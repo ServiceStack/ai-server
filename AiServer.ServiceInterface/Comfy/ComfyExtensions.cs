@@ -19,6 +19,16 @@ public static class ComfyExtensions
             NegativePrompt = textToAudio.TextPrompts.ExtractNegativePrompt()
         };
     }
+    
+    public static ComfySpeechToText ToComfy(this OpenAiWhisperSpeechToText speechToText)
+    {
+        return new ComfySpeechToText
+        {
+            WhisperModel = speechToText.Model,
+            InitAudio = speechToText.File
+        };
+    }
+    
     public static ComfyImageToText ToComfy(this StableDiffusionImageToText imageToText)
     {
         return new ComfyImageToText

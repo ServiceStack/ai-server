@@ -13,7 +13,7 @@ namespace AiServer.Tests;
 
 public class ComfyUITests
 {
-    const string BaseUrl = "https://comfy-dell.pvq.app/api";
+    const string BaseUrl = "http://localhost:7860/api";
     private ComfyClient client;
     
     [OneTimeSetUp]
@@ -121,6 +121,40 @@ public class ComfyUITests
         Assert.That(models.Any(x => x.Name.Contains(testName)), Is.True);
     }
 
+    [Test]
+    public async Task Can_use_ComfyClient_SpeechToText()
+    {
+        var testDto = new OpenAiWhisperSpeechToText()
+        {
+            Model = "base",
+            File = File.OpenRead("files/speech_to_text_test.wav")
+        };
+        
+        var response = await client.GenerateSpeechToTextAsync(testDto);
+        
+        Assert.That(response, Is.Not.Null);
+        Assert.That(response.PromptId, Is.Not.Empty);
+        
+        var status = await client.GetWorkflowStatusAsync(response.PromptId);
+        int jobTimeout = 30 * 1000; // 30 seconds
+        int pollInterval = 1000; // 1 second
+        var now = DateTime.UtcNow;
+        while (status.Completed == false && (DateTime.UtcNow - now).TotalMilliseconds < jobTimeout)
+        {
+            await Task.Delay(pollInterval);
+            status = await client.GetWorkflowStatusAsync(response.PromptId);
+        }
+        Assert.That(status, Is.Not.Null);
+        Assert.That(status.StatusMessage, Is.EqualTo("success"));
+        Assert.That(status.Completed, Is.EqualTo(true));
+        Assert.That(status.Outputs, Is.Not.Empty);
+        Assert.That(status.Outputs.Count, Is.EqualTo(1));
+        Assert.That(status.Outputs[0].Texts.Count, Is.EqualTo(1));
+        Assert.That(status.Outputs[0].Texts[0].Text, Is.Not.Null);
+        Assert.That(status.Outputs[0].Texts[0].Text, Is.Not.Empty);
+        Assert.That(status.Outputs[0].Texts[0].Text.Contains("Greetings, how are you?", StringComparison.OrdinalIgnoreCase), Is.True);
+    }
+    
     [Test]
     public async Task Can_use_ComfyClient_TextToAudio()
     {

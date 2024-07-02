@@ -39,6 +39,20 @@ public class ComfyImageInput
     public string Subfolder { get; set; }
 }
 
+public class ComfyFileInput
+{
+    public string Name { get; set; }
+    public string Type { get; set; }
+    public string Subfolder { get; set; }
+}
+
+public class ComfySpeechToText
+{
+    public string WhisperModel { get; set; } = "base";
+    public Stream? InitAudio { get; set; }
+    public ComfyFileInput? Audio { get; set; }
+}
+
 public class ComfyTextToImage
 {
     public long Seed { get; set; }

@@ -24,6 +24,8 @@ public partial class ComfyClient(HttpClient httpClient)
     public string TextToAudioTemplate { get; set; } = "text_to_audio.json";
     public string AudioToTextTemplate { get; set; } = "audio_to_text.json";
     
+    public string SpeechToTextTemplate { get; set; } = "speech_to_text.json";
+    
     public int PollIntervalMs { get; set; } = 1000;
     public int TimeoutMs { get; set; } = 60000;
 
@@ -58,15 +60,20 @@ public partial class ComfyClient(HttpClient httpClient)
         return result.FromJson<ComfyImageInput>();
     }
     
-    public async Task<ComfyImageInput> UploadAudioAssetAsync(Stream fileStream, string filename)
+    public async Task<ComfyFileInput> UploadAudioAssetAsync(Stream fileStream, string filename)
     {
         var content = new MultipartFormDataContent();
-        content.Add(new StreamContent(fileStream), "audio", filename);
+        content.Add(new StreamContent(fileStream), "image", filename);
         // Still uses /upload/image endpoint at the time of development, expecting this will change
         var response = await httpClient.PostAsync("/upload/image?overwrite=true&type=temp", content);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadAsStringAsync();
-        return result.FromJson<ComfyImageInput>();
+        return result.FromJson<ComfyFileInput>();
+    }
+    
+    public async Task<string> PopulateSpeechToTextWorkflowAsync(ComfySpeechToText request)
+    {
+        return await PopulateWorkflow(request, SpeechToTextTemplate);
     }
     
     public async Task<string> PopulateImageToTextWorkflowAsync(ComfyImageToText request)
@@ -111,6 +118,26 @@ public partial class ComfyClient(HttpClient httpClient)
 
         // Render template to JSON
         return await workflowPageResult.RenderToStringAsync();
+    }
+    
+    public async Task<ComfyWorkflowResponse> GenerateSpeechToTextAsync(OpenAiWhisperSpeechToText request)
+    {
+        var comfyRequest = request.ToComfy();
+        if (comfyRequest.InitAudio == null)
+            throw new Exception("Audio input is required for Speech to Text");
+        
+        // Upload audio asset
+        comfyRequest.Audio = await UploadAudioAssetAsync(comfyRequest.InitAudio, $"speech2text_{Guid.NewGuid()}.wav");
+        
+        // Read template from file for Speech to Text
+        var workflowJson = await PopulateSpeechToTextWorkflowAsync(comfyRequest);
+        // Convert to ComfyUI API JSON format
+        var apiJson = await ConvertWorkflowToApiAsync(workflowJson);
+        // Call ComfyUI API
+        var response = await QueueWorkflowAsync(apiJson);
+        // Returns with job ID
+        using var jsConfig = JsConfig.With(new Config { TextCase = TextCase.SnakeCase });
+        return response.FromJson<ComfyWorkflowResponse>();
     }
     
     public async Task<ComfyWorkflowResponse> GenerateTextToAudioAsync(StableAudioTextToAudio request)
@@ -322,4 +349,10 @@ public partial class ComfyClient(HttpClient httpClient)
         // Convert to ComfyWorkflowStatus
         return status;
     }
+}
+
+public class OpenAiWhisperSpeechToText
+{
+    public Stream File { get; set; }
+    public string Model { get; set; } = "base";
 }
