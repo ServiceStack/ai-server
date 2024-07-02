@@ -194,6 +194,16 @@ public partial class ComfyClient
                     }).ToList();
                 }
 
+                if (output.ContainsKey("previews"))
+                {
+                    result.Files = output["previews"].AsArray().Select(y => new ComfyFileOutput
+                    {
+                        Filename = y["filename"].ToString(),
+                        Type = y["type"].ToString(),
+                        Subfolder = y["subfolder"].ToString()
+                    }).ToList();
+                }
+
                 return result;
             }).ToList()
         };

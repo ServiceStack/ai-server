@@ -122,6 +122,83 @@ public class ComfyUITests
     }
 
     [Test]
+    public async Task Can_use_ComfyClient_TextToSpeech()
+    {
+        var testDto = new OpenAiTextToSpeech()
+        {
+            Input = "Hello there, how are you today?",
+            Voice = "en_US-lessac",
+            Quality = "high"
+        };
+        
+        var response = await client.GenerateTextToSpeechAsync(testDto);
+        
+        Assert.That(response, Is.Not.Null);
+        Assert.That(response.PromptId, Is.Not.Empty);
+        
+        var status = await client.GetWorkflowStatusAsync(response.PromptId);
+        int jobTimeout = 30 * 1000; // 30 seconds
+        int pollInterval = 1000; // 1 second
+        var now = DateTime.UtcNow;
+        while (status.Completed == false && (DateTime.UtcNow - now).TotalMilliseconds < jobTimeout)
+        {
+            await Task.Delay(pollInterval);
+            status = await client.GetWorkflowStatusAsync(response.PromptId);
+        }
+        
+        Assert.That(status, Is.Not.Null);
+        Assert.That(status.StatusMessage, Is.EqualTo("success"));
+        Assert.That(status.Completed, Is.EqualTo(true));
+        Assert.That(status.Outputs, Is.Not.Empty);
+        Assert.That(status.Outputs.Count, Is.EqualTo(1));
+        Assert.That(status.Outputs[0].Files.Count, Is.EqualTo(1));
+        Assert.That(status.Outputs[0].Files[0].Type, Is.EqualTo("output"));
+        Assert.That(status.Outputs[0].Files[0].Filename, Is.Not.Null);
+        // Piper TTS populates output via preview and uses its own subfolder
+        Assert.That(status.Outputs[0].Files[0].Subfolder, Is.Not.Null);
+        Assert.That(status.Outputs[0].Files[0].Subfolder, Is.Not.Empty);
+        Assert.That(string.Equals(status.Outputs[0].Files[0].Subfolder, "piper_tts", StringComparison.InvariantCultureIgnoreCase), Is.True);
+        
+        // Download result
+        var output = await client.DownloadComfyOutputAsync(status.Outputs[0].Files[0]);
+        Assert.That(output, Is.Not.Null);
+        // Save the output to disk with random name
+        var outputFilePath = $"files/comfyui_output_{Guid.NewGuid().ToString().Substring(0, 5)}.wav";
+        await File.WriteAllBytesAsync(outputFilePath, await output.ReadFullyAsync());
+        Assert.That(File.Exists(outputFilePath), Is.True);
+        
+        // Read file back and send it to SpeechToText
+        var speechToTextDto = new OpenAiWhisperSpeechToText()
+        {
+            Model = "base",
+            File = File.OpenRead(outputFilePath)
+        };
+        
+        var speechToTextResponse = await client.GenerateSpeechToTextAsync(speechToTextDto);
+        
+        Assert.That(speechToTextResponse, Is.Not.Null);
+        Assert.That(speechToTextResponse.PromptId, Is.Not.Empty);
+        
+        status = await client.GetWorkflowStatusAsync(speechToTextResponse.PromptId);
+        now = DateTime.UtcNow;
+        while (status.Completed == false && (DateTime.UtcNow - now).TotalMilliseconds < jobTimeout)
+        {
+            await Task.Delay(pollInterval);
+            status = await client.GetWorkflowStatusAsync(speechToTextResponse.PromptId);
+        }
+        
+        Assert.That(status, Is.Not.Null);
+        Assert.That(status.StatusMessage, Is.EqualTo("success"));
+        Assert.That(status.Completed, Is.EqualTo(true));
+        Assert.That(status.Outputs, Is.Not.Empty);
+        Assert.That(status.Outputs.Count, Is.EqualTo(1));
+        Assert.That(status.Outputs[0].Texts.Count, Is.EqualTo(1));
+        Assert.That(status.Outputs[0].Texts[0].Text, Is.Not.Null);
+        Assert.That(status.Outputs[0].Texts[0].Text, Is.Not.Empty);
+        Assert.That(status.Outputs[0].Texts[0].Text.Contains("Hello there, how are you today?", StringComparison.OrdinalIgnoreCase), Is.True);
+    }
+
+    [Test]
     public async Task Can_use_ComfyClient_SpeechToText()
     {
         var testDto = new OpenAiWhisperSpeechToText()

@@ -75,6 +75,10 @@
     <Content Include="workflows\speech_to_text.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Remove="workflows\text_to_speech.json" />
+    <Content Include="workflows\text_to_speech.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

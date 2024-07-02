@@ -20,6 +20,17 @@ public static class ComfyExtensions
         };
     }
     
+    public static ComfyTextToSpeech ToComfy(this OpenAiTextToSpeech textToSpeech)
+    {
+        return new ComfyTextToSpeech
+        {
+            Input = textToSpeech.Input,
+            //Model = textToSpeech.Model
+            Quality = textToSpeech?.Quality ?? "high",
+            Voice = textToSpeech.Voice
+        };
+    }
+    
     public static ComfySpeechToText ToComfy(this OpenAiWhisperSpeechToText speechToText)
     {
         return new ComfySpeechToText

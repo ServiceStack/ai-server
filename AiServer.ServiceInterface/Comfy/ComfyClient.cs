@@ -21,6 +21,7 @@ public partial class ComfyClient(HttpClient httpClient)
     public string ImageToImageTemplate { get; set; } = "image_to_image.json";
     public string ImageToImageUpscaleTemplate { get; set; } = "image_to_image_upscale.json";
     public string ImageToImageWithMaskTemplate { get; set; } = "image_to_image_with_mask.json";
+    public string TextToSpeechTemplate { get; set; } = "text_to_speech.json";
     public string TextToAudioTemplate { get; set; } = "text_to_audio.json";
     public string AudioToTextTemplate { get; set; } = "audio_to_text.json";
     
@@ -76,6 +77,11 @@ public partial class ComfyClient(HttpClient httpClient)
         return await PopulateWorkflow(request, SpeechToTextTemplate);
     }
     
+    public async Task<string> PopulateTextToSpeechWorkflowAsync(ComfyTextToSpeech request)
+    {
+        return await PopulateWorkflow(request, TextToSpeechTemplate);
+    }
+
     public async Task<string> PopulateImageToTextWorkflowAsync(ComfyImageToText request)
     {
         return await PopulateWorkflow(request, ImageToTextTemplate);
@@ -118,6 +124,20 @@ public partial class ComfyClient(HttpClient httpClient)
 
         // Render template to JSON
         return await workflowPageResult.RenderToStringAsync();
+    }
+    
+    public async Task<ComfyWorkflowResponse> GenerateTextToSpeechAsync(OpenAiTextToSpeech request)
+    {
+        var comfyRequest = request.ToComfy();
+        // Read template from file for Text to Speech
+        var workflowJson = await PopulateTextToSpeechWorkflowAsync(comfyRequest);
+        // Convert to ComfyUI API JSON format
+        var apiJson = await ConvertWorkflowToApiAsync(workflowJson);
+        // Call ComfyUI API
+        var response = await QueueWorkflowAsync(apiJson);
+        // Returns with job ID
+        using var jsConfig = JsConfig.With(new Config { TextCase = TextCase.SnakeCase });
+        return response.FromJson<ComfyWorkflowResponse>();
     }
     
     public async Task<ComfyWorkflowResponse> GenerateSpeechToTextAsync(OpenAiWhisperSpeechToText request)
@@ -349,10 +369,4 @@ public partial class ComfyClient(HttpClient httpClient)
         // Convert to ComfyWorkflowStatus
         return status;
     }
-}
-
-public class OpenAiWhisperSpeechToText
-{
-    public Stream File { get; set; }
-    public string Model { get; set; } = "base";
 }
