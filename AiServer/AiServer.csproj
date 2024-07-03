@@ -24,4 +24,10 @@
     <ProjectReference Include="..\AiServer.ServiceModel\AiServer.ServiceModel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="workflows\text_to_image.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

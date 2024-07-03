@@ -1,0 +1,138 @@
+using System.Net.WebSockets;
+using System.Text;
+using System.Collections.Concurrent;
+using System.Text.Json;
+
+namespace AiServer.ServiceInterface.Comfy;
+
+public class ComfyWebSocketClient
+{
+    private readonly Uri serverUrl;
+    private readonly ClientWebSocket clientWebSocket;
+    private readonly string? apiKey;
+    private readonly ConcurrentQueue<string> messageQueue = new ConcurrentQueue<string>();
+    
+    public event EventHandler<string>? MessageReceived;
+    public event EventHandler<(int Value, int Max, string PromptId)>? ProgressUpdated;
+    public event EventHandler<int>? QueueRemaining;
+    public event EventHandler<string>? GenerationCompleted; 
+
+    public ComfyWebSocketClient(Uri serverUrl, ClientWebSocket clientWebSocket, string? apiKey = null)
+    {
+        this.serverUrl = serverUrl;
+        this.clientWebSocket = clientWebSocket;
+        this.apiKey = apiKey;
+    }
+
+    public async Task ConnectAndListenAsync()
+    {
+        try
+        {
+            if (apiKey != null)
+                clientWebSocket.Options.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+            await clientWebSocket.ConnectAsync(serverUrl, CancellationToken.None);
+            Console.WriteLine("Connected to WebSocket server");
+
+            // Start message processing on a separate thread
+            Task.Run(ProcessMessagesAsync);
+
+            await ReceiveMessagesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task ReceiveMessagesAsync()
+    {
+        var buffer = new byte[1024 * 4];
+        while (clientWebSocket.State == WebSocketState.Open)
+        {
+            var result = await clientWebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+            if (result.MessageType == WebSocketMessageType.Text)
+            {
+                string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                messageQueue.Enqueue(message);
+            }
+            else if (result.MessageType == WebSocketMessageType.Close)
+            {
+                await clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                break;
+            }
+        }
+    }
+
+    private async Task ProcessMessagesAsync()
+    {
+        while (true)
+        {
+            if (messageQueue.TryDequeue(out string? message))
+            {
+                MessageReceived?.Invoke(this, message);
+                ProcessMessage(message);
+            }
+            else
+            {
+                await Task.Delay(10); // Small delay to prevent busy waiting
+            }
+        }
+    }
+
+    private void ProcessMessage(string message)
+    {
+        try
+        {
+            var jsonDocument = JsonDocument.Parse(message);
+            var root = jsonDocument.RootElement;
+
+            if (root.TryGetProperty("type", out var typeElement) && typeElement.GetString() is string type)
+            {
+                switch (type)
+                {
+                    case "progress":
+                        if (root.TryGetProperty("data", out var dataElement))
+                        {
+                            int value = dataElement.GetProperty("value").GetInt32();
+                            int max = dataElement.GetProperty("max").GetInt32();
+                            string promptId = dataElement.GetProperty("prompt_id").GetString() ?? string.Empty;
+                            ProgressUpdated?.Invoke(this, (value, max, promptId));
+                        }
+                        break;
+                    case "status":
+                        if (root.TryGetProperty("data", out var statusDataElement) &&
+                            statusDataElement.TryGetProperty("status", out var statusElement) &&
+                            statusElement.TryGetProperty("exec_info", out var execInfoElement) &&
+                            execInfoElement.TryGetProperty("queue_remaining", out var queueRemainingElement))
+                        {
+                            int queueRemaining = queueRemainingElement.GetInt32();
+                            QueueRemaining?.Invoke(this, queueRemaining);
+                        }
+                        break;
+                    case "executing":
+                        if (root.TryGetProperty("data", out var executingDataElement) &&
+                            executingDataElement.TryGetProperty("prompt_id", out var executingPromptIdElement) &&
+                            executingDataElement.TryGetProperty("node", out var executingJsonDataElement))
+                        {
+                            string promptId = executingPromptIdElement.GetString()!;
+                            // Check if node is null, if it is, it means the generation is completed
+                            string? jsonData = executingJsonDataElement.ValueKind == JsonValueKind.Null
+                                ? null
+                                : executingJsonDataElement.Clone().GetRawText();
+                            if (jsonData == null)
+                                GenerationCompleted?.Invoke(this, promptId);
+                        }
+                        break;
+                    default:
+                        Console.WriteLine($"Unhandled message type: {type}");
+                        Console.WriteLine(message);
+                        break;
+                }
+            }
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"Error parsing JSON: {ex.Message}");
+        }
+    }
+}

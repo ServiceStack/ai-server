@@ -81,7 +81,6 @@ public partial class ComfyClient
                         var inputNode = node["inputs"]!.AsArray().FirstOrDefault(x => x["name"]!.ToString() == propName);
                         var srcNodeId = inputNode!["link"]!.ToString();
                         var linkVals = allLinks.AsArray().FirstOrDefault(x => (int)x[0] == int.Parse(srcNodeId));
-                        Console.WriteLine(linkVals.ToString());
                         apiNode["inputs"][propName] = new JsonArray() { linkVals![1].GetValue<int>().ToString(), linkVals[2].GetValue<int>() };
                     }
                     else
@@ -103,7 +102,7 @@ public partial class ComfyClient
             apiNodes[nodeId] = apiNode;
         }
 
-        return new JsonObject() { ["prompt"] = apiNodes }.ToJsonString();
+        return new JsonObject() { ["prompt"] = apiNodes, ["client_id"] = clientId }.ToJsonString();
     }
     private async Task AddToMappingAsync(string classType)
     {

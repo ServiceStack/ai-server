@@ -1,7 +1,10 @@
 using System.Data;
 using AiServer.ServiceInterface;
+using AiServer.ServiceInterface.Comfy;
 using AiServer.ServiceModel.Types;
+using ServiceStack.Configuration;
 using ServiceStack.Data;
+using ServiceStack.IO;
 using ServiceStack.OrmLite;
 
 [assembly: HostingStartup(typeof(AiServer.AppHost))]
@@ -20,6 +23,18 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             services.AddSingleton<OpenAiProvider>();
             services.AddSingleton<GoogleOpenAiProvider>();
             services.AddSingleton<AiProviderFactory>();
+            
+            services.AddSingleton<IComfyClient>(c => 
+                new ComfyClient("https://comfy-dell.pvq.app",
+                "testtest1234"));
+            
+            var appFs = new FileSystemVirtualFiles(context.HostingEnvironment.ContentRootPath.CombineWith("App_Data").AssertDir());
+            var uploadLocations = new[]
+            {
+                new UploadLocation("comfy", appFs, readAccessRole: RoleNames.AllowAnon),
+            };
+            services.AddSingleton<IVirtualFiles>(appFs);
+            services.AddPlugin(new FilesUploadFeature(uploadLocations));
         });
 
     public override IDbConnection GetDbConnection(string? namedConnection)

@@ -1,6 +1,9 @@
+using System.Collections.Concurrent;
 using System.Net.Http.Json;
+using System.Net.WebSockets;
 using System.Runtime.Serialization;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using ServiceStack;
 using ServiceStack.Script;
 using ServiceStack.Text;
@@ -10,7 +13,19 @@ namespace AiServer.ServiceInterface.Comfy;
 using System.Net.Http;
 using System.Text.Json.Nodes;
 
-public partial class ComfyClient(HttpClient httpClient)
+public interface IComfyClient
+{
+    Task<ComfyWorkflowResponse> PromptGeneration<T>(T comfyRequest);
+    Task<ComfyAgentDownloadStatus> DownloadModelAsync(string url, string filename, string apiKey = null, string apiKeyLocation = "");
+    Task<ComfyAgentDownloadStatus> GetDownloadStatusAsync(string name);
+    Task<List<ComfyModel>> GetModelsListAsync();
+    Task<Stream> DownloadComfyOutputAsync(ComfyFileOutput output);
+    Task<ComfyWorkflowStatus> GetWorkflowStatusAsync(string jobId);
+
+    event EventHandler<GenerationCompleteEventArgs> GenerationComplete;
+}
+
+public partial class ComfyClient(HttpClient httpClient) : IComfyClient
 {
     private readonly Dictionary<string, JsonObject> metadataMapping = new();
     private static ScriptContext context = new ScriptContext().Init();
@@ -26,11 +41,12 @@ public partial class ComfyClient(HttpClient httpClient)
     public string AudioToTextTemplate { get; set; } = "audio_to_text.json";
     
     public string SpeechToTextTemplate { get; set; } = "speech_to_text.json";
-    
-    public int PollIntervalMs { get; set; } = 1000;
-    public int TimeoutMs { get; set; } = 60000;
 
-    public ComfyClient(string baseUrl,string apiKey = null)
+    private string clientId = Guid.NewGuid().ToString();
+    
+    public event EventHandler<GenerationCompleteEventArgs> GenerationComplete;
+
+    public ComfyClient(string baseUrl,string? apiKey = null)
         : this(string.IsNullOrEmpty(apiKey) ? new HttpClient
         {
             BaseAddress = new Uri(baseUrl),
@@ -42,23 +58,46 @@ public partial class ComfyClient(HttpClient httpClient)
                 "Authorization", $"Bearer {apiKey}"}}})
     {
         // Initialize ComfyWorkflowMapping
-        ComfyWorkflowMapping[typeof(ComfyTextToImage)] = TextToImageTemplate;
-        ComfyWorkflowMapping[typeof(ComfyImageToImage)] = ImageToImageTemplate;
-        ComfyWorkflowMapping[typeof(ComfyImageToImageUpscale)] = ImageToImageUpscaleTemplate;
-        ComfyWorkflowMapping[typeof(ComfyImageToImageWithMask)] = ImageToImageWithMaskTemplate;
-        ComfyWorkflowMapping[typeof(ComfyImageToText)] = ImageToTextTemplate;
-        ComfyWorkflowMapping[typeof(ComfyTextToSpeech)] = TextToSpeechTemplate;
-        ComfyWorkflowMapping[typeof(ComfyTextToAudio)] = TextToAudioTemplate;
-        ComfyWorkflowMapping[typeof(ComfySpeechToText)] = SpeechToTextTemplate;
+        comfyWorkflowMapping[typeof(ComfyTextToImage)] = TextToImageTemplate;
+        comfyWorkflowMapping[typeof(ComfyImageToImage)] = ImageToImageTemplate;
+        comfyWorkflowMapping[typeof(ComfyImageToImageUpscale)] = ImageToImageUpscaleTemplate;
+        comfyWorkflowMapping[typeof(ComfyImageToImageWithMask)] = ImageToImageWithMaskTemplate;
+        comfyWorkflowMapping[typeof(ComfyImageToText)] = ImageToTextTemplate;
+        comfyWorkflowMapping[typeof(ComfyTextToSpeech)] = TextToSpeechTemplate;
+        comfyWorkflowMapping[typeof(ComfyTextToAudio)] = TextToAudioTemplate;
+        comfyWorkflowMapping[typeof(ComfySpeechToText)] = SpeechToTextTemplate;
+        
+        // Initialize WebSocket Client
+        var webSocketUrl = new Uri(baseUrl.Replace("http", "ws") + "/ws?clientId=" + clientId);
+        webSocketClient = new ComfyWebSocketClient(webSocketUrl, new ClientWebSocket(), apiKey);
+        
+        // Subscribe to events
+        webSocketClient.GenerationCompleted += OnGenerationCompleted;
+        
+        // Start WebSocket connection
+        Task.Run(() => webSocketClient.ConnectAndListenAsync());
+    }
+    
+    
+    private async void OnGenerationCompleted(object? sender, string promptId)
+    {
+        var status = await GetWorkflowStatusAsync(promptId);
+        GenerationComplete?.Invoke(this, new GenerationCompleteEventArgs(promptId, status));
     }
 
-    private Dictionary<Type, string> ComfyWorkflowMapping = new();
+    private readonly Dictionary<Type, string> comfyWorkflowMapping = new();
+    private readonly ComfyWebSocketClient? webSocketClient;
 
     public async Task<string> QueueWorkflowAsync(string apiJson)
     {
         var response = await httpClient.PostAsync("/prompt", new StringContent(apiJson, Encoding.UTF8, "application/json"));
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadAsStringAsync();
+        var result = await response.Content.ReadAsStringAsync();
+        // returns with `prompt_id`
+        var promptId = JsonNode.Parse(result)?["prompt_id"];
+        if (promptId == null)
+            throw new Exception("Invalid response from ComfyUI API");
+        return result;
     }
     
     public async Task<ComfyImageInput> UploadImageAssetAsync(Stream fileStream, string filename)
@@ -68,7 +107,6 @@ public partial class ComfyClient(HttpClient httpClient)
         var response = await httpClient.PostAsync("/upload/image?overwrite=true&type=temp", content);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadAsStringAsync();
-        await Task.Delay(1000);
         return result.FromJson<ComfyImageInput>();
     }
     
@@ -99,9 +137,9 @@ public partial class ComfyClient(HttpClient httpClient)
     
     public async Task<ComfyWorkflowResponse> PromptGeneration<T>(T comfyRequest)
     {
-        if (!ComfyWorkflowMapping.ContainsKey(typeof(T)))
+        if (!comfyWorkflowMapping.ContainsKey(typeof(T)))
             throw new Exception($"Unsupported request type: {typeof(T).Name}");
-        var templatePath = ComfyWorkflowMapping[typeof(T)];
+        var templatePath = comfyWorkflowMapping[typeof(T)];
         // Read template from file for Text to Image
         var workflowJson = await PopulateWorkflow(comfyRequest, templatePath);
         // Convert to ComfyUI API JSON format
@@ -242,7 +280,7 @@ public partial class ComfyClient(HttpClient httpClient)
     /// `header:x-api-key` will populate the `x-api-key` request header with the API Key value.
     /// `bearer` will populate the Authorization header and use the API Key as a Bearer token.</param>
     /// <returns></returns>
-    public async Task<string> DownloadModelAsync(string url, string filename, string apiKey = null, string apiKeyLocation = "")
+    public async Task<ComfyAgentDownloadStatus> DownloadModelAsync(string url, string filename, string apiKey = null, string apiKeyLocation = "")
     {
         var path = $"/agent/pull?url={url}&name={filename}";
         if (!string.IsNullOrEmpty(apiKey))
@@ -251,7 +289,8 @@ public partial class ComfyClient(HttpClient httpClient)
             path += $"&api_key_location={apiKeyLocation}";
         var response = await httpClient.PostAsync(path,null);
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadAsStringAsync();
+        var result = await response.Content.ReadAsStringAsync();
+        return result.FromJson<ComfyAgentDownloadStatus>();
     }
 
     public async Task<string> GetPromptHistory(string id)
@@ -290,4 +329,15 @@ public partial class ComfyClient(HttpClient httpClient)
         // Convert to ComfyWorkflowStatus
         return status;
     }
+}
+
+public class GenerationUpdateEventArgs
+{
+    public string PromptId { get; set; }
+}
+
+public class GenerationCompleteEventArgs(string promptId, ComfyWorkflowStatus status) : EventArgs
+{
+    public string PromptId { get; } = promptId;
+    public ComfyWorkflowStatus Status { get; } = status;
 }
