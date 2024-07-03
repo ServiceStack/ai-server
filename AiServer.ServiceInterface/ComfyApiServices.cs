@@ -89,6 +89,7 @@ public class ComfyApiServices(IComfyClient comfyClient) : Service
 }
 
 
+[ValidateApiKey]
 public class CreateComfyTextToImage : IReturn<CreateComfyTextToImageResponse>
 {
     public string Model { get; set; }
