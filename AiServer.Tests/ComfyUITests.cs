@@ -1,12 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using AiServer.ServiceInterface.Comfy;
-using AiServer.ServiceModel;
 using NUnit.Framework;
 using ServiceStack;
-using ServiceStack.Text;
-using JsonObject = System.Text.Json.Nodes.JsonObject;
-using System.Drawing;
 using SixLabors.ImageSharp;
 
 namespace AiServer.Tests;
@@ -124,7 +120,7 @@ public class ComfyUITests
     [Test]
     public async Task Can_use_ComfyClient_TextToSpeech()
     {
-        var testDto = new OpenAiTextToSpeech()
+        var testDto = new ComfyTextToSpeech()
         {
             Input = "Hello there, how are you today?",
             Voice = "en_US-lessac",
@@ -168,10 +164,10 @@ public class ComfyUITests
         Assert.That(File.Exists(outputFilePath), Is.True);
         
         // Read file back and send it to SpeechToText
-        var speechToTextDto = new OpenAiWhisperSpeechToText()
+        var speechToTextDto = new ComfySpeechToText()
         {
-            Model = "base",
-            File = File.OpenRead(outputFilePath)
+            WhisperModel = "base",
+            AudioFile = File.OpenRead(outputFilePath)
         };
         
         var speechToTextResponse = await client.GenerateSpeechToTextAsync(speechToTextDto);
@@ -201,10 +197,10 @@ public class ComfyUITests
     [Test]
     public async Task Can_use_ComfyClient_SpeechToText()
     {
-        var testDto = new OpenAiWhisperSpeechToText()
+        var testDto = new ComfySpeechToText()
         {
-            Model = "base",
-            File = File.OpenRead("files/speech_to_text_test.wav")
+            WhisperModel = "base",
+            AudioFile = File.OpenRead("files/speech_to_text_test.wav")
         };
         
         var response = await client.GenerateSpeechToTextAsync(testDto);
@@ -548,7 +544,7 @@ public class ComfyUITests
         };
         
         // Convert template to JSON
-        var jsonTemplate = await client.PopulateImageToImageUpscaleWorkflowAsync(testDto);
+        var jsonTemplate = await client.PopulateWorkflow(testDto,client.ImageToImageUpscaleTemplate);
         
         // Assert that the JSON template is not null
         Assert.That(jsonTemplate, Is.Not.Null);
@@ -587,7 +583,7 @@ public class ComfyUITests
         };
         
         // Convert template to JSON
-        var jsonTemplate = await client.PopulateImageToImageWorkflowAsync(testDto);
+        var jsonTemplate = await client.PopulateWorkflow(testDto,client.ImageToImageTemplate);
         
         // Assert that the JSON template is not null
         Assert.That(jsonTemplate, Is.Not.Null);
@@ -623,7 +619,7 @@ public class ComfyUITests
         };
         
         // Convert template to JSON
-        var jsonTemplate = await client.PopulateTextToImageWorkflowAsync(testDto);
+        var jsonTemplate = await client.PopulateWorkflow(testDto,client.TextToImageTemplate);
         
         // Assert that the JSON template is not null
         Assert.That(jsonTemplate, Is.Not.Null);

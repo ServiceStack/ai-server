@@ -41,7 +41,18 @@ public partial class ComfyClient(HttpClient httpClient)
             DefaultRequestHeaders = { { "ContentType", "application/json" }, { "Accepts", "application/json" }, {
                 "Authorization", $"Bearer {apiKey}"}}})
     {
+        // Initialize ComfyWorkflowMapping
+        ComfyWorkflowMapping[typeof(ComfyTextToImage)] = TextToImageTemplate;
+        ComfyWorkflowMapping[typeof(ComfyImageToImage)] = ImageToImageTemplate;
+        ComfyWorkflowMapping[typeof(ComfyImageToImageUpscale)] = ImageToImageUpscaleTemplate;
+        ComfyWorkflowMapping[typeof(ComfyImageToImageWithMask)] = ImageToImageWithMaskTemplate;
+        ComfyWorkflowMapping[typeof(ComfyImageToText)] = ImageToTextTemplate;
+        ComfyWorkflowMapping[typeof(ComfyTextToSpeech)] = TextToSpeechTemplate;
+        ComfyWorkflowMapping[typeof(ComfyTextToAudio)] = TextToAudioTemplate;
+        ComfyWorkflowMapping[typeof(ComfySpeechToText)] = SpeechToTextTemplate;
     }
+
+    private Dictionary<Type, string> ComfyWorkflowMapping = new();
 
     public async Task<string> QueueWorkflowAsync(string apiJson)
     {
@@ -72,46 +83,6 @@ public partial class ComfyClient(HttpClient httpClient)
         return result.FromJson<ComfyFileInput>();
     }
     
-    public async Task<string> PopulateSpeechToTextWorkflowAsync(ComfySpeechToText request)
-    {
-        return await PopulateWorkflow(request, SpeechToTextTemplate);
-    }
-    
-    public async Task<string> PopulateTextToSpeechWorkflowAsync(ComfyTextToSpeech request)
-    {
-        return await PopulateWorkflow(request, TextToSpeechTemplate);
-    }
-
-    public async Task<string> PopulateImageToTextWorkflowAsync(ComfyImageToText request)
-    {
-        return await PopulateWorkflow(request, ImageToTextTemplate);
-    }
-    
-    public async Task<string> PopulateImageToImageWithMaskWorkflowAsync(ComfyImageToImageWithMask request)
-    {
-        return await PopulateWorkflow(request, ImageToImageWithMaskTemplate);
-    }
-    
-    public async Task<string> PopulateTextToImageWorkflowAsync(ComfyTextToImage request)
-    {
-        return await PopulateWorkflow(request, TextToImageTemplate);
-    }
-    
-    public async Task<string> PopulateImageToImageWorkflowAsync(ComfyImageToImage request)
-    {
-        return await PopulateWorkflow(request, ImageToImageTemplate);
-    }
-    
-    private async Task<string> PopulateTextToAudioWorkflowAsync(ComfyTextToAudio request)
-    {
-        return await PopulateWorkflow(request, TextToAudioTemplate);
-    }
-    
-    public async Task<string> PopulateImageToImageUpscaleWorkflowAsync(ComfyImageToImageUpscale request)
-    {
-        return await PopulateWorkflow(request, ImageToImageUpscaleTemplate);
-    }
-    
     public async Task<string> PopulateWorkflow<T>(T request, string templatePath)
     {
         // Read template from file for Text to Image
@@ -126,11 +97,13 @@ public partial class ComfyClient(HttpClient httpClient)
         return await workflowPageResult.RenderToStringAsync();
     }
     
-    public async Task<ComfyWorkflowResponse> GenerateTextToSpeechAsync(OpenAiTextToSpeech request)
+    public async Task<ComfyWorkflowResponse> PromptGeneration<T>(T comfyRequest)
     {
-        var comfyRequest = request.ToComfy();
-        // Read template from file for Text to Speech
-        var workflowJson = await PopulateTextToSpeechWorkflowAsync(comfyRequest);
+        if (!ComfyWorkflowMapping.ContainsKey(typeof(T)))
+            throw new Exception($"Unsupported request type: {typeof(T).Name}");
+        var templatePath = ComfyWorkflowMapping[typeof(T)];
+        // Read template from file for Text to Image
+        var workflowJson = await PopulateWorkflow(comfyRequest, templatePath);
         // Convert to ComfyUI API JSON format
         var apiJson = await ConvertWorkflowToApiAsync(workflowJson);
         // Call ComfyUI API
@@ -140,38 +113,26 @@ public partial class ComfyClient(HttpClient httpClient)
         return response.FromJson<ComfyWorkflowResponse>();
     }
     
-    public async Task<ComfyWorkflowResponse> GenerateSpeechToTextAsync(OpenAiWhisperSpeechToText request)
+    public async Task<ComfyWorkflowResponse> GenerateTextToSpeechAsync(ComfyTextToSpeech request)
     {
-        var comfyRequest = request.ToComfy();
-        if (comfyRequest.InitAudio == null)
+        return await PromptGeneration(request);
+    }
+    
+    public async Task<ComfyWorkflowResponse> GenerateSpeechToTextAsync(ComfySpeechToText request)
+    {
+        if (request.AudioFile == null)
             throw new Exception("Audio input is required for Speech to Text");
         
         // Upload audio asset
-        comfyRequest.Audio = await UploadAudioAssetAsync(comfyRequest.InitAudio, $"speech2text_{Guid.NewGuid()}.wav");
+        request.Audio = await UploadAudioAssetAsync(request.AudioFile, $"speech2text_{Guid.NewGuid()}.wav");
         
-        // Read template from file for Speech to Text
-        var workflowJson = await PopulateSpeechToTextWorkflowAsync(comfyRequest);
-        // Convert to ComfyUI API JSON format
-        var apiJson = await ConvertWorkflowToApiAsync(workflowJson);
-        // Call ComfyUI API
-        var response = await QueueWorkflowAsync(apiJson);
-        // Returns with job ID
-        using var jsConfig = JsConfig.With(new Config { TextCase = TextCase.SnakeCase });
-        return response.FromJson<ComfyWorkflowResponse>();
+        return await PromptGeneration(request);
     }
     
     public async Task<ComfyWorkflowResponse> GenerateTextToAudioAsync(StableAudioTextToAudio request)
     {
         var comfyRequest = request.ToComfy();
-        // Read template from file for Text to Audio
-        var workflowJson = await PopulateTextToAudioWorkflowAsync(comfyRequest);
-        // Convert to ComfyUI API JSON format
-        var apiJson = await ConvertWorkflowToApiAsync(workflowJson);
-        // Call ComfyUI API
-        var response = await QueueWorkflowAsync(apiJson);
-        // Returns with job ID
-        using var jsConfig = JsConfig.With(new Config { TextCase = TextCase.SnakeCase });
-        return response.FromJson<ComfyWorkflowResponse>();
+        return await PromptGeneration(comfyRequest);
     }
 
     public async Task<ComfyWorkflowResponse> GenerateImageToTextAsync(StableDiffusionImageToText request)
@@ -186,15 +147,7 @@ public partial class ComfyClient(HttpClient httpClient)
         if (comfyRequest.Image == null)
             throw new Exception("Image input is required for Image to Text");
         
-        // Read template from file for Image to Text
-        var workflowJson = await PopulateImageToTextWorkflowAsync(comfyRequest);
-        // Convert to ComfyUI API JSON format
-        var apiJson = await ConvertWorkflowToApiAsync(workflowJson);
-        // Call ComfyUI API
-        var response = await QueueWorkflowAsync(apiJson);
-        // Returns with job ID
-        using var jsConfig = JsConfig.With(new Config { TextCase = TextCase.SnakeCase });
-        return response.FromJson<ComfyWorkflowResponse>();
+        return await PromptGeneration(comfyRequest);
     }
 
     public async Task<ComfyWorkflowResponse> GenerateImageToImageWithMaskAsync(
@@ -224,15 +177,7 @@ public partial class ComfyClient(HttpClient httpClient)
         if (comfyRequest.MaskImage == null)
             throw new Exception("Mask input failed to upload for Image to Image with Mask");
         
-        // Read template from file for Image to Image with Mask
-        var workflowJson = await PopulateImageToImageWithMaskWorkflowAsync(comfyRequest);
-        // Convert to ComfyUI API JSON format
-        var apiJson = await ConvertWorkflowToApiAsync(workflowJson);
-        // Call ComfyUI API
-        var response = await QueueWorkflowAsync(apiJson);
-        // Returns with job ID
-        using var jsConfig = JsConfig.With(new Config { TextCase = TextCase.SnakeCase });
-        return response.FromJson<ComfyWorkflowResponse>();
+        return await PromptGeneration(comfyRequest);
     }
 
     public async Task<ComfyWorkflowResponse> GenerateImageToImageUpscaleAsync(StableDiffusionImageToImageUpscale request)
@@ -244,15 +189,7 @@ public partial class ComfyClient(HttpClient httpClient)
         // Upload image asset
         comfyRequest.Image = await UploadImageAssetAsync(comfyRequest.InitImage, $"image2image_upscale_{Guid.NewGuid()}.png");
         
-        // Read template from file for Image to Image
-        var workflowJson = await PopulateImageToImageUpscaleWorkflowAsync(comfyRequest);
-        // Convert to ComfyUI API JSON format
-        var apiJson = await ConvertWorkflowToApiAsync(workflowJson);
-        // Call ComfyUI API
-        var response = await QueueWorkflowAsync(apiJson);
-        // Returns with job ID
-        using var jsConfig = JsConfig.With(new Config { TextCase = TextCase.SnakeCase });
-        return response.FromJson<ComfyWorkflowResponse>();
+        return await PromptGeneration(comfyRequest);
     }
 
     public async Task<ComfyWorkflowResponse> GenerateImageToImageAsync(StableDiffusionImageToImage request)
@@ -267,30 +204,14 @@ public partial class ComfyClient(HttpClient httpClient)
         if (comfyRequest.Image == null)
             throw new Exception("Image input is required for Image to Image");
         
-        // Read template from file for Image to Image
-        var workflowJson = await PopulateImageToImageWorkflowAsync(comfyRequest);
-        // Convert to ComfyUI API JSON format
-        var apiJson = await ConvertWorkflowToApiAsync(workflowJson);
-        // Call ComfyUI API
-        var response = await QueueWorkflowAsync(apiJson);
-        // Returns with job ID
-        using var jsConfig = JsConfig.With(new Config { TextCase = TextCase.SnakeCase });
-        return response.FromJson<ComfyWorkflowResponse>();
+        return await PromptGeneration(comfyRequest);
     }
 
     public async Task<ComfyWorkflowResponse> GenerateTextToImageAsync(StableDiffusionTextToImage request)
     {
         // Convert to Internal DTO
         var comfyRequest = request.ToComfy();
-        // Read template from file for Text to Image
-        var workflowJson = await PopulateTextToImageWorkflowAsync(comfyRequest);
-        // Convert to ComfyUI API JSON format
-        var apiJson = await ConvertWorkflowToApiAsync(workflowJson);
-        // Call ComfyUI API
-        var response = await QueueWorkflowAsync(apiJson);
-        // Returns with job ID
-        using var jsConfig = JsConfig.With(new Config { TextCase = TextCase.SnakeCase });
-        return response.FromJson<ComfyWorkflowResponse>();
+        return await PromptGeneration(comfyRequest);
     }
     
     public async Task<ComfyAgentDownloadStatus> GetDownloadStatusAsync(string name)

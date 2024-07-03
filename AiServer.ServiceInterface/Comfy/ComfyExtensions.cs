@@ -19,27 +19,7 @@ public static class ComfyExtensions
             NegativePrompt = textToAudio.TextPrompts.ExtractNegativePrompt()
         };
     }
-    
-    public static ComfyTextToSpeech ToComfy(this OpenAiTextToSpeech textToSpeech)
-    {
-        return new ComfyTextToSpeech
-        {
-            Input = textToSpeech.Input,
-            //Model = textToSpeech.Model
-            Quality = textToSpeech?.Quality ?? "high",
-            Voice = textToSpeech.Voice
-        };
-    }
-    
-    public static ComfySpeechToText ToComfy(this OpenAiWhisperSpeechToText speechToText)
-    {
-        return new ComfySpeechToText
-        {
-            WhisperModel = speechToText.Model,
-            InitAudio = speechToText.File
-        };
-    }
-    
+
     public static ComfyImageToText ToComfy(this StableDiffusionImageToText imageToText)
     {
         return new ComfyImageToText

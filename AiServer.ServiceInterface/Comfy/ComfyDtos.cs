@@ -49,7 +49,7 @@ public class ComfyFileInput
 public class ComfySpeechToText
 {
     public string WhisperModel { get; set; } = "base";
-    public Stream? InitAudio { get; set; }
+    public Stream? AudioFile { get; set; }
     public ComfyFileInput? Audio { get; set; }
 }
 
@@ -61,24 +61,6 @@ public class ComfyTextToSpeech
     public string Quality { get; set; } = "high";
 }
 
-public class OpenAiWhisperSpeechToText
-{
-    public Stream File { get; set; }
-    public string Model { get; set; } = "base";
-}
-
-public class OpenAiTextToSpeech
-{
-    // Ignored for now
-    public string Model { get; set; } = "default";
-    public string Input { get; set; }
-    
-    // TODO mapping valid voice selections to ComfyUI supported ones?
-    public string Voice { get; set; } = "en_US-lessac";
-
-    // Not on original DTO
-    public string? Quality { get; set; } = "high";
-}
 
 public class ComfyTextToImage
 {
