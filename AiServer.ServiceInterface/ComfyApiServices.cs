@@ -43,7 +43,7 @@ public class ComfyApiServices(IComfyClient comfyClient) : Service
             }
         }
 
-        comfyClient.GenerationComplete += OnComfyClientOnGenerationComplete;
+        //comfyClient.GenerationComplete += OnComfyClientOnGenerationComplete;
 
         try
         {
@@ -83,7 +83,7 @@ public class ComfyApiServices(IComfyClient comfyClient) : Service
         }
         finally
         {
-            comfyClient.GenerationComplete -= OnComfyClientOnGenerationComplete;
+            //comfyClient.GenerationComplete -= OnComfyClientOnGenerationComplete;
         }
     }
 }

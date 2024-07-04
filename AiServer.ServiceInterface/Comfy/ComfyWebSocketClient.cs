@@ -10,12 +10,12 @@ public class ComfyWebSocketClient
     private readonly Uri serverUrl;
     private readonly ClientWebSocket clientWebSocket;
     private readonly string? apiKey;
-    private readonly ConcurrentQueue<string> messageQueue = new ConcurrentQueue<string>();
-    
-    public event EventHandler<string>? MessageReceived;
-    public event EventHandler<(int Value, int Max, string PromptId)>? ProgressUpdated;
-    public event EventHandler<int>? QueueRemaining;
-    public event EventHandler<string>? GenerationCompleted; 
+    private readonly ConcurrentQueue<string> messageQueue = new();
+
+    public Action<string>? OnMessageReceived { get; set; }
+    public Action<int, int, string>? OnProgressUpdated { get; set; }
+    public Action<int>? OnQueueRemaining { get; set; }
+    public Action<string>? OnGenerationCompleted { get; set; }
 
     public ComfyWebSocketClient(Uri serverUrl, ClientWebSocket clientWebSocket, string? apiKey = null)
     {
@@ -69,7 +69,7 @@ public class ComfyWebSocketClient
         {
             if (messageQueue.TryDequeue(out string? message))
             {
-                MessageReceived?.Invoke(this, message);
+                OnMessageReceived?.Invoke(message);
                 ProcessMessage(message);
             }
             else
@@ -96,7 +96,7 @@ public class ComfyWebSocketClient
                             int value = dataElement.GetProperty("value").GetInt32();
                             int max = dataElement.GetProperty("max").GetInt32();
                             string promptId = dataElement.GetProperty("prompt_id").GetString() ?? string.Empty;
-                            ProgressUpdated?.Invoke(this, (value, max, promptId));
+                            OnProgressUpdated?.Invoke(value, max, promptId);
                         }
                         break;
                     case "status":
@@ -106,7 +106,7 @@ public class ComfyWebSocketClient
                             execInfoElement.TryGetProperty("queue_remaining", out var queueRemainingElement))
                         {
                             int queueRemaining = queueRemainingElement.GetInt32();
-                            QueueRemaining?.Invoke(this, queueRemaining);
+                            OnQueueRemaining?.Invoke(queueRemaining);
                         }
                         break;
                     case "executing":
@@ -120,7 +120,10 @@ public class ComfyWebSocketClient
                                 ? null
                                 : executingJsonDataElement.Clone().GetRawText();
                             if (jsonData == null)
-                                GenerationCompleted?.Invoke(this, promptId);
+                            {
+                                OnGenerationCompleted?.Invoke(promptId);
+                            }
+                                
                         }
                         break;
                     default:

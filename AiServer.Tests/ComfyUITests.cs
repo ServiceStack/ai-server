@@ -135,20 +135,23 @@ public class ComfyUITests
         
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
-
-        void onTtsGenerationComplete(object? sender, GenerationCompleteEventArgs args)
+        
+        string ttsGenId = null;
+        
+        client.OnGenerationComplete.Add((promptId, status) =>
         {
-            Console.WriteLine($"Generation completed: {args.PromptId}");
-            capturedStatus = args.Status;
+            if(ttsGenId != promptId)
+                return;
+            Console.WriteLine($"Generation completed: {promptId}");
+            capturedStatus = status;
             generationCompleteEvent.Set(); // Signal that the event has fired
-        }
-
-        client.GenerationComplete += onTtsGenerationComplete;
+        });
         
         var response = await client.GenerateTextToSpeechAsync(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
+        ttsGenId = response.PromptId;
         
         // Wait for the GenerationComplete event to fire or timeout after 60 seconds
         bool eventFired = generationCompleteEvent.Wait(TimeSpan.FromSeconds(60));
@@ -178,8 +181,6 @@ public class ComfyUITests
         await File.WriteAllBytesAsync(outputFilePath, await output.ReadFullyAsync());
         Assert.That(File.Exists(outputFilePath), Is.True);
         
-        client.GenerationComplete -= onTtsGenerationComplete;
-        
         // Read file back and send it to SpeechToText
         var speechToTextDto = new ComfySpeechToText()
         {
@@ -190,17 +191,23 @@ public class ComfyUITests
         using var sttGenerationEventSlim = new ManualResetEventSlim(false);
         ComfyWorkflowStatus sstCapturedStatus = null;
         
+        string sstGenId = null;
+        
+        client.OnGenerationComplete.Add((sttPromptId, sttStatus) =>
+        {
+            if(sstGenId != sttPromptId)
+                return;
+            Console.WriteLine($"Generation completed: {sttPromptId}");
+            sstCapturedStatus = sttStatus;
+            sttGenerationEventSlim.Set(); // Signal that the event has fired
+        });
+        
         var speechToTextResponse = await client.GenerateSpeechToTextAsync(speechToTextDto);
         
         Assert.That(speechToTextResponse, Is.Not.Null);
         Assert.That(speechToTextResponse.PromptId, Is.Not.Empty);
         
-        client.GenerationComplete += (sender, args) =>
-        {
-            Console.WriteLine($"Generation completed: {args.PromptId}");
-            sstCapturedStatus = args.Status;
-            sttGenerationEventSlim.Set(); // Signal that the event has fired
-        };
+        sstGenId = speechToTextResponse.PromptId;
         
         // Wait for the GenerationComplete event to fire or timeout after 60 seconds
         bool sstEventFired = sttGenerationEventSlim.Wait(TimeSpan.FromSeconds(60));
@@ -231,17 +238,23 @@ public class ComfyUITests
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
         
+        string genId = null;
+        
+        client.OnGenerationComplete.Add((promptId, status) =>
+        {
+            if(genId != promptId)
+                return;
+            Console.WriteLine($"Generation completed: {promptId}");
+            capturedStatus = status;
+            generationCompleteEvent.Set(); // Signal that the event has fired
+        });
+        
         var response = await client.GenerateSpeechToTextAsync(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
         
-        client.GenerationComplete += (sender, args) =>
-        {
-            Console.WriteLine($"Generation completed: {args.PromptId}");
-            capturedStatus = args.Status;
-            generationCompleteEvent.Set(); // Signal that the event has fired
-        };
+        genId = response.PromptId;
 
         // Wait for the GenerationComplete event to fire or timeout after 60 seconds
         bool eventFired = generationCompleteEvent.Wait(TimeSpan.FromSeconds(60));
@@ -285,17 +298,23 @@ public class ComfyUITests
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
         
+        string genId = null;
+        
+        client.OnGenerationComplete.Add((promptId, status) =>
+        {
+            if(genId != promptId)
+                return;
+            Console.WriteLine($"Generation completed: {promptId}");
+            capturedStatus = status;
+            generationCompleteEvent.Set(); // Signal that the event has fired
+        });
+        
         var response = await client.GenerateTextToAudioAsync(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
         
-        client.GenerationComplete += (sender, args) =>
-        {
-            Console.WriteLine($"Generation completed: {args.PromptId}");
-            capturedStatus = args.Status;
-            generationCompleteEvent.Set(); // Signal that the event has fired
-        };
+        genId = response.PromptId;
         
         // Wait for the GenerationComplete event to fire or timeout after 60 seconds
         bool eventFired = generationCompleteEvent.Wait(TimeSpan.FromSeconds(60));
@@ -318,17 +337,23 @@ public class ComfyUITests
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
         
+        string genId = null;
+        
+        client.OnGenerationComplete.Add((promptId, status) =>
+        {
+            if(genId != promptId)
+                return;
+            Console.WriteLine($"Generation completed: {promptId}");
+            capturedStatus = status;
+            generationCompleteEvent.Set(); // Signal that the event has fired
+        });
+        
         var response = await client.GenerateImageToTextAsync(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
         
-        client.GenerationComplete += (sender, args) =>
-        {
-            Console.WriteLine($"Generation completed: {args.PromptId}");
-            capturedStatus = args.Status;
-            generationCompleteEvent.Set(); // Signal that the event has fired
-        };
+        genId = response.PromptId;
         
         // Wait for the GenerationComplete event to fire or timeout after 60 seconds
         bool eventFired = generationCompleteEvent.Wait(TimeSpan.FromSeconds(60));
@@ -375,17 +400,23 @@ public class ComfyUITests
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
         
-        client.GenerationComplete += (sender, args) =>
+        string genId = null;
+        
+        client.OnGenerationComplete.Add((promptId, status) =>
         {
-            Console.WriteLine($"Generation completed: {args.PromptId}");
-            capturedStatus = args.Status;
+            if(genId != promptId)
+                return;
+            Console.WriteLine($"Generation completed: {promptId}");
+            capturedStatus = status;
             generationCompleteEvent.Set(); // Signal that the event has fired
-        };
+        });
         
         var response = await client.GenerateImageToImageWithMaskAsync(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
+        
+        genId = response.PromptId;
         
         // Wait for the GenerationComplete event to fire or timeout after 60 seconds
         bool eventFired = generationCompleteEvent.Wait(TimeSpan.FromSeconds(60));
@@ -418,17 +449,23 @@ public class ComfyUITests
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
         
-        client.GenerationComplete += (sender, args) =>
+        string genId = null;
+        
+        client.OnGenerationComplete.Add((promptId, status) =>
         {
-            Console.WriteLine($"Generation completed: {args.PromptId}");
-            capturedStatus = args.Status;
+            if(genId != promptId)
+                return;
+            Console.WriteLine($"Generation completed: {promptId}");
+            capturedStatus = status;
             generationCompleteEvent.Set(); // Signal that the event has fired
-        };
+        });
         
         var response = await client.GenerateImageToImageUpscaleAsync(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
+        
+        genId = response.PromptId;
         
         // Wait for the GenerationComplete event to fire or timeout after 60 seconds
         bool eventFired = generationCompleteEvent.Wait(TimeSpan.FromSeconds(60));
@@ -496,18 +533,24 @@ public class ComfyUITests
         
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
-
-        client.GenerationComplete += (sender, args) =>
+        
+        string genId = null;
+        
+        client.OnGenerationComplete.Add((promptId, status) =>
         {
-            Console.WriteLine($"Generation completed: {args.PromptId}");
-            capturedStatus = args.Status;
+            if(genId != promptId)
+                return;
+            Console.WriteLine($"Generation completed: {promptId}");
+            capturedStatus = status;
             generationCompleteEvent.Set(); // Signal that the event has fired
-        };
+        });
 
         var response = await client.GenerateImageToImageAsync(testDto);
 
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
+        
+        genId = response.PromptId;
 
         // Wait for the GenerationComplete event to fire or timeout after 60 seconds
         bool eventFired = generationCompleteEvent.Wait(TimeSpan.FromSeconds(60));
@@ -562,18 +605,24 @@ public class ComfyUITests
                 
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
+
+        string genId = null;
         
-        client.GenerationComplete += (sender, args) =>
+        client.OnGenerationComplete.Add((promptId, status) =>
         {
-            Console.WriteLine($"Generation completed: {args.PromptId}");
-            capturedStatus = args.Status;
+            if(genId != promptId)
+                return;
+            Console.WriteLine($"Generation completed: {promptId}");
+            capturedStatus = status;
             generationCompleteEvent.Set(); // Signal that the event has fired
-        };
+        });
         
         var response = await client.GenerateTextToImageAsync(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
+        
+        genId = response.PromptId;
         
         // Wait for the GenerationComplete event to fire or timeout after 60 seconds
         bool eventFired = generationCompleteEvent.Wait(TimeSpan.FromSeconds(60));

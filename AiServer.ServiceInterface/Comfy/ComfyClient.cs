@@ -21,8 +21,6 @@ public interface IComfyClient
     Task<List<ComfyModel>> GetModelsListAsync();
     Task<Stream> DownloadComfyOutputAsync(ComfyFileOutput output);
     Task<ComfyWorkflowStatus> GetWorkflowStatusAsync(string jobId);
-
-    event EventHandler<GenerationCompleteEventArgs> GenerationComplete;
 }
 
 public partial class ComfyClient(HttpClient httpClient) : IComfyClient
@@ -41,10 +39,10 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     public string AudioToTextTemplate { get; set; } = "audio_to_text.json";
     
     public string SpeechToTextTemplate { get; set; } = "speech_to_text.json";
+    
+    public ConcurrentBag<Action<string,ComfyWorkflowStatus>> OnGenerationComplete = new();
 
     private string clientId = Guid.NewGuid().ToString();
-    
-    public event EventHandler<GenerationCompleteEventArgs> GenerationComplete;
 
     public ComfyClient(string baseUrl,string? apiKey = null)
         : this(string.IsNullOrEmpty(apiKey) ? new HttpClient
@@ -72,19 +70,12 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         webSocketClient = new ComfyWebSocketClient(webSocketUrl, new ClientWebSocket(), apiKey);
         
         // Subscribe to events
-        webSocketClient.GenerationCompleted += OnGenerationCompleted;
+        webSocketClient.OnGenerationCompleted = OnGenerationCompleted;
         
         // Start WebSocket connection
         Task.Run(() => webSocketClient.ConnectAndListenAsync());
     }
     
-    
-    private async void OnGenerationCompleted(object? sender, string promptId)
-    {
-        var status = await GetWorkflowStatusAsync(promptId);
-        GenerationComplete?.Invoke(this, new GenerationCompleteEventArgs(promptId, status));
-    }
-
     private readonly Dictionary<Type, string> comfyWorkflowMapping = new();
     private readonly ComfyWebSocketClient? webSocketClient;
 
@@ -328,6 +319,12 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         var status = ParseWorkflowStatus(parsedStatus.AsObject(), jobId);
         // Convert to ComfyWorkflowStatus
         return status;
+    }
+
+    private async void OnGenerationCompleted(string promptId)
+    {
+        var status = await GetWorkflowStatusAsync(promptId);
+        OnGenerationComplete.ExecAll(x => x(promptId,status));
     }
 }
 
