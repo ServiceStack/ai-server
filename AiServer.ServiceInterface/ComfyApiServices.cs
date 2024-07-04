@@ -24,32 +24,24 @@ public class ComfyApiServices(IComfyClient comfyClient) : Service
         };
         
         var tcs = new TaskCompletionSource<Stream>();
-        var promptId = "";
         Stream downloadStream;
-
-        async void OnComfyClientOnGenerationComplete(object? sender, GenerationCompleteEventArgs args)
-        {
-            if (args.PromptId == promptId)
-            {
-                downloadStream = await comfyClient.DownloadComfyOutputAsync(args.Status.Outputs[0].Files[0]);
-                if (tcs.TrySetResult(downloadStream))
-                {
-                    Console.WriteLine($"PromptId: {args.PromptId} - Image URL: {args.Status.Outputs[0].Files[0]}");
-                }
-                else
-                {
-                    Console.WriteLine($"Failed to set result for PromptId: {args.PromptId}");
-                }
-            }
-        }
-
-        //comfyClient.GenerationComplete += OnComfyClientOnGenerationComplete;
-
+        
         try
         {
             var response = await comfyClient.PromptGeneration(comfyReq);
-            promptId = response.PromptId;
-
+            comfyClient.AddOnGenerationComplete(response.PromptId, async (promptId, status) =>
+            {
+                downloadStream = await comfyClient.DownloadComfyOutputAsync(status.Outputs[0].Files[0]);
+                if (tcs.TrySetResult(downloadStream))
+                {
+                    Console.WriteLine($"PromptId: {promptId} - Image URL: {status.Outputs[0].Files[0]}");
+                }
+                else
+                {
+                    Console.WriteLine($"Failed to set result for PromptId: {promptId}");
+                }
+            });
+            
             var filesUploadFeature = HostContext.GetPlugin<FilesUploadFeature>();
 
             // Wait for the event to fire and get the image URL
@@ -80,10 +72,6 @@ public class ComfyApiServices(IComfyClient comfyClient) : Service
         catch (Exception ex)
         {
             return ex;
-        }
-        finally
-        {
-            //comfyClient.GenerationComplete -= OnComfyClientOnGenerationComplete;
         }
     }
 }

@@ -20,13 +20,17 @@ public interface IComfyClient
     Task<ComfyAgentDownloadStatus> GetDownloadStatusAsync(string name);
     Task<List<ComfyModel>> GetModelsListAsync();
     Task<Stream> DownloadComfyOutputAsync(ComfyFileOutput output);
-    Task<ComfyWorkflowStatus> GetWorkflowStatusAsync(string jobId);
+    Task<ComfyWorkflowStatus> GetWorkflowStatusAsync(string promptId);
+    
+    void AddOnGenerationComplete(string innerPromptId, Action<string,ComfyWorkflowStatus> callback);
 }
 
 public partial class ComfyClient(HttpClient httpClient) : IComfyClient
 {
     private readonly Dictionary<string, JsonObject> metadataMapping = new();
     private static ScriptContext context = new ScriptContext().Init();
+
+    public static Action<string> LogMessage;
 
     public string WorkflowTemplatePath { get; set; } = "workflows";
     public string TextToImageTemplate { get; set; } = "text_to_image.json";
@@ -40,7 +44,9 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     
     public string SpeechToTextTemplate { get; set; } = "speech_to_text.json";
     
-    public ConcurrentBag<Action<string,ComfyWorkflowStatus>> OnGenerationComplete = new();
+    public ConcurrentDictionary<string,Action<string,ComfyWorkflowStatus>> OnGenerationComplete = new();
+    private ConcurrentDictionary<string,string> innerPromptIdToPromptIdMapping = new();
+    private ConcurrentDictionary<string,string> promptIdToInnerPromptIdMapping = new();
 
     private string clientId = Guid.NewGuid().ToString();
 
@@ -128,6 +134,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     
     public async Task<ComfyWorkflowResponse> PromptGeneration<T>(T comfyRequest)
     {
+        // Check if the request type is supported
         if (!comfyWorkflowMapping.ContainsKey(typeof(T)))
             throw new Exception($"Unsupported request type: {typeof(T).Name}");
         var templatePath = comfyWorkflowMapping[typeof(T)];
@@ -135,11 +142,19 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         var workflowJson = await PopulateWorkflow(comfyRequest, templatePath);
         // Convert to ComfyUI API JSON format
         var apiJson = await ConvertWorkflowToApiAsync(workflowJson);
+        // Before queuing the workflow, generate a local prompt ID to track to avoid race conditions
+        var promptId = Guid.NewGuid().ToString();
+        innerPromptIdToPromptIdMapping[promptId] = null;
         // Call ComfyUI API
         var response = await QueueWorkflowAsync(apiJson);
         // Returns with job ID
         using var jsConfig = JsConfig.With(new Config { TextCase = TextCase.SnakeCase });
-        return response.FromJson<ComfyWorkflowResponse>();
+        var result = response.FromJson<ComfyWorkflowResponse>();
+        promptIdToInnerPromptIdMapping[result.PromptId] = promptId;
+        innerPromptIdToPromptIdMapping[promptId] = result.PromptId;
+        // Replace the PromptId with the local promptId
+        result.PromptId = promptId;
+        return result;
     }
     
     public async Task<ComfyWorkflowResponse> GenerateTextToSpeechAsync(ComfyTextToSpeech request)
@@ -284,7 +299,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         return result.FromJson<ComfyAgentDownloadStatus>();
     }
 
-    public async Task<string> GetPromptHistory(string id)
+    private async Task<string> GetPromptHistory(string id)
     {
         var response = await httpClient.GetAsync($"/history/{id}");
         response.EnsureSuccessStatusCode();
@@ -305,9 +320,9 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         return await response.Content.ReadAsStreamAsync();
     }
     
-    public async Task<ComfyWorkflowStatus> GetWorkflowStatusAsync(string jobId)
+    private async Task<ComfyWorkflowStatus> GetComfyWorkflowStatusAsync(string promptId)
     {
-        var statusJson = await GetPromptHistory(jobId);
+        var statusJson = await GetPromptHistory(promptId);
         var parsedStatus = JsonNode.Parse(statusJson);
         if (parsedStatus == null)
             throw new Exception("Invalid status JSON response");
@@ -316,25 +331,93 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         if (parsedStatus.AsObject().Count == 0)
             return new ComfyWorkflowStatus();
         
-        var status = ParseWorkflowStatus(parsedStatus.AsObject(), jobId);
+        var status = ParseWorkflowStatus(parsedStatus.AsObject(), promptId);
         // Convert to ComfyWorkflowStatus
         return status;
     }
-
-    private async void OnGenerationCompleted(string promptId)
+    
+    public async Task<ComfyWorkflowStatus> GetWorkflowStatusAsync(string promptId)
     {
-        var status = await GetWorkflowStatusAsync(promptId);
-        OnGenerationComplete.ExecAll(x => x(promptId,status));
+        var comfyPromptId = innerPromptIdToPromptIdMapping[promptId];
+        if (comfyPromptId == null)
+            throw new Exception("PromptId not found in mapping");
+        return await GetComfyWorkflowStatusAsync(promptId);
     }
-}
+    
+    private readonly object lockObj = new();
+    
+    public void AddOnGenerationComplete(string innerPromptId, Action<string,ComfyWorkflowStatus> callback)
+    {
+        // Use lock to prevent race conditions
+        string? comfyPromptId;
+        string? missedPromptId = null;
+        var fireMissed = false;
+        lock (lockObj)
+        {
+            if (innerPromptIdToPromptIdMapping.TryGetValue(innerPromptId, out comfyPromptId))
+            {
+                if(missedGenerationCompleteMapping.ContainsKey(comfyPromptId))
+                {
+                    LogMessage("Missed AddOnGenerationComplete");
+                    missedGenerationCompleteMapping[comfyPromptId] = innerPromptId;
+                    missedPromptId = innerPromptId;
+                    fireMissed = true;
+                }
+            }
+            if (!fireMissed)
+                OnGenerationComplete.AddOrUpdate(innerPromptId, callback, (key, oldValue) => callback);
+        }
 
-public class GenerationUpdateEventArgs
-{
-    public string PromptId { get; set; }
-}
+        if (fireMissed && !string.IsNullOrEmpty(missedPromptId))
+        {
+            LogMessage("Running Missed AddOnGenerationComplete");
+            Task.Run(async () =>
+            {
+                LogMessage("In Process Missed AddOnGenerationComplete");
+                var missedStatus = await GetWorkflowStatusAsync(missedPromptId);
+                LogMessage("Got Missed Status");
+                LogMessage($"PromptId: {comfyPromptId} - InnerPromptId: {innerPromptId}");
+                callback?.Invoke(innerPromptId, missedStatus);
+                LogMessage("Invoked Missed Callback");
+            });
+        }
+    }
+    
+    private ConcurrentDictionary<string,string> missedGenerationCompleteMapping = new();
 
-public class GenerationCompleteEventArgs(string promptId, ComfyWorkflowStatus status) : EventArgs
-{
-    public string PromptId { get; } = promptId;
-    public ComfyWorkflowStatus Status { get; } = status;
+    private async void OnGenerationCompleted(string comfyPromptId)
+    {
+        string innerPromptId;
+        Action<string, ComfyWorkflowStatus>? callback = null;
+        lock (lockObj)
+        {
+            if(!promptIdToInnerPromptIdMapping.TryGetValue(comfyPromptId, out innerPromptId))
+            {
+                LogMessage($"No innerPromptId found for promptId: {comfyPromptId}");
+                var didAdd = missedGenerationCompleteMapping.TryAdd(comfyPromptId, "");
+                if(!didAdd)
+                    LogMessage($"Failed to add missedGenerationCompleteMapping for promptId: {comfyPromptId}");
+                return;
+            }
+            var hasRegisteredCallback = OnGenerationComplete.TryGetValue(innerPromptId!, out callback);
+            
+            if (!hasRegisteredCallback)
+            {
+                LogMessage($"No callback found for promptId: {comfyPromptId}");
+                LogMessage($"No callback found for innerPromptId: {innerPromptId}");
+                promptIdToInnerPromptIdMapping.TryRemove(comfyPromptId, out _);
+                return;
+            }
+        }
+
+        var status = await GetComfyWorkflowStatusAsync(comfyPromptId);
+        if(callback != null)
+            callback(innerPromptId, status);
+        // Remove the callback
+        lock (lockObj)
+        {
+            OnGenerationComplete.TryRemove(comfyPromptId, out _);
+        }
+        
+    }
 }
