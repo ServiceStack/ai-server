@@ -28,19 +28,22 @@ public class ComfyApiServices(IComfyClient comfyClient) : Service
         
         try
         {
-            var response = await comfyClient.PromptGeneration(comfyReq);
-            comfyClient.AddOnGenerationComplete(response.PromptId, async (promptId, status) =>
+            var response = await comfyClient.PromptGeneration(comfyReq, true);
+            var promptId = response.PromptId;
+
+            var status = await comfyClient.GetWorkflowStatusAsync(response.PromptId);
+            if (status == null)
+                throw new Exception("Failed to get workflow status");
+            
+            downloadStream = await comfyClient.DownloadComfyOutputAsync(status.Outputs[0].Files[0]);
+            if (tcs.TrySetResult(downloadStream))
             {
-                downloadStream = await comfyClient.DownloadComfyOutputAsync(status.Outputs[0].Files[0]);
-                if (tcs.TrySetResult(downloadStream))
-                {
-                    Console.WriteLine($"PromptId: {promptId} - Image URL: {status.Outputs[0].Files[0]}");
-                }
-                else
-                {
-                    Console.WriteLine($"Failed to set result for PromptId: {promptId}");
-                }
-            });
+                Console.WriteLine($"PromptId: {promptId} - Image URL: {status.Outputs[0].Files[0]}");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to set result for PromptId: {promptId}");
+            }
             
             var filesUploadFeature = HostContext.GetPlugin<FilesUploadFeature>();
 

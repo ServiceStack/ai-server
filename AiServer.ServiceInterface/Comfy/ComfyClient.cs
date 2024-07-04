@@ -1,9 +1,6 @@
 using System.Collections.Concurrent;
-using System.Net.Http.Json;
 using System.Net.WebSockets;
-using System.Runtime.Serialization;
 using System.Text;
-using Microsoft.Extensions.Logging;
 using ServiceStack;
 using ServiceStack.Script;
 using ServiceStack.Text;
@@ -15,7 +12,7 @@ using System.Text.Json.Nodes;
 
 public interface IComfyClient
 {
-    Task<ComfyWorkflowResponse> PromptGeneration<T>(T comfyRequest);
+    Task<ComfyWorkflowResponse> PromptGeneration<T>(T comfyRequest, bool waitResult = false);
     Task<ComfyAgentDownloadStatus> DownloadModelAsync(string url, string filename, string apiKey = null, string apiKeyLocation = "");
     Task<ComfyAgentDownloadStatus> GetDownloadStatusAsync(string name);
     Task<List<ComfyModel>> GetModelsListAsync();
@@ -132,7 +129,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         return await workflowPageResult.RenderToStringAsync();
     }
     
-    public async Task<ComfyWorkflowResponse> PromptGeneration<T>(T comfyRequest)
+    public async Task<ComfyWorkflowResponse> PromptGeneration<T>(T comfyRequest, bool waitResult = false)
     {
         // Check if the request type is supported
         if (!comfyWorkflowMapping.ContainsKey(typeof(T)))
@@ -154,6 +151,18 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         innerPromptIdToPromptIdMapping[promptId] = result.PromptId;
         // Replace the PromptId with the local promptId
         result.PromptId = promptId;
+        
+        // If waitResult is true, wait for the result
+        if (waitResult)
+        {
+            var tcs = new TaskCompletionSource<ComfyWorkflowResponse>();
+            AddOnGenerationComplete(innerPromptId: promptId, (finishedPromptId, status) =>
+            {
+                tcs.TrySetResult(result);
+            });
+            return await tcs.Task;
+        }
+        
         return result;
     }
     
