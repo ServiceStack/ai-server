@@ -341,7 +341,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         var comfyPromptId = innerPromptIdToPromptIdMapping[promptId];
         if (comfyPromptId == null)
             throw new Exception("PromptId not found in mapping");
-        return await GetComfyWorkflowStatusAsync(promptId);
+        return await GetComfyWorkflowStatusAsync(comfyPromptId);
     }
     
     private readonly object lockObj = new();
