@@ -6,12 +6,12 @@ public class Migration1002 : MigrationBase
 {
     public class ComfyGenerationTask : Migration1000.TaskBase
     {
-        public ComfyGenerationRequest Request { get; set; }
-        public ComfyGenerationResponse? Response { get; set; }
+        public object Request { get; set; }
+        public string WorkflowTemplate { get; set; }
+        public ComfyWorkflowResponse Response { get; set; }
     }
     
-    public class ComfyGenerationRequest { }
-    public class ComfyGenerationResponse { }
+    public class ComfyWorkflowResponse { }
     
     public override void Up()
     {
