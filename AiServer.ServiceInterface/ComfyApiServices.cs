@@ -60,8 +60,8 @@ public class ComfyApiServices(IComfyClient comfyClient,
             var task = request.ConvertTo<ComfyGenerationTask>();
             task.Request = comfyReq;
             task.Response = response;
-            task.WorkflowTemplate = comfyClient.GetTemplateByType<ComfyTextToImage>() ?? "";
-            
+            task.TaskType = ComfyTaskType.TextToImage;
+            task.WorkflowTemplate = comfyClient.GetTemplateContentsByType<ComfyTextToImage>() ?? "";
             
             mq.Publish(new AppDbWrites {
                 CreateComfyGenerationTask = task,

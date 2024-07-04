@@ -22,7 +22,7 @@ public interface IComfyClient
     
     void AddOnGenerationComplete(string innerPromptId, Action<string,ComfyWorkflowStatus> callback);
     
-    string? GetTemplateByType<T>();
+    string? GetTemplateContentsByType<T>();
 }
 
 public partial class ComfyClient(HttpClient httpClient) : IComfyClient
@@ -395,9 +395,12 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         }
     }
 
-    public string? GetTemplateByType<T>()
+    public string? GetTemplateContentsByType<T>()
     {
-        return comfyWorkflowMapping.ContainsKey(typeof(T)) == false ? null : comfyWorkflowMapping[typeof(T)];
+        var path = comfyWorkflowMapping.ContainsKey(typeof(T)) == false ? null : comfyWorkflowMapping[typeof(T)];
+        if (path == null)
+            return null;
+        return File.ReadAllText(Path.Combine(WorkflowTemplatePath, path));
     }
 
     private ConcurrentDictionary<string,string> missedGenerationCompleteMapping = new();
