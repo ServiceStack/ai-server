@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
+using AiServer.ServiceModel.Types;
 using ServiceStack;
 using ServiceStack.Script;
 using ServiceStack.Text;
@@ -20,6 +21,8 @@ public interface IComfyClient
     Task<ComfyWorkflowStatus> GetWorkflowStatusAsync(string promptId);
     
     void AddOnGenerationComplete(string innerPromptId, Action<string,ComfyWorkflowStatus> callback);
+    
+    string? GetTemplateByType<T>();
 }
 
 public partial class ComfyClient(HttpClient httpClient) : IComfyClient
@@ -391,7 +394,12 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
             });
         }
     }
-    
+
+    public string? GetTemplateByType<T>()
+    {
+        return comfyWorkflowMapping.ContainsKey(typeof(T)) == false ? null : comfyWorkflowMapping[typeof(T)];
+    }
+
     private ConcurrentDictionary<string,string> missedGenerationCompleteMapping = new();
 
     private async void OnGenerationCompleted(string comfyPromptId)

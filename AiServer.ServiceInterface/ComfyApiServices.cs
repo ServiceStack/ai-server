@@ -1,10 +1,19 @@
 using AiServer.ServiceInterface.Comfy;
+using AiServer.ServiceModel.Types;
+using Microsoft.Extensions.Logging;
 using ServiceStack;
+using ServiceStack.Data;
 using ServiceStack.Host;
+using ServiceStack.Messaging;
 
 namespace AiServer.ServiceInterface;
 
-public class ComfyApiServices(IComfyClient comfyClient) : Service
+public class ComfyApiServices(IComfyClient comfyClient,
+    ILogger<ComfyApiServices> log,
+    IDbConnectionFactory dbFactory, 
+    IMessageProducer mq,
+    IAutoQueryDb autoQuery,
+    AppData appData) : Service
 {
     public async Task<object> Post(CreateComfyTextToImage request)
     {
@@ -44,38 +53,34 @@ public class ComfyApiServices(IComfyClient comfyClient) : Service
             {
                 Console.WriteLine($"Failed to set result for PromptId: {promptId}");
             }
+
+            var filePath = GetNewFilePath($"{promptId}.png");
+            VirtualFiles.WriteFile(filePath, downloadStream);
+
+            var task = request.ConvertTo<ComfyGenerationTask>();
+            task.Request = comfyReq;
+            task.Response = response;
+            task.WorkflowTemplate = comfyClient.GetTemplateByType<ComfyTextToImage>() ?? "";
             
-            var filesUploadFeature = HostContext.GetPlugin<FilesUploadFeature>();
+            
+            mq.Publish(new AppDbWrites {
+                CreateComfyGenerationTask = task,
+            });
 
-            // Wait for the event to fire and get the image URL
-            var imageData = await tcs.Task;
-            var imageGuid = Guid.NewGuid().ToString();
-            // Save the image using the files upload feature
-            var location = filesUploadFeature.GetLocation("comfy");
-            if (location == null)
-                throw new Exception("Upload location not found");
-
-            if (Request == null)
-                throw new Exception("Request is null");
-            var downloadUrl = await filesUploadFeature.UploadFileAsync(location, Request, await GetSessionAsync(),
-                new HttpFile()
-                {
-                    InputStream = imageData,
-                    Name = $"{imageGuid}.png",
-                    ContentLength = imageData.Length,
-                    ContentType = MimeTypes.GetMimeType("png"),
-                    FileName = $"{imageGuid}.png"
-                });
-
-            if (downloadUrl == null)
-                throw new Exception("Failed to upload image");
-
-            return new CreateComfyTextToImageResponse { ImageUrl = downloadUrl };
+            return new CreateComfyTextToImageResponse { ImageUrl = VirtualFiles.GetFile(filePath).VirtualPath };
         }
         catch (Exception ex)
         {
             return ex;
         }
+    }
+
+    private string GetNewFilePath(string fileName)
+    {
+        var now = DateTime.UtcNow;
+        var path = $"/comfy/{now:yyyy}/{now:MM}/{now:dd}/";
+        var fullPath = Path.Combine(path, fileName);
+        return fullPath;
     }
 }
 
@@ -90,6 +95,11 @@ public class CreateComfyTextToImage : IReturn<CreateComfyTextToImageResponse>
     public long? Seed { get; set; }
     public string PositivePrompt { get; set; }
     public string? NegativePrompt { get; set; }
+    
+    public string? RefId { get; set; }
+    public string? Provider { get; set; }
+    public string? ReplyTo { get; set; }
+    public string? Tag { get; set; }
 }
 
 public class CreateComfyTextToImageResponse

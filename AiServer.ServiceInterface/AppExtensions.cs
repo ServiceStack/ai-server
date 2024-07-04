@@ -55,6 +55,26 @@ public static class AppExtensions
         to.FailedDate = DateTime.UtcNow;
         return to;
     }
+    
+    public static ComfyGenerationCompleted ToComfyGenerationCompleted(this ComfyGenerationTask from, ComfyWorkflowStatus status)
+    {
+        var to = from.CreateNew<ComfyGenerationCompleted>();
+        to.Request = from.Request;
+        to.WorkflowTemplate = from.WorkflowTemplate;
+        to.Status = status;
+        to.Response = from.Response;
+        return to;
+    }
+    
+    public static ComfyGenerationFailed ToComfyGenerationFailed(this ComfyGenerationTask from)
+    {
+        var to = from.CreateNew<ComfyGenerationFailed>();
+        to.Request = from.Request;
+        to.WorkflowTemplate = from.WorkflowTemplate;
+        to.Response = from.Response;
+        to.FailedDate = DateTime.UtcNow;
+        return to;
+    }
 
     public static T CreateNew<T>(this TaskBase x) where T : TaskBase, new()
     {

@@ -62,6 +62,8 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
         var db = dbFactory.OpenDbConnection(monthDb);
         db.CreateTableIfNotExists<OpenAiChatCompleted>();
         db.CreateTableIfNotExists<OpenAiChatFailed>();
+        db.CreateTableIfNotExists<ComfyGenerationCompleted>();
+        db.CreateTableIfNotExists<ComfyGenerationFailed>();
 
         return db;
     }

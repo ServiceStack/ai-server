@@ -1,4 +1,5 @@
 ﻿using AiServer.ServiceInterface.AppDb;
+using AiServer.ServiceInterface.AppDb.Comfy;
 using AiServer.ServiceInterface.Executor;
 using AiServer.ServiceInterface.Notification;
 using AiServer.ServiceInterface.Queue;
@@ -48,6 +49,9 @@ public class AppDbWrites : IReturn<EmptyResponse>
     
     [Command<AppDbPeriodicTasksCommand>]
     public PeriodicTasks? PeriodicTasks { get; set; } 
+    
+    [Command<CreateComfyGenerationTaskCommand>]
+    public ComfyGenerationTask? CreateComfyGenerationTask { get; set; }
 }
 
 [Tag(Tag.Tasks)]

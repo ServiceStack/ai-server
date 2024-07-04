@@ -1,4 +1,4 @@
-namespace AiServer.ServiceInterface.Comfy;
+namespace AiServer.ServiceModel.Types;
 
 
 public class ComfyWorkflowStatus

@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using AiServer.ServiceModel.Types;
 
 namespace AiServer.ServiceInterface.Comfy;
 

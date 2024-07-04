@@ -1,3 +1,5 @@
+using AiServer.ServiceModel.Types;
+
 namespace AiServer.ServiceInterface.Comfy;
 
 
