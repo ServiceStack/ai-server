@@ -316,7 +316,7 @@ public class ComfyUITests
     {
         var testDto = new StableDiffusionImageToText()
         {
-            InitImage = File.OpenRead("files/comfyui_upload_test.png"),
+            InputImage = File.OpenRead("files/comfyui_upload_test.png"),
         };
         
         using var generationCompleteEvent = new ManualResetEventSlim(false);
@@ -358,8 +358,8 @@ public class ComfyUITests
     {
         var testDto = new StableDiffusionImageToImageWithMask()
         {
-            InitImage = File.OpenRead("files/comfyui_upload_test.png"),
-            MaskImage = File.OpenRead("files/comfyui_upload_test_mask.png"),
+            ImageInput = File.OpenRead("files/comfyui_upload_test.png"),
+            MaskInput = File.OpenRead("files/comfyui_upload_test_mask.png"),
             EngineId = "zavychromaxl_v80.safetensors",
             TextPrompts = new List<TextPrompt>
             {
@@ -415,7 +415,7 @@ public class ComfyUITests
     {
         var testDto = new StableDiffusionImageToImageUpscale()
         {
-            Image = File.OpenRead("files/comfyui_upload_test.png"),
+            ImageInput = File.OpenRead("files/comfyui_upload_test.png"),
         };
         
                 

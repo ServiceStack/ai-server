@@ -194,10 +194,10 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     public async Task<ComfyWorkflowResponse> GenerateImageToTextAsync(StableDiffusionImageToText request)
     {
         var comfyRequest = request.ToComfy();
-        if (comfyRequest.Image == null && request.InitImage != null)
+        if (comfyRequest.Image == null && request.InputImage != null)
         {
             var tempFileName = $"image2text_{Guid.NewGuid()}.png";
-            comfyRequest.Image = await UploadImageAssetAsync(request.InitImage, tempFileName);
+            comfyRequest.Image = await UploadImageAssetAsync(request.InputImage, tempFileName);
         }
 
         if (comfyRequest.Image == null)
@@ -210,21 +210,21 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         StableDiffusionImageToImageWithMask request)
     {
         var comfyRequest = request.ToComfy();
-        if (comfyRequest.InitImage == null)
+        if (comfyRequest.ImageInput == null)
             throw new Exception("Image input is required for Image to Image with Mask");
-        if (comfyRequest.InitMask == null)
+        if (comfyRequest.MaskInput == null)
             throw new Exception("Mask image input is required for Image to Image with Mask");
         
-        if (comfyRequest.Image == null && request.InitImage != null)
+        if (comfyRequest.Image == null && request.ImageInput != null)
         {
             var tempFileName = $"image2image_mask_{Guid.NewGuid()}.png";
-            comfyRequest.Image = await UploadImageAssetAsync(request.InitImage, tempFileName);
+            comfyRequest.Image = await UploadImageAssetAsync(request.ImageInput, tempFileName);
         }
         
-        if (comfyRequest.MaskImage == null && request.MaskImage != null)
+        if (comfyRequest.MaskImage == null && request.MaskInput != null)
         {
             var tempFileName = $"image2image_mask_{Guid.NewGuid()}.png";
-            comfyRequest.MaskImage = await UploadImageAssetAsync(request.MaskImage, tempFileName);
+            comfyRequest.MaskImage = await UploadImageAssetAsync(request.MaskInput, tempFileName);
         }
         
         if (comfyRequest.Image == null)
@@ -239,11 +239,11 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     public async Task<ComfyWorkflowResponse> GenerateImageToImageUpscaleAsync(StableDiffusionImageToImageUpscale request)
     {
         var comfyRequest = request.ToComfy();
-        if(comfyRequest.InitImage == null)
+        if(comfyRequest.ImageInput == null)
             throw new Exception("Image input is required for Image to Image Upscale");
         
         // Upload image asset
-        comfyRequest.Image = await UploadImageAssetAsync(comfyRequest.InitImage, $"image2image_upscale_{Guid.NewGuid()}.png");
+        comfyRequest.Image = await UploadImageAssetAsync(comfyRequest.ImageInput, $"image2image_upscale_{Guid.NewGuid()}.png");
         
         return await PromptGeneration(comfyRequest);
     }

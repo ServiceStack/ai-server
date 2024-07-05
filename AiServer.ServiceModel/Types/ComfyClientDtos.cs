@@ -61,8 +61,15 @@ public class ComfyTextToSpeech
     public string Quality { get; set; } = "high";
 }
 
+/// <summary>
+/// Way to tag a class as a Comfy Request with a known template?
+/// </summary>
+public interface IComfyRequest
+{
+}
 
-public class ComfyTextToImage
+
+public class ComfyTextToImage : IComfyRequest
 {
     public long Seed { get; set; }
     public int CfgScale { get; set; }
@@ -78,7 +85,7 @@ public class ComfyTextToImage
     public string? Scheduler { get; set; } = "normal";
 }
 
-public class ComfyImageToImage
+public class ComfyImageToImage : IComfyRequest
 {
     public long Seed { get; set; }
     public int CfgScale { get; set; }
@@ -94,7 +101,7 @@ public class ComfyImageToImage
     public string NegativePrompt { get; set; }
     public ComfyImageInput? Image { get; set; }
     
-    public Stream? InitImage { get; set; }
+    public Stream? ImageInput { get; set; }
 }
 
 public class ComfyImageToImageUpscale
@@ -102,7 +109,7 @@ public class ComfyImageToImageUpscale
     public string UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
     public ComfyImageInput? Image { get; set; }
     
-    public Stream? InitImage { get; set; }
+    public Stream? ImageInput { get; set; }
 }
 
 public class ComfyImageToImageWithMask
@@ -119,9 +126,9 @@ public class ComfyImageToImageWithMask
     public string NegativePrompt { get; set; }
     
     public ComfyMaskSource MaskChannel { get; set; }
-    public Stream? InitImage { get; set; }
+    public Stream? ImageInput { get; set; }
     public ComfyImageInput? Image { get; set; }
-    public Stream? InitMask { get; set; }
+    public Stream? MaskInput { get; set; }
     public ComfyImageInput? MaskImage { get; set; }
 }
 
@@ -137,25 +144,25 @@ public class ComfyImageToText
 {
     public ComfyImageInput? Image { get; set; }
     
-    public Stream? InitImage { get; set; }
+    public Stream? ImageInput { get; set; }
 }
 
 public class StableDiffusionImageToText
 {
-    public Stream? InitImage { get; set; }
+    public Stream? InputImage { get; set; }
 }
 
 public class StableDiffusionImageToImageUpscale
 {
     public string UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
-    public Stream? Image { get; set; }
+    public Stream? ImageInput { get; set; }
 }
 
 public class StableDiffusionImageToImageWithMask
 {
     public StableDiffusionMaskSource MaskSource { get; set; } = StableDiffusionMaskSource.White;
-    public Stream? InitImage { get; set; }
-    public Stream? MaskImage { get; set; }
+    public Stream? ImageInput { get; set; }
+    public Stream? MaskInput { get; set; }
     public List<TextPrompt> TextPrompts { get; set; }
     public int CfgScale { get; set; } = 7;
     public StableDiffusionSampler Sampler { get; set; } = StableDiffusionSampler.K_EULER_ANCESTRAL;

@@ -13,24 +13,12 @@ public class ComfyApiServices(IComfyClient comfyClient,
     IDbConnectionFactory dbFactory, 
     IMessageProducer mq,
     IAutoQueryDb autoQuery,
-    AppData appData) : Service
+    AppData appData,
+    AppConfig appConfig) : Service
 {
-    public async Task<object> Post(CreateComfyTextToImage request)
+    public async Task<object> Post(QueueComfyWorkflow request)
     {
-        var comfyReq = new ComfyTextToImage
-        {
-            Model = request.Model,
-            Width = request.Width,
-            Height = request.Height,
-            Sampler = ComfySampler.euler_ancestral,
-            BatchSize = request.Samples,
-            Seed = request.Seed ?? Random.Shared.Next(),
-            PositivePrompt = request.PositivePrompt,
-            NegativePrompt = request.NegativePrompt ?? "low quality, blurry, noisy, compression artifacts",
-            Scheduler = "normal",
-            Steps = 25,
-            CfgScale = 7,
-        };
+        var comfyReq = request.ToComfy(appConfig);
         
         var tcs = new TaskCompletionSource<Stream>();
         Stream downloadStream;
@@ -84,9 +72,60 @@ public class ComfyApiServices(IComfyClient comfyClient,
     }
 }
 
+public enum ArtStyle
+{
+    ThreeDModel,
+    AnalogFilm,
+    Anime,
+    Cinematic,
+    ComicBook,
+    DigitalArt,
+    Enhance,
+    FantasyArt,
+    Isometric,
+    LineArt,
+    LowPoly,
+    ModelingCompound,
+    NeonPunk,
+    Origami,
+    Photographic,
+    PixelArt,
+    TileTexture
+}
+
 
 [ValidateApiKey]
-public class CreateComfyTextToImage : IReturn<CreateComfyTextToImageResponse>
+public class QueueComfyWorkflow : IReturn<CreateComfyTextToImageResponse>
+{
+    public string? Model { get; set; }
+    public int? Steps { get; set; }
+    public int BatchSize { get; set; }
+    public int? Seed { get; set; }
+    public string? PositivePrompt { get; set; }
+    public string? NegativePrompt { get; set; }
+    public Stream? ImageInput { get; set; }
+    public Stream? SpeechInput { get; set; }
+    public Stream? MaskInput { get; set; }
+    
+    public ComfySampler? Sampler { get; set; }
+    public ArtStyle? ArtStyle { get; set; }
+    public string? Scheduler { get; set; } = "normal";
+    public int? CfgScale { get; set; }
+    public double? Denoise { get; set; } = 0.5d;
+    
+    public string? UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
+    
+    public int? Width { get; set; }
+    public int? Height { get; set; }
+    
+    public ComfyTaskType TaskType { get; set; }
+    public string? RefId { get; set; }
+    public string? Provider { get; set; }
+    public string? ReplyTo { get; set; }
+    public string? Tag { get; set; }
+}
+
+public class CreateComfyTextToImage
 {
     public string Model { get; set; }
     public int Width { get; set; }
@@ -95,11 +134,6 @@ public class CreateComfyTextToImage : IReturn<CreateComfyTextToImageResponse>
     public long? Seed { get; set; }
     public string PositivePrompt { get; set; }
     public string? NegativePrompt { get; set; }
-    
-    public string? RefId { get; set; }
-    public string? Provider { get; set; }
-    public string? ReplyTo { get; set; }
-    public string? Tag { get; set; }
 }
 
 public class CreateComfyTextToImageResponse
