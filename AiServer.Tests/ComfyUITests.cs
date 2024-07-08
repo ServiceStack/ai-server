@@ -23,14 +23,6 @@ public class ComfyUITests
             Assert.Ignore("COMFY_API_KEY is not set");
         }
         client = new ComfyClient(BaseUrl,apiKey);
-        var lockedObject = new object();
-        ComfyClient.LogMessage = s =>
-        {
-            lock (lockedObject)
-            {
-                Console.WriteLine(s);
-            }
-        };
     }
     
     [Test]

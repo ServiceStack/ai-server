@@ -32,8 +32,6 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     private readonly Dictionary<string, JsonObject> metadataMapping = new();
     private static ScriptContext context = new ScriptContext().Init();
 
-    public static Action<string> LogMessage;
-
     public string WorkflowTemplatePath { get; set; } = "workflows";
     public string TextToImageTemplate { get; set; } = "text_to_image.json";
     public string ImageToTextTemplate { get; set; } = "image_to_text.json";
@@ -291,7 +289,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
             {
                 if(!string.IsNullOrEmpty(comfyPromptId) && missedGenerationCompleteMapping.ContainsKey(comfyPromptId))
                 {
-                    LogMessage("Missed AddOnGenerationComplete");
+                    Console.WriteLine("Missed AddOnGenerationComplete");
                     missedGenerationCompleteMapping[comfyPromptId] = innerPromptId;
                     missedPromptId = innerPromptId;
                     fireMissed = true;
@@ -303,15 +301,15 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
 
         if (fireMissed && !string.IsNullOrEmpty(missedPromptId))
         {
-            LogMessage("Running Missed AddOnGenerationComplete");
+            Console.WriteLine("Running Missed AddOnGenerationComplete");
             Task.Run(async () =>
             {
-                LogMessage("In Process Missed AddOnGenerationComplete");
+                Console.WriteLine("In Process Missed AddOnGenerationComplete");
                 var missedStatus = await GetWorkflowStatusAsync(missedPromptId);
-                LogMessage("Got Missed Status");
-                LogMessage($"PromptId: {comfyPromptId} - InnerPromptId: {innerPromptId}");
+                Console.WriteLine("Got Missed Status");
+                Console.WriteLine($"PromptId: {comfyPromptId} - InnerPromptId: {innerPromptId}");
                 callback?.Invoke(innerPromptId, missedStatus);
-                LogMessage("Invoked Missed Callback");
+                Console.WriteLine("Invoked Missed Callback");
             });
         }
     }
@@ -334,18 +332,18 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         {
             if(!promptIdToInnerPromptIdMapping.TryGetValue(comfyPromptId, out innerPromptId))
             {
-                LogMessage($"No innerPromptId found for promptId: {comfyPromptId}");
+                Console.WriteLine($"No innerPromptId found for promptId: {comfyPromptId}");
                 var didAdd = missedGenerationCompleteMapping.TryAdd(comfyPromptId, "");
                 if(!didAdd)
-                    LogMessage($"Failed to add missedGenerationCompleteMapping for promptId: {comfyPromptId}");
+                    Console.WriteLine($"Failed to add missedGenerationCompleteMapping for promptId: {comfyPromptId}");
                 return;
             }
             var hasRegisteredCallback = OnGenerationComplete.TryGetValue(innerPromptId!, out callback);
             
             if (!hasRegisteredCallback)
             {
-                LogMessage($"No callback found for promptId: {comfyPromptId}");
-                LogMessage($"No callback found for innerPromptId: {innerPromptId}");
+                Console.WriteLine($"No callback found for promptId: {comfyPromptId}");
+                Console.WriteLine($"No callback found for innerPromptId: {innerPromptId}");
                 promptIdToInnerPromptIdMapping.TryRemove(comfyPromptId, out _);
                 return;
             }
