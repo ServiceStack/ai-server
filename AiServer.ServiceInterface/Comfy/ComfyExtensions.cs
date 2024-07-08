@@ -24,7 +24,7 @@ public static class ComfyExtensions
                     Width = request.Width ?? 1024,
                     Height = request.Height ?? 1024,
                     Sampler = ComfySampler.euler_ancestral,
-                    BatchSize = request.BatchSize,
+                    BatchSize = request.BatchSize ?? 1,
                     Seed = request.Seed ?? Random.Shared.Next(),
                     PositivePrompt = request.PositivePrompt,
                     NegativePrompt = request.NegativePrompt ?? 
@@ -32,6 +32,7 @@ public static class ComfyExtensions
                     Scheduler = "normal",
                     Steps = request.Steps ?? 25,
                     CfgScale = request.CfgScale ?? 7,
+                    TaskType = ComfyTaskType.TextToImage
                 };
                 break;
             case ComfyTaskType.ImageToImage:
@@ -39,29 +40,7 @@ public static class ComfyExtensions
                 {
                     Model = request.Model ?? artStyleEntry.Filename,
                     Denoise = request.Denoise ?? 0.5d,
-                    BatchSize = request.BatchSize,
-                    Seed = request.Seed ?? Random.Shared.Next(),
-                    PositivePrompt = request.PositivePrompt,
-                    NegativePrompt = request.NegativePrompt ?? 
-                                     "low quality, blurry, noisy, compression artifacts",
-                    Scheduler = request.Scheduler ?? "normal",
-                    CfgScale = request.CfgScale ?? 7,
-                    Steps = request.Steps ?? 25,
-                    Sampler = request.Sampler ?? ComfySampler.euler_ancestral
-                };
-                break;
-            case ComfyTaskType.ImageToImageUpscale:
-                resObject = new ComfyWorkflowRequest
-                {
-                    UpscaleModel = request.UpscaleModel ?? "RealESRGAN_x2.pth"
-                };
-                break;
-            case ComfyTaskType.ImageToImageWithMask:
-                resObject = new ComfyWorkflowRequest
-                {
-                    Model = request.Model ?? artStyleEntry.Filename,
-                    Denoise = request.Denoise ?? 0.5d,
-                    BatchSize = request.BatchSize,
+                    BatchSize = request.BatchSize ?? 1,
                     Seed = request.Seed ?? Random.Shared.Next(),
                     PositivePrompt = request.PositivePrompt,
                     NegativePrompt = request.NegativePrompt ?? 
@@ -70,12 +49,38 @@ public static class ComfyExtensions
                     CfgScale = request.CfgScale ?? 7,
                     Steps = request.Steps ?? 25,
                     Sampler = request.Sampler ?? ComfySampler.euler_ancestral,
-                    MaskChannel = ComfyMaskSource.red
+                    TaskType = ComfyTaskType.ImageToImage
+                };
+                break;
+            case ComfyTaskType.ImageToImageUpscale:
+                resObject = new ComfyWorkflowRequest
+                {
+                    UpscaleModel = request.UpscaleModel ?? "RealESRGAN_x2.pth",
+                    TaskType = ComfyTaskType.ImageToImageUpscale
+                };
+                break;
+            case ComfyTaskType.ImageToImageWithMask:
+                resObject = new ComfyWorkflowRequest
+                {
+                    Model = request.Model ?? artStyleEntry.Filename,
+                    Denoise = request.Denoise ?? 0.5d,
+                    BatchSize = request.BatchSize ?? 1,
+                    Seed = request.Seed ?? Random.Shared.Next(),
+                    PositivePrompt = request.PositivePrompt,
+                    NegativePrompt = request.NegativePrompt ?? 
+                                     "low quality, blurry, noisy, compression artifacts",
+                    Scheduler = request.Scheduler ?? "normal",
+                    CfgScale = request.CfgScale ?? 7,
+                    Steps = request.Steps ?? 25,
+                    Sampler = request.Sampler ?? ComfySampler.euler_ancestral,
+                    MaskChannel = ComfyMaskSource.red,
+                    TaskType = ComfyTaskType.ImageToImageWithMask
                 };
                 break;
             case ComfyTaskType.ImageToText:
                 resObject = new ComfyWorkflowRequest
                 {
+                    TaskType = ComfyTaskType.ImageToText
                 };
                 break;
             case ComfyTaskType.TextToAudio:
@@ -90,25 +95,30 @@ public static class ComfyExtensions
                     Scheduler = request.Scheduler ?? "normal",
                     SampleLength = 47.5d,
                     Sampler = request.Sampler ?? ComfySampler.dpmpp_2s_ancestral,
-                    Clip = request.Clip ?? "t5_base.safetensors"
+                    Clip = request.Clip ?? "t5_base.safetensors",
+                    TaskType = ComfyTaskType.TextToAudio
                 };
                 break;
             case ComfyTaskType.TextToSpeech:
                 resObject = new ComfyWorkflowRequest
                 {
                     PositivePrompt = request.PositivePrompt, 
-                    Model = request.Model ?? "high:en_US-lessac"
+                    Model = request.Model ?? "high:en_US-lessac",
+                    TaskType = ComfyTaskType.TextToSpeech
                 };
                 break;
             case ComfyTaskType.SpeechToText:
                 resObject = new ComfyWorkflowRequest
                 {
-                    Model = request.Model ?? "base"
+                    Model = request.Model ?? "base",
+                    TaskType = ComfyTaskType.SpeechToText
                 };
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
+        
+        resObject.ArtStyle = artStyle;
 
         return resObject;
     }

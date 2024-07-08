@@ -17,6 +17,47 @@ public class ComfyApiServices(IComfyClient comfyClient,
     {
         // Convert the request DTO to a ComfyWorkflowRequest
         var comfyReq = request.ToComfy(appConfig);
+
+        var availableModels = await comfyClient.GetModelsListAsync();
+        var defaultModel = appConfig.ArtStyleModelMappings[(comfyReq.ArtStyle ?? ArtStyle.Photographic).ToString()];
+        
+        if (string.IsNullOrEmpty(request.Model) && availableModels.All(x => x.Name != comfyReq.Model) &&
+            availableModels.All(x => x.Name != defaultModel.Filename))
+        {
+            // Check if download already in progress
+            var downloadJob = await comfyClient.GetDownloadStatusAsync(defaultModel.Filename);
+
+            if (downloadJob.Name == defaultModel.Filename && downloadJob.Progress == -1)
+            {
+                // Delete file and try again
+                await comfyClient.DeleteModelAsync(defaultModel.Filename);
+            } 
+            else if(downloadJob.Name == defaultModel.Filename && downloadJob.Progress < 100)
+            {
+                throw new Exception("Model download already in progress");
+            }
+            
+            if(appConfig.CivitAiApiKey.IsNullOrEmpty())
+                downloadJob = await comfyClient.DownloadModelAsync(
+                    defaultModel.DownloadUrl, 
+                    defaultModel.Filename
+                    );
+            else
+                downloadJob = await comfyClient.DownloadModelAsync(
+                    defaultModel.DownloadUrl, 
+                    defaultModel.Filename,
+                    apiKey: appConfig.CivitAiApiKey,
+                    "bearer"
+                    );
+            
+            // Poll the download job until it's complete
+            while (downloadJob.Name != defaultModel.Filename || downloadJob.Progress != 100)
+            {
+                await Task.Delay(1000);
+                downloadJob = await comfyClient.GetDownloadStatusAsync(defaultModel.Filename);
+            }
+            
+        }
         
         // Handle any file uploads required before processing the workflow
         // and update the ComfyWorkflowRequest with the uploaded files if required

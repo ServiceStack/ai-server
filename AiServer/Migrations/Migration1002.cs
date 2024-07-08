@@ -17,7 +17,7 @@ public class Migration1002 : MigrationBase
     
     public class ComfyTaskSummary
     {
-
+        [AutoIncrement]
         public long Id { get; set; }
 
         /// <summary>

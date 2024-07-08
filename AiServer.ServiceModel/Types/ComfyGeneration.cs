@@ -76,7 +76,7 @@ public class QueueComfyWorkflow : IReturn<CreateComfyTextToImageResponse>
 {
     public string? Model { get; set; }
     public int? Steps { get; set; }
-    public int BatchSize { get; set; }
+    public int? BatchSize { get; set; } = 1;
     public int? Seed { get; set; }
     public string? PositivePrompt { get; set; }
     public string? NegativePrompt { get; set; }
@@ -156,6 +156,7 @@ public class ComfyWorkflowRequest
 public class ComfyTaskSummary
 {
 
+    [AutoIncrement]
     public long Id { get; set; }
 
     /// <summary>

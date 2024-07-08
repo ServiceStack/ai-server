@@ -8,6 +8,8 @@ namespace AiServer.ServiceInterface
         public string? AuthSecret { get; set; }
 
         public Dictionary<string, ArtStyleEntry> ArtStyleModelMappings { get; set; }
+        
+        public string CivitAiApiKey { get; set; }
     }
     
     public class ArtStyleEntry
