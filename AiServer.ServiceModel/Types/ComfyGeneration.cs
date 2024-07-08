@@ -1,3 +1,5 @@
+using System.Runtime.Serialization;
+using ServiceStack;
 using ServiceStack.DataAnnotations;
 
 namespace AiServer.ServiceModel.Types;
@@ -6,11 +8,13 @@ public class ComfyGenerationTask : TaskBase
 {
     [AutoIncrement]
     public long Id { get; set; }
-    public object Request { get; set; }
+    public ComfyWorkflowRequest Request { get; set; }
+    
+    public ComfyWorkflowResponse? Response { get; set; }
     
     public ComfyTaskType TaskType { get; set; }
     public string WorkflowTemplate { get; set; }
-    public ComfyWorkflowResponse? Response { get; set; }
+
 }
 
 public class ComfyGenerationCompleted : ComfyGenerationTask
@@ -23,12 +27,130 @@ public class ComfyGenerationFailed : ComfyGenerationTask
     public DateTime FailedDate { get; set; }
 }
 
+[DataContract]
+public enum ArtStyle
+{
+    [EnumMember(Value = "3d_model")]
+    ThreeDModel,
+    [EnumMember(Value = "analog_film")]
+    AnalogFilm,
+    [EnumMember(Value = "anime")]
+    Anime,
+    [EnumMember(Value = "cinematic")]
+    Cinematic,
+    [EnumMember(Value = "comic")]
+    ComicBook,
+    [EnumMember(Value = "digital_art")]
+    DigitalArt,
+    [EnumMember(Value = "enhance")]
+    Enhance,
+    [EnumMember(Value = "fantasy_art")]
+    FantasyArt,
+    [EnumMember(Value = "isometric")]
+    Isometric,
+    [EnumMember(Value = "line_art")]
+    LineArt,
+    [EnumMember(Value = "low_poly")]
+    LowPoly,
+    [EnumMember(Value = "modeling_compound")]
+    ModelingCompound,
+    [EnumMember(Value = "neon_punk")]
+    NeonPunk,
+    [EnumMember(Value = "oil_painting")]
+    Origami,
+    [EnumMember(Value = "photographic")]
+    Photographic,
+    [EnumMember(Value = "pixel_art")]
+    PixelArt,
+    [EnumMember(Value = "game_asset")]
+    TileTexture
+}
+
+public class CreateComfyTextToImageResponse
+{
+    public string ImageUrl { get; set; }
+}
+
+[ValidateApiKey]
+public class QueueComfyWorkflow : IReturn<CreateComfyTextToImageResponse>
+{
+    public string? Model { get; set; }
+    public int? Steps { get; set; }
+    public int BatchSize { get; set; }
+    public int? Seed { get; set; }
+    public string? PositivePrompt { get; set; }
+    public string? NegativePrompt { get; set; }
+    [Input(Type = "file")]
+    public Stream? ImageInput { get; set; }
+    [Input(Type = "file")]
+    public Stream? SpeechInput { get; set; }
+    [Input(Type = "file")]
+    public Stream? MaskInput { get; set; }
+    
+    public ComfySampler? Sampler { get; set; }
+    public ArtStyle? ArtStyle { get; set; }
+    public string? Scheduler { get; set; } = "normal";
+    public int? CfgScale { get; set; }
+    public double? Denoise { get; set; } = 0.5d;
+    
+    public string? UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
+    
+    public int? Width { get; set; }
+    public int? Height { get; set; }
+    
+    public string? Clip { get; set; }
+    public double? SampleLength { get; set; }
+    
+    public ComfyTaskType TaskType { get; set; }
+    public string? RefId { get; set; }
+    public string? Provider { get; set; }
+    public string? ReplyTo { get; set; }
+    public string? Tag { get; set; }
+}
+
+
+
 public class ComfyWorkflowRequest
 {
     public long Id { get; set; }
-    public string Model { get; set; }
-    public string Provider { get; set; }
-    public object Request { get; set; }
+    
+    public string? Model { get; set; }
+    
+    public int? Steps { get; set; }
+    
+    public int BatchSize { get; set; }
+
+    public int? Seed { get; set; }
+    public string? PositivePrompt { get; set; }
+    public string? NegativePrompt { get; set; }
+    
+    public ComfyFileInput? Image { get; set; }
+    public ComfyFileInput? Speech { get; set; }
+    public ComfyFileInput? Mask { get; set; }
+    
+    public Stream? ImageInput { get; set; }
+    public Stream? SpeechInput { get; set; }
+    public Stream? MaskInput { get; set; }
+    
+    public ComfySampler? Sampler { get; set; }
+    public ArtStyle? ArtStyle { get; set; }
+    public string? Scheduler { get; set; } = "normal";
+    public int? CfgScale { get; set; }
+    public double? Denoise { get; set; } = 0.5d;
+    
+    public string? UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
+    
+    public int? Width { get; set; }
+    public int? Height { get; set; }
+    
+    public ComfyTaskType TaskType { get; set; }
+    public string? RefId { get; set; }
+    public string? Provider { get; set; }
+    public string? ReplyTo { get; set; }
+    public string? Tag { get; set; }
+    public string? Clip { get; set; }
+    public double? SampleLength { get; set; }
+    public ComfyMaskSource MaskChannel { get; set; }
 }
 
 public class ComfyTaskSummary

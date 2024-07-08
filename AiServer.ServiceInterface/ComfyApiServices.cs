@@ -18,7 +18,12 @@ public class ComfyApiServices(IComfyClient comfyClient,
 {
     public async Task<object> Post(QueueComfyWorkflow request)
     {
-        var comfyReq = request.ToComfy(appConfig);
+        
+        
+        var comfyReq = await request.ToComfyAsync(comfyClient, appConfig);
+        
+        // Handle any file uploads required before processing the workflow
+        
         
         var tcs = new TaskCompletionSource<Stream>();
         Stream downloadStream;
@@ -49,7 +54,7 @@ public class ComfyApiServices(IComfyClient comfyClient,
             task.Request = comfyReq;
             task.Response = response;
             task.TaskType = ComfyTaskType.TextToImage;
-            task.WorkflowTemplate = comfyClient.GetTemplateContentsByType<ComfyTextToImage>() ?? "";
+            task.WorkflowTemplate = comfyClient.GetTemplateContentsByType(request.TaskType) ?? "";
             
             mq.Publish(new AppDbWrites {
                 CreateComfyGenerationTask = task,
@@ -70,73 +75,4 @@ public class ComfyApiServices(IComfyClient comfyClient,
         var fullPath = Path.Combine(path, fileName);
         return fullPath;
     }
-}
-
-public enum ArtStyle
-{
-    ThreeDModel,
-    AnalogFilm,
-    Anime,
-    Cinematic,
-    ComicBook,
-    DigitalArt,
-    Enhance,
-    FantasyArt,
-    Isometric,
-    LineArt,
-    LowPoly,
-    ModelingCompound,
-    NeonPunk,
-    Origami,
-    Photographic,
-    PixelArt,
-    TileTexture
-}
-
-
-[ValidateApiKey]
-public class QueueComfyWorkflow : IReturn<CreateComfyTextToImageResponse>
-{
-    public string? Model { get; set; }
-    public int? Steps { get; set; }
-    public int BatchSize { get; set; }
-    public int? Seed { get; set; }
-    public string? PositivePrompt { get; set; }
-    public string? NegativePrompt { get; set; }
-    public Stream? ImageInput { get; set; }
-    public Stream? SpeechInput { get; set; }
-    public Stream? MaskInput { get; set; }
-    
-    public ComfySampler? Sampler { get; set; }
-    public ArtStyle? ArtStyle { get; set; }
-    public string? Scheduler { get; set; } = "normal";
-    public int? CfgScale { get; set; }
-    public double? Denoise { get; set; } = 0.5d;
-    
-    public string? UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
-    
-    public int? Width { get; set; }
-    public int? Height { get; set; }
-    
-    public ComfyTaskType TaskType { get; set; }
-    public string? RefId { get; set; }
-    public string? Provider { get; set; }
-    public string? ReplyTo { get; set; }
-    public string? Tag { get; set; }
-}
-
-public class CreateComfyTextToImage
-{
-    public string Model { get; set; }
-    public int Width { get; set; }
-    public int Height { get; set; }
-    public int Samples { get; set; } = 1;
-    public long? Seed { get; set; }
-    public string PositivePrompt { get; set; }
-    public string? NegativePrompt { get; set; }
-}
-
-public class CreateComfyTextToImageResponse
-{
-    public string ImageUrl { get; set; }
 }

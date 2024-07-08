@@ -1,21 +1,47 @@
 using AiServer.ServiceModel.Types;
-using ServiceStack;
 
 namespace AiServer.ServiceInterface.Comfy;
 
 
 public static class ComfyExtensions
 {
-    public static object ToComfy(this QueueComfyWorkflow request, AppConfig appConfig)
+    public static async Task<ComfyWorkflowRequest> ToComfyAsync(this QueueComfyWorkflow request, 
+        IComfyClient comfyClient,
+        AppConfig appConfig)
     {
         var artStyle = request.ArtStyle ?? ArtStyle.Photographic;
         var artStyleString = artStyle.ToString();
         var artStyleEntry = appConfig.ArtStyleModelMappings[artStyleString];
-        object resObject;
+        
+        ComfyFileInput? imageInput = null;
+        ComfyFileInput? maskInput = null;
+        ComfyFileInput? speechInput = null;
+        // Upload image assets if required
+        if (request.ImageInput != null)
+        {
+            var tempFilename = "ComfyUI_" + Guid.NewGuid().ToString("N").Take(5) + ".png";
+            imageInput = await comfyClient.UploadImageAssetAsync(request.ImageInput, tempFilename);
+        }
+        
+        if (request.MaskInput != null)
+        {
+            var tempFilename = "ComfyUI_" + Guid.NewGuid().ToString("N").Take(5) + ".png";
+            maskInput = await comfyClient.UploadImageAssetAsync(request.MaskInput, tempFilename);
+        }
+        
+        if (request.SpeechInput != null)
+        {
+            var tempFilename = "ComfyUI_" + Guid.NewGuid().ToString("N").Take(5) + ".wav";
+            speechInput = await comfyClient.UploadAudioAssetAsync(request.SpeechInput, tempFilename);
+        }
+        
+        ComfyWorkflowRequest resObject;
+        
+        
         switch (request.TaskType)
         {
             case ComfyTaskType.TextToImage:
-                resObject = new ComfyTextToImage
+                resObject = new ComfyWorkflowRequest()
                 {
                     Model = request.Model ?? artStyleEntry.Filename,
                     Width = request.Width ?? 1024,
@@ -24,57 +50,74 @@ public static class ComfyExtensions
                     BatchSize = request.BatchSize,
                     Seed = request.Seed ?? Random.Shared.Next(),
                     PositivePrompt = request.PositivePrompt,
-                    NegativePrompt = request.NegativePrompt ?? "low quality, blurry, noisy, compression artifacts",
+                    NegativePrompt = request.NegativePrompt ?? 
+                                     "low quality, blurry, noisy, compression artifacts",
                     Scheduler = "normal",
                     Steps = request.Steps ?? 25,
                     CfgScale = request.CfgScale ?? 7,
                 };
                 break;
             case ComfyTaskType.ImageToImage:
-                resObject = new ComfyImageToImage
+                if(imageInput == null)
+                    throw new Exception("Image input required for ImageToImage task");
+                resObject = new ComfyWorkflowRequest
                 {
                     Model = request.Model ?? artStyleEntry.Filename,
                     Denoise = request.Denoise ?? 0.5d,
                     BatchSize = request.BatchSize,
                     Seed = request.Seed ?? Random.Shared.Next(),
                     PositivePrompt = request.PositivePrompt,
-                    NegativePrompt = request.NegativePrompt ?? "low quality, blurry, noisy, compression artifacts",
+                    NegativePrompt = request.NegativePrompt ?? 
+                                     "low quality, blurry, noisy, compression artifacts",
                     Scheduler = request.Scheduler ?? "normal",
                     CfgScale = request.CfgScale ?? 7,
                     Steps = request.Steps ?? 25,
                     Sampler = request.Sampler ?? ComfySampler.euler_ancestral,
-                    ImageInput = request.ImageInput
+                    Image = imageInput
                 };
                 break;
             case ComfyTaskType.ImageToImageUpscale:
-                resObject = new ComfyImageToImageUpscale
+                if(imageInput == null)
+                    throw new Exception("Image input required for ImageToImageUpscale task");
+                resObject = new ComfyWorkflowRequest
                 {
-                    ImageInput = request.ImageInput, UpscaleModel = request.UpscaleModel ?? "RealESRGAN_x2.pth"
+                    Image = imageInput, 
+                    UpscaleModel = request.UpscaleModel ?? "RealESRGAN_x2.pth"
                 };
                 break;
             case ComfyTaskType.ImageToImageWithMask:
-                resObject = new ComfyImageToImageWithMask
+                if(imageInput == null)
+                    throw new Exception("Image input required for ImageToImageWithMask task");
+                if(maskInput == null)
+                    throw new Exception("Mask input required for ImageToImageWithMask task");
+                resObject = new ComfyWorkflowRequest
                 {
                     Model = request.Model ?? artStyleEntry.Filename,
                     Denoise = request.Denoise ?? 0.5d,
                     BatchSize = request.BatchSize,
                     Seed = request.Seed ?? Random.Shared.Next(),
                     PositivePrompt = request.PositivePrompt,
-                    NegativePrompt = request.NegativePrompt ?? "low quality, blurry, noisy, compression artifacts",
+                    NegativePrompt = request.NegativePrompt ?? 
+                                     "low quality, blurry, noisy, compression artifacts",
                     Scheduler = request.Scheduler ?? "normal",
                     CfgScale = request.CfgScale ?? 7,
                     Steps = request.Steps ?? 25,
                     Sampler = request.Sampler ?? ComfySampler.euler_ancestral,
-                    ImageInput = request.ImageInput,
-                    MaskInput = request.MaskInput,
+                    Image = imageInput,
+                    Mask = maskInput,
                     MaskChannel = ComfyMaskSource.red
                 };
                 break;
             case ComfyTaskType.ImageToText:
-                resObject = new ComfyImageToText { ImageInput = request.ImageInput };
+                if(imageInput == null)
+                    throw new Exception("Image input required for ImageToText task");
+                resObject = new ComfyWorkflowRequest
+                {
+                    Image = imageInput
+                };
                 break;
             case ComfyTaskType.TextToAudio:
-                resObject = new ComfyTextToAudio
+                resObject = new ComfyWorkflowRequest
                 {
                     Model = request.Model ?? "stable_audio_open_1.0.safetensors",
                     Seed = request.Seed ?? Random.Shared.Next(),
@@ -85,19 +128,23 @@ public static class ComfyExtensions
                     Scheduler = request.Scheduler ?? "normal",
                     SampleLength = 47.5d,
                     Sampler = request.Sampler ?? ComfySampler.dpmpp_2s_ancestral,
-                    Clip = "t5_base.safetensors"
+                    Clip = request.Clip ?? "t5_base.safetensors"
                 };
                 break;
             case ComfyTaskType.TextToSpeech:
-                resObject = new ComfyTextToSpeech
+                resObject = new ComfyWorkflowRequest
                 {
-                    Input = request.PositivePrompt, Quality = "high", Voice = request.Model ?? "en_US-lessac"
+                    PositivePrompt = request.PositivePrompt, 
+                    Model = request.Model ?? "high:en_US-lessac"
                 };
                 break;
             case ComfyTaskType.SpeechToText:
-                resObject = new ComfySpeechToText
+                if (speechInput == null)
+                    throw new Exception("Speech input required for SpeechToText task");
+                resObject = new ComfyWorkflowRequest
                 {
-                    AudioFile = request.SpeechInput, WhisperModel = request.Model ?? "base"
+                    Speech = speechInput,
+                    Model = request.Model ?? "base"
                 };
                 break;
             default:
@@ -107,9 +154,9 @@ public static class ComfyExtensions
         return resObject;
     }
     
-    public static ComfyTextToAudio ToComfy(this StableAudioTextToAudio textToAudio)
+    public static ComfyWorkflowRequest ToComfy(this StableAudioTextToAudio textToAudio)
     {
-        return new ComfyTextToAudio
+        return new ComfyWorkflowRequest
         {
             Seed = textToAudio.Seed,
             CfgScale = textToAudio.CfgScale,
@@ -120,29 +167,33 @@ public static class ComfyExtensions
             Scheduler = "normal",
             SampleLength = textToAudio.SampleLength,
             PositivePrompt = textToAudio.TextPrompts.ExtractPositivePrompt(),
-            NegativePrompt = textToAudio.TextPrompts.ExtractNegativePrompt()
+            NegativePrompt = textToAudio.TextPrompts.ExtractNegativePrompt(),
+            TaskType = ComfyTaskType.TextToAudio
         };
     }
 
-    public static ComfyImageToText ToComfy(this StableDiffusionImageToText imageToText)
+    public static ComfyWorkflowRequest ToComfy(this StableDiffusionImageToText imageToText)
     {
-        return new ComfyImageToText
+        return new ComfyWorkflowRequest
         {
-            ImageInput = imageToText.InputImage
+            ImageInput = imageToText.InputImage,
+            TaskType = ComfyTaskType.ImageToText
         };
     }
     
-    public static ComfyImageToImageUpscale ToComfy(this StableDiffusionImageToImageUpscale imageToImage)
+    public static ComfyWorkflowRequest ToComfy(this StableDiffusionImageToImageUpscale imageToImage)
     {
-        return new ComfyImageToImageUpscale
+        return new ComfyWorkflowRequest
         {
-            ImageInput = imageToImage.ImageInput
+            ImageInput = imageToImage.ImageInput,
+            UpscaleModel = imageToImage.UpscaleModel,
+            TaskType = ComfyTaskType.ImageToImageUpscale
         };
     }
 
-    public static ComfyImageToImageWithMask ToComfy(this StableDiffusionImageToImageWithMask imageWithMask)
+    public static ComfyWorkflowRequest ToComfy(this StableDiffusionImageToImageWithMask imageWithMask)
     {
-        return new ComfyImageToImageWithMask()
+        return new ComfyWorkflowRequest()
         {
             Seed = Random.Shared.Next(),
             CfgScale = imageWithMask.CfgScale,
@@ -163,13 +214,14 @@ public static class ComfyExtensions
                 StableDiffusionMaskSource.Black => throw new Exception("Black mask not supported"),
                 StableDiffusionMaskSource.Alpha => ComfyMaskSource.alpha,
                 _ => ComfyMaskSource.red
-            }
+            },
+            TaskType = ComfyTaskType.ImageToImageWithMask
         };
     }
     
-    public static ComfyTextToImage ToComfy(this StableDiffusionTextToImage textToImage)
+    public static ComfyWorkflowRequest ToComfy(this StableDiffusionTextToImage textToImage)
     {
-        return new ComfyTextToImage
+        return new ComfyWorkflowRequest
         {
             Seed = textToImage.Seed,
             CfgScale = textToImage.CfgScale,
@@ -181,12 +233,13 @@ public static class ComfyExtensions
             Model = textToImage.EngineId,
             PositivePrompt = textToImage.TextPrompts.ExtractPositivePrompt(),
             NegativePrompt = textToImage.TextPrompts.ExtractNegativePrompt(),
+            TaskType = ComfyTaskType.TextToImage
         };
     }
 
-    public static ComfyImageToImage ToComfy(this StableDiffusionImageToImage imageToImage)
+    public static ComfyWorkflowRequest ToComfy(this StableDiffusionImageToImage imageToImage)
     {
-        return new ComfyImageToImage
+        return new ComfyWorkflowRequest
         {
             Seed = Random.Shared.Next(),
             CfgScale = imageToImage.CfgScale,
@@ -198,7 +251,8 @@ public static class ComfyExtensions
             Scheduler = "normal",
             ImageInput = imageToImage.InitImage,
             PositivePrompt = imageToImage.TextPrompts.ExtractPositivePrompt(),
-            NegativePrompt = imageToImage.TextPrompts.ExtractNegativePrompt()
+            NegativePrompt = imageToImage.TextPrompts.ExtractNegativePrompt(),
+            TaskType = ComfyTaskType.ImageToImage
         };
     }
     

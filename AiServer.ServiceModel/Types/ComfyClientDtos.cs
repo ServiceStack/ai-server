@@ -32,13 +32,6 @@ public class ComfyTextOutput
     public string Text { get; set; }
 }
 
-public class ComfyImageInput
-{
-    public string Name { get; set; }
-    public string Type { get; set; }
-    public string Subfolder { get; set; }
-}
-
 public class ComfyFileInput
 {
     public string Name { get; set; }
@@ -99,7 +92,7 @@ public class ComfyImageToImage : IComfyRequest
     public string Model { get; set; }
     public string PositivePrompt { get; set; }
     public string NegativePrompt { get; set; }
-    public ComfyImageInput? Image { get; set; }
+    public ComfyFileInput? Image { get; set; }
     
     public Stream? ImageInput { get; set; }
 }
@@ -107,7 +100,7 @@ public class ComfyImageToImage : IComfyRequest
 public class ComfyImageToImageUpscale
 {
     public string UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
-    public ComfyImageInput? Image { get; set; }
+    public ComfyFileInput? Image { get; set; }
     
     public Stream? ImageInput { get; set; }
 }
@@ -127,9 +120,9 @@ public class ComfyImageToImageWithMask
     
     public ComfyMaskSource MaskChannel { get; set; }
     public Stream? ImageInput { get; set; }
-    public ComfyImageInput? Image { get; set; }
+    public ComfyFileInput? Image { get; set; }
     public Stream? MaskInput { get; set; }
-    public ComfyImageInput? MaskImage { get; set; }
+    public ComfyFileInput? MaskImage { get; set; }
 }
 
 public enum ComfyMaskSource
@@ -142,7 +135,7 @@ public enum ComfyMaskSource
 
 public class ComfyImageToText
 {
-    public ComfyImageInput? Image { get; set; }
+    public ComfyFileInput? Image { get; set; }
     
     public Stream? ImageInput { get; set; }
 }
@@ -211,7 +204,7 @@ public enum ComfySampler
 /// </summary>
 public class StableDiffusionTextToImage
 {
-    public long Seed { get; set; }
+    public int Seed { get; set; }
     public int CfgScale { get; set; }
     public int Height { get; set; }
     public int Width { get; set; }

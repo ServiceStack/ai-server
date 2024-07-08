@@ -13,7 +13,7 @@ using System.Text.Json.Nodes;
 
 public interface IComfyClient
 {
-    Task<ComfyWorkflowResponse> PromptGeneration<T>(T comfyRequest, bool waitResult = false);
+    Task<ComfyWorkflowResponse> PromptGeneration(ComfyWorkflowRequest comfyRequest, bool waitResult = false);
     Task<ComfyAgentDownloadStatus> DownloadModelAsync(string url, string filename, string apiKey = null, string apiKeyLocation = "");
     Task<ComfyAgentDownloadStatus> GetDownloadStatusAsync(string name);
     Task<List<ComfyModel>> GetModelsListAsync();
@@ -21,8 +21,12 @@ public interface IComfyClient
     Task<ComfyWorkflowStatus> GetWorkflowStatusAsync(string promptId);
     
     void AddOnGenerationComplete(string innerPromptId, Action<string,ComfyWorkflowStatus> callback);
+
+    public Task<ComfyFileInput> UploadImageAssetAsync(Stream fileStream, string filename);
     
-    string? GetTemplateContentsByType<T>();
+    public Task<ComfyFileInput> UploadAudioAssetAsync(Stream fileStream, string filename);
+    
+    string? GetTemplateContentsByType(ComfyTaskType taskType);
 }
 
 public partial class ComfyClient(HttpClient httpClient) : IComfyClient
@@ -62,14 +66,14 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
                 "Authorization", $"Bearer {apiKey}"}}})
     {
         // Initialize ComfyWorkflowMapping
-        comfyWorkflowMapping[typeof(ComfyTextToImage)] = TextToImageTemplate;
-        comfyWorkflowMapping[typeof(ComfyImageToImage)] = ImageToImageTemplate;
-        comfyWorkflowMapping[typeof(ComfyImageToImageUpscale)] = ImageToImageUpscaleTemplate;
-        comfyWorkflowMapping[typeof(ComfyImageToImageWithMask)] = ImageToImageWithMaskTemplate;
-        comfyWorkflowMapping[typeof(ComfyImageToText)] = ImageToTextTemplate;
-        comfyWorkflowMapping[typeof(ComfyTextToSpeech)] = TextToSpeechTemplate;
-        comfyWorkflowMapping[typeof(ComfyTextToAudio)] = TextToAudioTemplate;
-        comfyWorkflowMapping[typeof(ComfySpeechToText)] = SpeechToTextTemplate;
+        comfyWorkflowMapping[ComfyTaskType.TextToImage] = TextToImageTemplate;
+        comfyWorkflowMapping[ComfyTaskType.ImageToImage] = ImageToImageTemplate;
+        comfyWorkflowMapping[ComfyTaskType.ImageToImageUpscale] = ImageToImageUpscaleTemplate;
+        comfyWorkflowMapping[ComfyTaskType.ImageToImageWithMask] = ImageToImageWithMaskTemplate;
+        comfyWorkflowMapping[ComfyTaskType.ImageToText] = ImageToTextTemplate;
+        comfyWorkflowMapping[ComfyTaskType.TextToSpeech] = TextToSpeechTemplate;
+        comfyWorkflowMapping[ComfyTaskType.TextToAudio] = TextToAudioTemplate;
+        comfyWorkflowMapping[ComfyTaskType.SpeechToText] = SpeechToTextTemplate;
         
         // Initialize WebSocket Client
         var webSocketUrl = new Uri(baseUrl.Replace("http", "ws") + "/ws?clientId=" + clientId);
@@ -82,7 +86,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         Task.Run(() => webSocketClient.ConnectAndListenAsync());
     }
     
-    private readonly Dictionary<Type, string> comfyWorkflowMapping = new();
+    private readonly Dictionary<ComfyTaskType, string> comfyWorkflowMapping = new();
     private readonly ComfyWebSocketClient? webSocketClient;
 
     public async Task<string> QueueWorkflowAsync(string apiJson)
@@ -97,14 +101,14 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         return result;
     }
     
-    public async Task<ComfyImageInput> UploadImageAssetAsync(Stream fileStream, string filename)
+    public async Task<ComfyFileInput> UploadImageAssetAsync(Stream fileStream, string filename)
     {
         var content = new MultipartFormDataContent();
         content.Add(new StreamContent(fileStream), "image", filename);
         var response = await httpClient.PostAsync("/upload/image?overwrite=true&type=temp", content);
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadAsStringAsync();
-        return result.FromJson<ComfyImageInput>();
+        return result.FromJson<ComfyFileInput>();
     }
     
     public async Task<ComfyFileInput> UploadAudioAssetAsync(Stream fileStream, string filename)
@@ -118,7 +122,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         return result.FromJson<ComfyFileInput>();
     }
     
-    public async Task<string> PopulateWorkflow<T>(T request, string templatePath)
+    public async Task<string> PopulateWorkflow(ComfyWorkflowRequest request, string templatePath)
     {
         // Read template from file for Text to Image
         var template = await File.ReadAllTextAsync(Path.Combine(WorkflowTemplatePath, templatePath));
@@ -132,19 +136,24 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         return await workflowPageResult.RenderToStringAsync();
     }
     
-    public async Task<ComfyWorkflowResponse> PromptGeneration<T>(T comfyRequest, bool waitResult = false)
+    public async Task<ComfyWorkflowResponse> PromptGeneration(ComfyWorkflowRequest comfyRequest, bool waitResult = false)
     {
         // Check if the request type is supported
-        if (!comfyWorkflowMapping.ContainsKey(typeof(T)))
-            throw new Exception($"Unsupported request type: {typeof(T).Name}");
-        var templatePath = comfyWorkflowMapping[typeof(T)];
+        if (!comfyWorkflowMapping.TryGetValue(comfyRequest.TaskType, out var templatePath))
+            throw new Exception($"Unsupported request type: {comfyRequest.TaskType}");
+        
+        // Before queuing the workflow, generate a local prompt ID to track to avoid race conditions
+        var promptId = Guid.NewGuid().ToString();
+        innerPromptIdToPromptIdMapping[promptId] = null;
+        
+        // Handle any file uploads required before processing the workflow
+        await HandleAssetUploads(comfyRequest, promptId);
+        
         // Read template from file for Text to Image
         var workflowJson = await PopulateWorkflow(comfyRequest, templatePath);
         // Convert to ComfyUI API JSON format
         var apiJson = await ConvertWorkflowToApiAsync(workflowJson);
-        // Before queuing the workflow, generate a local prompt ID to track to avoid race conditions
-        var promptId = Guid.NewGuid().ToString();
-        innerPromptIdToPromptIdMapping[promptId] = null;
+
         // Call ComfyUI API
         var response = await QueueWorkflowAsync(apiJson);
         // Returns with job ID
@@ -168,108 +177,19 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         
         return result;
     }
-    
-    public async Task<ComfyWorkflowResponse> GenerateTextToSpeechAsync(ComfyTextToSpeech request)
+
+    private async Task HandleAssetUploads(ComfyWorkflowRequest request, string promptId)
     {
-        return await PromptGeneration(request);
-    }
-    
-    public async Task<ComfyWorkflowResponse> GenerateSpeechToTextAsync(ComfySpeechToText request)
-    {
-        if (request.AudioFile == null)
-            throw new Exception("Audio input is required for Speech to Text");
+        if(request.ImageInput != null)
+            request.Image = await UploadImageAssetAsync(request.ImageInput, "image_" + promptId + ".png");
         
-        // Upload audio asset
-        request.Audio = await UploadAudioAssetAsync(request.AudioFile, $"speech2text_{Guid.NewGuid()}.wav");
+        if(request.SpeechInput != null)
+            request.Speech = await UploadAudioAssetAsync(request.SpeechInput, "speech_" + promptId + ".wav");
         
-        return await PromptGeneration(request);
-    }
-    
-    public async Task<ComfyWorkflowResponse> GenerateTextToAudioAsync(StableAudioTextToAudio request)
-    {
-        var comfyRequest = request.ToComfy();
-        return await PromptGeneration(comfyRequest);
+        if(request.MaskInput != null)
+            request.Mask = await UploadImageAssetAsync(request.MaskInput, "mask_" + promptId + ".png");
     }
 
-    public async Task<ComfyWorkflowResponse> GenerateImageToTextAsync(StableDiffusionImageToText request)
-    {
-        var comfyRequest = request.ToComfy();
-        if (comfyRequest.Image == null && request.InputImage != null)
-        {
-            var tempFileName = $"image2text_{Guid.NewGuid()}.png";
-            comfyRequest.Image = await UploadImageAssetAsync(request.InputImage, tempFileName);
-        }
-
-        if (comfyRequest.Image == null)
-            throw new Exception("Image input is required for Image to Text");
-        
-        return await PromptGeneration(comfyRequest);
-    }
-
-    public async Task<ComfyWorkflowResponse> GenerateImageToImageWithMaskAsync(
-        StableDiffusionImageToImageWithMask request)
-    {
-        var comfyRequest = request.ToComfy();
-        if (comfyRequest.ImageInput == null)
-            throw new Exception("Image input is required for Image to Image with Mask");
-        if (comfyRequest.MaskInput == null)
-            throw new Exception("Mask image input is required for Image to Image with Mask");
-        
-        if (comfyRequest.Image == null && request.ImageInput != null)
-        {
-            var tempFileName = $"image2image_mask_{Guid.NewGuid()}.png";
-            comfyRequest.Image = await UploadImageAssetAsync(request.ImageInput, tempFileName);
-        }
-        
-        if (comfyRequest.MaskImage == null && request.MaskInput != null)
-        {
-            var tempFileName = $"image2image_mask_{Guid.NewGuid()}.png";
-            comfyRequest.MaskImage = await UploadImageAssetAsync(request.MaskInput, tempFileName);
-        }
-        
-        if (comfyRequest.Image == null)
-            throw new Exception("Image input failed to upload for Image to Image with Mask");
-        
-        if (comfyRequest.MaskImage == null)
-            throw new Exception("Mask input failed to upload for Image to Image with Mask");
-        
-        return await PromptGeneration(comfyRequest);
-    }
-
-    public async Task<ComfyWorkflowResponse> GenerateImageToImageUpscaleAsync(StableDiffusionImageToImageUpscale request)
-    {
-        var comfyRequest = request.ToComfy();
-        if(comfyRequest.ImageInput == null)
-            throw new Exception("Image input is required for Image to Image Upscale");
-        
-        // Upload image asset
-        comfyRequest.Image = await UploadImageAssetAsync(comfyRequest.ImageInput, $"image2image_upscale_{Guid.NewGuid()}.png");
-        
-        return await PromptGeneration(comfyRequest);
-    }
-
-    public async Task<ComfyWorkflowResponse> GenerateImageToImageAsync(StableDiffusionImageToImage request)
-    {
-        var comfyRequest = request.ToComfy();
-        if (comfyRequest.Image == null && request.InitImage != null)
-        {
-            var tempFileName = $"image2image_{Guid.NewGuid()}.png";
-            comfyRequest.Image = await UploadImageAssetAsync(request.InitImage, tempFileName);
-        }
-
-        if (comfyRequest.Image == null)
-            throw new Exception("Image input is required for Image to Image");
-        
-        return await PromptGeneration(comfyRequest);
-    }
-
-    public async Task<ComfyWorkflowResponse> GenerateTextToImageAsync(StableDiffusionTextToImage request)
-    {
-        // Convert to Internal DTO
-        var comfyRequest = request.ToComfy();
-        return await PromptGeneration(comfyRequest);
-    }
-    
     public async Task<ComfyAgentDownloadStatus> GetDownloadStatusAsync(string name)
     {
         var response = await httpClient.GetAsync($"/agent/pull?name={name}");
@@ -395,9 +315,9 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         }
     }
 
-    public string? GetTemplateContentsByType<T>()
+    public string? GetTemplateContentsByType(ComfyTaskType taskType)
     {
-        var path = comfyWorkflowMapping.ContainsKey(typeof(T)) == false ? null : comfyWorkflowMapping[typeof(T)];
+        var path = comfyWorkflowMapping.ContainsKey(taskType) == false ? null : comfyWorkflowMapping[taskType];
         if (path == null)
             return null;
         return File.ReadAllText(Path.Combine(WorkflowTemplatePath, path));

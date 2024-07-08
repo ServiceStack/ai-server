@@ -31,7 +31,7 @@
         "Node name for S&R": "LoadAudio"
       },
       "widgets_values": [
-        "{{Audio.Name}}",
+        "{{Speech.Name}}",
         null,
         ""
       ]
@@ -72,7 +72,7 @@
         "Node name for S&R": "AudioToTextWhisper"
       },
       "widgets_values": [
-        "{{WhisperModel}}"
+        "{{Model}}"
       ]
     },
     {

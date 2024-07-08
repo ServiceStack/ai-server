@@ -133,17 +133,17 @@ public class ComfyUITests
     [Test]
     public async Task Can_use_ComfyClient_TextToSpeech()
     {
-        var testDto = new ComfyTextToSpeech()
+        var testDto = new ComfyWorkflowRequest()
         {
-            Input = "Hello there, how are you today?",
-            Voice = "en_US-lessac",
-            Quality = "high"
+            PositivePrompt = "Hello there, how are you today?",
+            Model = "high:en_US-lessac",
+            TaskType = ComfyTaskType.TextToSpeech
         };
         
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
 
-        var response = await client.GenerateTextToSpeechAsync(testDto);
+        var response = await client.PromptGeneration(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
@@ -183,16 +183,17 @@ public class ComfyUITests
         Assert.That(File.Exists(outputFilePath), Is.True);
         
         // Read file back and send it to SpeechToText
-        var speechToTextDto = new ComfySpeechToText()
+        var speechToTextDto = new ComfyWorkflowRequest
         {
-            WhisperModel = "base",
-            AudioFile = File.OpenRead(outputFilePath)
+            Model = "base",
+            SpeechInput = File.OpenRead(outputFilePath),
+            TaskType = ComfyTaskType.SpeechToText
         };
         
         using var sttGenerationEventSlim = new ManualResetEventSlim(false);
         ComfyWorkflowStatus sstCapturedStatus = null;
         
-        var speechToTextResponse = await client.GenerateSpeechToTextAsync(speechToTextDto);
+        var speechToTextResponse = await client.PromptGeneration(speechToTextDto);
         
         Assert.That(speechToTextResponse, Is.Not.Null);
         Assert.That(speechToTextResponse.PromptId, Is.Not.Empty);
@@ -224,10 +225,11 @@ public class ComfyUITests
     [Test]
     public async Task Can_use_ComfyClient_SpeechToText()
     {
-        var testDto = new ComfySpeechToText()
+        var testDto = new ComfyWorkflowRequest
         {
-            WhisperModel = "base",
-            AudioFile = File.OpenRead("files/speech_to_text_test.wav")
+            Model = "base",
+            SpeechInput = File.OpenRead("files/speech_to_text_test.wav"),
+            TaskType = ComfyTaskType.SpeechToText
         };
         
         using var generationCompleteEvent = new ManualResetEventSlim(false);
@@ -235,7 +237,7 @@ public class ComfyUITests
         
         string genId = null;
         
-        var response = await client.GenerateSpeechToTextAsync(testDto);
+        var response = await client.PromptGeneration(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
@@ -284,12 +286,12 @@ public class ComfyUITests
                     Weight = -1.0d
                 }
             }
-        };
+        }.ToComfy();
         
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
         
-        var response = await client.GenerateTextToAudioAsync(testDto);
+        var response = await client.PromptGeneration(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
@@ -314,15 +316,16 @@ public class ComfyUITests
     [Test]
     public async Task Can_use_ComfyClient_ImageToText()
     {
-        var testDto = new StableDiffusionImageToText()
+        var testDto = new ComfyWorkflowRequest()
         {
-            InputImage = File.OpenRead("files/comfyui_upload_test.png"),
+            ImageInput = File.OpenRead("files/comfyui_upload_test.png"),
+            TaskType = ComfyTaskType.ImageToText
         };
         
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
         
-        var response = await client.GenerateImageToTextAsync(testDto);
+        var response = await client.PromptGeneration(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
@@ -374,12 +377,12 @@ public class ComfyUITests
                     Weight = -1.0d,
                 }
             }
-        };
+        }.ToComfy();
         
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
         
-        var response = await client.GenerateImageToImageWithMaskAsync(testDto);
+        var response = await client.PromptGeneration(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
@@ -416,13 +419,13 @@ public class ComfyUITests
         var testDto = new StableDiffusionImageToImageUpscale()
         {
             ImageInput = File.OpenRead("files/comfyui_upload_test.png"),
-        };
+        }.ToComfy();
         
                 
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
         
-        var response = await client.GenerateImageToImageUpscaleAsync(testDto);
+        var response = await client.PromptGeneration(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
@@ -496,12 +499,12 @@ public class ComfyUITests
                     Weight = -1.0d,
                 }
             }
-        };
+        }.ToComfy();
         
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
 
-        var response = await client.GenerateImageToImageAsync(testDto);
+        var response = await client.PromptGeneration(testDto);
 
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
@@ -561,7 +564,7 @@ public class ComfyUITests
                     Weight = -1.0d,
                 }
             }
-        };
+        }.ToComfy();
         
                 
         using var generationCompleteEvent = new ManualResetEventSlim(false);
@@ -569,7 +572,7 @@ public class ComfyUITests
 
         string genId = null;
         
-        var response = await client.GenerateTextToImageAsync(testDto);
+        var response = await client.PromptGeneration(testDto);
         
         Assert.That(response, Is.Not.Null);
         Assert.That(response.PromptId, Is.Not.Empty);
@@ -603,7 +606,7 @@ public class ComfyUITests
     [Test]
     public async Task Can_force_race_condition_test()
     {
-        var comfyReq = new ComfyTextToImage
+        var comfyReq = new ComfyWorkflowRequest
         {
             Model = "zavychromaxl_v80.safetensors",
             Width = 512,
@@ -616,6 +619,7 @@ public class ComfyUITests
             Scheduler = "normal",
             Steps = 25,
             CfgScale = 7,
+            TaskType = ComfyTaskType.TextToImage
         };
 
         using var generationCompleteEvent = new ManualResetEventSlim(false);
@@ -675,9 +679,10 @@ public class ComfyUITests
             $"ComfyUI_test_{Guid.NewGuid().ToString().Substring(0, 5)}_00001_.png");
         
         // Init test DTO
-        var testDto = new ComfyImageToImageUpscale()
+        var testDto = new ComfyWorkflowRequest
         {
-            Image = comfyInput
+            Image = comfyInput,
+            TaskType = ComfyTaskType.ImageToImageUpscale
         };
         
         // Convert template to JSON
@@ -706,7 +711,7 @@ public class ComfyUITests
             $"ComfyUI_test_{Guid.NewGuid().ToString().Substring(0, 5)}_00001_.png");
         
         // Init test DTO
-        var testDto = new ComfyImageToImage()
+        var testDto = new ComfyWorkflowRequest
         {
             CfgScale = 7,
             Seed = Random.Shared.Next(),
@@ -716,7 +721,8 @@ public class ComfyUITests
             Denoise = 0.75d,
             PositivePrompt = "photorealistic,realistic,stormy,scary,gloomy",
             NegativePrompt = "cartoon,painting,3d, lowres, text, watermark,low quality, blurry, noisy image",
-            Image = comfyInput
+            Image = comfyInput,
+            TaskType = ComfyTaskType.ImageToImage
         };
         
         // Convert template to JSON
@@ -741,10 +747,10 @@ public class ComfyUITests
     public async Task Can_use_TextToImage_from_template_workflow()
     {
         // Init test DTO
-        var testDto = new ComfyTextToImage()
+        var testDto = new ComfyWorkflowRequest
         {
             CfgScale = 7,
-            Seed = Random.Shared.NextInt64(),
+            Seed = Random.Shared.Next(),
             Height = 1024,
             Width = 1024,
             Model = "zavychromaxl_v80.safetensors",
@@ -753,6 +759,7 @@ public class ComfyUITests
             Steps = 20,
             PositivePrompt = "A beautiful sunset over the ocean",
             NegativePrompt = "low quality, blurry, noisy image",
+            TaskType = ComfyTaskType.TextToImage
         };
         
         // Convert template to JSON

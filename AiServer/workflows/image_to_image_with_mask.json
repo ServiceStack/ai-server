@@ -76,7 +76,7 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "{{MaskImage.Name}}",
+        "{{Mask.Name}}",
         "image"
       ]
     },

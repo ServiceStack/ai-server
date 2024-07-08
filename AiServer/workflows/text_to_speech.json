@@ -29,9 +29,9 @@
         "Node name for S&R": "PiperTTS"
       },
       "widgets_values": [
-        "{{Input}}",
-        "{{Voice}}",
-        "{{Quality}}",
+        "{{PositivePrompt}}",
+        "{{Model.split(':')[1]}}",
+        "{{Model.split(':')[0]}}",
         {
           "hidden": false,
           "paused": false,

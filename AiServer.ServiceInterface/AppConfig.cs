@@ -7,17 +7,7 @@ namespace AiServer.ServiceInterface
         public static AppConfig Instance { get; } = new();
         public string? AuthSecret { get; set; }
 
-        public Dictionary<string, ArtStyleEntry> ArtStyleModelMappings { get; set; } = new()
-        {
-            {
-                "Photographic", new ArtStyleEntry
-                {
-                    Name = "OpenXL Version 3.0 Cinematic",
-                    DownloadUrl = "https://civitai.com/api/download/models/506622",
-                    Filename = "openxlVersion30_v30.safetensors"
-                }
-            }
-        };
+        public Dictionary<string, ArtStyleEntry> ArtStyleModelMappings { get; set; }
     }
     
     public class ArtStyleEntry
