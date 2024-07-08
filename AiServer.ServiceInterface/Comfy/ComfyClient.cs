@@ -13,14 +13,12 @@ using System.Text.Json.Nodes;
 
 public interface IComfyClient
 {
-    Task<ComfyWorkflowResponse> PromptGeneration(ComfyWorkflowRequest comfyRequest, bool waitResult = false);
+    Task<ComfyWorkflowResponse> PromptGeneration(ComfyWorkflowRequest comfyRequest, Action<string,ComfyWorkflowStatus>? callback = null, bool waitResult = false);
     Task<ComfyAgentDownloadStatus> DownloadModelAsync(string url, string filename, string apiKey = null, string apiKeyLocation = "");
     Task<ComfyAgentDownloadStatus> GetDownloadStatusAsync(string name);
     Task<List<ComfyModel>> GetModelsListAsync();
     Task<Stream> DownloadComfyOutputAsync(ComfyFileOutput output);
     Task<ComfyWorkflowStatus> GetWorkflowStatusAsync(string promptId);
-    
-    void AddOnGenerationComplete(string innerPromptId, Action<string,ComfyWorkflowStatus> callback);
 
     public Task<ComfyFileInput> UploadImageAssetAsync(Stream fileStream, string filename);
     
@@ -136,7 +134,8 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         return await workflowPageResult.RenderToStringAsync();
     }
     
-    public async Task<ComfyWorkflowResponse> PromptGeneration(ComfyWorkflowRequest comfyRequest, bool waitResult = false)
+    public async Task<ComfyWorkflowResponse> PromptGeneration(ComfyWorkflowRequest comfyRequest, 
+        Action<string,ComfyWorkflowStatus>? callback = null, bool waitResult = false)
     {
         // Check if the request type is supported
         if (!comfyWorkflowMapping.TryGetValue(comfyRequest.TaskType, out var templatePath))
@@ -145,6 +144,8 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         // Before queuing the workflow, generate a local prompt ID to track to avoid race conditions
         var promptId = Guid.NewGuid().ToString();
         innerPromptIdToPromptIdMapping[promptId] = null;
+        if(callback != null)
+            AddOnGenerationComplete(promptId, callback);
         
         // Handle any file uploads required before processing the workflow
         await HandleAssetUploads(comfyRequest, promptId);
@@ -278,7 +279,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     
     private readonly object lockObj = new();
     
-    public void AddOnGenerationComplete(string innerPromptId, Action<string,ComfyWorkflowStatus> callback)
+    private void AddOnGenerationComplete(string innerPromptId, Action<string,ComfyWorkflowStatus> callback)
     {
         // Use lock to prevent race conditions
         string? comfyPromptId;
@@ -288,7 +289,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         {
             if (innerPromptIdToPromptIdMapping.TryGetValue(innerPromptId, out comfyPromptId))
             {
-                if(missedGenerationCompleteMapping.ContainsKey(comfyPromptId))
+                if(!string.IsNullOrEmpty(comfyPromptId) && missedGenerationCompleteMapping.ContainsKey(comfyPromptId))
                 {
                     LogMessage("Missed AddOnGenerationComplete");
                     missedGenerationCompleteMapping[comfyPromptId] = innerPromptId;

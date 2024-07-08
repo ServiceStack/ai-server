@@ -5,36 +5,13 @@ namespace AiServer.ServiceInterface.Comfy;
 
 public static class ComfyExtensions
 {
-    public static async Task<ComfyWorkflowRequest> ToComfyAsync(this QueueComfyWorkflow request, 
-        IComfyClient comfyClient,
+    public static ComfyWorkflowRequest ToComfy(this QueueComfyWorkflow request, 
         AppConfig appConfig)
     {
         var artStyle = request.ArtStyle ?? ArtStyle.Photographic;
         var artStyleString = artStyle.ToString();
         var artStyleEntry = appConfig.ArtStyleModelMappings[artStyleString];
-        
-        ComfyFileInput? imageInput = null;
-        ComfyFileInput? maskInput = null;
-        ComfyFileInput? speechInput = null;
-        // Upload image assets if required
-        if (request.ImageInput != null)
-        {
-            var tempFilename = "ComfyUI_" + Guid.NewGuid().ToString("N").Take(5) + ".png";
-            imageInput = await comfyClient.UploadImageAssetAsync(request.ImageInput, tempFilename);
-        }
-        
-        if (request.MaskInput != null)
-        {
-            var tempFilename = "ComfyUI_" + Guid.NewGuid().ToString("N").Take(5) + ".png";
-            maskInput = await comfyClient.UploadImageAssetAsync(request.MaskInput, tempFilename);
-        }
-        
-        if (request.SpeechInput != null)
-        {
-            var tempFilename = "ComfyUI_" + Guid.NewGuid().ToString("N").Take(5) + ".wav";
-            speechInput = await comfyClient.UploadAudioAssetAsync(request.SpeechInput, tempFilename);
-        }
-        
+
         ComfyWorkflowRequest resObject;
         
         
@@ -58,8 +35,6 @@ public static class ComfyExtensions
                 };
                 break;
             case ComfyTaskType.ImageToImage:
-                if(imageInput == null)
-                    throw new Exception("Image input required for ImageToImage task");
                 resObject = new ComfyWorkflowRequest
                 {
                     Model = request.Model ?? artStyleEntry.Filename,
@@ -72,24 +47,16 @@ public static class ComfyExtensions
                     Scheduler = request.Scheduler ?? "normal",
                     CfgScale = request.CfgScale ?? 7,
                     Steps = request.Steps ?? 25,
-                    Sampler = request.Sampler ?? ComfySampler.euler_ancestral,
-                    Image = imageInput
+                    Sampler = request.Sampler ?? ComfySampler.euler_ancestral
                 };
                 break;
             case ComfyTaskType.ImageToImageUpscale:
-                if(imageInput == null)
-                    throw new Exception("Image input required for ImageToImageUpscale task");
                 resObject = new ComfyWorkflowRequest
                 {
-                    Image = imageInput, 
                     UpscaleModel = request.UpscaleModel ?? "RealESRGAN_x2.pth"
                 };
                 break;
             case ComfyTaskType.ImageToImageWithMask:
-                if(imageInput == null)
-                    throw new Exception("Image input required for ImageToImageWithMask task");
-                if(maskInput == null)
-                    throw new Exception("Mask input required for ImageToImageWithMask task");
                 resObject = new ComfyWorkflowRequest
                 {
                     Model = request.Model ?? artStyleEntry.Filename,
@@ -103,17 +70,12 @@ public static class ComfyExtensions
                     CfgScale = request.CfgScale ?? 7,
                     Steps = request.Steps ?? 25,
                     Sampler = request.Sampler ?? ComfySampler.euler_ancestral,
-                    Image = imageInput,
-                    Mask = maskInput,
                     MaskChannel = ComfyMaskSource.red
                 };
                 break;
             case ComfyTaskType.ImageToText:
-                if(imageInput == null)
-                    throw new Exception("Image input required for ImageToText task");
                 resObject = new ComfyWorkflowRequest
                 {
-                    Image = imageInput
                 };
                 break;
             case ComfyTaskType.TextToAudio:
@@ -139,11 +101,8 @@ public static class ComfyExtensions
                 };
                 break;
             case ComfyTaskType.SpeechToText:
-                if (speechInput == null)
-                    throw new Exception("Speech input required for SpeechToText task");
                 resObject = new ComfyWorkflowRequest
                 {
-                    Speech = speechInput,
                     Model = request.Model ?? "base"
                 };
                 break;
