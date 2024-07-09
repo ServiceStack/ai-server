@@ -82,7 +82,9 @@ public class ComfyUITests
         var modelName = "easynegative.safetensors"; // friendly named model
         var deleteRes = await client.DeleteModelAsync(modelName);
         Assert.That(deleteRes, Is.Not.Null);
-        Assert.That(deleteRes, Is.Not.Empty);
+        Assert.That(deleteRes.Message, Is.Not.Null);
+        Assert.That(deleteRes.Message, Is.Not.Empty);
+        Assert.That(deleteRes.Message, Is.EqualTo("Model deleted"));
 
         var models = await client.GetModelsListAsync();
         Assert.That(models, Is.Not.Null);

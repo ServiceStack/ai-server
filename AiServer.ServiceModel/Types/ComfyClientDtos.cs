@@ -14,6 +14,11 @@ public class ComfyAgentDownloadStatus
     public int? Progress { get; set; }
 }
 
+public class ComfyAgentDeleteModelResponse
+{
+    public string? Message { get; set; }
+}
+
 public class ComfyOutput
 {
     public List<ComfyFileOutput> Files { get; set; } = new();

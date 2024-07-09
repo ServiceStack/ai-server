@@ -50,8 +50,22 @@ public class AppDbWrites : IReturn<EmptyResponse>
     [Command<AppDbPeriodicTasksCommand>]
     public PeriodicTasks? PeriodicTasks { get; set; } 
     
+    // Comfy Tasks
+    
     [Command<CreateComfyGenerationTaskCommand>]
     public ComfyGenerationTask? CreateComfyGenerationTask { get; set; }
+    
+    [Command<CompleteComfyGenerationCommand>]
+    public CompleteComfyGeneration? CompleteComfyGeneration { get; set; }
+    
+    [Command<FailComfyGenerationCommand>]
+    public FailComfyGeneration? FailComfyGeneration { get; set; }
+    
+    [Command<ChangeComfyProviderStatusCommand>]
+    public ChangeComfyProviderStatus? ChangeComfyProviderStatus { get; set; }
+    
+    [Command<RequestComfyGenerationTasksCommand>]
+    public RequestComfyGenerationTasks? RequestComfyGenerationTasks { get; set; }
 }
 
 [Tag(Tag.Tasks)]

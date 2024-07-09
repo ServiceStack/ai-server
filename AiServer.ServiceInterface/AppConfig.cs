@@ -1,3 +1,4 @@
+using AiServer.ServiceModel.Types;
 using ServiceStack;
 
 namespace AiServer.ServiceInterface
@@ -17,6 +18,18 @@ namespace AiServer.ServiceInterface
         public string Name { get; set; }
         public string Filename { get; set; }
         public string DownloadUrl { get; set; }
+        
+        public double? CfgScale { get; set; }
+        
+        public string? Scheduler { get; set; }
+        
+        public ComfySampler? Sampler { get; set; }
+        
+        public int? Width { get; set; }
+        
+        public int? Height { get; set; }
+        
+        public int? Steps { get; set; }
     }
 }
 

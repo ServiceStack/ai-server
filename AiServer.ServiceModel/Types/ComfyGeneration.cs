@@ -27,6 +27,24 @@ public class ComfyGenerationFailed : ComfyGenerationTask
     public DateTime FailedDate { get; set; }
 }
 
+[ValidateApiKey]
+public class FailComfyGeneration : IPost, IReturn<EmptyResponse>
+{
+    public long Id { get; set; }
+    public string Provider { get; set; }
+    public int DurationMs { get; set; }
+    public ResponseStatus Error { get; set; }
+}
+
+[ValidateApiKey]
+public class CompleteComfyGeneration : IPost, IReturn<EmptyResponse>
+{
+    public long Id { get; set; }
+    public string Provider { get; set; }
+    public int DurationMs { get; set; }
+    public ComfyWorkflowResponse Response { get; set; }
+}
+
 [DataContract]
 public enum ArtStyle
 {

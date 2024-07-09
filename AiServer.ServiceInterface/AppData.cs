@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using AiServer.ServiceInterface.Comfy;
 using Microsoft.Extensions.Logging;
 using ServiceStack;
 using ServiceStack.Messaging;
@@ -17,6 +18,9 @@ public class AppData(ILogger<AppData> log, AiProviderFactory aiFactory, IMessage
     public long LastChatTaskId => Interlocked.Read(ref nextChatTaskId);
     public long GetNextChatTaskId() => Interlocked.Increment(ref nextChatTaskId);
 
+    public ComfyProviderWorker[] ComfyProviderWorkers { get; set; } = [];
+    
+    public ComfyApiProvider[] ComfyApiProviders { get; set; } = [];
     public ApiProviderWorker[] ApiProviderWorkers { get; set; } = [];
     public ApiProvider[] ApiProviders { get; set; } = [];
     public IEnumerable<ApiProviderWorker> GetActiveWorkers() => ApiProviderWorkers.Where(x => x is { Enabled: true, Concurrency: > 0 });

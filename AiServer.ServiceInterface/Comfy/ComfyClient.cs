@@ -16,7 +16,7 @@ public interface IComfyClient
     Task<ComfyWorkflowResponse> PromptGeneration(ComfyWorkflowRequest comfyRequest, Action<string,ComfyWorkflowStatus>? callback = null, bool waitResult = false);
     Task<ComfyAgentDownloadStatus> DownloadModelAsync(string url, string filename, string apiKey = null, string apiKeyLocation = "");
     
-    Task<ComfyAgentDownloadStatus> DeleteModelAsync(string name);
+    Task<ComfyAgentDeleteModelResponse> DeleteModelAsync(string name);
     Task<ComfyAgentDownloadStatus> GetDownloadStatusAsync(string name);
     Task<List<ComfyModel>> GetModelsListAsync();
     Task<Stream> DownloadComfyOutputAsync(ComfyFileOutput output);
@@ -239,12 +239,12 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         return await response.Content.ReadAsStringAsync();
     }
     
-    public async Task<ComfyAgentDownloadStatus> DeleteModelAsync(string name)
+    public async Task<ComfyAgentDeleteModelResponse> DeleteModelAsync(string name)
     {
         var response = await httpClient.PostAsync($"/agent/delete?name={name}", new StringContent(""));
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadAsStringAsync();
-        return result.FromJson<ComfyAgentDownloadStatus>();
+        return result.FromJson<ComfyAgentDeleteModelResponse>();
     }
     
     public async Task<Stream> DownloadComfyOutputAsync(ComfyFileOutput output)
