@@ -75,30 +75,50 @@ public class ComfyApiServices(IComfyClient comfyClient,
             if (status == null)
                 throw new Exception("Failed to get workflow status");
             
+            var fileOutputs = new List<ComfyHostedFileOutput>();
+            
+            // For each file in Outputs[0], download and write to virtual files with promptId prefix
+            foreach(var file in status.Outputs[0].Files)
+            {
+                downloadStream = await comfyClient.DownloadComfyOutputAsync(file);
+                var fileNameSuffix = file.Filename.SplitOnLast(".")[1];
+                var fileName = file.Filename.SplitOnLast(".")[0];
+                var filePath = GetNewFilePath($"{promptId}-{fileName}.{fileNameSuffix}");
+                VirtualFiles.WriteFile(filePath, downloadStream);
+                fileOutputs.Add(new ComfyHostedFileOutput
+                {
+                    Url = filePath,
+                    FileName = file.Filename
+                });
+            }
+            
             downloadStream = await comfyClient.DownloadComfyOutputAsync(status.Outputs[0].Files[0]);
             if (tcs.TrySetResult(downloadStream))
             {
-                Console.WriteLine($"PromptId: {promptId} - Image URL: {status.Outputs[0].Files[0]}");
+                Console.WriteLine($"PromptId: {promptId} - URL: {status.Outputs[0].Files[0]}");
             }
             else
             {
                 Console.WriteLine($"Failed to set result for PromptId: {promptId}");
             }
-
-            var filePath = GetNewFilePath($"{promptId}.png");
-            VirtualFiles.WriteFile(filePath, downloadStream);
-
+            
             var task = request.ConvertTo<ComfyGenerationTask>();
             task.Request = comfyReq;
             task.Response = response;
-            task.TaskType = ComfyTaskType.TextToImage;
+            task.TaskType = request.TaskType;
             task.WorkflowTemplate = comfyClient.GetTemplateContentsByType(request.TaskType) ?? "";
             
-            mq.Publish(new AppDbWrites {
+            mq?.Publish(new AppDbWrites {
                 CreateComfyGenerationTask = task,
             });
 
-            return new CreateComfyTextToImageResponse { ImageUrl = VirtualFiles.GetFile(filePath).VirtualPath };
+            return new QueueComfyWorkflowResponse
+            {
+                Status = status,
+                PromptId = promptId,
+                WorkflowResponse = response,
+                FileOutputs = fileOutputs
+            };
         }
         catch (Exception ex)
         {

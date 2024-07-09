@@ -126,6 +126,20 @@ public class QueueComfyWorkflow : IReturn<CreateComfyTextToImageResponse>
     public string? Tag { get; set; }
 }
 
+public class QueueComfyWorkflowResponse
+{
+    public ComfyWorkflowStatus Status { get; set; }
+    public ComfyWorkflowResponse WorkflowResponse { get; set; }
+    public string PromptId { get; set; }
+    public List<ComfyHostedFileOutput> FileOutputs { get; set; }
+}
+
+public class ComfyHostedFileOutput
+{
+    public string Url { get; set; }
+    public string FileName { get; set; }
+}
+
 
 
 public class ComfyWorkflowRequest

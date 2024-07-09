@@ -1,3 +1,5 @@
+using ServiceStack;
+
 namespace AiServer.ServiceModel.Types;
 
 
@@ -52,11 +54,15 @@ public class ComfySpeechToText
 }
 
 
-public class ComfyTextToSpeech
+public class ComfyTextToSpeech : IReturn<ComfyTextToSpeechResponse>
 {
-    public string Input { get; set; }
-    public string Voice { get; set; } = "en_US-lessac";
-    public string Quality { get; set; } = "high";
+    public string PositivePrompt { get; set; }
+    public string Model { get; set; } = "high:en_US-lessac";
+}
+
+public class ComfyTextToSpeechResponse
+{
+    public string FilePath { get; set; }
 }
 
 /// <summary>
@@ -125,9 +131,7 @@ public class ComfyImageToImageWithMask
     
     public ComfyMaskSource MaskChannel { get; set; }
     public Stream? ImageInput { get; set; }
-    public ComfyFileInput? Image { get; set; }
     public Stream? MaskInput { get; set; }
-    public ComfyFileInput? MaskImage { get; set; }
 }
 
 public enum ComfyMaskSource
