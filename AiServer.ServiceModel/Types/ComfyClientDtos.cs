@@ -36,7 +36,7 @@ public class ComfyFileOutput
 
 public class ComfyTextOutput
 {
-    public string Text { get; set; }
+    public string? Text { get; set; }
 }
 
 public class ComfyFileInput
@@ -46,11 +46,15 @@ public class ComfyFileInput
     public string Subfolder { get; set; }
 }
 
-public class ComfySpeechToText
+public class ComfySpeechToText : IReturn<ComfySpeechToTextResponse>
 {
-    public string WhisperModel { get; set; } = "base";
-    public Stream? AudioFile { get; set; }
-    public ComfyFileInput? Audio { get; set; }
+    public string Model { get; set; } = "base";
+    public Stream? SpeechInput { get; set; }
+}
+
+public class ComfySpeechToTextResponse
+{
+    public string? Text { get; set; }
 }
 
 
@@ -62,21 +66,13 @@ public class ComfyTextToSpeech : IReturn<ComfyTextToSpeechResponse>
 
 public class ComfyTextToSpeechResponse
 {
-    public string FilePath { get; set; }
+    public string? FilePath { get; set; }
 }
 
-/// <summary>
-/// Way to tag a class as a Comfy Request with a known template?
-/// </summary>
-public interface IComfyRequest
-{
-}
-
-
-public class ComfyTextToImage : IComfyRequest
+public class ComfyTextToImage : IReturn<ComfyTextToImageResponse>
 {
     public long Seed { get; set; }
-    public int CfgScale { get; set; }
+    public double CfgScale { get; set; }
     public int Height { get; set; }
     public int Width { get; set; }
     public ComfySampler Sampler { get; set; }
@@ -89,10 +85,15 @@ public class ComfyTextToImage : IComfyRequest
     public string? Scheduler { get; set; } = "normal";
 }
 
-public class ComfyImageToImage : IComfyRequest
+public class ComfyTextToImageResponse
+{
+    public string? FilePath { get; set; }
+}
+
+public class ComfyImageToImage : IReturn<ComfyImageToImageResponse>
 {
     public long Seed { get; set; }
-    public int CfgScale { get; set; }
+    public double CfgScale { get; set; }
     public ComfySampler Sampler { get; set; }
     public int Steps { get; set; }
     
@@ -103,12 +104,16 @@ public class ComfyImageToImage : IComfyRequest
     public string Model { get; set; }
     public string PositivePrompt { get; set; }
     public string NegativePrompt { get; set; }
-    public ComfyFileInput? Image { get; set; }
     
     public Stream? ImageInput { get; set; }
 }
 
-public class ComfyImageToImageUpscale
+public class ComfyImageToImageResponse
+{
+    public string? FilePath { get; set; }
+}
+
+public class ComfyImageToImageUpscale : IReturn<ComfyImageToImageUpscaleResponse>
 {
     public string UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
     public ComfyFileInput? Image { get; set; }
@@ -116,10 +121,16 @@ public class ComfyImageToImageUpscale
     public Stream? ImageInput { get; set; }
 }
 
-public class ComfyImageToImageWithMask
+public class ComfyImageToImageUpscaleResponse
+{
+    public string? FilePath { get; set; }
+
+}
+
+public class ComfyImageToImageWithMask : IReturn<ComfyImageToImageWithMaskResponse>
 {
     public long Seed { get; set; }
-    public int CfgScale { get; set; }
+    public double CfgScale { get; set; }
     public ComfySampler Sampler { get; set; }
     public int Steps { get; set; }
     public int BatchSize { get; set; }
@@ -134,6 +145,11 @@ public class ComfyImageToImageWithMask
     public Stream? MaskInput { get; set; }
 }
 
+public class ComfyImageToImageWithMaskResponse
+{
+    public string? FilePath { get; set; }
+}
+
 public enum ComfyMaskSource
 {
     red,
@@ -142,11 +158,14 @@ public enum ComfyMaskSource
     alpha
 }
 
-public class ComfyImageToText
+public class ComfyImageToText : IReturn<ComfyImageToTextResponse>
 {
-    public ComfyFileInput? Image { get; set; }
-    
     public Stream? ImageInput { get; set; }
+}
+
+public class ComfyImageToTextResponse
+{
+    public string? Text { get; set; }
 }
 
 public class StableDiffusionImageToText
@@ -166,7 +185,7 @@ public class StableDiffusionImageToImageWithMask
     public Stream? ImageInput { get; set; }
     public Stream? MaskInput { get; set; }
     public List<TextPrompt> TextPrompts { get; set; }
-    public int CfgScale { get; set; } = 7;
+    public double CfgScale { get; set; } = 7;
     public StableDiffusionSampler Sampler { get; set; } = StableDiffusionSampler.K_EULER_ANCESTRAL;
     public int Samples { get; set; } = 1;
     public int Steps { get; set; } = 20;
@@ -214,7 +233,7 @@ public enum ComfySampler
 public class StableDiffusionTextToImage
 {
     public int Seed { get; set; }
-    public int CfgScale { get; set; }
+    public double CfgScale { get; set; }
     public int Height { get; set; }
     public int Width { get; set; }
     public StableDiffusionSampler Sampler { get; set; }
@@ -230,7 +249,7 @@ public class StableDiffusionImageToImage
     public string InitImageMode { get; set; } = "IMAGE_STRENGTH";
     public Stream? InitImage { get; set; }
     public List<TextPrompt> TextPrompts { get; set; }
-    public int CfgScale { get; set; }
+    public double CfgScale { get; set; }
     public StableDiffusionSampler Sampler { get; set; }
     public int Samples { get; set; }
     public int Steps { get; set; }
@@ -239,26 +258,31 @@ public class StableDiffusionImageToImage
 }
 
 
-public class ComfyTextToAudio
+public class ComfyTextToAudio : IReturn<ComfyTextToAudioResponse>
 {    
-    public string Clip { get; set; }
-    public string Model { get; set; }
-    public int Steps { get; set; }
-    public int CfgScale { get; set; }
-    public int Seed { get; set; }
-    public ComfySampler Sampler { get; set; }
-    public string Scheduler { get; set; }
+    public string? Clip { get; set; }
+    public string? Model { get; set; }
+    public int? Steps { get; set; }
+    public double? CfgScale { get; set; }
+    public int? Seed { get; set; }
+    public ComfySampler? Sampler { get; set; }
+    public string? Scheduler { get; set; }
     public string PositivePrompt { get; set; }
-    public string NegativePrompt { get; set; }
+    public string? NegativePrompt { get; set; }
     
     public double? SampleLength { get; set; } = 47.6d;
+}
+
+public class ComfyTextToAudioResponse
+{
+    public string? FilePath { get; set; }
 }
 
 public class StableAudioTextToAudio
 {
     public int Seed { get; set; } = Random.Shared.Next();
     public List<TextPrompt> TextPrompts { get; set; }
-    public int CfgScale { get; set; } = 4;
+    public double CfgScale { get; set; } = 4;
     public StableDiffusionSampler Sampler { get; set; } = StableDiffusionSampler.K_DPMPP_2S_ANCESTRAL;
     public int Steps { get; set; } = 50;
     public string EngineId { get; set; } = "stable_audio_open_1.0.safetensors";

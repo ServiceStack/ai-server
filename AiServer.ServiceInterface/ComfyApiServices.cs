@@ -19,9 +19,14 @@ public class ComfyApiServices(IComfyClient comfyClient,
         var comfyReq = request.ToComfy(appConfig);
 
         var availableModels = await comfyClient.GetModelsListAsync();
-        var defaultModel = appConfig.ArtStyleModelMappings[(comfyReq.ArtStyle ?? ArtStyle.Photographic).ToString()];
+        if(appConfig.ArtStyleModelMappings.IsNullOrEmpty())
+            log.LogWarning("ArtStyleModelMappings is empty");
+        var artStyle = (comfyReq.ArtStyle ?? ArtStyle.Photographic).ToString();
+        if(!appConfig.ArtStyleModelMappings.ContainsKey(artStyle))
+            throw new Exception($"ArtStyleModelMappings does not contain key: {artStyle}");
+        var defaultModel = appConfig.ArtStyleModelMappings[artStyle];
         
-        if (string.IsNullOrEmpty(request.Model) && availableModels.All(x => x.Name != comfyReq.Model) &&
+        if (string.IsNullOrEmpty(comfyReq.Model) && availableModels.All(x => x.Name != comfyReq.Model) &&
             availableModels.All(x => x.Name != defaultModel.Filename))
         {
             // Check if download already in progress
@@ -59,11 +64,10 @@ public class ComfyApiServices(IComfyClient comfyClient,
             
         }
         
-        // Handle any file uploads required before processing the workflow
-        // and update the ComfyWorkflowRequest with the uploaded files if required
-        await ApplyFiles(request, comfyReq);
-        
-        var tcs = new TaskCompletionSource<Stream>();
+        // Apply files to the request
+         ApplyFiles(comfyReq);
+
+        var tcs = new TaskCompletionSource<ComfyOutput>();
         Stream downloadStream;
         
         try
@@ -92,21 +96,13 @@ public class ComfyApiServices(IComfyClient comfyClient,
                 });
             }
             
-            downloadStream = await comfyClient.DownloadComfyOutputAsync(status.Outputs[0].Files[0]);
-            if (tcs.TrySetResult(downloadStream))
-            {
-                Console.WriteLine($"PromptId: {promptId} - URL: {status.Outputs[0].Files[0]}");
-            }
-            else
-            {
-                Console.WriteLine($"Failed to set result for PromptId: {promptId}");
-            }
-            
             var task = request.ConvertTo<ComfyGenerationTask>();
             task.Request = comfyReq;
             task.Response = response;
             task.TaskType = request.TaskType;
             task.WorkflowTemplate = comfyClient.GetTemplateContentsByType(request.TaskType) ?? "";
+
+            tcs.TrySetResult(status.Outputs[0]);
             
             mq?.Publish(new AppDbWrites {
                 CreateComfyGenerationTask = task,
@@ -117,7 +113,8 @@ public class ComfyApiServices(IComfyClient comfyClient,
                 Status = status,
                 PromptId = promptId,
                 WorkflowResponse = response,
-                FileOutputs = fileOutputs
+                FileOutputs = fileOutputs,
+                TextOutputs = status.Outputs[0].Texts
             };
         }
         catch (Exception ex)
@@ -126,46 +123,12 @@ public class ComfyApiServices(IComfyClient comfyClient,
         }
     }
 
-    private async Task ApplyFiles(QueueComfyWorkflow request, ComfyWorkflowRequest comfyReq)
+    private void ApplyFiles(ComfyWorkflowRequest request)
     {
-        ComfyFileInput? imageInput = null;
-        ComfyFileInput? maskInput = null;
-        ComfyFileInput? speechInput = null;
-        // Upload image assets if required
-        // Using the `request.TaskType` enum, map tasks that require image assets
-        if (request.TaskType is ComfyTaskType.ImageToImage or ComfyTaskType.ImageToImageUpscale
-            or ComfyTaskType.ImageToImageWithMask)
-        {
-            if (request.ImageInput == null)
-                throw new ArgumentException("ImageInput is required for this task type");
-            var tempFilename = "ComfyUI_" + Guid.NewGuid().ToString("N").Take(5) + ".png";
-            imageInput = await comfyClient.UploadImageAssetAsync(request.ImageInput, tempFilename);
-        }
-
-        if (request.TaskType is ComfyTaskType.ImageToImageWithMask)
-        {
-            if (request.MaskInput == null)
-                throw new ArgumentException("MaskInput is required for this task type");
-            {
-                var tempFilename = "ComfyUI_" + Guid.NewGuid().ToString("N").Take(5) + ".png";
-                maskInput = await comfyClient.UploadImageAssetAsync(request.MaskInput, tempFilename);
-            }
-        }
-
-        if (request.TaskType is ComfyTaskType.SpeechToText)
-        {
-            if (request.SpeechInput == null)
-                throw new ArgumentException("SpeechInput is required for this task type");
-            {
-                var tempFilename = "ComfyUI_" + Guid.NewGuid().ToString("N").Take(5) + ".wav";
-                speechInput = await comfyClient.UploadAudioAssetAsync(request.SpeechInput, tempFilename);
-            }
-        }
-        
-        
-        comfyReq.Image = imageInput;
-        comfyReq.Mask = maskInput;
-        comfyReq.Speech = speechInput;
+        // Pull HTTP file uploads from the original Request to DTOs
+        request.ImageInput ??= Request?.Files.FirstOrDefault(x => x.Name == "imageInput")?.InputStream;
+        request.MaskInput ??= Request?.Files.FirstOrDefault(x => x.Name == "maskInput")?.InputStream;
+        request.SpeechInput ??= Request?.Files.FirstOrDefault(x => x.Name == "speechInput")?.InputStream;
     }
 
     private string GetNewFilePath(string fileName)

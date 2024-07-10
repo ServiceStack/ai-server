@@ -109,7 +109,7 @@ public class QueueComfyWorkflow : IReturn<CreateComfyTextToImageResponse>
     public ArtStyle? ArtStyle { get; set; }
     public string? Scheduler { get; set; } = "normal";
     public int? CfgScale { get; set; }
-    public double? Denoise { get; set; } = 0.5d;
+    public double? Denoise { get; set; }
     
     public string? UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
     
@@ -132,6 +132,7 @@ public class QueueComfyWorkflowResponse
     public ComfyWorkflowResponse WorkflowResponse { get; set; }
     public string PromptId { get; set; }
     public List<ComfyHostedFileOutput> FileOutputs { get; set; }
+    public List<ComfyTextOutput> TextOutputs { get; set; }
 }
 
 public class ComfyHostedFileOutput
@@ -167,8 +168,8 @@ public class ComfyWorkflowRequest
     public ComfySampler? Sampler { get; set; }
     public ArtStyle? ArtStyle { get; set; }
     public string? Scheduler { get; set; } = "normal";
-    public int? CfgScale { get; set; }
-    public double? Denoise { get; set; } = 0.5d;
+    public double? CfgScale { get; set; }
+    public double? Denoise { get; set; }
     
     public string? UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
     

@@ -30,6 +30,8 @@ namespace AiServer.ServiceInterface
         public int? Height { get; set; }
         
         public int? Steps { get; set; }
+        
+        public string? NegativePrompt { get; set; }
     }
 }
 

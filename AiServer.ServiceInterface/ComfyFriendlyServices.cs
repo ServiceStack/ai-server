@@ -1,4 +1,3 @@
-using AiServer.ServiceInterface.Comfy;
 using AiServer.ServiceModel.Types;
 using ServiceStack;
 
@@ -12,8 +11,11 @@ public class ComfyFriendlyServices : Service
         var queueComfyReq = request.ConvertTo<QueueComfyWorkflow>();
         queueComfyReq.TaskType = ComfyTaskType.TextToImage;
         
-        var result = await genericService.Post(queueComfyReq);
-        return result;
+        var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
+        return new ComfyTextToImageResponse
+        {
+            FilePath = result?.FileOutputs[0].Url
+        };
     }
     
     public async Task<object> Post(ComfyImageToText request)
@@ -21,9 +23,12 @@ public class ComfyFriendlyServices : Service
         var genericService = ResolveService<ComfyApiServices>();
         var queueComfyReq = request.ConvertTo<QueueComfyWorkflow>();
         queueComfyReq.TaskType = ComfyTaskType.ImageToText;
-        
-        var result = await genericService.Post(queueComfyReq);
-        return result;
+
+        var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
+        return new ComfyImageToTextResponse
+        {
+            Text = result?.TextOutputs[0].Text
+        };
     }
     
     public async Task<object> Post(ComfyImageToImage request)
@@ -31,9 +36,12 @@ public class ComfyFriendlyServices : Service
         var genericService = ResolveService<ComfyApiServices>();
         var queueComfyReq = request.ConvertTo<QueueComfyWorkflow>();
         queueComfyReq.TaskType = ComfyTaskType.ImageToImage;
-        
-        var result = await genericService.Post(queueComfyReq);
-        return result;
+
+        var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
+        return new ComfyImageToImageResponse
+        {
+            FilePath = result?.FileOutputs[0].Url
+        };
     }
     
     public async Task<object> Post(ComfyImageToImageUpscale request)
@@ -42,8 +50,11 @@ public class ComfyFriendlyServices : Service
         var queueComfyReq = request.ConvertTo<QueueComfyWorkflow>();
         queueComfyReq.TaskType = ComfyTaskType.ImageToImageUpscale;
         
-        var result = await genericService.Post(queueComfyReq);
-        return result;
+        var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
+        return new ComfyImageToImageUpscaleResponse()
+        {
+            FilePath = result?.FileOutputs[0].Url
+        };
     }
     
     // ImageToImageWithMask
@@ -53,8 +64,11 @@ public class ComfyFriendlyServices : Service
         var queueComfyReq = request.ConvertTo<QueueComfyWorkflow>();
         queueComfyReq.TaskType = ComfyTaskType.ImageToImageWithMask;
         
-        var result = await genericService.Post(queueComfyReq);
-        return result;
+        var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
+        return new ComfyImageToImageWithMaskResponse
+        {
+            FilePath = result?.FileOutputs[0].Url
+        };
     }
     
     // TextToSpeech
@@ -67,7 +81,7 @@ public class ComfyFriendlyServices : Service
         var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
         return new ComfyTextToSpeechResponse
         {
-            FilePath = result.FileOutputs[0].Url
+            FilePath = result?.FileOutputs[0].Url
         };
     }
     
@@ -77,9 +91,12 @@ public class ComfyFriendlyServices : Service
         var genericService = ResolveService<ComfyApiServices>();
         var queueComfyReq = request.ConvertTo<QueueComfyWorkflow>();
         queueComfyReq.TaskType = ComfyTaskType.SpeechToText;
-        
-        var result = await genericService.Post(queueComfyReq);
-        return result;
+
+        var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
+        return new ComfySpeechToTextResponse
+        {
+            Text = result?.TextOutputs[0].Text
+        };
     }
     
     // TextToAudio
@@ -88,8 +105,11 @@ public class ComfyFriendlyServices : Service
         var genericService = ResolveService<ComfyApiServices>();
         var queueComfyReq = request.ConvertTo<QueueComfyWorkflow>();
         queueComfyReq.TaskType = ComfyTaskType.TextToAudio;
-        
-        var result = await genericService.Post(queueComfyReq);
-        return result;
+
+        var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
+        return new ComfyTextToAudioResponse
+        {
+            FilePath = result?.FileOutputs[0].Url
+        };
     }
 }
