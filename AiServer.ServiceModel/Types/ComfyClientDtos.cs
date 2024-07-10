@@ -87,7 +87,7 @@ public class ComfyTextToImage : IReturn<ComfyTextToImageResponse>
 
 public class ComfyTextToImageResponse
 {
-    public string? FilePath { get; set; }
+    public List<ComfyHostedFileOutput>? Images { get; set; } = new();
 }
 
 public class ComfyImageToImage : IReturn<ComfyImageToImageResponse>

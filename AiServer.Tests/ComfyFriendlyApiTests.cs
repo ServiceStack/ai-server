@@ -106,8 +106,12 @@ public class ComfyFriendlyApiTests
         }
 
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.FilePath, Is.Not.Null);
-        Assert.That(response.FilePath, Is.Not.Empty);
+        Assert.That(response.Images, Is.Not.Null);
+        Assert.That(response.Images.Count, Is.GreaterThan(0));
+        Assert.That(response.Images[0].Url, Is.Not.Null);
+        Assert.That(response.Images[0].Url, Is.Not.Empty);
+        Assert.That(response.Images[0].FileName, Is.Not.Null);
+        Assert.That(response.Images[0].FileName, Is.Not.Empty);
     }
 
     [Test]

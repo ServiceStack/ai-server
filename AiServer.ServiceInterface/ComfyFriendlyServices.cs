@@ -14,7 +14,11 @@ public class ComfyFriendlyServices : Service
         var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
         return new ComfyTextToImageResponse
         {
-            FilePath = result?.FileOutputs[0].Url
+            Images = result?.FileOutputs.Select(x => new ComfyHostedFileOutput
+            {
+                Url = x.Url,
+                FileName = x.FileName
+            }).ToList()
         };
     }
     
