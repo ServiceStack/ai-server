@@ -187,7 +187,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         // Upload image assets if required
         // Using the `request.TaskType` enum, map tasks that require image assets
         if (request.TaskType is ComfyTaskType.ImageToImage or ComfyTaskType.ImageToImageUpscale
-            or ComfyTaskType.ImageToImageWithMask && request.Image == null)
+            or ComfyTaskType.ImageToImageWithMask or ComfyTaskType.ImageToText && request.Image == null)
         {
             if (request.ImageInput == null)
                 throw new ArgumentException("ImageInput is required for this task type");

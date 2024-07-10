@@ -251,4 +251,66 @@ public class ComfyFriendlyApiTests
         Assert.That(response.Text?.Contains("Greetings", StringComparison.OrdinalIgnoreCase), Is.True);
         Assert.That(response.Text?.Contains("how are you", StringComparison.OrdinalIgnoreCase), Is.True);
     }
+
+    [Test]
+    public async Task Can_call_text_to_audio_api()
+    {
+        var client = CreateClient();
+        
+        //Assert does not throw
+        ComfyTextToAudioResponse? response = null;
+        var req = new ComfyTextToAudio()
+        {
+            PositivePrompt = "ambient music, relaxing sounds, cyberpunk",
+            NegativePrompt = "loud noises, heavy metal, rock music"
+        };
+        
+        try
+        {
+            response = await client.PostAsync(req);
+        }
+        catch (Exception e)
+        {
+            Assert.Fail(e.Message);
+        }
+        
+        Assert.That(response, Is.Not.Null);
+        Assert.That(response.FilePath, Is.Not.Null);
+        Assert.That(response.FilePath, Is.Not.Empty);
+        Assert.That(response.FilePath, Does.Contain(".flac"));
+    }
+    
+    [Test]
+    public async Task Can_call_image_to_text_api()
+    {
+        var client = CreateClient();
+
+        //Assert does not throw
+        ComfyImageToTextResponse? response = null;
+        var filePath = $"files/comfyui_upload_test.png";
+        var imageFile = new FileInfo(filePath);
+        // Assert file exists
+        Assert.That(imageFile.Exists, Is.True);
+        var req = new ComfyImageToText();
+        try
+        {
+            response = client.PostFilesWithRequest<ComfyImageToTextResponse>(req.ToPostUrl(),
+                req, 
+                new[]
+                {
+                    new UploadFile("imageInput", 
+                        File.OpenRead("files/comfyui_upload_test.png"),
+                        "imageInput", "image/png")
+                });
+        }
+        catch (Exception e)
+        {
+            Assert.Fail(e.Message);
+        }
+        
+        Assert.That(response, Is.Not.Null);
+        Assert.That(response.Text, Is.Not.Null);
+        Assert.That(response.Text, Is.Not.Empty);
+        Assert.That(response.Text,Contains.Substring("ocean"));
+    }
 }

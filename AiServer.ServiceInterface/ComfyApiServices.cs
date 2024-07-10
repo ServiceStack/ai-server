@@ -72,6 +72,7 @@ public class ComfyApiServices(IComfyClient comfyClient,
         
         try
         {
+            // TODO: Change to async once app queuing is setup
             var response = await comfyClient.PromptGeneration(comfyReq, waitResult:true);
             var promptId = response.PromptId;
 

@@ -203,6 +203,16 @@ public partial class ComfyClient
                         Subfolder = y["subfolder"].ToString()
                     }).ToList();
                 }
+                
+                if(output.ContainsKey("audio"))
+                {
+                    result.Files = output["audio"].AsArray().Select(y => new ComfyFileOutput
+                    {
+                        Filename = y["filename"].ToString(),
+                        Type = y["type"].ToString(),
+                        Subfolder = y["subfolder"].ToString()
+                    }).ToList();
+                }
 
                 return result;
             }).ToList()
