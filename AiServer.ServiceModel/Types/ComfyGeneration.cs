@@ -84,13 +84,10 @@ public enum ArtStyle
     TileTexture
 }
 
-public class CreateComfyTextToImageResponse
-{
-    public string ImageUrl { get; set; }
-}
+
 
 [ValidateApiKey]
-public class QueueComfyWorkflow : IReturn<CreateComfyTextToImageResponse>
+public class QueueComfyWorkflow : IReturn<QueueComfyWorkflowResponse>
 {
     public string? Model { get; set; }
     public int? Steps { get; set; }
