@@ -8,7 +8,17 @@ public partial class ComfyClient
     
     public async Task<string> ConvertWorkflowToApiAsync(string rawWorkflow)
     {
-        var workflow = JsonNode.Parse(rawWorkflow).AsObject();
+        JsonObject workflow;
+        try
+        {
+            workflow = JsonNode.Parse(rawWorkflow).AsObject();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Invalid workflow JSON. This is usually due to missing values or templating syntax issues.\n" +
+                                $"JSON: {rawWorkflow}", e);
+        }
         var apiNodes = new JsonObject();
         var nodeOutputs = new JsonObject();
         

@@ -259,23 +259,19 @@ public class ComfyUITests
     [Test]
     public async Task Can_use_ComfyClient_TextToAudio()
     {
-        var testDto = new StableAudioTextToAudio
+        var testDto = new ComfyWorkflowRequest()
         {
-            Sampler = StableDiffusionSampler.K_DPMPP_2S_ANCESTRAL,
-            TextPrompts = new List<TextPrompt>
-            {
-                new()
-                {
-                    Text = "electronic, ambient,orchestral,sad,memories,cyberpunk,rain,afterlife",
-                    Weight = 1.0d
-                },
-                new()
-                {
-                    Text = "loud,metal,rock,fast,aggressive,angry,violent,chaotic",
-                    Weight = -1.0d
-                }
-            }
-        }.ToComfy();
+            Model = "stable_audio_open_1.0.safetensors",
+            Clip = "t5_base.safetensors",
+            Steps = 50,
+            SampleLength = 47.6,
+            CfgScale = 4,
+            Sampler = ComfySampler.dpmpp_2s_ancestral,
+            PositivePrompt = "electronic, ambient,orchestral,sad,memories,cyberpunk,rain,afterlife",
+            NegativePrompt = "loud,metal,rock,fast,aggressive,angry,violent,chaotic",
+            Seed = 42,
+            TaskType = ComfyTaskType.TextToAudio
+        };
         
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
@@ -344,25 +340,24 @@ public class ComfyUITests
     [Test]
     public async Task Can_use_ComfyClient_ImageToImageWithMask()
     {
-        var testDto = new StableDiffusionImageToImageWithMask()
+        var testDto = new ComfyWorkflowRequest()
         {
             ImageInput = File.OpenRead("files/comfyui_upload_test.png"),
             MaskInput = File.OpenRead("files/comfyui_upload_test_mask.png"),
-            EngineId = "zavychromaxl_v80.safetensors",
-            TextPrompts = new List<TextPrompt>
-            {
-                new()
-                {
-                    Text = "photorealistic,realistic,stormy,scary,gloomy",
-                    Weight = 1.0d,
-                },
-                new()
-                {
-                    Text = "cartoon,painting,3d, lowres, text, watermark,low quality, blurry, noisy image",
-                    Weight = -1.0d,
-                }
-            }
-        }.ToComfy();
+            Model = "zavychromaxl_v80.safetensors",
+            CfgScale = 7,
+            Width = 512,
+            Height = 512,
+            Sampler = ComfySampler.euler_ancestral,
+            Scheduler = "normal",
+            Steps = 25,
+            Denoise = 0.75,
+            BatchSize = 1,
+            PositivePrompt = "photorealistic,realistic,stormy,scary,gloomy",
+            NegativePrompt = "cartoon,painting,3d, lowres, text, watermark,low quality, blurry, noisy image",
+            Seed = 42,
+            TaskType = ComfyTaskType.ImageToImageWithMask
+        };
         
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
@@ -399,10 +394,11 @@ public class ComfyUITests
     [Test]
     public async Task Can_use_ComfyClient_ImageToImageUpscale()
     {
-        var testDto = new StableDiffusionImageToImageUpscale()
+        var testDto = new ComfyWorkflowRequest()
         {
             ImageInput = File.OpenRead("files/comfyui_upload_test.png"),
-        }.ToComfy();
+            TaskType = ComfyTaskType.ImageToImageUpscale
+        };
         
                 
         using var generationCompleteEvent = new ManualResetEventSlim(false);
@@ -458,29 +454,20 @@ public class ComfyUITests
     [Test]
     public async Task Can_use_ComfyClient_ImageToImage()
     {
-        var testDto = new StableDiffusionImageToImage()
+        var testDto = new ComfyWorkflowRequest
         {
             CfgScale = 7,
-            EngineId = "zavychromaxl_v80.safetensors",
-            Sampler = StableDiffusionSampler.K_EULER_ANCESTRAL,
+            Model = "zavychromaxl_v80.safetensors",
+            Sampler = ComfySampler.euler_ancestral,
             Steps = 20,
-            ImageStrength = 0.25d,
-            InitImage = File.OpenRead("files/comfyui_upload_test.png"),
-            Samples = 2,
-            TextPrompts = new List<TextPrompt>
-            {
-                new()
-                {
-                    Text = "photorealistic,realistic,stormy,scary,gloomy",
-                    Weight = 1.0d,
-                },
-                new()
-                {
-                    Text = "cartoon,painting,3d, lowres, text, watermark,low quality, blurry, noisy image",
-                    Weight = -1.0d,
-                }
-            }
-        }.ToComfy();
+            Denoise = 0.75d,
+            ImageInput = File.OpenRead("files/comfyui_upload_test.png"),
+            BatchSize = 2,
+            PositivePrompt = "photorealistic,realistic,stormy,scary,gloomy",
+            NegativePrompt = "cartoon,painting,3d, lowres, text, watermark,low quality, blurry, noisy image",
+            Seed = 42,
+            TaskType = ComfyTaskType.ImageToImage
+        };
         
         using var generationCompleteEvent = new ManualResetEventSlim(false);
         ComfyWorkflowStatus capturedStatus = null;
@@ -520,30 +507,20 @@ public class ComfyUITests
     public async Task Can_use_ComfyClient_TextToImage()
     {
         // Init test DTO
-        var testDto = new StableDiffusionTextToImage()
+        var testDto = new ComfyWorkflowRequest
         {
             CfgScale = 7,
             Seed = Random.Shared.Next(),
             Height = 1024,
             Width = 1024,
-            EngineId = "zavychromaxl_v80.safetensors",
-            Sampler = StableDiffusionSampler.K_EULER_ANCESTRAL,
-            Samples = 1,
+            Model = "zavychromaxl_v80.safetensors",
+            Sampler = ComfySampler.euler_ancestral,
+            BatchSize = 1,
             Steps = 20,
-            TextPrompts = new List<TextPrompt>
-            {
-                new()
-                {
-                    Text = "A beautiful sunset over the ocean",
-                    Weight = 1.0d,
-                },
-                new()
-                {
-                    Text = "low quality, blurry, noisy image",
-                    Weight = -1.0d,
-                }
-            }
-        }.ToComfy();
+            PositivePrompt = "A beautiful sunset over the ocean",
+            NegativePrompt = "low quality, blurry, noisy image",
+            TaskType = ComfyTaskType.TextToImage
+        };
         
                 
         using var generationCompleteEvent = new ManualResetEventSlim(false);

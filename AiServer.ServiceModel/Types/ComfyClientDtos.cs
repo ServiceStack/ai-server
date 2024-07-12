@@ -89,6 +89,7 @@ public class ComfyTextToImage : IReturn<ComfyTextToImageResponse>
 
 public class ComfyTextToImageResponse
 {
+    public string? PromptId { get; set; }
     public ComfyWorkflowRequest? Request { get; set; }
     public List<ComfyHostedFileOutput>? Images { get; set; } = new();
 }
@@ -113,6 +114,7 @@ public class ComfyImageToImage : IReturn<ComfyImageToImageResponse>
 
 public class ComfyImageToImageResponse
 {
+    public string? PromptId { get; set; }
     public ComfyWorkflowRequest? Request { get; set; }
     
     public List<ComfyHostedFileOutput>? Images { get; set; } = new();
@@ -128,6 +130,7 @@ public class ComfyImageToImageUpscale : IReturn<ComfyImageToImageUpscaleResponse
 
 public class ComfyImageToImageUpscaleResponse
 {
+    public string? PromptId { get; set; }
     public ComfyWorkflowRequest? Request { get; set; }
     public List<ComfyHostedFileOutput>? Images { get; set; } = new();
 
@@ -153,6 +156,7 @@ public class ComfyImageToImageWithMask : IReturn<ComfyImageToImageWithMaskRespon
 
 public class ComfyImageToImageWithMaskResponse
 {
+    public string? PromptId { get; set; }
     public ComfyWorkflowRequest? Request { get; set; }
     public List<ComfyHostedFileOutput>? Images { get; set; } = new();
 }
@@ -172,42 +176,10 @@ public class ComfyImageToText : IReturn<ComfyImageToTextResponse>
 
 public class ComfyImageToTextResponse
 {
+    public string? PromptId { get; set; }
     public ComfyWorkflowRequest? Request { get; set; }
     public ComfyTextOutput? TextOutput { get; set; }
 }
-
-public class StableDiffusionImageToText
-{
-    public Stream? InputImage { get; set; }
-}
-
-public class StableDiffusionImageToImageUpscale
-{
-    public string UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
-    public Stream? ImageInput { get; set; }
-}
-
-public class StableDiffusionImageToImageWithMask
-{
-    public StableDiffusionMaskSource MaskSource { get; set; } = StableDiffusionMaskSource.White;
-    public Stream? ImageInput { get; set; }
-    public Stream? MaskInput { get; set; }
-    public List<TextPrompt> TextPrompts { get; set; }
-    public double CfgScale { get; set; } = 7;
-    public StableDiffusionSampler Sampler { get; set; } = StableDiffusionSampler.K_EULER_ANCESTRAL;
-    public int Samples { get; set; } = 1;
-    public int Steps { get; set; } = 20;
-    public string EngineId { get; set; }
-    public double ImageStrength { get; set; } = 0.40d;
-}
-
-public enum StableDiffusionMaskSource
-{
-    White,
-    Black,
-    Alpha
-}
-
 public enum ComfySampler
 {
     euler,
@@ -234,38 +206,6 @@ public enum ComfySampler
     uni_pc_bh2
 }
 
-
-/// <summary>
-/// Text To Image Request to Match Stability AI API
-/// </summary>
-public class StableDiffusionTextToImage
-{
-    public int Seed { get; set; }
-    public double CfgScale { get; set; }
-    public int Height { get; set; }
-    public int Width { get; set; }
-    public StableDiffusionSampler Sampler { get; set; }
-    public int Samples { get; set; }
-    public int Steps { get; set; }
-    public string EngineId { get; set; }
-    public List<TextPrompt> TextPrompts { get; set; }
-}
-
-public class StableDiffusionImageToImage
-{
-    public double ImageStrength { get; set; }
-    public string InitImageMode { get; set; } = "IMAGE_STRENGTH";
-    public Stream? InitImage { get; set; }
-    public List<TextPrompt> TextPrompts { get; set; }
-    public double CfgScale { get; set; }
-    public StableDiffusionSampler Sampler { get; set; }
-    public int Samples { get; set; }
-    public int Steps { get; set; }
-    
-    public string EngineId { get; set; }
-}
-
-
 public class ComfyTextToAudio : IReturn<ComfyTextToAudioResponse>
 {    
     public string? Clip { get; set; }
@@ -283,22 +223,9 @@ public class ComfyTextToAudio : IReturn<ComfyTextToAudioResponse>
 
 public class ComfyTextToAudioResponse
 {
+    public string? PromptId { get; set; }
     public ComfyWorkflowRequest? Request { get; set; }
     public List<ComfyHostedFileOutput>? Sounds { get; set; } = new();
-}
-
-public class StableAudioTextToAudio
-{
-    public int Seed { get; set; } = Random.Shared.Next();
-    public List<TextPrompt> TextPrompts { get; set; }
-    public double CfgScale { get; set; } = 4;
-    public StableDiffusionSampler Sampler { get; set; } = StableDiffusionSampler.K_DPMPP_2S_ANCESTRAL;
-    public int Steps { get; set; } = 50;
-    public string EngineId { get; set; } = "stable_audio_open_1.0.safetensors";
-    public string ClipEngineId { get; set; } = "t5_base.safetensors";
-
-    public double? SampleLength { get; set; } = 47.6d;
-
 }
 
 /*
@@ -318,20 +245,6 @@ public class ComfyWorkflowResponse
 public class NodeError
 {
     
-}
-
-public enum StableDiffusionSampler
-{
-    DDIM,
-    DDPM,
-    K_DPMPP_2M,
-    K_DPMPP_2S_ANCESTRAL,
-    K_DPM_2,
-    K_DPM_2_ANCESTRAL,
-    K_EULER,
-    K_EULER_ANCESTRAL,
-    K_HEUN,
-    K_LMS
 }
 
 public class TextPrompt
