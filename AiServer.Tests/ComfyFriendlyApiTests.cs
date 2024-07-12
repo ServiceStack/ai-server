@@ -82,8 +82,8 @@ public class ComfyFriendlyApiTests
         }
 
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.FilePath, Is.Not.Null);
-        Assert.That(response.FilePath, Is.Not.Empty);
+        Assert.That(response?.Speech, Is.Not.Null);
+        Assert.That(response?.Speech, Is.Not.Empty);
     }
 
     [Test]
@@ -97,7 +97,7 @@ public class ComfyFriendlyApiTests
         {
             response = await client.PostAsync(new ComfyTextToImage()
             {
-                PositivePrompt = "Beautil sunset over the ocean"
+                PositivePrompt = "Beautiful sunset over the ocean"
             });
         }
         catch (Exception e)
@@ -146,8 +146,8 @@ public class ComfyFriendlyApiTests
         }
         
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.FilePath, Is.Not.Null);
-        Assert.That(response.FilePath, Is.Not.Empty);
+        Assert.That(response?.Images, Is.Not.Null);
+        Assert.That(response?.Images, Is.Not.Empty);
     }
     
     [Test]
@@ -217,8 +217,8 @@ public class ComfyFriendlyApiTests
         }
         
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.FilePath, Is.Not.Null);
-        Assert.That(response.FilePath, Is.Not.Empty);
+        Assert.That(response?.Images, Is.Not.Null);
+        Assert.That(response?.Images, Is.Not.Empty);
     }
     
     [Test]
@@ -250,10 +250,10 @@ public class ComfyFriendlyApiTests
         }
         
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.Text, Is.Not.Null);
-        Assert.That(response.Text, Is.Not.Empty);
-        Assert.That(response.Text?.Contains("Greetings", StringComparison.OrdinalIgnoreCase), Is.True);
-        Assert.That(response.Text?.Contains("how are you", StringComparison.OrdinalIgnoreCase), Is.True);
+        Assert.That(response?.TextOutput, Is.Not.Null);
+        Assert.That(response?.TextOutput?.Text, Is.Not.Empty);
+        Assert.That(response?.TextOutput?.Text?.Contains("Greetings", StringComparison.OrdinalIgnoreCase), Is.True);
+        Assert.That(response?.TextOutput?.Text?.Contains("how are you", StringComparison.OrdinalIgnoreCase), Is.True);
     }
 
     [Test]
@@ -279,9 +279,9 @@ public class ComfyFriendlyApiTests
         }
         
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.FilePath, Is.Not.Null);
-        Assert.That(response.FilePath, Is.Not.Empty);
-        Assert.That(response.FilePath, Does.Contain(".flac"));
+        Assert.That(response?.Sounds, Is.Not.Null);
+        Assert.That(response?.Sounds, Is.Not.Empty);
+        Assert.That(response?.Sounds?[0].FileName, Does.Contain(".flac"));
     }
     
     [Test]
@@ -313,8 +313,45 @@ public class ComfyFriendlyApiTests
         }
         
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.Text, Is.Not.Null);
-        Assert.That(response.Text, Is.Not.Empty);
-        Assert.That(response.Text,Contains.Substring("ocean"));
+        Assert.That(response?.TextOutput, Is.Not.Null);
+        Assert.That(response?.TextOutput?.Text, Is.Not.Empty);
+        Assert.That(response?.TextOutput?.Text,Contains.Substring("ocean"));
+    }
+    
+    // Used by BlazorDiffusion so that consuming applications can repeat the same request
+    // One issue is that the seed value is only related to the request and not each image generated.
+    // Comfy does not return a seed per image.
+    // One work around might be that all templates should use "increment" as the seed strategy, but 
+    // what ComfyUI does with this option still needs to be tested.
+    [Test]
+    public async Task Can_return_original_seed_value_in_request()
+    {
+var client = CreateClient();
+
+        //Assert does not throw
+        ComfyTextToImageResponse? response = null;
+        // Use TextToImage as example.
+        var req = new ComfyTextToImage()
+        {
+            PositivePrompt = "Beautiful sunset over the ocean",
+            Seed = 123456
+        };
+        try
+        {
+            response = await client.PostAsync(req);
+        }
+        catch (Exception e)
+        {
+            Assert.Fail(e.Message);
+        }
+        
+        Assert.That(response, Is.Not.Null);
+        Assert.That(response?.Images, Is.Not.Null);
+        Assert.That(response?.Images?.Count, Is.GreaterThan(0));
+        Assert.That(response?.Images?[0].Url, Is.Not.Null);
+        Assert.That(response?.Images?[0].Url, Is.Not.Empty);
+        Assert.That(response?.Images?[0].FileName, Is.Not.Null);
+        Assert.That(response?.Images?[0].FileName, Is.Not.Empty);
+        Assert.That(response?.Request?.Seed, Is.EqualTo(123456));
     }
 }

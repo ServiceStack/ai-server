@@ -125,6 +125,7 @@ public class QueueComfyWorkflow : IReturn<QueueComfyWorkflowResponse>
 
 public class QueueComfyWorkflowResponse
 {
+    public ComfyWorkflowRequest? Request { get; set; }
     public ComfyWorkflowStatus Status { get; set; }
     public ComfyWorkflowResponse WorkflowResponse { get; set; }
     public string PromptId { get; set; }

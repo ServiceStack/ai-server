@@ -14,6 +14,7 @@ public class ComfyFriendlyServices : Service
         var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
         return new ComfyTextToImageResponse
         {
+            Request = result?.Request,
             Images = result?.FileOutputs.Select(x => new ComfyHostedFileOutput
             {
                 Url = x.Url,
@@ -31,7 +32,7 @@ public class ComfyFriendlyServices : Service
         var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
         return new ComfyImageToTextResponse
         {
-            Text = result?.TextOutputs[0].Text
+            TextOutput = result?.TextOutputs[0]
         };
     }
     
@@ -44,7 +45,8 @@ public class ComfyFriendlyServices : Service
         var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
         return new ComfyImageToImageResponse
         {
-            FilePath = result?.FileOutputs[0].Url
+            Request = result?.Request,
+            Images = result?.FileOutputs
         };
     }
     
@@ -57,7 +59,8 @@ public class ComfyFriendlyServices : Service
         var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
         return new ComfyImageToImageUpscaleResponse()
         {
-            FilePath = result?.FileOutputs[0].Url
+            Request = result?.Request,
+            Images = result?.FileOutputs
         };
     }
     
@@ -71,7 +74,8 @@ public class ComfyFriendlyServices : Service
         var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
         return new ComfyImageToImageWithMaskResponse
         {
-            FilePath = result?.FileOutputs[0].Url
+            Request = result?.Request,
+            Images = result?.FileOutputs
         };
     }
     
@@ -85,7 +89,8 @@ public class ComfyFriendlyServices : Service
         var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
         return new ComfyTextToSpeechResponse
         {
-            FilePath = result?.FileOutputs[0].Url
+            Request = result?.Request,
+            Speech = result?.FileOutputs
         };
     }
     
@@ -99,7 +104,8 @@ public class ComfyFriendlyServices : Service
         var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
         return new ComfySpeechToTextResponse
         {
-            Text = result?.TextOutputs[0].Text
+            Request = result?.Request,
+            TextOutput = result?.TextOutputs[0]
         };
     }
     
@@ -113,7 +119,8 @@ public class ComfyFriendlyServices : Service
         var result = await genericService.Post(queueComfyReq) as QueueComfyWorkflowResponse;
         return new ComfyTextToAudioResponse
         {
-            FilePath = result?.FileOutputs[0].Url
+            Request = result?.Request,
+            Sounds = result?.FileOutputs
         };
     }
 }

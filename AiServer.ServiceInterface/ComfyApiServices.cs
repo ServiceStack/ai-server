@@ -97,6 +97,11 @@ public class ComfyApiServices(IComfyClient comfyClient,
                 });
             }
             
+            // Clear streams from comfyReq
+            request.ImageInput = null;
+            request.MaskInput = null;
+            request.SpeechInput = null;
+            
             var task = request.ConvertTo<ComfyGenerationTask>();
             task.Request = comfyReq;
             task.Response = response;
@@ -111,6 +116,7 @@ public class ComfyApiServices(IComfyClient comfyClient,
 
             return new QueueComfyWorkflowResponse
             {
+                Request = comfyReq,
                 Status = status,
                 PromptId = promptId,
                 WorkflowResponse = response,

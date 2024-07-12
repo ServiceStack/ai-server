@@ -54,7 +54,8 @@ public class ComfySpeechToText : IReturn<ComfySpeechToTextResponse>
 
 public class ComfySpeechToTextResponse
 {
-    public string? Text { get; set; }
+    public ComfyWorkflowRequest? Request { get; set; }
+    public ComfyTextOutput? TextOutput { get; set; }
 }
 
 
@@ -66,7 +67,8 @@ public class ComfyTextToSpeech : IReturn<ComfyTextToSpeechResponse>
 
 public class ComfyTextToSpeechResponse
 {
-    public string? FilePath { get; set; }
+    public ComfyWorkflowRequest? Request { get; set; }
+    public List<ComfyHostedFileOutput>? Speech { get; set; } = new();
 }
 
 public class ComfyTextToImage : IReturn<ComfyTextToImageResponse>
@@ -87,6 +89,7 @@ public class ComfyTextToImage : IReturn<ComfyTextToImageResponse>
 
 public class ComfyTextToImageResponse
 {
+    public ComfyWorkflowRequest? Request { get; set; }
     public List<ComfyHostedFileOutput>? Images { get; set; } = new();
 }
 
@@ -110,7 +113,9 @@ public class ComfyImageToImage : IReturn<ComfyImageToImageResponse>
 
 public class ComfyImageToImageResponse
 {
-    public string? FilePath { get; set; }
+    public ComfyWorkflowRequest? Request { get; set; }
+    
+    public List<ComfyHostedFileOutput>? Images { get; set; } = new();
 }
 
 public class ComfyImageToImageUpscale : IReturn<ComfyImageToImageUpscaleResponse>
@@ -123,7 +128,8 @@ public class ComfyImageToImageUpscale : IReturn<ComfyImageToImageUpscaleResponse
 
 public class ComfyImageToImageUpscaleResponse
 {
-    public string? FilePath { get; set; }
+    public ComfyWorkflowRequest? Request { get; set; }
+    public List<ComfyHostedFileOutput>? Images { get; set; } = new();
 
 }
 
@@ -147,7 +153,8 @@ public class ComfyImageToImageWithMask : IReturn<ComfyImageToImageWithMaskRespon
 
 public class ComfyImageToImageWithMaskResponse
 {
-    public string? FilePath { get; set; }
+    public ComfyWorkflowRequest? Request { get; set; }
+    public List<ComfyHostedFileOutput>? Images { get; set; } = new();
 }
 
 public enum ComfyMaskSource
@@ -165,7 +172,8 @@ public class ComfyImageToText : IReturn<ComfyImageToTextResponse>
 
 public class ComfyImageToTextResponse
 {
-    public string? Text { get; set; }
+    public ComfyWorkflowRequest? Request { get; set; }
+    public ComfyTextOutput? TextOutput { get; set; }
 }
 
 public class StableDiffusionImageToText
@@ -275,7 +283,8 @@ public class ComfyTextToAudio : IReturn<ComfyTextToAudioResponse>
 
 public class ComfyTextToAudioResponse
 {
-    public string? FilePath { get; set; }
+    public ComfyWorkflowRequest? Request { get; set; }
+    public List<ComfyHostedFileOutput>? Sounds { get; set; } = new();
 }
 
 public class StableAudioTextToAudio
