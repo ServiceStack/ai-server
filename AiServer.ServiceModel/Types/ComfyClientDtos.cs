@@ -54,6 +54,7 @@ public class ComfySpeechToText : IReturn<ComfySpeechToTextResponse>
 
 public class ComfySpeechToTextResponse
 {
+    public string? PromptId { get; set; }
     public ComfyWorkflowRequest? Request { get; set; }
     public ComfyTextOutput? TextOutput { get; set; }
 }
@@ -67,6 +68,7 @@ public class ComfyTextToSpeech : IReturn<ComfyTextToSpeechResponse>
 
 public class ComfyTextToSpeechResponse
 {
+    public string? PromptId { get; set; }
     public ComfyWorkflowRequest? Request { get; set; }
     public List<ComfyHostedFileOutput>? Speech { get; set; } = new();
 }

@@ -326,7 +326,7 @@ public class ComfyFriendlyApiTests
     [Test]
     public async Task Can_return_original_seed_value_in_request()
     {
-var client = CreateClient();
+        var client = CreateClient();
 
         //Assert does not throw
         ComfyTextToImageResponse? response = null;
