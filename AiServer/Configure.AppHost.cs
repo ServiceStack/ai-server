@@ -25,8 +25,8 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             services.AddSingleton<AiProviderFactory>();
             
             services.AddSingleton<IComfyClient>(c => 
-                new ComfyClient("https://comfy-dell.pvq.app",
-                "testtest1234"));
+                new ComfyClient("http://localhost:7860",
+                "",c.GetService<ILoggerFactory>()));
             
             var appFs = new FileSystemVirtualFiles(context.HostingEnvironment.ContentRootPath.CombineWith("App_Data").AssertDir());
             var uploadLocations = new[]

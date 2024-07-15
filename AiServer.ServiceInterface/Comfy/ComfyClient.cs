@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 using AiServer.ServiceModel.Types;
+using Microsoft.Extensions.Logging;
 using ServiceStack;
 using ServiceStack.Script;
 using ServiceStack.Text;
@@ -51,8 +52,10 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     private ConcurrentDictionary<string,string> promptIdToInnerPromptIdMapping = new();
 
     private string clientId = Guid.NewGuid().ToString();
+    
+    ILoggerFactory? loggerFactory;
 
-    public ComfyClient(string baseUrl,string? apiKey = null)
+    public ComfyClient(string baseUrl,string? apiKey = null, ILoggerFactory? loggerFactory = null)
         : this(string.IsNullOrEmpty(apiKey) ? new HttpClient
         {
             BaseAddress = new Uri(baseUrl),
@@ -73,9 +76,11 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         comfyWorkflowMapping[ComfyTaskType.TextToAudio] = TextToAudioTemplate;
         comfyWorkflowMapping[ComfyTaskType.SpeechToText] = SpeechToTextTemplate;
         
+        this.loggerFactory = loggerFactory;
+        
         // Initialize WebSocket Client
         var webSocketUrl = new Uri(baseUrl.Replace("http", "ws") + "/ws?clientId=" + clientId);
-        webSocketClient = new ComfyWebSocketClient(webSocketUrl, new ClientWebSocket(), apiKey);
+        webSocketClient = new ComfyWebSocketClient(webSocketUrl, new ClientWebSocket(), apiKey,loggerFactory?.CreateLogger(typeof(ComfyWebSocketClient)));
         
         // Subscribe to events
         webSocketClient.OnGenerationCompleted = OnGenerationCompleted;

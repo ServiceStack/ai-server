@@ -2,46 +2,63 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Collections.Concurrent;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace AiServer.ServiceInterface.Comfy;
 
-public class ComfyWebSocketClient
+public class ComfyWebSocketClient(Uri serverUrl, ClientWebSocket clientWebSocket, string? apiKey = null, ILogger? logger = null)
 {
-    private readonly Uri serverUrl;
-    private readonly ClientWebSocket clientWebSocket;
-    private readonly string? apiKey;
     private readonly ConcurrentQueue<string> messageQueue = new();
+    
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private int MaxReconnectAttempts = 20;
+    private const int ReconnectDelayMs = 3000;
 
     public Action<string>? OnMessageReceived { get; set; }
     public Action<int, int, string>? OnProgressUpdated { get; set; }
     public Action<int>? OnQueueRemaining { get; set; }
     public Action<string>? OnGenerationCompleted { get; set; }
 
-    public ComfyWebSocketClient(Uri serverUrl, ClientWebSocket clientWebSocket, string? apiKey = null)
-    {
-        this.serverUrl = serverUrl;
-        this.clientWebSocket = clientWebSocket;
-        this.apiKey = apiKey;
-    }
-
     public async Task ConnectAndListenAsync()
     {
-        try
-        {
-            if (apiKey != null)
-                clientWebSocket.Options.SetRequestHeader("Authorization", $"Bearer {apiKey}");
-            await clientWebSocket.ConnectAsync(serverUrl, CancellationToken.None);
-            Console.WriteLine("Connected to WebSocket server");
+        int reconnectAttempts = 0;
 
-            // Start message processing on a separate thread
-            Task.Run(ProcessMessagesAsync);
-
-            await ReceiveMessagesAsync();
-        }
-        catch (Exception ex)
+        while (!cancellationTokenSource.IsCancellationRequested)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            try
+            {
+                await ConnectAsync();
+                reconnectAttempts = 0; // Reset reconnect attempts on successful connection
+
+                await ReceiveMessagesAsync();
+            }
+            catch (Exception ex)
+            {
+                logger?.LogError($"Error: {ex.Message}");
+                logger?.LogDebug($"Stack Trace: {ex.StackTrace}");
+
+                if (++reconnectAttempts > MaxReconnectAttempts)
+                {
+                    logger?.LogError("Max reconnection attempts reached. Stopping.");
+                    break;
+                }
+
+                logger?.LogInformation($"Attempting to reconnect in {ReconnectDelayMs / 1000} seconds...");
+                await Task.Delay(ReconnectDelayMs);
+            }
         }
+    }
+    
+    private async Task ConnectAsync()
+    {
+        clientWebSocket = new ClientWebSocket();
+        if (apiKey != null)
+            clientWebSocket.Options.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+        await clientWebSocket.ConnectAsync(serverUrl, cancellationTokenSource.Token);
+        logger?.LogInformation("Connected to WebSocket server");
+
+        // Start message processing on a separate thread
+        Task.Run(ProcessMessagesAsync);
     }
 
     private async Task ReceiveMessagesAsync()
@@ -49,15 +66,23 @@ public class ComfyWebSocketClient
         var buffer = new byte[1024 * 4];
         while (clientWebSocket.State == WebSocketState.Open)
         {
-            var result = await clientWebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-            if (result.MessageType == WebSocketMessageType.Text)
+            try
             {
-                string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                messageQueue.Enqueue(message);
+                var result = await clientWebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationTokenSource.Token);
+                if (result.MessageType == WebSocketMessageType.Text)
+                {
+                    string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    messageQueue.Enqueue(message);
+                }
+                else if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    await clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, cancellationTokenSource.Token);
+                    break;
+                }
             }
-            else if (result.MessageType == WebSocketMessageType.Close)
+            catch (WebSocketException)
             {
-                await clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                // Connection lost, break the loop to trigger reconnection
                 break;
             }
         }
@@ -65,7 +90,7 @@ public class ComfyWebSocketClient
 
     private async Task ProcessMessagesAsync()
     {
-        while (true)
+        while (!cancellationTokenSource.IsCancellationRequested)
         {
             if (messageQueue.TryDequeue(out string? message))
             {
@@ -86,7 +111,7 @@ public class ComfyWebSocketClient
             var jsonDocument = JsonDocument.Parse(message);
             var root = jsonDocument.RootElement;
 
-            if (root.TryGetProperty("type", out var typeElement) && typeElement.GetString() is string type)
+            if (root.TryGetProperty("type", out var typeElement) && typeElement.GetString() is { } type)
             {
                 switch (type)
                 {
@@ -127,15 +152,21 @@ public class ComfyWebSocketClient
                         }
                         break;
                     default:
-                        Console.WriteLine($"Unhandled message type: {type}");
-                        Console.WriteLine(message);
+                        logger?.LogWarning($"Unhandled message type: {type}");
+                        logger?.LogDebug($"Full message: {message}");
                         break;
                 }
             }
         }
         catch (JsonException ex)
         {
-            Console.WriteLine($"Error parsing JSON: {ex.Message}");
+            logger?.LogError($"Error parsing JSON: {ex.Message}");
+            logger?.LogDebug($"Stack Trace: {ex.StackTrace}");
         }
+    }
+    
+    public void Stop()
+    {
+        cancellationTokenSource.Cancel();
     }
 }

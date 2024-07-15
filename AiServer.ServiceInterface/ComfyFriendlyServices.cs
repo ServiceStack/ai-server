@@ -1,9 +1,10 @@
+using AiServer.ServiceInterface.Comfy;
 using AiServer.ServiceModel.Types;
 using ServiceStack;
 
 namespace AiServer.ServiceInterface;
 
-public class ComfyFriendlyServices : Service
+public class ComfyFriendlyServices(AppConfig appConfig,IComfyClient comfyClient) : Service
 {
     public async Task<object> Post(ComfyTextToImage request)
     {
@@ -131,4 +132,57 @@ public class ComfyFriendlyServices : Service
             Sounds = result?.FileOutputs
         };
     }
+
+    public async Task<object> Post(ConfigureAndDownloadModel request)
+    {
+        var resp = await comfyClient.DownloadModelAsync(request.DownloadUrl,
+            request.Filename);
+        return resp;
+    }
+
+    public async Task<object> Post(DownloadConfgiuredArtStyleModel request)
+    {
+        if(request?.ArtStyle == null)
+            throw new ArgumentException("ArtStyle is required.");
+        
+        // Resolve artstyle from AppConfig
+        var artStyle = appConfig.ArtStyleModelMappings.FirstOrDefault(x => x.Key == request.ArtStyle.ToString());
+        if(artStyle.Value == null)
+            throw new ArgumentException("ArtStyle not found in AppConfig.");
+        
+        // Send a request to the configured agent to download the model
+        var downloadRequest = new ConfigureAndDownloadModel
+        {
+            DownloadUrl = artStyle.Value.DownloadUrl,
+            Name = artStyle.Value.Name,
+            Filename = artStyle.Value.Filename
+        };
+        return await Post(downloadRequest);
+    }
+}
+
+public class DownloadConfgiuredArtStyleModel
+{
+    public ArtStyle? ArtStyle { get; set; }
+}
+
+public class ConfigureAndDownloadModel
+{
+    public string Name { get; set; }
+    public string Filename { get; set; }
+    public string DownloadUrl { get; set; }
+        
+    public double? CfgScale { get; set; }
+        
+    public string? Scheduler { get; set; }
+        
+    public ComfySampler? Sampler { get; set; }
+        
+    public int? Width { get; set; }
+        
+    public int? Height { get; set; }
+        
+    public int? Steps { get; set; }
+        
+    public string? NegativePrompt { get; set; }
 }

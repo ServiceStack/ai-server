@@ -45,42 +45,24 @@ public class CompleteComfyGeneration : IPost, IReturn<EmptyResponse>
     public ComfyWorkflowResponse Response { get; set; }
 }
 
-[DataContract]
 public enum ArtStyle
 {
-    [EnumMember(Value = "3d_model")]
     ThreeDModel,
-    [EnumMember(Value = "analog_film")]
     AnalogFilm,
-    [EnumMember(Value = "anime")]
     Anime,
-    [EnumMember(Value = "cinematic")]
     Cinematic,
-    [EnumMember(Value = "comic")]
     ComicBook,
-    [EnumMember(Value = "digital_art")]
     DigitalArt,
-    [EnumMember(Value = "enhance")]
     Enhance,
-    [EnumMember(Value = "fantasy_art")]
     FantasyArt,
-    [EnumMember(Value = "isometric")]
     Isometric,
-    [EnumMember(Value = "line_art")]
     LineArt,
-    [EnumMember(Value = "low_poly")]
     LowPoly,
-    [EnumMember(Value = "modeling_compound")]
     ModelingCompound,
-    [EnumMember(Value = "neon_punk")]
     NeonPunk,
-    [EnumMember(Value = "oil_painting")]
     Origami,
-    [EnumMember(Value = "photographic")]
     Photographic,
-    [EnumMember(Value = "pixel_art")]
     PixelArt,
-    [EnumMember(Value = "game_asset")]
     TileTexture
 }
 
