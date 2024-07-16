@@ -36,12 +36,54 @@ public class OpenAiProviderTests
     }
 
     [Test]
+    public async Task Can_Send_Ollama_Gemma2_27B_Request()
+    {
+        var openAi = factory.GetOpenAiProvider();
+        var response = await openAi.ChatAsync(new ApiProviderWorker(TestUtils.SupermicroApiProvider, factory), new OpenAiChat
+        {
+            Model = "gemma2:27b",
+            Messages =
+            [
+                new()
+                {
+                    Role = "user",
+                    Content = "What is the capital of France?",
+                }
+            ],
+            MaxTokens = 100,
+        });
+        
+        response.PrintDump();
+    }
+
+    [Test]
     public async Task Can_Send_Ollama_Qwen2_Request()
     {
         var openAi = factory.GetOpenAiProvider();
         var response = await openAi.ChatAsync(new ApiProviderWorker(TestUtils.OpenRouterProvider, factory), new OpenAiChat
         {
             Model = "qwen2:72b",
+            Messages =
+            [
+                new()
+                {
+                    Role = "user",
+                    Content = "What is the capital of France?",
+                }
+            ],
+            MaxTokens = 100,
+        });
+        
+        response.PrintDump();
+    }
+
+    [Test]
+    public async Task Can_Send_Ollama_Sonnet3_5_Request()
+    {
+        var openAi = factory.GetOpenAiProvider();
+        var response = await openAi.ChatAsync(new ApiProviderWorker(TestUtils.OpenRouterProvider, factory), new OpenAiChat
+        {
+            Model = "anthropic/claude-3.5-sonnet",
             Messages =
             [
                 new()
