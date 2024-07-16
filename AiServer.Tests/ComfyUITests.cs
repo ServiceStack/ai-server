@@ -9,6 +9,7 @@ using SixLabors.ImageSharp;
 
 namespace AiServer.Tests;
 
+[Explicit("https://comfy-dell.pvq.app/api is not available")]
 public class ComfyUITests
 {
     const string BaseUrl = "https://comfy-dell.pvq.app/api";
