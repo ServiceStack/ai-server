@@ -3,6 +3,7 @@ using ServiceStack.DataAnnotations;
 
 namespace AiServer.ServiceModel;
 
+[Tag(Tag.Info)]
 [ValidateApiKey]
 [Description("API Providers that can process AI Tasks")]
 public class QueryApiProviders : QueryDb<ApiProvider>
@@ -10,6 +11,7 @@ public class QueryApiProviders : QueryDb<ApiProvider>
     public string? Name { get; set; }
 }
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 [Description("Create an API Provider that can process AI Tasks")]
 [AutoPopulate(nameof(ApiProvider.CreatedDate),  Eval = "utcNow")]
@@ -50,6 +52,7 @@ public class CreateApiProvider : ICreateDb<ApiProvider>, IReturn<IdResponse>
     public List<ApiProviderModel> Models { get; set; }
 }
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 [Description("View and API Provider Models")]
 public class QueryApiProviderModels : QueryDb<ApiProviderModel>
@@ -59,6 +62,7 @@ public class QueryApiProviderModels : QueryDb<ApiProviderModel>
     public string? ApiModel { get; set; }
 }
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 [Description("Register a Model supported by an API Provider")]
 public class CreateApiProviderModel : ICreateDb<ApiProviderModel>, IReturn<IdResponse>
@@ -73,6 +77,7 @@ public class CreateApiProviderModel : ICreateDb<ApiProviderModel>, IReturn<IdRes
     public string? ApiModel { get; set; }
 }
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 [Description("Update the Model supported by the API Provider")]
 public class UpdateApiProviderModel : IPatchDb<ApiProviderModel>, IReturn<IdResponse>
@@ -90,6 +95,7 @@ public class UpdateApiProviderModel : IPatchDb<ApiProviderModel>, IReturn<IdResp
     public string? ApiModel { get; set; }
 }
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 [Description("Delete a Model supported by the API Provider")]
 public class DeleteApiProviderModel : IDeleteDb<ApiProviderModel>, IReturn<IdResponse>
@@ -98,10 +104,12 @@ public class DeleteApiProviderModel : IDeleteDb<ApiProviderModel>, IReturn<IdRes
     public int Id { get; set; }
 }
 
+[Tag(Tag.Info)]
 [ValidateApiKey]
 [Description("Different Models available in AI Server")]
 public class QueryApiModels : QueryDb<ApiModel> {}
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 [Description("Different Models available for the API")]
 public class CreateApiModel : ICreateDb<ApiModel>, IReturn<IdResponse>
@@ -119,6 +127,7 @@ public class CreateApiModel : ICreateDb<ApiModel>, IReturn<IdResponse>
     public string? Notes { get; set; }
 }
 
+[Tag(Tag.Info)]
 [ValidateApiKey]
 [Description("The Type and behavior of different API Providers")]
 public class QueryApiType : QueryDb<ApiType> {}

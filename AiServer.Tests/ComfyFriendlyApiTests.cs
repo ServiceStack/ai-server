@@ -1,5 +1,6 @@
 using AiServer.ServiceInterface;
 using AiServer.ServiceInterface.Comfy;
+using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using Funq;
 using NUnit.Framework;

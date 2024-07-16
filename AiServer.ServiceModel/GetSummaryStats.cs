@@ -2,6 +2,7 @@
 
 namespace AiServer.ServiceModel;
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 public class GetSummaryStats : IGet, IReturn<GetSummaryStatsResponse>
 {

@@ -1,4 +1,5 @@
 using AiServer.ServiceInterface.Comfy;
+using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using ServiceStack;
 
@@ -161,28 +162,3 @@ public class ComfyFriendlyServices(AppConfig appConfig,IComfyClient comfyClient)
     }
 }
 
-public class DownloadConfgiuredArtStyleModel
-{
-    public ArtStyle? ArtStyle { get; set; }
-}
-
-public class ConfigureAndDownloadModel
-{
-    public string Name { get; set; }
-    public string Filename { get; set; }
-    public string DownloadUrl { get; set; }
-        
-    public double? CfgScale { get; set; }
-        
-    public string? Scheduler { get; set; }
-        
-    public ComfySampler? Sampler { get; set; }
-        
-    public int? Width { get; set; }
-        
-    public int? Height { get; set; }
-        
-    public int? Steps { get; set; }
-        
-    public string? NegativePrompt { get; set; }
-}
