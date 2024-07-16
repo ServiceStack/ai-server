@@ -180,6 +180,7 @@ public class Migration1001 : MigrationBase
         {
             new() { Name = "phi3", Parameters = "4B" },
             new() { Name = "gemma:2b", Parameters = "2B" },
+            new() { Name = "gemma2:27b", Parameters = "27B" },
             new() { Name = "qwen:4b", Parameters = "4B" },
             new() { Name = "qwen:72b", Parameters = "72B" },
             new() { Name = "qwen:110b", Parameters = "110B" },
@@ -209,6 +210,7 @@ public class Migration1001 : MigrationBase
             new() { Name = "claude-3-haiku" },
             new() { Name = "claude-3-sonnet" },
             new() { Name = "claude-3-opus" },
+            new() { Name = "claude-3-5-sonnet" },
             new() { Name = "mistral-small" },
             new() { Name = "mistral-large" },
             new() { Name = "mistral-embed" },
@@ -237,6 +239,7 @@ public class Migration1001 : MigrationBase
             {
                 ["mistral"] = "mistralai/mistral-7b-instruct",
                 ["gemma"] = "google/gemma-7b-it",
+                ["gemma2:27b"] = "google/gemma-2-27b-it",
                 ["mixtral"] = "mistralai/mixtral-8x7b-instruct",
                 ["mixtral:8x22b"] = "mistralai/mixtral-8x22b-instruct",
                 ["llama3:8b"] = "meta-llama/llama-3-8b-instruct",
@@ -253,6 +256,7 @@ public class Migration1001 : MigrationBase
                 ["claude-3-haiku"] = "anthropic/claude-3-haiku",
                 ["claude-3-sonnet"] = "anthropic/claude-3-sonnet",
                 ["claude-3-opus"] = "anthropic/claude-3-opus",
+                ["claude-3-5-sonnet"] = "anthropic/claude-3.5-sonnet",
 
                 ["gemini-pro"] = "google/gemini-pro",
                 ["gemini-pro-1.5"] = "google/gemini-pro-1.5",

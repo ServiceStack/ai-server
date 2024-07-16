@@ -43,8 +43,9 @@ public class PvqApiTests
                 new() { Model = "phi3", },
                 new() { Model = "mistral", },
                 new() { Model = "llama3:8b", },
-                new() { Model = "gemma", },
                 new() { Model = "codellama", },
+                new() { Model = "gemma", },
+                new() { Model = "gemma2:27b", },
             ]
         },
         new CreateApiProvider
@@ -57,6 +58,7 @@ public class PvqApiTests
             Enabled = true,
             Models = [
                 new() { Model = "gemma:2b", },
+                new() { Model = "gemma2:27b", },
                 new() { Model = "qwen:4b", },
                 new() { Model = "deepseek-coder:6.7b" },
                 new() { Model = "deepseek-coder:33b" },
@@ -82,6 +84,7 @@ public class PvqApiTests
                 new() { Model = "mistral", },
                 new() { Model = "llama3:8b", },
                 new() { Model = "gemma", },
+                new() { Model = "gemma2:27b", },
                 new() { Model = "codellama", },
                 new() { Model = "mixtral", },
                 new() { Model = "command-r", },
