@@ -27,24 +27,6 @@ public class ComfyGenerationFailed : ComfyGenerationTask
     public DateTime FailedDate { get; set; }
 }
 
-[ValidateApiKey]
-public class FailComfyGeneration : IPost, IReturn<EmptyResponse>
-{
-    public long Id { get; set; }
-    public string Provider { get; set; }
-    public int DurationMs { get; set; }
-    public ResponseStatus Error { get; set; }
-}
-
-[ValidateApiKey]
-public class CompleteComfyGeneration : IPost, IReturn<EmptyResponse>
-{
-    public long Id { get; set; }
-    public string Provider { get; set; }
-    public int DurationMs { get; set; }
-    public ComfyWorkflowResponse Response { get; set; }
-}
-
 public enum ArtStyle
 {
     ThreeDModel,
@@ -66,62 +48,11 @@ public enum ArtStyle
     TileTexture
 }
 
-
-
-[ValidateApiKey]
-public class QueueComfyWorkflow : IReturn<QueueComfyWorkflowResponse>
-{
-    public string? Model { get; set; }
-    public int? Steps { get; set; }
-    public int? BatchSize { get; set; } = 1;
-    public int? Seed { get; set; }
-    public string? PositivePrompt { get; set; }
-    public string? NegativePrompt { get; set; }
-    [Input(Type = "file")]
-    public Stream? ImageInput { get; set; }
-    [Input(Type = "file")]
-    public Stream? SpeechInput { get; set; }
-    [Input(Type = "file")]
-    public Stream? MaskInput { get; set; }
-    
-    public ComfySampler? Sampler { get; set; }
-    public ArtStyle? ArtStyle { get; set; }
-    public string? Scheduler { get; set; } = "normal";
-    public int? CfgScale { get; set; }
-    public double? Denoise { get; set; }
-    
-    public string? UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
-    
-    public int? Width { get; set; }
-    public int? Height { get; set; }
-    
-    public string? Clip { get; set; }
-    public double? SampleLength { get; set; }
-    
-    public ComfyTaskType TaskType { get; set; }
-    public string? RefId { get; set; }
-    public string? Provider { get; set; }
-    public string? ReplyTo { get; set; }
-    public string? Tag { get; set; }
-}
-
-public class QueueComfyWorkflowResponse
-{
-    public ComfyWorkflowRequest? Request { get; set; }
-    public ComfyWorkflowStatus Status { get; set; }
-    public ComfyWorkflowResponse WorkflowResponse { get; set; }
-    public string PromptId { get; set; }
-    public List<ComfyHostedFileOutput> FileOutputs { get; set; }
-    public List<ComfyTextOutput> TextOutputs { get; set; }
-}
-
 public class ComfyHostedFileOutput
 {
     public string Url { get; set; }
     public string FileName { get; set; }
 }
-
-
 
 public class ComfyWorkflowRequest
 {

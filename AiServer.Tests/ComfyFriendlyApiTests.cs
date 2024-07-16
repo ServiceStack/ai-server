@@ -1,5 +1,6 @@
 using AiServer.ServiceInterface;
 using AiServer.ServiceInterface.Comfy;
+using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using Funq;
 using NUnit.Framework;
@@ -8,6 +9,7 @@ using ServiceStack.Messaging;
 
 namespace AiServer.Tests;
 
+[Explicit("https://comfy-dell.pvq.app/api is not available")]
 public class ComfyFriendlyApiTests
 {
     const string BaseUri = "http://localhost:2000/";

@@ -1,4 +1,5 @@
 using System.Data;
+using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using ServiceStack;
 using ServiceStack.Data;

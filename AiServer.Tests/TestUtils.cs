@@ -223,6 +223,31 @@ public static class TestUtils
         ApiType = OpenAiApiType
     };
 
+    public static ApiProvider SupermicroApiProvider = new()
+    {
+        Name = "supermicro",
+        ApiTypeId = 1,
+        ApiBaseUrl = "https://supermicro.pvq.app",
+        Concurrency = 1,
+        Priority = 0,
+        Enabled = true,
+        Models = [
+            new() { Model = "gemma:2b", },
+            new() { Model = "gemma2:27b", },
+            new() { Model = "qwen:4b", },
+            new() { Model = "deepseek-coder:6.7b" },
+            new() { Model = "deepseek-coder:33b" },
+            new() { Model = "phi3", },
+            new() { Model = "mistral", },
+            new() { Model = "llama3:8b", },
+            new() { Model = "gemma", },
+            new() { Model = "codellama", },
+            new() { Model = "mixtral", },
+            new() { Model = "command-r", },
+        ],
+        ApiType = OpenAiApiType
+    };
+
     public static ApiProvider GoogleApiProvider = new()
     {
         Name = "google",
@@ -252,6 +277,7 @@ public static class TestUtils
         Enabled = true,
         Models =
         [
+            new() { Model = "gemma2:27b", },
             new() { Model = "mixtral:8x22b", },
             new() { Model = "llama3:70b" },
             new() { Model = "wizardlm2:7b", },
@@ -265,6 +291,7 @@ public static class TestUtils
             new() { Model = "claude-3-haiku", },
             new() { Model = "claude-3-sonnet", },
             new() { Model = "claude-3-opus", },
+            new() { Model = "claude-3-5-sonnet", },
             new() { Model = "gemini-pro", },
             new() { Model = "gemini-pro-1.5", },
             new() { Model = "gemini-pro-vision", },

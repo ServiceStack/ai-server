@@ -3,16 +3,21 @@ using ServiceStack;
 
 namespace AiServer.ServiceModel;
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 public class StopWorkers : IPost, IReturn<EmptyResponse> {}
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 public class StartWorkers : IPost, IReturn<EmptyResponse> {}
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 public class RestartWorkers : IPost, IReturn<EmptyResponse> {}
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 public class ResetActiveProviders : IGet, IReturn<GetActiveProvidersResponse> {}
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 public class ChangeApiProviderStatus : IPost, IReturn<StringResponse>
 {
@@ -20,6 +25,7 @@ public class ChangeApiProviderStatus : IPost, IReturn<StringResponse>
     public bool Online { get; set; }
 }
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 public class ChatOperations : IPost, IReturn<EmptyResponse>
 {
@@ -27,6 +33,7 @@ public class ChatOperations : IPost, IReturn<EmptyResponse>
     public bool? RequeueIncompleteTasks { get; set; }
 }
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 public class ChatFailedTasks : IPost, IReturn<EmptyResponse>
 {
@@ -35,12 +42,14 @@ public class ChatFailedTasks : IPost, IReturn<EmptyResponse>
     public List<long>? RequeueFailedTaskIds { get; set; }
 }
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 public class FirePeriodicTask : IPost, IReturn<EmptyResponse>
 {
     public PeriodicFrequency Frequency { get; set; }
 }
 
+[Tag(Tag.Admin)]
 [ValidateAuthSecret]
 public class ChatNotifyCompletedTasks : IPost, IReturn<ChatNotifyCompletedTasksResponse>
 {
@@ -48,7 +57,6 @@ public class ChatNotifyCompletedTasks : IPost, IReturn<ChatNotifyCompletedTasksR
     [Input(Type = "tag"), FieldCss(Field = "col-span-12")]
     public List<int> Ids { get; set; }
 }
-
 public class ChatNotifyCompletedTasksResponse
 {
     public Dictionary<long, string> Errors { get; set; } = new();

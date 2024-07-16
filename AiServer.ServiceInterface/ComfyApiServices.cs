@@ -1,4 +1,5 @@
 using AiServer.ServiceInterface.Comfy;
+using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.Logging;
 using ServiceStack;

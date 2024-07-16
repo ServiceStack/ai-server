@@ -1,7 +1,7 @@
+using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 
 namespace AiServer.ServiceInterface.Comfy;
-
 
 public static class ComfyExtensions
 {
@@ -13,7 +13,6 @@ public static class ComfyExtensions
         var artStyleEntry = appConfig.ArtStyleModelMappings[artStyleString];
 
         ComfyWorkflowRequest resObject;
-        
         
         switch (request.TaskType)
         {
