@@ -30,47 +30,13 @@ public class ComfyApiServices(IComfyClient comfyClient,
         if (string.IsNullOrEmpty(comfyReq.Model) && availableModels.All(x => x.Name != comfyReq.Model) &&
             availableModels.All(x => x.Name != defaultModel.Filename))
         {
-            // Check if download already in progress
-            var downloadJob = await comfyClient.GetDownloadStatusAsync(defaultModel.Filename);
-
-            if (downloadJob.Name == defaultModel.Filename && downloadJob.Progress == -1)
-            {
-                // Delete file and try again
-                await comfyClient.DeleteModelAsync(defaultModel.Filename);
-            } 
-            else if(downloadJob.Name == defaultModel.Filename && downloadJob.Progress < 100)
-            {
-                throw new Exception("Model download already in progress");
-            }
-            
-            if(appConfig.CivitAiApiKey.IsNullOrEmpty())
-                downloadJob = await comfyClient.DownloadModelAsync(
-                    defaultModel.DownloadUrl, 
-                    defaultModel.Filename
-                    );
-            else
-                downloadJob = await comfyClient.DownloadModelAsync(
-                    defaultModel.DownloadUrl, 
-                    defaultModel.Filename,
-                    apiKey: appConfig.CivitAiApiKey,
-                    "bearer"
-                    );
-            
-            // Poll the download job until it's complete
-            while (downloadJob.Name != defaultModel.Filename || downloadJob.Progress != 100)
-            {
-                await Task.Delay(1000);
-                downloadJob = await comfyClient.GetDownloadStatusAsync(defaultModel.Filename);
-            }
-            
+            await TryDownloadModel(defaultModel);
         }
         
         // Apply files to the request
          ApplyFiles(comfyReq);
 
         var tcs = new TaskCompletionSource<ComfyOutput>();
-        Stream downloadStream;
-        
         try
         {
             // TODO: Change to async once app queuing is setup
@@ -81,23 +47,8 @@ public class ComfyApiServices(IComfyClient comfyClient,
             if (status == null)
                 throw new Exception("Failed to get workflow status");
             
-            var fileOutputs = new List<ComfyHostedFileOutput>();
-            
-            // For each file in Outputs[0], download and write to virtual files with promptId prefix
-            foreach(var file in status.Outputs[0].Files)
-            {
-                downloadStream = await comfyClient.DownloadComfyOutputAsync(file);
-                var fileNameSuffix = file.Filename.SplitOnLast(".")[1];
-                var fileName = file.Filename.SplitOnLast(".")[0];
-                var filePath = GetNewFilePath($"{promptId}-{fileName}.{fileNameSuffix}");
-                VirtualFiles.WriteFile(filePath, downloadStream);
-                fileOutputs.Add(new ComfyHostedFileOutput
-                {
-                    Url = filePath,
-                    FileName = file.Filename
-                });
-            }
-            
+            var fileOutputs = await UpdateComfyHostedFileOutputs(status, promptId);
+
             // Clear streams from comfyReq
             request.ImageInput = null;
             request.MaskInput = null;
@@ -129,6 +80,71 @@ public class ComfyApiServices(IComfyClient comfyClient,
         {
             return ex;
         }
+    }
+
+    private async Task<List<ComfyHostedFileOutput>> UpdateComfyHostedFileOutputs(ComfyWorkflowStatus status, string promptId)
+    {
+        var fileOutputs = new List<ComfyHostedFileOutput>();
+
+        // For each file in Outputs[0], download and write to virtual files with promptId prefix
+        await Parallel.ForEachAsync(status.Outputs[0].Files, async (file, token) =>
+        {
+            var downloadStream = await comfyClient.DownloadComfyOutputAsync(file);
+            var fileNameSuffix = file.Filename.SplitOnLast(".")[1];
+            var fileName = file.Filename.SplitOnLast(".")[0];
+            var filePath = GetNewFilePath($"{promptId}-{fileName}.{fileNameSuffix}");
+            VirtualFiles.WriteFile(filePath, downloadStream);
+            fileOutputs.Add(new ComfyHostedFileOutput
+            {
+                Url = filePath,
+                FileName = file.Filename
+            });
+        });
+
+        return fileOutputs;
+    }
+
+    private async Task TryDownloadModel(ArtStyleEntry defaultModel)
+    {
+        // Check if download already in progress
+        var downloadJob = await comfyClient.GetDownloadStatusAsync(defaultModel.Filename);
+
+        if (downloadJob.Name == defaultModel.Filename && downloadJob.Progress == -1)
+        {
+            // Delete file and try again
+            await comfyClient.DeleteModelAsync(defaultModel.Filename);
+        } 
+        else if(downloadJob.Name == defaultModel.Filename && downloadJob.Progress < 100)
+        {
+            throw new Exception("Model download already in progress");
+        }
+            
+        if(appConfig.CivitAiApiKey.IsNullOrEmpty())
+            downloadJob = await comfyClient.DownloadModelAsync(
+                defaultModel.DownloadUrl, 
+                defaultModel.Filename
+            );
+        else
+            downloadJob = await comfyClient.DownloadModelAsync(
+                defaultModel.DownloadUrl, 
+                defaultModel.Filename,
+                apiKey: appConfig.CivitAiApiKey,
+                "bearer"
+            );
+            
+        // Set a max timeout of 5 minutes for the download job
+        var timeout = DateTime.UtcNow.AddMinutes(5);
+            
+        // Poll the download job until it's complete
+        while ((timeout - DateTime.UtcNow).TotalSeconds > 0 && 
+               downloadJob.Name != defaultModel.Filename || downloadJob.Progress != 100)
+        {
+            await Task.Delay(1000);
+            downloadJob = await comfyClient.GetDownloadStatusAsync(defaultModel.Filename);
+        }
+            
+        if(downloadJob.Progress != 100)
+            throw new Exception("Model download failed");
     }
 
     private void ApplyFiles(ComfyWorkflowRequest request)

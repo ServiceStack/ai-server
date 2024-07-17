@@ -24,7 +24,7 @@ public class ComfyFriendlyApiTests
         public override void Configure(Container container)
         {
             container.AddSingleton<IComfyClient>(c =>
-                new ComfyClient("https://comfy-dell.pvq.app",
+                new ComfyClient("https://comfy-dell.pvq.app/api",
                     "testtest1234"));
             container.AddSingleton<IMessageService>(c => new BackgroundMqService
             {

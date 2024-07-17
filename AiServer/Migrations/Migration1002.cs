@@ -234,21 +234,7 @@ public class Migration1002 : MigrationBase
 
     public class ArtStyleEntry
     {
-        public string Name { get; set; }
-        public string Filename { get; set; }
-        public string DownloadUrl { get; set; }
 
-        public double? CfgScale { get; set; }
-
-        public string? Scheduler { get; set; }
-
-        public ComfySampler? Sampler { get; set; }
-
-        public int? Width { get; set; }
-
-        public int? Height { get; set; }
-
-        public int? Steps { get; set; }
     }
 
     public override void Up()
