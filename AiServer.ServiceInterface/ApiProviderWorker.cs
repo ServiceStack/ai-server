@@ -48,11 +48,11 @@ public class ApiProviderWorker : IApiProviderWorker
     private Func<bool> anyTasksRemaining;
     private DateTime lastChatExecuted = DateTime.UtcNow;
 
-    public ApiProviderWorker(ApiProvider apiProvider, AiProviderFactory aiFactory, Func<bool> anyTasksRemaining, CancellationToken token = default)
+    public ApiProviderWorker(ApiProvider apiProvider, AiProviderFactory aiFactory, Func<bool>? anyTasksRemaining = null, CancellationToken token = default)
     {
         this.apiProvider = apiProvider;
         this.aiFactory = aiFactory;
-        this.anyTasksRemaining = anyTasksRemaining;
+        this.anyTasksRemaining = anyTasksRemaining ?? (() => false);
         this.token = token;
         Models = apiProvider.Models.Select(x => x.Model).ToArray();
     }
