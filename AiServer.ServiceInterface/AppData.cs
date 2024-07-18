@@ -56,7 +56,7 @@ public class AppData(ILogger<AppData> log, AiProviderFactory aiFactory, IMessage
             log.LogInformation("Starting {Count} Workers...", apiProviders.Length);
             StoppedAt = null;
             ApiProviders = apiProviders;
-            ApiProviderWorkers = apiProviders.Select(x => new ApiProviderWorker(x, aiFactory, cts.Token)).ToArray();
+            ApiProviderWorkers = apiProviders.Select(x => new ApiProviderWorker(x, aiFactory, HasAnyChatTasksQueued, cts.Token)).ToArray();
         }
 
         foreach (var worker in ApiProviderWorkers)

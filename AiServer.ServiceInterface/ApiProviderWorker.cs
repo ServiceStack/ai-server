@@ -42,14 +42,17 @@ public class ApiProviderWorker : IApiProviderWorker
     private long retries = 0;
     private long failed = 0;
     private long running = 0;
+    private long done = 0;
     private readonly ApiProvider apiProvider;
     private readonly AiProviderFactory aiFactory;
+    private Func<bool> anyTasksRemaining;
     private DateTime lastChatExecuted = DateTime.UtcNow;
 
-    public ApiProviderWorker(ApiProvider apiProvider, AiProviderFactory aiFactory, CancellationToken token = default)
+    public ApiProviderWorker(ApiProvider apiProvider, AiProviderFactory aiFactory, Func<bool> anyTasksRemaining, CancellationToken token = default)
     {
         this.apiProvider = apiProvider;
         this.aiFactory = aiFactory;
+        this.anyTasksRemaining = anyTasksRemaining;
         this.token = token;
         Models = apiProvider.Models.Select(x => x.Model).ToArray();
     }
@@ -221,12 +224,10 @@ public class ApiProviderWorker : IApiProviderWorker
                     log.LogInformation("[{Name}] has {Count} new Tasks assigned after polling {Polled} times...", 
                         Name, ChatQueueCount, polling-1);
 
-                    // Don't hold up ExecuteTasks if there are no more tasks to execute
-                    var timeSinceLastTask = DateTime.UtcNow - lastChatExecuted;
-                    if (ChatQueueCount == 0 && timeSinceLastTask > TimeSpan.FromMinutes(5))
+                    // Finish executing when all other workers have completed as well
+                    if (!anyTasksRemaining())
                     {
-                        log.LogInformation("[{Name}] hasn't executed a task in {TimeSinceLastTask}, exiting...", Name, timeSinceLastTask);
-                        return;
+                        log.LogInformation("[{Name}] no tasks remaining, exiting...", Name);
                     }
                 }
             }
