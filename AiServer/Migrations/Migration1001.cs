@@ -207,6 +207,7 @@ public class Migration1001 : MigrationBase
             new() { Name = "gpt-4-turbo" },
             new() { Name = "gpt-4-vision" },
             new() { Name = "gpt-4o" },
+            new() { Name = "gpt-4o-mini" },
             new() { Name = "claude-3-haiku" },
             new() { Name = "claude-3-sonnet" },
             new() { Name = "claude-3-opus" },
@@ -268,6 +269,7 @@ public class Migration1001 : MigrationBase
                 ["gpt-4-turbo"] = "openai/gpt-4-turbo",
                 ["gpt-4-vision"] = "openai/gpt-4-vision-preview",
                 ["gpt-4o"] = "openai/gpt-4o",
+                ["gpt-4o-mini"] = "openai/gpt-4o-mini",
             }
         });
         Db.Insert(new ApiType
