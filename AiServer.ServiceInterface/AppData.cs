@@ -96,8 +96,8 @@ public class AppData(ILogger<AppData> log, AiProviderFactory aiFactory, IMessage
             {
                 worker.Dispose();
             }
-            ApiProviders = Array.Empty<ApiProvider>();
-            ApiProviderWorkers = Array.Empty<ApiProviderWorker>();
+            ApiProviders = [];
+            ApiProviderWorkers = [];
         }
     }
     

@@ -14,7 +14,6 @@ public class ComfyGenerationTask : TaskBase
     
     public ComfyTaskType TaskType { get; set; }
     public string WorkflowTemplate { get; set; }
-
 }
 
 public class ComfyGenerationCompleted : ComfyGenerationTask
