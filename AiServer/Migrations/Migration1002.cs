@@ -173,17 +173,16 @@ public class Migration1002 : MigrationBase
     {
         [AutoIncrement] public int Id { get; set; }
 
-        public int ApiProviderId { get; set; }
-
-        /// <summary>
-        /// Ollama Model Id
-        /// </summary>
-        public string Model { get; set; }
-
-        /// <summary>
-        /// What Model to use for this API Provider
-        /// </summary>
-        public string? ApiModel { get; set; }
+        [References(typeof(ComfyApiProvider))]
+        public int ComfyApiProviderId { get; set; }
+        
+        [References(typeof(ComfyApiModel))]
+        public int ComfyApiModelId { get; set; }
+        
+        [Reference]
+        public ComfyApiProvider ComfyApiProvider { get; set; }
+        [Reference]
+        public ComfyApiModel ComfyApiModel { get; set; }
     }
 
     public class ComfyApiType
@@ -214,27 +213,53 @@ public class Migration1002 : MigrationBase
         /// API Paths for different AI Tasks
         /// </summary>
         public Dictionary<ComfyTaskType, string> TaskPaths { get; set; }
-
-        /// <summary>
-        /// Mapping of Models to API Models
-        /// </summary>
-        public Dictionary<string, string> ApiModels { get; set; } = new();
     }
 
     public class ComfyApiModel
     {
-        [AutoIncrement] public int Id { get; set; }
+        [AutoIncrement] 
+        public int Id { get; set; }
 
         public int ApiProviderId { get; set; }
 
-        public string Model { get; set; }
-
-        public ArtStyleEntry ModelMetadata { get; set; }
+        public string Name { get; set; }
+        
+        public string? Description { get; set; }
+        
+        public string? Tags { get; set; }
+        public string Filename { get; set; }
+        public string DownloadUrl { get; set; }
+        
+        public string IconUrl { get; set; }
+        public string Url { get; set; }
+        
+        public DateTime CreatedDate { get; set; }
+        
+        [Reference]
+        public ComfyApiModelSettings? ModelSettings { get; set; }
     }
 
-    public class ArtStyleEntry
+    public class ComfyApiModelSettings
     {
-
+        [AutoIncrement]
+        public int Id { get; set; }
+        
+        [References(typeof(ComfyApiModel))]
+        public int ComfyApiModelId { get; set; }
+        
+        public double? CfgScale { get; set; }
+        
+        public string? Scheduler { get; set; }
+        
+        public ComfySampler? Sampler { get; set; }
+        
+        public int? Width { get; set; }
+        
+        public int? Height { get; set; }
+        
+        public int? Steps { get; set; }
+        
+        public string? NegativePrompt { get; set; }
     }
 
     public override void Up()
@@ -243,24 +268,104 @@ public class Migration1002 : MigrationBase
         Db.CreateTable<ComfyApiProvider>();
         Db.CreateTable<ComfyApiProviderModel>();
         Db.CreateTable<ComfyApiType>();
+        Db.CreateTable<ComfyApiModelSettings>();
         
         Db.CreateTable<ComfyGenerationTask>();
         Db.CreateTable<ComfyTaskSummary>();
+        
+        // Initialize providers, models, model settings into database
+        
+        // Each type is prefixed with 'ComfyApi'
+        // A `Provider` is a server that can provide the functionality of the workflow processing
+        // A `Model` is the model details about where it came from, name etc.
+        // A `ModelSettings` is the default settings for a specific model, since models can be sensitive to 
+        // Inference settings due to how they are trained or fine tuned.
+        // A `ProviderModel` is the relationship between agents and what models they have available.
+
+        var apiType = new ComfyApiType
+        {
+            Name = "agent-comfy",
+            Website = "https://github.com/ServiceStack/agent-comfy",
+            ApiBaseUrl = "https://comfy-dell.pvq.app/api",
+            TaskPaths = new Dictionary<ComfyTaskType, string>
+            {
+                { ComfyTaskType.TextToImage, "/prompt" },
+                { ComfyTaskType.ImageToImage, "/prompt" },
+                { ComfyTaskType.ImageToImageUpscale, "/prompt" },
+                { ComfyTaskType.ImageToImageWithMask, "/prompt" },
+                { ComfyTaskType.TextToAudio, "/prompt" },
+                { ComfyTaskType.TextToSpeech, "/prompt" },
+                { ComfyTaskType.SpeechToText, "/prompt" }
+            },
+            HeartbeatUrl = "/"
+        };
+
+        var apiTypeId = (int)Db.Insert(apiType, selectIdentity: true);
+        apiType.Id = apiTypeId;
+
+        var provider = new ComfyApiProvider
+        {
+            Name = "comfy-dell.pvq.app",
+            ApiBaseUrl = "https://comfy-dell.pvq.app/api",
+            Concurrency = 1,
+            HeartbeatUrl = "/",
+            TaskPaths = apiType.TaskPaths,
+            Enabled = true,
+            CreatedDate = DateTime.UtcNow,
+            Priority = 1,
+            ApiKey = "testtest1234",
+            ApiTypeId = apiTypeId,
+        };
+
+        var providerId = (int)Db.Insert(provider, selectIdentity: true);
+        provider.Id = providerId;
+
+        var model = new ComfyApiModel
+        {
+            Name = "SDXL Lightning 4-Step",
+            Filename = "sdxl_lightning_4step.safetensors",
+            DownloadUrl =
+                "https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step.safetensors?download=true",
+            CreatedDate = DateTime.UtcNow,
+            Url = "https://huggingface.co/ByteDance/SDXL-Lightning",
+            ApiProviderId = providerId
+        };
+
+        var modelId = (int)Db.Insert(model, selectIdentity: true);
+        model.Id = modelId;
+
+        var modelSetting = new ComfyApiModelSettings
+        {
+            Width = 1024,
+            Height = 1024,
+            Sampler = ComfySampler.euler,
+            Scheduler = "sgm_uniform",
+            Steps = 4,
+            CfgScale = 1.0,
+            ComfyApiModelId = modelId
+        };
+
+        var modelSettingId = (int)Db.Insert(modelSetting, selectIdentity: true);
+        modelSetting.Id = modelSettingId;
+
+        var providerModel = new ComfyApiProviderModel
+        {
+            ComfyApiModelId = modelId,
+            ComfyApiProviderId = providerId
+        };
+
+        Db.Insert(providerModel);
+
     }
 
     public override void Down()
     {
         Db.DropTable<ComfyGenerationTask>();
-        try
-        {
-            Db.DropTable<ComfyTaskSummary>();
-            Db.DropTable<ComfyApiType>();
-            Db.DropTable<ComfyApiProviderModel>();
-            Db.DropTable<ComfyApiProvider>();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
+        Db.DropTable<ComfyTaskSummary>();
+        Db.DropTable<ComfyApiModelSettings>();
+        Db.DropTable<ComfyApiType>();
+        Db.DropTable<ComfyApiProviderModel>();
+        Db.DropTable<ComfyApiModel>();
+        Db.DropTable<ComfyApiProvider>();
     }
 }
