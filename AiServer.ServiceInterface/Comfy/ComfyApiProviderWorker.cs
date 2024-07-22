@@ -65,7 +65,7 @@ public class ComfyProviderWorker : IApiProviderWorker
         this.apiProvider = apiProvider;
         this.aiFactory = aiFactory;
         this.token = token;
-        Models = apiProvider.Models.Select(x => x.Model).ToArray();
+        Models = apiProvider.Models.Select(x => x.ComfyApiModel.Filename).ToArray();
     }
     
     public string GetApiEndpointUrlFor(TaskType taskType)

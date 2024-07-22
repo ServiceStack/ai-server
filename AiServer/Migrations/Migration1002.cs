@@ -14,10 +14,8 @@ public class Migration1002 : MigrationBase
         public ComfyWorkflowResponse Response { get; set; }
     }
 
-    public class ComfyTaskSummary
+    public class ComfySummary
     {
-        [AutoIncrement] public long Id { get; set; }
-
         /// <summary>
         /// The type of Task
         /// </summary>
@@ -219,9 +217,6 @@ public class Migration1002 : MigrationBase
     {
         [AutoIncrement] 
         public int Id { get; set; }
-
-        public int ApiProviderId { get; set; }
-
         public string Name { get; set; }
         
         public string? Description { get; set; }
@@ -271,7 +266,7 @@ public class Migration1002 : MigrationBase
         Db.CreateTable<ComfyApiModelSettings>();
         
         Db.CreateTable<ComfyGenerationTask>();
-        Db.CreateTable<ComfyTaskSummary>();
+        Db.CreateTable<ComfySummary>();
         
         // Initialize providers, models, model settings into database
         
@@ -327,8 +322,7 @@ public class Migration1002 : MigrationBase
             DownloadUrl =
                 "https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step.safetensors?download=true",
             CreatedDate = DateTime.UtcNow,
-            Url = "https://huggingface.co/ByteDance/SDXL-Lightning",
-            ApiProviderId = providerId
+            Url = "https://huggingface.co/ByteDance/SDXL-Lightning"
         };
 
         var modelId = (int)Db.Insert(model, selectIdentity: true);
@@ -361,7 +355,7 @@ public class Migration1002 : MigrationBase
     public override void Down()
     {
         Db.DropTable<ComfyGenerationTask>();
-        Db.DropTable<ComfyTaskSummary>();
+        Db.DropTable<ComfySummary>();
         Db.DropTable<ComfyApiModelSettings>();
         Db.DropTable<ComfyApiType>();
         Db.DropTable<ComfyApiProviderModel>();

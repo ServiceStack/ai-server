@@ -17,7 +17,7 @@ public class CreateComfyGenerationTaskCommand(ILogger<CreateComfyGenerationTaskC
 
         using var dbTrans = db.OpenTransaction();
         await db.InsertAsync(request);
-        await db.InsertAsync(new ComfyTaskSummary
+        await db.InsertAsync(new ComfySummary
         {
             Id = request.Id,
             Type = request.TaskType,

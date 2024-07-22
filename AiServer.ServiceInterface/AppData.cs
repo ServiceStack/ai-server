@@ -5,6 +5,7 @@ using ServiceStack;
 using ServiceStack.Messaging;
 using ServiceStack.OrmLite;
 using AiServer.ServiceModel;
+using AiServer.ServiceModel.Types;
 
 namespace AiServer.ServiceInterface;
 

@@ -1,4 +1,5 @@
-﻿using ServiceStack;
+﻿using AiServer.ServiceModel.Types;
+using ServiceStack;
 using ServiceStack.DataAnnotations;
 
 namespace AiServer.ServiceModel;
@@ -131,3 +132,81 @@ public class CreateApiModel : ICreateDb<ApiModel>, IReturn<IdResponse>
 [ValidateApiKey]
 [Description("The Type and behavior of different API Providers")]
 public class QueryApiType : QueryDb<ApiType> {}
+
+
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
+[Description("Create a Comfy API Provider that can process Comfy Workflow Tasks")]
+public class CreateComfyApiProvider : ICreateDb<ComfyApiProvider>, IReturn<IdResponse>
+{
+    public string Name { get; set; }
+    
+    public string? ApiKey { get; set; }
+
+    public string? ApiKeyHeader { get; set; }
+    
+    public string? ApiBaseUrl { get; set; }
+
+    public string? HeartbeatUrl { get; set; }
+    
+    public Dictionary<ComfyTaskType, string>? TaskPaths { get; set; }
+    
+    public int Concurrency { get; set; }
+    
+    public int Priority { get; set; }
+    
+    public bool Enabled { get; set; }
+
+    public List<ComfyApiProviderModel> Models { get; set; }
+}
+
+public class CreateComfyApiModel : ICreateDb<ComfyApiModel>, IReturn<IdResponse>
+{
+    public string Name { get; set; }
+
+    public string? Description { get; set; }
+
+    public string? Tags { get; set; }
+    public string Filename { get; set; }
+    public string DownloadUrl { get; set; }
+
+    public string IconUrl { get; set; }
+    public string Url { get; set; }
+
+    public ComfyApiModelSettings? ModelSettings { get; set; }
+}
+
+public class QueryComfyApiProviders : QueryDb<ComfyApiProvider>
+{
+    public string? Name { get; set; }
+}
+
+public class UpdateComfyApiProvider : IUpdateDb<ComfyApiProvider>, IReturn<IdResponse>
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    
+    public string? ApiKey { get; set; }
+
+    public string? ApiKeyHeader { get; set; }
+    
+    public string? ApiBaseUrl { get; set; }
+
+    public string? HeartbeatUrl { get; set; }
+    
+    public Dictionary<ComfyTaskType, string>? TaskPaths { get; set; }
+    
+    public int Concurrency { get; set; }
+    
+    public int Priority { get; set; }
+    
+    public bool Enabled { get; set; }
+}
+
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
+public class ChangeComfyApiProviderStatus : IPost, IReturn<StringResponse>
+{
+    public string Provider { get; set; }
+    public bool Online { get; set; }
+}

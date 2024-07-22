@@ -1,6 +1,5 @@
 using System.Data;
-using AiServer.ServiceInterface.Comfy;
-using AiServer.ServiceModel;
+using AiServer.ServiceModel.Types;
 using ServiceStack;
 using ServiceStack.OrmLite;
 
