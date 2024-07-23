@@ -74,6 +74,8 @@ public class QueueTasks : IReturn<EmptyResponse>
 {
     [Command<DelegateOpenAiChatTasksCommand>]
     public DelegateOpenAiChatTasks? DelegateOpenAiChatTasks { get; set; }
+    
+    public DelegateComfyWorkflowTasks? DelegateComfyTasks { get; set; }
 }
 
 [Tag(Tag.Tasks)]

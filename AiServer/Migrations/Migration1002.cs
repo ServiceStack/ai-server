@@ -108,11 +108,6 @@ public class Migration1002 : MigrationBase
         public string Name { get; set; }
 
         /// <summary>
-        /// The behavior for this API Provider
-        /// </summary>
-        public int ApiTypeId { get; set; }
-
-        /// <summary>
         /// The API Key to use for this Provider
         /// </summary>
         public string? ApiKey { get; set; }
@@ -131,11 +126,8 @@ public class Migration1002 : MigrationBase
         /// Url to check if the API is online
         /// </summary>
         public string? HeartbeatUrl { get; set; }
-
-        /// <summary>
-        /// Override API Paths for different AI Tasks
-        /// </summary>
-        public Dictionary<ComfyTaskType, string>? TaskPaths { get; set; }
+        
+        public Dictionary<ComfyTaskType, string>? TaskWorkflows { get; set; }
 
         /// <summary>
         /// How many requests should be made concurrently
@@ -240,6 +232,7 @@ public class Migration1002 : MigrationBase
         public int Id { get; set; }
         
         [References(typeof(ComfyApiModel))]
+        [ForeignKey(typeof(ComfyApiModel), OnDelete = "CASCADE")]
         public int ComfyApiModelId { get; set; }
         
         public double? CfgScale { get; set; }
@@ -277,78 +270,55 @@ public class Migration1002 : MigrationBase
         // Inference settings due to how they are trained or fine tuned.
         // A `ProviderModel` is the relationship between agents and what models they have available.
 
-        var apiType = new ComfyApiType
-        {
-            Name = "agent-comfy",
-            Website = "https://github.com/ServiceStack/agent-comfy",
-            ApiBaseUrl = "https://comfy-dell.pvq.app/api",
-            TaskPaths = new Dictionary<ComfyTaskType, string>
-            {
-                { ComfyTaskType.TextToImage, "/prompt" },
-                { ComfyTaskType.ImageToImage, "/prompt" },
-                { ComfyTaskType.ImageToImageUpscale, "/prompt" },
-                { ComfyTaskType.ImageToImageWithMask, "/prompt" },
-                { ComfyTaskType.TextToAudio, "/prompt" },
-                { ComfyTaskType.TextToSpeech, "/prompt" },
-                { ComfyTaskType.SpeechToText, "/prompt" }
-            },
-            HeartbeatUrl = "/"
-        };
-
-        var apiTypeId = (int)Db.Insert(apiType, selectIdentity: true);
-        apiType.Id = apiTypeId;
-
-        var provider = new ComfyApiProvider
-        {
-            Name = "comfy-dell.pvq.app",
-            ApiBaseUrl = "https://comfy-dell.pvq.app/api",
-            Concurrency = 1,
-            HeartbeatUrl = "/",
-            TaskPaths = apiType.TaskPaths,
-            Enabled = true,
-            CreatedDate = DateTime.UtcNow,
-            Priority = 1,
-            ApiKey = "testtest1234",
-            ApiTypeId = apiTypeId,
-        };
-
-        var providerId = (int)Db.Insert(provider, selectIdentity: true);
-        provider.Id = providerId;
-
-        var model = new ComfyApiModel
-        {
-            Name = "SDXL Lightning 4-Step",
-            Filename = "sdxl_lightning_4step.safetensors",
-            DownloadUrl =
-                "https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step.safetensors?download=true",
-            CreatedDate = DateTime.UtcNow,
-            Url = "https://huggingface.co/ByteDance/SDXL-Lightning"
-        };
-
-        var modelId = (int)Db.Insert(model, selectIdentity: true);
-        model.Id = modelId;
-
-        var modelSetting = new ComfyApiModelSettings
-        {
-            Width = 1024,
-            Height = 1024,
-            Sampler = ComfySampler.euler,
-            Scheduler = "sgm_uniform",
-            Steps = 4,
-            CfgScale = 1.0,
-            ComfyApiModelId = modelId
-        };
-
-        var modelSettingId = (int)Db.Insert(modelSetting, selectIdentity: true);
-        modelSetting.Id = modelSettingId;
-
-        var providerModel = new ComfyApiProviderModel
-        {
-            ComfyApiModelId = modelId,
-            ComfyApiProviderId = providerId
-        };
-
-        Db.Insert(providerModel);
+        // var provider = new ComfyApiProvider
+        // {
+        //     Name = "comfy-dell.pvq.app",
+        //     ApiBaseUrl = "https://comfy-dell.pvq.app/api",
+        //     Concurrency = 1,
+        //     HeartbeatUrl = "/",
+        //     Enabled = true,
+        //     CreatedDate = DateTime.UtcNow,
+        //     Priority = 1,
+        //     ApiKey = "testtest1234",
+        // };
+        //
+        // var providerId = (int)Db.Insert(provider, selectIdentity: true);
+        // provider.Id = providerId;
+        //
+        // var model = new ComfyApiModel
+        // {
+        //     Name = "SDXL Lightning 4-Step",
+        //     Filename = "sdxl_lightning_4step.safetensors",
+        //     DownloadUrl =
+        //         "https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step.safetensors?download=true",
+        //     CreatedDate = DateTime.UtcNow,
+        //     Url = "https://huggingface.co/ByteDance/SDXL-Lightning"
+        // };
+        //
+        // var modelId = (int)Db.Insert(model, selectIdentity: true);
+        // model.Id = modelId;
+        //
+        // var modelSetting = new ComfyApiModelSettings
+        // {
+        //     Width = 1024,
+        //     Height = 1024,
+        //     Sampler = ComfySampler.euler,
+        //     Scheduler = "sgm_uniform",
+        //     Steps = 4,
+        //     CfgScale = 1.0,
+        //     ComfyApiModelId = modelId
+        // };
+        //
+        // var modelSettingId = (int)Db.Insert(modelSetting, selectIdentity: true);
+        // modelSetting.Id = modelSettingId;
+        //
+        // var providerModel = new ComfyApiProviderModel
+        // {
+        //     ComfyApiModelId = modelId,
+        //     ComfyApiProviderId = providerId
+        // };
+        //
+        // Db.Insert(providerModel);
 
     }
 

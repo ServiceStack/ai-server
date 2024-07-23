@@ -147,11 +147,6 @@ public class ComfyApiProvider
     public string Name { get; set; }
 
     /// <summary>
-    /// The behavior for this API Provider
-    /// </summary>
-    public int ApiTypeId { get; set; }
-
-    /// <summary>
     /// The API Key to use for this Provider
     /// </summary>
     public string? ApiKey { get; set; }
@@ -171,10 +166,8 @@ public class ComfyApiProvider
     /// </summary>
     public string? HeartbeatUrl { get; set; }
 
-    /// <summary>
-    /// Override API Paths for different AI Tasks
-    /// </summary>
-    public Dictionary<ComfyTaskType, string>? TaskPaths { get; set; }
+        
+    public Dictionary<ComfyTaskType, string>? TaskWorkflows { get; set; }
 
     /// <summary>
     /// How many requests should be made concurrently
@@ -200,8 +193,6 @@ public class ComfyApiProvider
     /// When the Provider was created
     /// </summary>
     public DateTime CreatedDate { get; set; }
-
-    [Reference] public ComfyApiType ApiType { get; set; }
 
     [Reference] public List<ComfyApiProviderModel> Models { get; set; }
 }
@@ -272,7 +263,9 @@ public class ComfyApiModelSettings
 {
     [AutoIncrement] public int Id { get; set; }
 
-    [References(typeof(ComfyApiModel))] public int ComfyApiModelId { get; set; }
+    [References(typeof(ComfyApiModel))]
+    [ForeignKey(typeof(ComfyApiModel), OnDelete = "CASCADE")]
+    public int ComfyApiModelId { get; set; }
 
     public double? CfgScale { get; set; }
 

@@ -8,27 +8,30 @@ namespace AiServer.Tests;
 [Explicit]
 public class ComfyApiProviderTests
 {
+    private static bool useLocal = true;
+    
     private static List<CreateComfyApiProvider> ComfyApiProviders = new()
     {
         new CreateComfyApiProvider
         {
             Name = "comfy-dell.pvq.app",
-            ApiBaseUrl = "https://comfy-dell.pvq.app/api",
+            ApiBaseUrl = useLocal ? "https://localhost:7860/api" : "https://comfy-dell.pvq.app/api",
             Concurrency = 1,
             HeartbeatUrl = "/",
-            TaskPaths = new Dictionary<ComfyTaskType, string>
+            TaskWorkflows = new Dictionary<ComfyTaskType, string>
             {
-                { ComfyTaskType.TextToImage, "/prompt" },
-                { ComfyTaskType.ImageToImage, "/prompt" },
-                { ComfyTaskType.ImageToImageUpscale, "/prompt" },
-                { ComfyTaskType.ImageToImageWithMask, "/prompt" },
-                { ComfyTaskType.TextToAudio, "/prompt" },
-                { ComfyTaskType.TextToSpeech, "/prompt" },
-                { ComfyTaskType.SpeechToText, "/prompt" }
+                { ComfyTaskType.TextToImage, "text_to_image.json" },
+                { ComfyTaskType.ImageToImage, "image_to_image.json" },
+                { ComfyTaskType.ImageToImageUpscale, "image_to_image_upscale.json" },
+                { ComfyTaskType.ImageToImageWithMask, "image_to_image_with_mask.json" },
+                { ComfyTaskType.TextToAudio, "text_to_audio.json" },
+                { ComfyTaskType.TextToSpeech, "text_to_speech.json" },
+                { ComfyTaskType.SpeechToText, "speech_to_text.json" }
             },
             Enabled = true,
             Priority = 1,
-            ApiKey = "testtest1234"
+            ApiKey = "testtest1234",
+            Models = new List<ComfyApiProviderModel>()
         }
     };
     
@@ -51,15 +54,73 @@ public class ComfyApiProviderTests
             }
         }
     };
+    
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
+    {
+        // Delete all existing ComfyApiProviders and ComfyApiModels
+        var client = TestUtils.CreateAuthSecretClient();
+        try
+        {
+            DeleteComfyApiModels(client).Wait();
+            DeleteComfyApiProviders(client).Wait();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
 
     [Test]
     public async Task Create_Local_ComfyApiProviders_and_Models()
     {
+        Environment.SetEnvironmentVariable("AUTH_SECRET","p@55wOrd");
         var client = TestUtils.CreateAuthSecretClient();
         await CreateComfyApiProviders(client);
         await CreateComfyApiModels(client);
         // Update provider to use model
-        
+    }
+    
+    private async Task DeleteComfyApiModels(JsonApiClient client)
+    {
+        foreach (var createComfyApiModel in ComfyApiModels)
+        {
+            var apiQuery = await client.ApiAsync(new QueryComfyApiModels
+            {
+                Name = createComfyApiModel.Name,
+            });
+            apiQuery.ThrowIfError();
+            var existingModel = apiQuery.Response!.Results.FirstOrDefault();
+            if (existingModel != null)
+            {
+                var api = await client.ApiAsync(new DeleteComfyApiModel
+                {
+                    Id = existingModel.Id,
+                });
+                api.ThrowIfError();
+            }
+        }
+    }
+
+    private async Task DeleteComfyApiProviders(JsonApiClient client)
+    {
+        foreach (var createComfyApiProvider in ComfyApiProviders)
+        {
+            var apiQuery = await client.ApiAsync(new QueryComfyApiProviders
+            {
+                Name = createComfyApiProvider.Name,
+            });
+            apiQuery.ThrowIfError();
+            var existingProvider = apiQuery.Response!.Results.FirstOrDefault();
+            if (existingProvider != null)
+            {
+                var api = await client.ApiAsync(new DeleteComfyApiProvider
+                {
+                    Id = existingProvider.Id,
+                });
+                api.ThrowIfError();
+            }
+        }
     }
 
     // [Test]
@@ -91,7 +152,9 @@ public class ComfyApiProviderTests
     [Test]
     public async Task Update_ComfyApiProvider()
     {
-        var client = TestUtils.CreatePublicAuthSecretClient();
+        Environment.SetEnvironmentVariable("AUTH_SECRET","p@55wOrd");
+        var client = TestUtils.CreateAuthSecretClient();
+        await CreateComfyApiProviders(client);
         var providerToUpdate = ComfyApiProviders[0]; // Assuming we want to update the first provider
 
         var apiQuery = await client.ApiAsync(new QueryComfyApiProviders
@@ -119,7 +182,10 @@ public class ComfyApiProviderTests
     [Test]
     public async Task ChangeComfyApiProviderStatus_Offline()
     {
-        var client = TestUtils.CreatePublicAuthSecretClient();
+        Environment.SetEnvironmentVariable("AUTH_SECRET","p@55wOrd");
+        var client = TestUtils.CreateAuthSecretClient();
+        // Create
+        await CreateComfyApiProviders(client);
         var api = await client.ApiAsync(new ChangeComfyApiProviderStatus
         {
             Provider = ComfyApiProviders[0].Name,

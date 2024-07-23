@@ -137,6 +137,7 @@ public class QueryApiType : QueryDb<ApiType> {}
 [Tag(Tag.Admin)]
 [ValidateAuthSecret]
 [Description("Create a Comfy API Provider that can process Comfy Workflow Tasks")]
+[AutoPopulate(nameof(ApiProvider.CreatedDate),  Eval = "utcNow")]
 public class CreateComfyApiProvider : ICreateDb<ComfyApiProvider>, IReturn<IdResponse>
 {
     public string Name { get; set; }
@@ -149,7 +150,7 @@ public class CreateComfyApiProvider : ICreateDb<ComfyApiProvider>, IReturn<IdRes
 
     public string? HeartbeatUrl { get; set; }
     
-    public Dictionary<ComfyTaskType, string>? TaskPaths { get; set; }
+    public Dictionary<ComfyTaskType, string>? TaskWorkflows { get; set; }
     
     public int Concurrency { get; set; }
     
@@ -160,6 +161,22 @@ public class CreateComfyApiProvider : ICreateDb<ComfyApiProvider>, IReturn<IdRes
     public List<ComfyApiProviderModel> Models { get; set; }
 }
 
+public class DeleteComfyApiProvider : IDeleteDb<ComfyApiProvider>, IReturn<IdResponse>
+{
+    public int? Id { get; set; }
+    public string? Name { get; set; }
+}
+
+public class DeleteComfyApiModel : IDeleteDb<ComfyApiModel>, IReturn<IdResponse>
+{
+    public int? Id { get; set; }
+    public string? Name { get; set; }
+}
+
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
+[Description("Create a Comfy API Model that can be used by Comfy API Providers")]
+[AutoPopulate(nameof(ApiProvider.CreatedDate),  Eval = "utcNow")]
 public class CreateComfyApiModel : ICreateDb<ComfyApiModel>, IReturn<IdResponse>
 {
     public string Name { get; set; }
@@ -181,6 +198,11 @@ public class QueryComfyApiProviders : QueryDb<ComfyApiProvider>
     public string? Name { get; set; }
 }
 
+public class QueryComfyApiModels : QueryDb<ComfyApiModel>
+{
+    public string? Name { get; set; }
+}
+
 public class UpdateComfyApiProvider : IUpdateDb<ComfyApiProvider>, IReturn<IdResponse>
 {
     public int Id { get; set; }
@@ -196,11 +218,11 @@ public class UpdateComfyApiProvider : IUpdateDb<ComfyApiProvider>, IReturn<IdRes
     
     public Dictionary<ComfyTaskType, string>? TaskPaths { get; set; }
     
-    public int Concurrency { get; set; }
+    public int? Concurrency { get; set; }
     
-    public int Priority { get; set; }
+    public int? Priority { get; set; }
     
-    public bool Enabled { get; set; }
+    public bool? Enabled { get; set; }
 }
 
 [Tag(Tag.Admin)]

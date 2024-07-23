@@ -19,11 +19,11 @@ public interface IApiProviderWorker : IDisposable
     string GetApiModel(string model);
 }
 
-public class ApiProviderWorker : IApiProviderWorker
+public class ApiProviderWorker : IApiProviderWorker,IWorker
 {
     public int Id => apiProvider.Id;
     public string Name => apiProvider.Name;
-    public readonly string[] Models;
+    public string[] Models { get; }
 
     // Can be modified at runtime
     public int Concurrency => apiProvider.Concurrency;
