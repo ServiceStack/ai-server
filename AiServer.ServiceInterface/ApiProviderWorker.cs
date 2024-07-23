@@ -19,7 +19,7 @@ public interface IApiProviderWorker : IDisposable
     string GetApiModel(string model);
 }
 
-public class ApiProviderWorker : IApiProviderWorker,IWorker
+public class ApiProviderWorker : IApiProviderWorker
 {
     public int Id => apiProvider.Id;
     public string Name => apiProvider.Name;

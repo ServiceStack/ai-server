@@ -72,10 +72,28 @@ public class ComfyQueueOperationServices(AppData appData, IDbConnectionFactory d
         if (request.Enabled == true || request.Concurrency > 0)
         {
             MessageProducer.Publish(new QueueTasks {
-                DelegateOpenAiChatTasks = new()
+                DelegateComfyTasks = new()
             });
         }
         
+        return result;
+    }
+    
+    public async Task<object> Any(AddComfyProviderModel request)
+    {
+        if (!string.IsNullOrEmpty(request.ComfyApiModelName))
+        {
+            // Find the ComfyApiModelId by Name
+            var comfyApiModel = await Db.SingleAsync<ComfyApiModel>(x => x.Name == request.ComfyApiModelName);
+            if (comfyApiModel == null)
+                throw HttpError.NotFound("ComfyApiModel not found");
+            
+            request.ComfyApiModelId = comfyApiModel.Id;
+        }
+        var result = await autoQuery.CreateAsync(request, base.Request);
+        MessageProducer.Publish(new QueueTasks {
+            DelegateOpenAiChatTasks = new()
+        });
         return result;
     }
 

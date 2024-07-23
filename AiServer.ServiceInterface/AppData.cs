@@ -70,14 +70,25 @@ public class AppData(ILogger<AppData> log, AiProviderFactory aiFactory, ComfyPro
         ResetInitialTaskIds(db);
         var apiProviders = db.LoadSelect<ApiProvider>().OrderByDescending(x => x.Priority).ThenBy(x => x.Id).ToArray();
         var comfyProviders = db.LoadSelect<ComfyApiProvider>().OrderByDescending(x => x.Priority).ThenBy(x => x.Id).ToArray();
+        // Could be slow for lots of providers, but usually only called on Init
+        foreach (var provider in comfyProviders)
+        {
+            PopulateWorkerModels(provider, db);
+        }
         StartWorkers(apiProviders, comfyProviders);
+    }
+
+    private void PopulateWorkerModels(ComfyApiProvider provider, IDbConnection db)
+    {
+        provider.Models = db.LoadSelect<ComfyApiProviderModel>(x => x.ComfyApiProviderId == provider.Id);
     }
 
     public void StartWorkers(ApiProvider[] apiProviders, ComfyApiProvider[] comfyProviders)
     {
         cts = new();
         StartApiWorkers(apiProviders);
-        StartComfyWorkers(comfyProviders);
+        if(comfyProviders.Length > 0)
+            StartComfyWorkers(comfyProviders);
 
         using var mq = mqServer.CreateMessageProducer();
         mq.Publish(new QueueTasks {
@@ -110,7 +121,7 @@ public class AppData(ILogger<AppData> log, AiProviderFactory aiFactory, ComfyPro
         LogWorkerInfo(ComfyProviderWorkers, "Comfy");
     }
 
-    private void LogWorkerInfo<T>(T[] workers, string workerType) where T : IWorker
+    private void LogWorkerInfo(ApiProviderWorker[] workers, string workerType)
     {
         foreach (var worker in workers)
         {
@@ -128,6 +139,27 @@ public class AppData(ILogger<AppData> log, AiProviderFactory aiFactory, ComfyPro
                 worker.IsOffline ? "Offline" : "Online",
                 worker.Concurrency, 
                 string.Join("\n    ", worker.Models));
+        }
+    }
+    
+    private void LogWorkerInfo(ComfyProviderWorker[] workers, string workerType)
+    {
+        foreach (var worker in workers)
+        {
+            log.LogInformation(
+                """
+
+                [{Type}] [{Name}] is {Enabled}, currently {Online} at concurrency {Concurrency}, accepting models:
+                
+                    {Models}
+                    
+                """,
+                workerType,
+                worker.Name,
+                worker.Enabled ? "Enabled" : "Disabled",
+                worker.IsOffline ? "Offline" : "Online",
+                worker.Concurrency, 
+                string.Join("\n    ", worker.Models ?? ["No Models"]));
         }
     }
 
@@ -174,13 +206,4 @@ public class AppData(ILogger<AppData> log, AiProviderFactory aiFactory, ComfyPro
     }
     
     public string CreateRequestId() => Guid.NewGuid().ToString("N");
-}
-
-public interface IWorker : IDisposable
-{
-    string Name { get; }
-    bool Enabled { get; }
-    bool IsOffline { get; }
-    int Concurrency { get; }
-    string[] Models { get; }
 }

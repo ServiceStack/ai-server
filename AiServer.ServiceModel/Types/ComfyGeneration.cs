@@ -194,7 +194,7 @@ public class ComfyApiProvider
     /// </summary>
     public DateTime CreatedDate { get; set; }
 
-    [Reference] public List<ComfyApiProviderModel> Models { get; set; }
+    [Reference] public List<ComfyApiProviderModel>? Models { get; set; }
 }
 
 public class ComfyApiProviderModel

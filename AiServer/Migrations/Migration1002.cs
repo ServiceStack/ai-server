@@ -16,6 +16,9 @@ public class Migration1002 : MigrationBase
 
     public class ComfySummary
     {
+        [AutoIncrement]
+        public long Id { get; set; }
+    
         /// <summary>
         /// The type of Task
         /// </summary>
@@ -126,6 +129,7 @@ public class Migration1002 : MigrationBase
         /// Url to check if the API is online
         /// </summary>
         public string? HeartbeatUrl { get; set; }
+
         
         public Dictionary<ComfyTaskType, string>? TaskWorkflows { get; set; }
 
@@ -153,8 +157,6 @@ public class Migration1002 : MigrationBase
         /// When the Provider was created
         /// </summary>
         public DateTime CreatedDate { get; set; }
-
-        [Reference] public ComfyApiType ApiType { get; set; }
 
         [Reference] public List<ComfyApiProviderModel> Models { get; set; }
     }

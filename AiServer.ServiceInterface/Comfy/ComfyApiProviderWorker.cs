@@ -10,27 +10,37 @@ using ServiceStack.OrmLite;
 namespace AiServer.ServiceInterface.Comfy;
 
 
+public interface IComfyProviderWorker : IDisposable
+{
+    string Name { get; }
+    string? ApiKey { get; }
+    string? HeartbeatUrl { get; }
+    string GetApiEndpointUrlFor(TaskType taskType);
+    string GetPreferredApiModel();
+    string GetApiModel(string model);
+}
+
 public interface IComfyProvider
 {
-    Task<bool> IsOnlineAsync(IApiProviderWorker worker, CancellationToken token = default);
+    Task<bool> IsOnlineAsync(IComfyProviderWorker worker, CancellationToken token = default);
 
-    Task<(ComfyWorkflowResponse,TimeSpan)> QueueWorkflow(IApiProviderWorker worker, ComfyWorkflowRequest request, CancellationToken token = default);
+    Task<(ComfyWorkflowResponse,TimeSpan)> QueueWorkflow(IComfyProviderWorker worker, ComfyWorkflowRequest request, CancellationToken token = default);
 }
 
 public class ComfyProvider : IComfyProvider
 {
-    public Task<bool> IsOnlineAsync(IApiProviderWorker worker, CancellationToken token = default)
+    public Task<bool> IsOnlineAsync(IComfyProviderWorker worker, CancellationToken token = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<(ComfyWorkflowResponse,TimeSpan)> QueueWorkflow(IApiProviderWorker worker, ComfyWorkflowRequest request, CancellationToken token = default)
+    public Task<(ComfyWorkflowResponse,TimeSpan)> QueueWorkflow(IComfyProviderWorker worker, ComfyWorkflowRequest request, CancellationToken token = default)
     {
         throw new NotImplementedException();
     }
 }
 
-public class ComfyProviderWorker : IApiProviderWorker,IWorker
+public class ComfyProviderWorker : IComfyProviderWorker
 {
     public void Dispose()
     {
@@ -64,7 +74,7 @@ public class ComfyProviderWorker : IApiProviderWorker,IWorker
     
     public int WorkflowQueueCount => AppQueue.Count;
     
-    public string[] Models { get; }
+    public string[]? Models { get; }
     
     public bool IsOffline
     {
@@ -78,7 +88,7 @@ public class ComfyProviderWorker : IApiProviderWorker,IWorker
         this.aiFactory = aiFactory;
         this.token = token;
         this.anyTasksRemaining = anyTasksRemaining ?? (() => false);
-        Models = apiProvider.Models.Select(x => x.ComfyApiModel.Filename).ToArray();
+        Models = apiProvider.Models?.Select(x => x.ComfyApiModel.Filename).ToArray();
     }
     
     public string GetApiEndpointUrlFor(TaskType taskType)

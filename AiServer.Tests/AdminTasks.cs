@@ -142,11 +142,65 @@ public class ComfyApiProviderTests
 
     private static async Task CreateComfyApiModels(JsonApiClient client)
     {
+        
         foreach (var createComfyApiModel in ComfyApiModels)
         {
             var api = await client.ApiAsync(createComfyApiModel);
             api.ThrowIfError();
         }
+    }
+
+    [Test]
+    public async Task Assign_ComfyApiModelToProvider()
+    {
+        Environment.SetEnvironmentVariable("AUTH_SECRET","p@55wOrd");
+        var client = TestUtils.CreateAuthSecretClient();
+        await CreateComfyApiProviders(client);
+        var providerToUpdate = ComfyApiProviders[0]; // Assuming we want to update the first provider
+
+        var apiQuery = await client.ApiAsync(new QueryComfyApiProviders
+        {
+            Name = providerToUpdate.Name,
+        });
+        apiQuery.ThrowIfError();
+        var existingProvider = apiQuery.Response!.Results.FirstOrDefault();
+        if (existingProvider == null)
+            throw new Exception("ComfyApiProvider not found");
+
+        await CreateComfyApiModels(client);
+        var model = ComfyApiModels[0];
+        var modelQuery = await client.ApiAsync(new QueryComfyApiModels
+        {
+            Name = model.Name,
+        });
+        modelQuery.ThrowIfError();
+        
+        var modelId = modelQuery.Response!.Results.FirstOrDefault()?.Id;
+        if (modelId == null)
+            throw new Exception("ComfyApiModel not found");
+
+        var api = await client.ApiAsync(new AddComfyProviderModel
+        {
+            ComfyApiProviderId = existingProvider.Id,
+            ComfyApiModelId = modelId.Value,
+        });
+        
+        api.ThrowIfError();
+        
+        // Query provider
+        var providerQuery = await client.ApiAsync(new QueryComfyApiProviders
+        {
+            Name = providerToUpdate.Name,
+        });
+        
+        providerQuery.ThrowIfError();
+        
+        var provider = providerQuery.Response!.Results.FirstOrDefault();
+        
+        if (provider == null)
+            throw new Exception("ComfyApiProvider not found");
+        
+        Assert.That(provider.Models.Count, Is.EqualTo(1));
     }
 
     [Test]

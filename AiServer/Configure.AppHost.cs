@@ -24,6 +24,10 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             services.AddSingleton<GoogleOpenAiProvider>();
             services.AddSingleton<AiProviderFactory>();
             
+            services.AddSingleton<ComfyProvider>();
+            services.AddSingleton<ComfyProviderFactory>();
+            
+            
             services.AddSingleton<IComfyClient>(c => 
                 new ComfyClient("https://comfy-dell.pvq.app/api",
                 "testtest1234",c.GetService<ILoggerFactory>()));
