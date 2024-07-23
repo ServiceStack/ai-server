@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Net.Http.Headers;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.Logging;
@@ -15,9 +16,11 @@ public interface IComfyProviderWorker : IDisposable
     string Name { get; }
     string? ApiKey { get; }
     string? HeartbeatUrl { get; }
-    string GetApiEndpointUrlFor(TaskType taskType);
-    string GetPreferredApiModel();
+    
+    string? GetPreferredApiModel();
     string GetApiModel(string model);
+
+    IComfyClient GetComfyClient();
 }
 
 public interface IComfyProvider
@@ -29,14 +32,37 @@ public interface IComfyProvider
 
 public class ComfyProvider : IComfyProvider
 {
-    public Task<bool> IsOnlineAsync(IComfyProviderWorker worker, CancellationToken token = default)
+    public async Task<bool> IsOnlineAsync(IComfyProviderWorker worker, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        try
+        {
+            Action<HttpRequestMessage>? requestFilter = worker.ApiKey != null
+                ? req => req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", worker.ApiKey)
+                : null;
+
+            var heartbeatUrl = worker.HeartbeatUrl;
+            if (heartbeatUrl != null)
+            {
+                await heartbeatUrl.GetStringFromUrlAsync(requestFilter:requestFilter, token: token);
+            }
+            
+            return true;
+        }
+        catch (Exception e)
+        {
+            if (e is TaskCanceledException)
+                throw;
+            return false;
+        }
     }
 
-    public Task<(ComfyWorkflowResponse,TimeSpan)> QueueWorkflow(IComfyProviderWorker worker, ComfyWorkflowRequest request, CancellationToken token = default)
+    public async Task<(ComfyWorkflowResponse,TimeSpan)> QueueWorkflow(IComfyProviderWorker worker, ComfyWorkflowRequest request, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        var comfyClient = worker.GetComfyClient();
+        var start = DateTime.UtcNow;
+        var response = await comfyClient.PromptGeneration(request,waitResult:true);
+        var duration = DateTime.UtcNow - start;
+        return (response,duration);
     }
 }
 
@@ -68,6 +94,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
     private long running = 0;
     private readonly ComfyApiProvider apiProvider;
     private readonly ComfyProviderFactory aiFactory;
+    private readonly IComfyClient comfyClient;
     private Func<bool> anyTasksRemaining;
     private readonly CancellationToken token;
     private DateTime lastExecuted = DateTime.UtcNow;
@@ -86,26 +113,39 @@ public class ComfyProviderWorker : IComfyProviderWorker
     {
         this.apiProvider = apiProvider;
         this.aiFactory = aiFactory;
+        if(apiProvider.ApiBaseUrl.IsNullOrEmpty())
+            throw new ArgumentNullException(nameof(apiProvider.ApiBaseUrl));
+        var comfyBaseUrl = apiProvider.ApiBaseUrl!;
+        comfyClient = new ComfyClient(comfyBaseUrl,apiProvider.ApiKey);
         this.token = token;
         this.anyTasksRemaining = anyTasksRemaining ?? (() => false);
         Models = apiProvider.Models?.Select(x => x.ComfyApiModel.Filename).ToArray();
     }
+
+    public string GetHealthCheckEndpoint()
+    {
+        return apiProvider.ApiBaseUrl.CombineWith("/");
+    }
+
+    public string? GetPreferredApiModel()
+    {
+        var model = Models?.FirstOrDefault();
+        return model;
+    }
     
-    public string GetApiEndpointUrlFor(TaskType taskType)
-    {
-        throw new NotImplementedException();
-    }
-
-    public string GetPreferredApiModel()
-    {
-        throw new NotImplementedException();
-    }
-
     public string GetApiModel(string model)
     {
-        throw new NotImplementedException();
+        if (Models == null || Models.Length == 0)
+            return string.Empty;
+        return Models.Contains(model) ? model : Models[0];
     }
-    
+
+    public IComfyClient GetComfyClient()
+    {
+        return comfyClient;
+    }
+
+
     public void AddToChatQueue(string requestId)
     {
         AppQueue.Add(requestId, token);

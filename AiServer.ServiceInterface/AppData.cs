@@ -9,7 +9,10 @@ using AiServer.ServiceModel.Types;
 
 namespace AiServer.ServiceInterface;
 
-public class AppData(ILogger<AppData> log, AiProviderFactory aiFactory, ComfyProviderFactory comfyFactory, IMessageService mqServer)
+public class AppData(ILogger<AppData> log, 
+    AiProviderFactory aiFactory, 
+    ComfyProviderFactory comfyFactory, 
+    IMessageService mqServer)
 {
     public static object SyncRoot = new();
     public static AppData Instance { get; set; }
