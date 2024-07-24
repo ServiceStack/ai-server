@@ -43,17 +43,23 @@ public class DelegateComfyWorkflowTasksCommand(ILogger<DelegateComfyWorkflowTask
 
             while (true)
             {
-                foreach (var apiWorker in appData.GetActiveWorkers())
+                foreach (var apiWorker in appData.GetActiveComfyWorkers())
                 {
                     if (appData.IsStopped)
                         return;
                 
                     // Don't assign more work to provider until their work queue is empty
-                    if (apiWorker is { ChatQueueCount: > 0 })
+                    if (apiWorker is { WorkflowQueueCount: > 0 })
                         continue;
                     
                     var requestId = appData.CreateRequestId();
                     var models = apiWorker.Models;
+                    // Worker might not have models
+                    if (models == null || models.Length == 0)
+                    {
+                        log.LogWarning("[Comfy][{Provider}] {Counter}: No models found for worker, skipping...", apiWorker.Name, ++counter);
+                        continue;
+                    }
                     var pendingTasks = await db.ReserveNextTasksAsync(
                         requestId: requestId,
                         models: models,
@@ -63,22 +69,22 @@ public class DelegateComfyWorkflowTasksCommand(ILogger<DelegateComfyWorkflowTask
                     DelegatedCount += pendingTasks;
                     if (pendingTasks > 0)
                     {
-                        log.LogDebug("[Chat][{Provider}] {Counter}: Reserved and delegating {PendingTasks} tasks with Id {RequestId}",
+                        log.LogDebug("[Comfy][{Provider}] {Counter}: Reserved and delegating {PendingTasks} tasks with Id {RequestId}",
                             apiWorker.Name, ++counter, pendingTasks, requestId);
-                        apiWorker.AddToChatQueue(requestId);
+                        apiWorker.AddToQueue(requestId);
                     }
                 }
 
                 if (appData.IsStopped)
                     return;
                 
-                if (!ExecuteOpenAiChatTasksCommand.Running)
+                if (!ExecuteComfyGenerationTasksCommand.Running)
                 {
-                    var hasWorkQueued = appData.HasAnyChatTasksQueued();
+                    var hasWorkQueued = appData.HasAnyComfyTasksQueued();
                     if (hasWorkQueued)
                     {
                         mq.Publish(new ExecutorTasks {
-                            ExecuteOpenAiChatTasks = new()
+                            ExecuteComfyGenerationTasks = new()
                         });
                     }
                 }
@@ -87,7 +93,7 @@ public class DelegateComfyWorkflowTasksCommand(ILogger<DelegateComfyWorkflowTask
                     .Where(x => x.RequestId == null && x.StartedDate == null && x.CompletedDate == null && activeWorkerModels.Contains(x.Model)));
                 if (!hasMoreTasksToDelegate)
                 {
-                    log.LogInformation("[Chat] All tasks have been delegated, exiting...");
+                    log.LogInformation("[Comfy] All tasks have been delegated, exiting...");
                     return;
                 }
                 
@@ -95,13 +101,13 @@ public class DelegateComfyWorkflowTasksCommand(ILogger<DelegateComfyWorkflowTask
                     return;
                 
                 // Give time for workers to complete their tasks before trying to delegate more work to them
-                log.LogInformation("[Chat] Waiting {WaitSeconds} seconds before delegating more tasks...", CheckIntervalSeconds);
+                log.LogInformation("[Comfy] Waiting {WaitSeconds} seconds before delegating more tasks...", CheckIntervalSeconds);
                 await Task.Delay(TimeSpan.FromSeconds(CheckIntervalSeconds));
             }
         }
         catch (TaskCanceledException)
         {
-            log.LogInformation("[Chat] Delegating tasks was cancelled, exiting...");
+            log.LogInformation("[Comfy] Delegating tasks was cancelled, exiting...");
         }
         finally
         {

@@ -7,6 +7,7 @@ using ServiceStack.OrmLite;
 
 namespace AiServer.ServiceInterface.AppDb.Comfy;
 
+[Tag(Tags.ComfyWorkflow)]
 public class CreateComfyGenerationTaskCommand(ILogger<CreateComfyGenerationTaskCommand> log, IDbConnection db) 
     : IAsyncCommand<ComfyGenerationTask>
 {

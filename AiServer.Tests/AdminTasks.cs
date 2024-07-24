@@ -257,4 +257,32 @@ public class ComfyApiProviderTests
         });
         api.ThrowIfError();
     }
+
+    [Test]
+    public async Task CanSetupNewProviderWithNewModelAndRunWorkflow()
+    {
+        // Create new provider
+        var client = TestUtils.CreateAuthSecretClient();
+        await CreateComfyApiProviders(client);
+        await CreateComfyApiModels(client);
+        await Assign_ComfyApiModelToProvider();
+        await ChangeComfyApiProviderStatus_Online();
+        
+        // Validate provider is online
+        var api = await client.ApiAsync(new QueryComfyApiProviders
+        {
+            Name = ComfyApiProviders[0].Name,
+        });
+        api.ThrowIfError();
+        var provider = api.Response!.Results.FirstOrDefault();
+        Assert.That(provider, Is.Not.Null);
+        Assert.That(provider!.OfflineDate, Is.Null);
+        
+        // Start workers
+        var startWorkers = await client.ApiAsync(new StartWorkers());
+        startWorkers.ThrowIfError();
+        
+        // Run workflow
+        
+    }
 }

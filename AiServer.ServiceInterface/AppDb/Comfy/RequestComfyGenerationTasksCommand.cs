@@ -12,7 +12,7 @@ public class RequestComfyGenerationTasks
     public int Count { get; set; }
 }
 
-
+[Tag(Tags.ComfyWorkflow)]
 public class RequestComfyGenerationTasksCommand(ILogger<RequestComfyGenerationTasks> log, AppData appData, IDbConnectionFactory dbFactory) 
     : IAsyncCommand<RequestComfyGenerationTasks>
 {
@@ -36,7 +36,7 @@ public class RequestComfyGenerationTasksCommand(ILogger<RequestComfyGenerationTa
             }
             
             assigned += rowsUpdated;
-            worker.AddToChatQueue(requestId);
+            worker.AddToQueue(requestId);
         }
 
         log.LogInformation("[{Provider}] Assigned {Assigned} tasks", worker.Name, assigned);

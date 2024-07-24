@@ -146,7 +146,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
     }
 
 
-    public void AddToChatQueue(string requestId)
+    public void AddToQueue(string requestId)
     {
         AppQueue.Add(requestId, token);
         Interlocked.Increment(ref received);

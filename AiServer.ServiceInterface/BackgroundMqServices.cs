@@ -66,6 +66,15 @@ public class AppDbWrites : IReturn<EmptyResponse>
     
     [Command<RequestComfyGenerationTasksCommand>]
     public RequestComfyGenerationTasks? RequestComfyGenerationTasks { get; set; }
+    
+    [Command<ReserveComfyGenerationTaskCommand>]
+    public ReserveComfyGenerationTask? ReserveComfyGenerationTask { get; set; }
+    
+    [Command<RequeueIncompleteComfyTasksCommand>]
+    public RequeueIncompleteComfyTasks? RequeueIncompleteComfyTasks { get; set; }
+    
+    [Command<ResetFailedComfyTasksCommand>]
+    public SelectedTasks? ResetFailedComfyTasks { get; set; }
 }
 
 [Tag(Tag.Tasks)]
@@ -95,6 +104,9 @@ public class ExecutorTasks : IReturn<EmptyResponse>
 {
     [Command<ExecuteOpenAiChatTasksCommand>]
     public ExecuteTasks? ExecuteOpenAiChatTasks { get; set; }
+    
+    [Command<ExecuteComfyGenerationTasksCommand>]
+    public ExecuteTasks? ExecuteComfyGenerationTasks { get; set; }
     
     [Command<ExecutorPeriodicTasksCommand>]
     public PeriodicTasks? PeriodicTasks { get; set; } 
