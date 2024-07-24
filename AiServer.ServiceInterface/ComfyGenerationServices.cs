@@ -98,9 +98,6 @@ public class ComfyGenerationServices(
     
     public async Task<object> Any(FetchComfyGenerationRequests request)
     {
-        if (request.Models == null || request.Models.Length == 0)
-            throw new ArgumentNullException(nameof(request.Models));
-        
         var aspReq = (HttpRequest)Request!.OriginalRequest;
         var requestId = aspReq.HttpContext.TraceIdentifier;
         var provider = request.Provider;
@@ -111,10 +108,6 @@ public class ComfyGenerationServices(
 
         var q = db.From<ComfyGenerationTask>()
             .Where(x => x.StartedDate == null && (x.Provider == null || x.Provider == request.Provider));
-        if (request.Models.Length == 1)
-            q.Where(x => x.Model == models[0]);
-        else
-            q.Where(x => models.Contains(x.Model));
         var startedAt = DateTime.UtcNow;
 
         var hasTasks = await db.ExistsAsync(q);
