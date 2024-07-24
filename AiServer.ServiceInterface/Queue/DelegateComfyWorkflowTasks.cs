@@ -1,4 +1,5 @@
 using AiServer.ServiceInterface.AppDb;
+using AiServer.ServiceInterface.AppDb.Comfy;
 using AiServer.ServiceInterface.Executor;
 using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.Logging;
@@ -60,7 +61,7 @@ public class DelegateComfyWorkflowTasksCommand(ILogger<DelegateComfyWorkflowTask
                         log.LogWarning("[Comfy][{Provider}] {Counter}: No models found for worker, skipping...", apiWorker.Name, ++counter);
                         continue;
                     }
-                    var pendingTasks = await db.ReserveNextTasksAsync(
+                    var pendingTasks = await db.ReserveNextComfyGenerationTasksAsync(
                         requestId: requestId,
                         models: models,
                         provider: apiWorker.Name,

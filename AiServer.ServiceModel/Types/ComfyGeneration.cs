@@ -61,8 +61,6 @@ public class ComfyHostedFileOutput
 
 public class ComfyWorkflowRequest
 {
-    public long Id { get; set; }
-
     public string? Model { get; set; }
 
     public int? Steps { get; set; }
@@ -93,10 +91,6 @@ public class ComfyWorkflowRequest
     public int? Height { get; set; }
 
     public ComfyTaskType TaskType { get; set; }
-    public string? RefId { get; set; }
-    public string? Provider { get; set; }
-    public string? ReplyTo { get; set; }
-    public string? Tag { get; set; }
     public string? Clip { get; set; }
     public double? SampleLength { get; set; }
     public ComfyMaskSource MaskChannel { get; set; }

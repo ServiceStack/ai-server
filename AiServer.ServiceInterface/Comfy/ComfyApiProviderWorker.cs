@@ -60,6 +60,8 @@ public class ComfyProvider : IComfyProvider
     {
         var comfyClient = worker.GetComfyClient();
         var start = DateTime.UtcNow;
+        // Last check for null seed
+        request.Seed ??= Random.Shared.Next();
         var response = await comfyClient.PromptGeneration(request,waitResult:true);
         var duration = DateTime.UtcNow - start;
         return (response,duration);
@@ -71,7 +73,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
     public void Dispose()
     {
         isDisposed = true;
-        AppQueue.Dispose();
+        WorkflowQueue.Dispose();
     }
 
     public int Id => apiProvider.Id;
@@ -84,7 +86,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
     public bool Enabled => apiProvider.Enabled;
     
     
-    private BlockingCollection<string> AppQueue { get; } = new();
+    private BlockingCollection<string> WorkflowQueue { get; } = new();
     
     private bool isDisposed;
     private long received = 0;
@@ -99,7 +101,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
     private readonly CancellationToken token;
     private DateTime lastExecuted = DateTime.UtcNow;
     
-    public int WorkflowQueueCount => AppQueue.Count;
+    public int WorkflowQueueCount => WorkflowQueue.Count;
     
     public string[]? Models { get; }
     
@@ -148,7 +150,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
 
     public void AddToQueue(string requestId)
     {
-        AppQueue.Add(requestId, token);
+        WorkflowQueue.Add(requestId, token);
         Interlocked.Increment(ref received);
     }
     
@@ -169,7 +171,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
     }
     
     bool ShouldStopRunning() => IsOffline || isDisposed || token.IsCancellationRequested;
-    private BlockingCollection<string> WorkflowQueue { get; } = new();
+
     
     public async Task ExecuteTasksAsync(ILogger log, IDbConnectionFactory dbFactory, IMessageProducer mq)
     {

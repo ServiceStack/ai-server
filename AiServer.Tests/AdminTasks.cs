@@ -16,7 +16,7 @@ public class ComfyApiProviderTests
         new CreateComfyApiProvider
         {
             Name = "comfy-dell.pvq.app",
-            ApiBaseUrl = useLocal ? "https://localhost:7860/api" : "https://comfy-dell.pvq.app/api",
+            ApiBaseUrl = useLocal ? "http://localhost:7860/api" : "https://comfy-dell.pvq.app/api",
             Concurrency = 1,
             HeartbeatUrl = "/",
             TaskWorkflows = new Dictionary<ComfyTaskType, string>
@@ -286,6 +286,7 @@ public class ComfyApiProviderTests
         // Run workflow via CreateComfyGeneration
         var createComfyGeneration = new CreateComfyGeneration
         {
+            Provider = "comfy-dell.pvq.app",
             Request = new ComfyWorkflowRequest()
             {
                 Model = ComfyApiModels[0].Name,
@@ -293,7 +294,6 @@ public class ComfyApiProviderTests
                 Height = 1024,
                 Width = 1024,
                 Sampler = ComfySampler.euler_ancestral,
-                Provider = "comfy-dell.pvq.app",
                 BatchSize = 1,
                 PositivePrompt = "Ocean sunset",
             }

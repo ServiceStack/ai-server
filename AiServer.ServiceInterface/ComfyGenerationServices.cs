@@ -71,13 +71,18 @@ public class ComfyGenerationServices(
             throw HttpError.NotFound($"Model {model} not found");
         
         // Find model
-        var comfyApiModel = await Db.SingleAsync<ComfyApiModel>(x => x.Name == request.Request.Model);
+        var comfyApiModel = await Db.SingleAsync<ComfyApiModel>(x => x.Name == model);
+        var comfyApiModeId = comfyApiModel.Id;
+        var modelWithSettings = await Db.LoadSingleByIdAsync<ComfyApiModel>(comfyApiModeId);
         
         request.RefId ??= Guid.NewGuid().ToString("N");
         var task = request.ConvertTo<ComfyGenerationTask>();
         task.Id = appData.GetNextComfyTaskId();
+        // Apply model defaults where missing properties
+        task.Request.PopulateWithNonDefaultValues(modelWithSettings.ModelSettings);
         // Filename is used as the internal unique id since that is what a comfy instance needs.
-        task.Model = comfyApiModel.Filename;
+        task.Request.Model = task.Model = comfyApiModel.Filename;
+        
         task.CreatedBy = Request.GetApiKeyUser() ?? "System";
         
         mq.Publish(new AppDbWrites {
