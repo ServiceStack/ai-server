@@ -48,20 +48,20 @@ public class ExecuteComfyGenerationTasksCommand(ILogger<ExecuteComfyGenerationTa
 
                     await Task.WhenAll(runningTasks);
 
-                    if (!appData.HasAnyChatTasksQueued())
+                    if (!appData.HasAnyComfyTasksQueued())
                     {
-                        log.LogInformation("[Chat] No more queued tasks left to execute, exiting...");
+                        log.LogInformation("[Comfy] No more queued tasks left to execute, exiting...");
                         break;
                     }
                 }
             }
             catch (TaskCanceledException)
             {
-                log.LogInformation("[Chat] Executing tasks was cancelled, exiting...");
+                log.LogInformation("[Comfy] Executing tasks was cancelled, exiting...");
             }
             catch (Exception ex)
             {
-                log.LogError(ex, "[Chat] Error executing tasks, exiting...");
+                log.LogError(ex, "[Comfy] Error executing tasks, exiting...");
             }
             finally
             {

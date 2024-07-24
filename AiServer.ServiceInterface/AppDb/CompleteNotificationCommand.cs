@@ -19,8 +19,7 @@ public class CompleteNotification
 [Tag(Tags.OpenAiChat)]
 public class CompleteNotificationCommand(
     ILogger<CompleteNotificationCommand> log, 
-    IDbConnectionFactory dbFactory,
-    IComfyClient comfyClient) : IAsyncCommand<CompleteNotification>
+    IDbConnectionFactory dbFactory) : IAsyncCommand<CompleteNotification>
 {
     public async Task ExecuteAsync(CompleteNotification request)
     {
@@ -104,6 +103,17 @@ public class CompleteNotificationCommand(
                 log.LogWarning("Task {Id} has no promptId", request.Id);
                 return;
             }
+
+            var worker = AppData.Instance.GetActiveComfyWorkers()
+                .Where(x => x.Name == task.Worker);
+            var comfyProviderWorkers = worker.ToList();
+            if (!comfyProviderWorkers.Any())
+            {
+                log.LogWarning("Task {Id} has no worker", request.Id);
+                return;
+            }
+
+            var comfyClient = comfyProviderWorkers.First().GetComfyClient();
 
             var succeeded = request.Error == null;
             if (succeeded)

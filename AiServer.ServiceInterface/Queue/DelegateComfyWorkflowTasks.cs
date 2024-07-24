@@ -29,7 +29,7 @@ public class DelegateComfyWorkflowTasksCommand(ILogger<DelegateComfyWorkflowTask
         if (Running)
             return;
         
-        var activeWorkerModels = appData.GetActiveWorkerModels();
+        var activeWorkerModels = appData.GetActiveComfyWorkerModels();
         using var db = await dbFactory.OpenDbConnectionAsync();
         if (!await db.ExistsAsync(db.From<ComfyGenerationTask>().Where(x => 
                 x.RequestId == null && x.StartedDate == null && x.CompletedDate == null && activeWorkerModels.Contains(x.Model))))

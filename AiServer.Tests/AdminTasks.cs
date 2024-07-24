@@ -1,3 +1,4 @@
+using AiServer.ServiceInterface;
 using AiServer.ServiceModel;
 using NUnit.Framework;
 using ServiceStack;
@@ -282,7 +283,25 @@ public class ComfyApiProviderTests
         var startWorkers = await client.ApiAsync(new StartWorkers());
         startWorkers.ThrowIfError();
         
-        // Run workflow
+        // Run workflow via CreateComfyGeneration
+        var createComfyGeneration = new CreateComfyGeneration
+        {
+            Request = new ComfyWorkflowRequest()
+            {
+                Model = ComfyApiModels[0].Name,
+                TaskType = ComfyTaskType.TextToImage,
+                Height = 1024,
+                Width = 1024,
+                Sampler = ComfySampler.euler_ancestral,
+                Provider = "comfy-dell.pvq.app",
+                BatchSize = 1,
+                PositivePrompt = "Ocean sunset",
+            }
+        };
+        
+        var createResponse = await client.ApiAsync(createComfyGeneration);
+        createResponse.ThrowIfError();
+        
         
     }
 }
