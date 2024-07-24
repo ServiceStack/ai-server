@@ -298,9 +298,14 @@ public class ComfyApiProviderTests
                 PositivePrompt = "Ocean sunset",
             }
         };
+
+        for (int i = 0; i < 5; i++)
+        {
+            createComfyGeneration.Request.PositivePrompt = $"Ocean sunset {i}";
+            var createResponse = await client.ApiAsync(createComfyGeneration);
+            createResponse.ThrowIfError();    
+        }
         
-        var createResponse = await client.ApiAsync(createComfyGeneration);
-        createResponse.ThrowIfError();
         
         
     }

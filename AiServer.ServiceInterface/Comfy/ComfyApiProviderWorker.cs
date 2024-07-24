@@ -279,8 +279,9 @@ public class ComfyProviderWorker : IComfyProviderWorker
             var (response,durationMs) = await comfyProvider.QueueWorkflow(this, task.Request, token);
 
             Interlocked.Increment(ref completed);
+            var taskType = Enum.GetName(task.TaskType);
             log.LogInformation("[{Name}] Completed Comfy {TaskType} Task {Id} from {Request} in {Duration}ms",
-                Name, task.TaskType, task.Id, task.RequestId, durationMs.TotalMilliseconds);
+                Name, taskType, task.Id, task.RequestId, durationMs.TotalMilliseconds);
 
             mq.Publish(new AppDbWrites
             {

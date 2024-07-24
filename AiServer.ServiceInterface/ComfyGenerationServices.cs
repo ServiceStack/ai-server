@@ -82,6 +82,7 @@ public class ComfyGenerationServices(
         task.Request.PopulateWithNonDefaultValues(modelWithSettings.ModelSettings);
         // Filename is used as the internal unique id since that is what a comfy instance needs.
         task.Request.Model = task.Model = comfyApiModel.Filename;
+        task.TaskType = request.Request.TaskType;
         
         task.CreatedBy = Request.GetApiKeyUser() ?? "System";
         
