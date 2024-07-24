@@ -7,11 +7,112 @@ public class Migration1002 : MigrationBase
 {
     public class ComfyGenerationTask : Migration1000.TaskBase
     {
-        public long Id { get; set; }
-        public object Request { get; set; }
-        public string WorkflowTemplate { get; set; }
+        public ComfyWorkflowRequest Request { get; set; }
+
+        public ComfyWorkflowResponse? Response { get; set; }
+    
+        public ComfyWorkflowStatus? Status { get; set; }
+
         public ComfyTaskType TaskType { get; set; }
-        public ComfyWorkflowResponse Response { get; set; }
+        public string WorkflowTemplate { get; set; }
+    }
+    
+    public class ComfyWorkflowStatus
+    {
+        public string StatusMessage { get; set; }
+        public bool Completed { get; set; }
+        public List<ComfyOutput> Outputs { get; set; } = new();
+    }
+    
+    public class ComfyFileOutput
+    {
+        public string Filename { get; set; }
+        public string Type { get; set; }
+        public string Subfolder { get; set; }
+    }
+
+    public class ComfyTextOutput
+    {
+        public string? Text { get; set; }
+    }
+    
+    public class ComfyOutput
+    {
+        public List<ComfyFileOutput> Files { get; set; } = new();
+        public List<ComfyTextOutput> Texts { get; set; } = new();
+    }
+    
+    public class ComfyFileInput
+    {
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public string Subfolder { get; set; }
+    }
+    
+    public class ComfyWorkflowRequest
+    {
+        public string? Model { get; set; }
+
+        public int? Steps { get; set; }
+
+        public int BatchSize { get; set; }
+
+        public int? Seed { get; set; }
+        public string? PositivePrompt { get; set; }
+        public string? NegativePrompt { get; set; }
+
+        public ComfyFileInput? Image { get; set; }
+        public ComfyFileInput? Speech { get; set; }
+        public ComfyFileInput? Mask { get; set; }
+
+        public Stream? ImageInput { get; set; }
+        public Stream? SpeechInput { get; set; }
+        public Stream? MaskInput { get; set; }
+
+        public ComfySampler? Sampler { get; set; }
+        public ArtStyle? ArtStyle { get; set; }
+        public string? Scheduler { get; set; } = "normal";
+        public double? CfgScale { get; set; }
+        public double? Denoise { get; set; }
+
+        public string? UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
+
+        public int? Width { get; set; }
+        public int? Height { get; set; }
+
+        public ComfyTaskType TaskType { get; set; }
+        public string? Clip { get; set; }
+        public double? SampleLength { get; set; }
+        public ComfyMaskSource MaskChannel { get; set; }
+    }
+    
+    public enum ComfyMaskSource
+    {
+        red,
+        blue,
+        green,
+        alpha
+    }
+    
+    public enum ArtStyle
+    {
+        ThreeDModel,
+        AnalogFilm,
+        Anime,
+        Cinematic,
+        ComicBook,
+        DigitalArt,
+        Enhance,
+        FantasyArt,
+        Isometric,
+        LineArt,
+        LowPoly,
+        ModelingCompound,
+        NeonPunk,
+        Origami,
+        Photographic,
+        PixelArt,
+        TileTexture
     }
 
     public class ComfySummary

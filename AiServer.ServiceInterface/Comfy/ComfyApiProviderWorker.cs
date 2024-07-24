@@ -278,6 +278,10 @@ public class ComfyProviderWorker : IComfyProviderWorker
             lastExecuted = DateTime.UtcNow;
             var (response,durationMs) = await comfyProvider.QueueWorkflow(this, task.Request, token);
 
+            // Get status
+            var comfyClient = GetComfyClient();
+            var status = await comfyClient.GetWorkflowStatusAsync(response.PromptId);
+            
             Interlocked.Increment(ref completed);
             var taskType = Enum.GetName(task.TaskType);
             log.LogInformation("[{Name}] Completed Comfy {TaskType} Task {Id} from {Request} in {Duration}ms",
@@ -290,6 +294,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
                     Id = task.Id,
                     Provider = Name,
                     DurationMs = (int)durationMs.TotalMilliseconds,
+                    Status = status,
                     Response = response,
                 },
             });

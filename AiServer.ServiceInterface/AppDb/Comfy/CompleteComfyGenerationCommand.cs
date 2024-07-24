@@ -16,6 +16,7 @@ public class CompleteComfyGenerationCommand(IDbConnection db) : IAsyncCommand<Co
             Provider = request.Provider,
             DurationMs = request.DurationMs,
             Response = request.Response,
+            Status = request.Status,
             CompletedDate = DateTime.UtcNow,
         }, where: x => x.Id == request.Id);
     }

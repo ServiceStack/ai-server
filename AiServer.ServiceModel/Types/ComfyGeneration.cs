@@ -9,6 +9,8 @@ public class ComfyGenerationTask : TaskBase
     public ComfyWorkflowRequest Request { get; set; }
 
     public ComfyWorkflowResponse? Response { get; set; }
+    
+    public ComfyWorkflowStatus? Status { get; set; }
 
     public ComfyTaskType TaskType { get; set; }
     public string WorkflowTemplate { get; set; }
@@ -16,7 +18,7 @@ public class ComfyGenerationTask : TaskBase
 
 public class ComfyGenerationCompleted : ComfyGenerationTask
 {
-    public ComfyWorkflowStatus? Status { get; set; }
+    
 }
 
 public class ComfyGenerationFailed : ComfyGenerationTask

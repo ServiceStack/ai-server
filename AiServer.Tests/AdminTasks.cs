@@ -56,21 +56,10 @@ public class ComfyApiProviderTests
         }
     };
 
-    [SetUp]
-    public async Task SetUp()
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
     {
-        // Delete all existing ComfyApiProviders and ComfyApiModels
-        var client = TestUtils.CreateAuthSecretClient();
         Environment.SetEnvironmentVariable("AUTH_SECRET","p@55wOrd");
-        try
-        {
-            await DeleteComfyApiModels(client);
-            await DeleteComfyApiProviders(client);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
     }
     
     
@@ -260,6 +249,20 @@ public class ComfyApiProviderTests
     }
 
     [Test]
+    public async Task EnsureProviderIsCreatedAndOnline()
+    {
+        // Create new provider
+        var client = TestUtils.CreateAuthSecretClient();
+        await CreateComfyApiProviders(client);
+        await CreateComfyApiModels(client);
+        await Assign_ComfyApiModelToProvider();
+        // Start workers
+        var startWorkers = await client.ApiAsync(new StartWorkers());
+        startWorkers.ThrowIfError();
+        await ChangeComfyApiProviderStatus_Online();
+    }
+
+    [Test]
     public async Task CanSetupNewProviderWithNewModelAndRunWorkflow()
     {
         // Create new provider
@@ -267,6 +270,9 @@ public class ComfyApiProviderTests
         await CreateComfyApiProviders(client);
         await CreateComfyApiModels(client);
         await Assign_ComfyApiModelToProvider();
+        // Start workers
+        var startWorkers = await client.ApiAsync(new StartWorkers());
+        startWorkers.ThrowIfError();
         await ChangeComfyApiProviderStatus_Online();
         
         // Validate provider is online
@@ -279,9 +285,7 @@ public class ComfyApiProviderTests
         Assert.That(provider, Is.Not.Null);
         Assert.That(provider!.OfflineDate, Is.Null);
         
-        // Start workers
-        var startWorkers = await client.ApiAsync(new StartWorkers());
-        startWorkers.ThrowIfError();
+
         
         // Run workflow via CreateComfyGeneration
         var createComfyGeneration = new CreateComfyGeneration
