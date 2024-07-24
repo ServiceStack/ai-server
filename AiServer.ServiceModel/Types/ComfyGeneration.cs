@@ -24,6 +24,14 @@ public class ComfyGenerationFailed : ComfyGenerationTask
     public DateTime FailedDate { get; set; }
 }
 
+public class ComfyGenerationRequest
+{
+    public long Id { get; set; }
+    public string Model { get; set; }
+    public string Provider { get; set; }
+    public ComfyWorkflowRequest Request { get; set; }
+}
+
 public enum ArtStyle
 {
     ThreeDModel,

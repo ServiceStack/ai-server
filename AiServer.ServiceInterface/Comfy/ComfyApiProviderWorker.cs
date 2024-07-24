@@ -185,7 +185,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
         try
         {
             using var db = await dbFactory.OpenDbConnectionAsync(token:token);
-            while (Executor.ExecuteOpenAiChatTasksCommand.ShouldContinueRunning)
+            while (Executor.ExecuteComfyGenerationTasksCommand.ShouldContinueRunning)
             {
                 if (ShouldStopRunning())
                     return;
@@ -232,7 +232,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
                     log.LogInformation("[{Name}] processed all its tasks, requesting new tasks...", Name);
                     mq.Publish(new AppDbWrites
                     {
-                        RequestOpenAiChatTasks = new()
+                        RequestComfyGenerationTasks = new()
                         {
                             Provider = Name,
                             Count = 3,
@@ -261,12 +261,12 @@ public class ComfyProviderWorker : IComfyProviderWorker
         }
     }
     
-    public IComfyProvider GetOpenAiProvider() => aiFactory.GetComfyProvider();
+    public IComfyProvider GetProvider() => aiFactory.GetComfyProvider();
 
     
     async Task<long?> ExecuteComfyWorkflowTaskAsync(ILogger log, IMessageProducer mq, ComfyGenerationTask task)
     {
-        var chatProvider = GetOpenAiProvider();
+        var comfyProvider = GetProvider();
 
         try
         {
@@ -274,7 +274,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
                 return null;
 
             lastExecuted = DateTime.UtcNow;
-            var (response,durationMs) = await chatProvider.QueueWorkflow(this, task.Request, token);
+            var (response,durationMs) = await comfyProvider.QueueWorkflow(this, task.Request, token);
 
             Interlocked.Increment(ref completed);
             log.LogInformation("[{Name}] Completed Chat Task {Id} from {Request} in {Duration}ms",
@@ -303,7 +303,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
                         Body = json,
                         CompleteNotification = new()
                         {
-                            Type = TaskType.OpenAiChat,
+                            Type = TaskType.Comfy,
                             Id = task.Id,
                         },
                     },
@@ -328,14 +328,14 @@ public class ComfyProviderWorker : IComfyProviderWorker
 
             try
             {
-                if (!await chatProvider.IsOnlineAsync(this, token))
+                if (!await comfyProvider.IsOnlineAsync(this, token))
                 {
                     var offlineDate = DateTime.UtcNow;
                     IsOffline = true;
                     log.LogError("[{Name}] has been taken offline", Name);
                     mq.Publish(new AppDbWrites
                     {
-                        RecordOfflineProvider = new()
+                        RecordOfflineComfyProvider = new()
                         {
                             Name = Name,
                             OfflineDate = offlineDate,
@@ -346,7 +346,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
                 {
                     mq.Publish(new AppDbWrites
                     {
-                        FailOpenAiChat = new()
+                        FailComfyGeneration = new()
                         {
                             Id = task.Id,
                             Provider = Name,

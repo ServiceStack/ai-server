@@ -62,7 +62,7 @@ public class AppDbWrites : IReturn<EmptyResponse>
     public FailComfyGeneration? FailComfyGeneration { get; set; }
     
     [Command<ChangeComfyProviderStatusCommand>]
-    public ChangeComfyProviderStatus? ChangeComfyProviderStatus { get; set; }
+    public ChangeComfyProviderStatus? RecordOfflineComfyProvider { get; set; }
     
     [Command<RequestComfyGenerationTasksCommand>]
     public RequestComfyGenerationTasks? RequestComfyGenerationTasks { get; set; }
