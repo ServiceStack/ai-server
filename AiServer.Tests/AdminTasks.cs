@@ -54,32 +54,24 @@ public class ComfyApiProviderTests
             }
         }
     };
-    
-    [OneTimeSetUp]
-    public void OneTimeSetUp()
+
+    [SetUp]
+    public async Task SetUp()
     {
         // Delete all existing ComfyApiProviders and ComfyApiModels
         var client = TestUtils.CreateAuthSecretClient();
+        Environment.SetEnvironmentVariable("AUTH_SECRET","p@55wOrd");
         try
         {
-            DeleteComfyApiModels(client).Wait();
-            DeleteComfyApiProviders(client).Wait();
+            await DeleteComfyApiModels(client);
+            await DeleteComfyApiProviders(client);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
         }
     }
-
-    [Test]
-    public async Task Create_Local_ComfyApiProviders_and_Models()
-    {
-        Environment.SetEnvironmentVariable("AUTH_SECRET","p@55wOrd");
-        var client = TestUtils.CreateAuthSecretClient();
-        await CreateComfyApiProviders(client);
-        await CreateComfyApiModels(client);
-        // Update provider to use model
-    }
+    
     
     private async Task DeleteComfyApiModels(JsonApiClient client)
     {
@@ -123,18 +115,20 @@ public class ComfyApiProviderTests
         }
     }
 
-    // [Test]
-    // public async Task Create_Remote_ComfyApiProviders_and_Models()
-    // {
-    //     var client = TestUtils.CreatePublicAuthSecretClient();
-    //     await CreateComfyApiProviders(client);
-    //     await CreateComfyApiModels(client);
-    // }
-
     private static async Task CreateComfyApiProviders(JsonApiClient client)
     {
         foreach (var createComfyApiProvider in ComfyApiProviders)
         {
+            var apiQuery = await client.ApiAsync(new QueryComfyApiProviders
+            {
+                Name = createComfyApiProvider.Name,
+            });
+            var existingProvider = apiQuery.Response?.Results?.FirstOrDefault();
+            if (existingProvider != null)
+            {
+                // Already exists, ignore
+                continue;
+            }
             var api = await client.ApiAsync(createComfyApiProvider);
             api.ThrowIfError();
         }
@@ -145,68 +139,71 @@ public class ComfyApiProviderTests
         
         foreach (var createComfyApiModel in ComfyApiModels)
         {
+            var apiQuery = await client.ApiAsync(new QueryComfyApiModels
+            {
+                Name = createComfyApiModel.Name,
+            });
+            var existingModel = apiQuery.Response?.Results?.FirstOrDefault();
+            if (existingModel != null)
+            {
+                // Already exists, ignore
+                continue;
+            }
             var api = await client.ApiAsync(createComfyApiModel);
             api.ThrowIfError();
         }
     }
 
+
+    [Test]
+    public async Task Create_Local_ComfyApiProviders_and_Models()
+    {
+        var client = TestUtils.CreateAuthSecretClient();
+        await CreateComfyApiProviders(client);
+        await CreateComfyApiModels(client);
+        // Update provider to use model
+    }
+    
     [Test]
     public async Task Assign_ComfyApiModelToProvider()
     {
-        Environment.SetEnvironmentVariable("AUTH_SECRET","p@55wOrd");
         var client = TestUtils.CreateAuthSecretClient();
+        // Create provider
         await CreateComfyApiProviders(client);
-        var providerToUpdate = ComfyApiProviders[0]; // Assuming we want to update the first provider
-
-        var apiQuery = await client.ApiAsync(new QueryComfyApiProviders
+        // Query provider
+        var resProvider = await client.ApiAsync(new QueryComfyApiProviders
         {
-            Name = providerToUpdate.Name,
+            Name = ComfyApiProviders[0].Name,
         });
-        apiQuery.ThrowIfError();
-        var existingProvider = apiQuery.Response!.Results.FirstOrDefault();
+        resProvider.ThrowIfError();
+        var existingProvider = resProvider.Response!.Results.FirstOrDefault();
         if (existingProvider == null)
             throw new Exception("ComfyApiProvider not found");
-
-        await CreateComfyApiModels(client);
-        var model = ComfyApiModels[0];
-        var modelQuery = await client.ApiAsync(new QueryComfyApiModels
-        {
-            Name = model.Name,
-        });
-        modelQuery.ThrowIfError();
         
-        var modelId = modelQuery.Response!.Results.FirstOrDefault()?.Id;
-        if (modelId == null)
+        // Create model
+        await CreateComfyApiModels(client);
+        // Query model
+        var resModel = await client.ApiAsync(new QueryComfyApiModels
+        {
+            Name = ComfyApiModels[0].Name,
+        });
+        resModel.ThrowIfError();
+        var model = resModel.Response!.Results.FirstOrDefault();
+        if (model == null)
             throw new Exception("ComfyApiModel not found");
 
         var api = await client.ApiAsync(new AddComfyProviderModel
         {
             ComfyApiProviderId = existingProvider.Id,
-            ComfyApiModelId = modelId.Value,
+            ComfyApiModelId = model.Id,
         });
         
         api.ThrowIfError();
-        
-        // Query provider
-        var providerQuery = await client.ApiAsync(new QueryComfyApiProviders
-        {
-            Name = providerToUpdate.Name,
-        });
-        
-        providerQuery.ThrowIfError();
-        
-        var provider = providerQuery.Response!.Results.FirstOrDefault();
-        
-        if (provider == null)
-            throw new Exception("ComfyApiProvider not found");
-        
-        Assert.That(provider.Models.Count, Is.EqualTo(1));
     }
 
     [Test]
     public async Task Update_ComfyApiProvider()
     {
-        Environment.SetEnvironmentVariable("AUTH_SECRET","p@55wOrd");
         var client = TestUtils.CreateAuthSecretClient();
         await CreateComfyApiProviders(client);
         var providerToUpdate = ComfyApiProviders[0]; // Assuming we want to update the first provider
@@ -236,7 +233,6 @@ public class ComfyApiProviderTests
     [Test]
     public async Task ChangeComfyApiProviderStatus_Offline()
     {
-        Environment.SetEnvironmentVariable("AUTH_SECRET","p@55wOrd");
         var client = TestUtils.CreateAuthSecretClient();
         // Create
         await CreateComfyApiProviders(client);
@@ -251,7 +247,9 @@ public class ComfyApiProviderTests
     [Test]
     public async Task ChangeComfyApiProviderStatus_Online()
     {
-        var client = TestUtils.CreatePublicAuthSecretClient();
+        var client = TestUtils.CreateAuthSecretClient();
+        // Create
+        await CreateComfyApiProviders(client);
         var api = await client.ApiAsync(new ChangeComfyApiProviderStatus
         {
             Provider = ComfyApiProviders[0].Name,

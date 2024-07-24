@@ -7,7 +7,7 @@ public class Migration1002 : MigrationBase
 {
     public class ComfyGenerationTask : Migration1000.TaskBase
     {
-        [AutoIncrement] public long Id { get; set; }
+        public long Id { get; set; }
         public object Request { get; set; }
         public string WorkflowTemplate { get; set; }
         public ComfyTaskType TaskType { get; set; }
@@ -16,7 +16,6 @@ public class Migration1002 : MigrationBase
 
     public class ComfySummary
     {
-        [AutoIncrement]
         public long Id { get; set; }
     
         /// <summary>
@@ -164,11 +163,11 @@ public class Migration1002 : MigrationBase
     public class ComfyApiProviderModel
     {
         [AutoIncrement] public int Id { get; set; }
-
-        [References(typeof(ComfyApiProvider))]
+        
+        [ForeignKey(typeof(ComfyApiProvider), OnDelete = "CASCADE")]
         public int ComfyApiProviderId { get; set; }
         
-        [References(typeof(ComfyApiModel))]
+        [ForeignKey(typeof(ComfyApiModel), OnDelete = "CASCADE")]
         public int ComfyApiModelId { get; set; }
         
         [Reference]
@@ -233,7 +232,6 @@ public class Migration1002 : MigrationBase
         [AutoIncrement]
         public int Id { get; set; }
         
-        [References(typeof(ComfyApiModel))]
         [ForeignKey(typeof(ComfyApiModel), OnDelete = "CASCADE")]
         public int ComfyApiModelId { get; set; }
         

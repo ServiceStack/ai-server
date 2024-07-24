@@ -225,12 +225,13 @@ public class UpdateComfyApiProvider : IUpdateDb<ComfyApiProvider>, IReturn<IdRes
     public bool? Enabled { get; set; }
 }
 
-public class AddComfyProviderModel : ICreateDb<ComfyApiProviderModel>, IReturn<IdResponse>
+public class AddComfyProviderModel : IPost, IReturn<IdResponse>
 {
     public int ComfyApiProviderId { get; set; }
     
-    public int? ComfyApiModelId { get; set; }
+    public int ComfyApiModelId { get; set; }
     public string? ComfyApiModelName { get; set; }
+    public string? ComfyApiProviderName { get; set; }
 }
 
 [Tag(Tag.Admin)]
