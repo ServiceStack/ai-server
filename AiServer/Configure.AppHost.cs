@@ -88,5 +88,14 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             client.Timeout = TimeSpan.FromSeconds(180);
             return client;
         };
+        
+        #if DEBUG
+        // Avoid having to re-renter AuthSecret and API Keys during Development
+        PreRequestFilters.Add((req, res) =>
+        {
+            req.Items[Keywords.AuthSecret] = authSecret;
+            req.Items[Keywords.Authorization] = "Bearer " + authSecret;
+        });
+        #endif
     }
 }
