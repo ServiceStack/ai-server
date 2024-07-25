@@ -215,3 +215,16 @@ public class RerunCompletedTasksResponse
     public List<long> Results { get; set; } = [];
     public ResponseStatus? ResponseStatus { get; set; }
 }
+
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
+public class AdminAddModel : IPost, IReturn<EmptyResponse>
+{
+    [ValidateNotNull]
+    public required ApiModel Model { get; set; }
+    
+    public Dictionary<string, Property>? ApiTypes { get; set; }
+
+    public Dictionary<string, ApiProviderModel>? ApiProviders { get; set; }
+}
+

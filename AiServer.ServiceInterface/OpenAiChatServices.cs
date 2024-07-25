@@ -442,4 +442,43 @@ public class OpenAiChatServices(
         
         return to;
     }
+
+    public async Task<object> Any(AdminAddModel request)
+    {
+        var apiModel = await Db.SingleAsync<ApiModel>(x => x.Name == request.Model.Name);
+        if (apiModel == null)
+        {
+            await Db.InsertAsync(request.Model);
+        }
+
+        if (request.ApiTypes != null)
+        {
+            var typeNames = request.ApiTypes.Keys.ToList();
+            var apiTypes = await Db.SelectAsync<ApiType>(x => typeNames.Contains(x.Name));
+            foreach (var apiType in apiTypes)
+            {
+                var apiTypeModel = request.ApiTypes[apiType.Name];
+                apiType.ApiModels[apiTypeModel.Name] = apiTypeModel.Value;
+                await Db.UpdateOnlyFieldsAsync(apiType, x => x.ApiModels, 
+                    x => x.Id == apiType.Id);
+            }
+        }
+
+        if (request.ApiProviders != null)
+        {
+            var providerNames = request.ApiProviders.Keys.ToList();
+            var apiProviders = await Db.SelectAsync<ApiProvider>(x => providerNames.Contains(x.Name));
+            foreach (var apiProvider in apiProviders)
+            {
+                if (await Db.ExistsAsync<ApiProviderModel>(x => x.ApiProviderId == apiProvider.Id && x.Model == request.Model.Name))
+                    continue;
+                
+                var apiProviderModel = request.ApiProviders[apiProvider.Name];
+                apiProviderModel.ApiProviderId = apiProvider.Id;
+                await Db.InsertAsync(apiProviderModel);
+            }
+        }
+
+        return new EmptyResponse();
+    }
 }
