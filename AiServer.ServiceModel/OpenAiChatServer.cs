@@ -24,6 +24,22 @@ public class GetOpenAiChatResponse
     public ResponseStatus? ResponseStatus { get; set; }
 }
 
+[Tag(Tag.OpenAi)]
+[ValidateApiKey]
+public class WaitForOpenAiChat : IGet, IReturn<GetOpenAiChatResponse>
+{
+    public int? Id { get; set; }
+    public string? RefId { get; set; }
+}
+
+[Tag(Tag.OpenAi)]
+[Route("/icons/models/{Model}", "GET")]
+public class GetModelImage : IGet, IReturn<byte[]>
+{
+    public string Model { get; set; }
+}
+
+
 [Tag(ServiceModel.Tag.OpenAi)]
 [ValidateApiKey]
 public class CreateOpenAiChat : ICreateDb<OpenAiChatTask>, IReturn<CreateOpenAiChatResponse>
