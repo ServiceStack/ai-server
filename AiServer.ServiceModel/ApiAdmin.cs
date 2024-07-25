@@ -106,6 +106,11 @@ public class DeleteApiProviderModel : IDeleteDb<ApiProviderModel>, IReturn<IdRes
 
 [Tag(Tag.Info)]
 [ValidateApiKey]
+[Description("Active Worker Models available in AI Server")]
+public class ActiveApiModels : IGet, IReturn<StringsResponse> {}
+
+[Tag(Tag.Info)]
+[ValidateApiKey]
 [Description("Different Models available in AI Server")]
 public class QueryApiModels : QueryDb<ApiModel> {}
 
@@ -131,3 +136,16 @@ public class CreateApiModel : ICreateDb<ApiModel>, IReturn<IdResponse>
 [ValidateApiKey]
 [Description("The Type and behavior of different API Providers")]
 public class QueryApiType : QueryDb<ApiType> {}
+
+public class AdminData : IGet, IReturn<AdminDataResponse> {}
+
+public class PageStats
+{
+    public string Label { get; set; }
+    public int Total { get; set; }
+}
+
+public class AdminDataResponse
+{
+    public List<PageStats> PageStats { get; set; }
+}
