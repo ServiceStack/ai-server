@@ -1,3 +1,4 @@
+using System.Data;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.Logging;
@@ -49,35 +50,44 @@ public class CompleteNotificationCommand(ILogger<CompleteNotificationCommand> lo
                 }, where: x => x.Id == request.Id);
             }
 
-            var monthDbName = dbFactory.GetNamedMonthDb(task.CreatedDate);
-            using var dbMonth = HostContext.AppHost.GetDbConnection(monthDbName);
-
-            if (succeeded)
-            {
-                var completedTask = task.ToOpenAiChatCompleted();
-                var openAiUsage = task.Response?.Usage;
-                var promptTokens = openAiUsage?.PromptTokens ?? 0;
-                var completionTokens = openAiUsage?.CompletionTokens ?? 0;
-                await db.UpdateOnlyAsync(() => new TaskSummary {
-                    Type = TaskType.OpenAiChat,
-                    Model = task.Model,
-                    PromptTokens = promptTokens, 
-                    CompletionTokens = completionTokens,
-                    Provider = task.Provider,
-                    DurationMs = task.DurationMs,
-                    Tag = task.Tag,
-                    RefId = task.RefId,
-                    CreatedDate = task.CreatedDate,
-                }, x => x.Id == task.Id);
-                await dbMonth.InsertAsync(completedTask);
-            }
-            else
-            {
-                var failedTask = task.ToOpenAiChatFailed();
-                await dbMonth.InsertAsync(failedTask);
-            }
-            
-            await db.DeleteByIdAsync<OpenAiChatTask>(request.Id);
+            await dbFactory.CompleteOpenAiChatAsync(db, task);
         }
+    }
+}
+
+public static class CompleteUtils
+{
+    public static async Task CompleteOpenAiChatAsync(this IDbConnectionFactory dbFactory, IDbConnection db, OpenAiChatTask task)
+    {
+        var monthDbName = dbFactory.GetNamedMonthDb(task.CreatedDate);
+        using var dbMonth = HostContext.AppHost.GetDbConnection(monthDbName);
+
+        var succeeded = task.Error == null;
+        if (succeeded)
+        {
+            var completedTask = task.ToOpenAiChatCompleted();
+            var openAiUsage = task.Response?.Usage;
+            var promptTokens = openAiUsage?.PromptTokens ?? 0;
+            var completionTokens = openAiUsage?.CompletionTokens ?? 0;
+            await db.UpdateOnlyAsync(() => new TaskSummary {
+                Type = TaskType.OpenAiChat,
+                Model = task.Model,
+                PromptTokens = promptTokens, 
+                CompletionTokens = completionTokens,
+                Provider = task.Provider,
+                DurationMs = task.DurationMs,
+                Tag = task.Tag,
+                RefId = task.RefId,
+                CreatedDate = task.CreatedDate,
+            }, x => x.Id == task.Id);
+            await dbMonth.InsertAsync(completedTask);
+        }
+        else
+        {
+            var failedTask = task.ToOpenAiChatFailed();
+            await dbMonth.InsertAsync(failedTask);
+        }
+            
+        await db.DeleteByIdAsync<OpenAiChatTask>(task.Id);
     }
 }

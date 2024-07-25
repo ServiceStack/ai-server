@@ -69,6 +69,7 @@ public class CompleteOpenAiChat : IPost, IReturn<EmptyResponse>
     public string Provider { get; set; }
     public int DurationMs { get; set; }
     public OpenAiChatResponse Response { get; set; }
+    public virtual string? ReplyTo { get; set; } 
 }
 
 [Tag(Tag.OpenAi)]

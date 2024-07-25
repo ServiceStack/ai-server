@@ -262,27 +262,9 @@ public class ApiProviderWorker : IApiProviderWorker
                     Provider = Name,
                     DurationMs = durationMs,
                     Response = response,
+                    ReplyTo = task.ReplyTo,
                 },
             });
-
-            if (task.ReplyTo != null)
-            {
-                var json = response.ToJson();
-                mq.Publish(new NotificationTasks
-                {
-                    NotificationRequest = new()
-                    {
-                        Url = task.ReplyTo,
-                        ContentType = MimeTypes.Json,
-                        Body = json,
-                        CompleteNotification = new()
-                        {
-                            Type = TaskType.OpenAiChat,
-                            Id = task.Id,
-                        },
-                    },
-                });
-            }
 
             return task.Id;
         }
