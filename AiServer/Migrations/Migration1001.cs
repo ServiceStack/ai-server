@@ -192,6 +192,7 @@ public class Migration1001 : MigrationBase
             new() { Name = "deepseek-coder:6.7b", Parameters = "6.7B" },
             new() { Name = "deepseek-coder:33b", Parameters = "33B" },
             new() { Name = "mistral", Parameters = "7B" },
+            new() { Name = "mistral-nemo", Parameters = "12B" },
             new() { Name = "mixtral", Parameters = "8x7B" },
             new() { Name = "command-r", Parameters = "35B" },
             new() { Name = "command-r-plus", Parameters = "104B" },
@@ -239,6 +240,7 @@ public class Migration1001 : MigrationBase
             ApiModels = new()
             {
                 ["mistral"] = "mistralai/mistral-7b-instruct",
+                ["mistral-nemo"] = "mistralai/mistral-nemo",
                 ["gemma"] = "google/gemma-7b-it",
                 ["gemma2:27b"] = "google/gemma-2-27b-it",
                 ["mixtral"] = "mistralai/mixtral-8x7b-instruct",
@@ -303,6 +305,7 @@ public class Migration1001 : MigrationBase
             ApiModels = new()
             {
                 ["mistral"] = "open-mistral-7b",
+                ["mistral-nemo"] = "open-mistral-nemo",
                 ["mixtral"] = "open-mixtral-8x7b",
                 ["mixtral:8x22b"] = "open-mixtral-8x22b",
                 ["mistral-small"] = "mistral-small-latest",

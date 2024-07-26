@@ -117,6 +117,7 @@ public static class TestUtils
         ApiModels = new()
         {
             ["mistral"] = "mistralai/mistral-7b-instruct",
+            ["mistral-nemo"] = "mistralai/mistral-nemo",
             ["gemma"] = "google/gemma-7b-it",
             ["mixtral"] = "mistralai/mixtral-8x7b-instruct",
             ["mixtral:8x22b"] = "mistralai/mixtral-8x22b-instruct",
@@ -200,7 +201,8 @@ public static class TestUtils
             new() { Model = "phi3", },
             new() { Model = "gemma", },
             new() { Model = "codellama", },
-            new() { Model = "mistral", }
+            new() { Model = "mistral", },
+            new() { Model = "mistral-nemo", },
         ],
         ApiType = OpenAiApiType
     };
@@ -219,6 +221,7 @@ public static class TestUtils
             new() { Model = "gemma", },
             new() { Model = "codellama", },
             new() { Model = "mistral", },
+            new() { Model = "mistral-nemo", },
         ],
         ApiType = OpenAiApiType
     };
@@ -239,6 +242,7 @@ public static class TestUtils
             new() { Model = "deepseek-coder:33b" },
             new() { Model = "phi3", },
             new() { Model = "mistral", },
+            new() { Model = "mistral-nemo", },
             new() { Model = "llama3:8b", },
             new() { Model = "gemma", },
             new() { Model = "codellama", },
@@ -284,6 +288,7 @@ public static class TestUtils
             new() { Model = "wizardlm2:8x22b", },
             new() { Model = "mistral-small", },
             new() { Model = "mistral-large", },
+            new() { Model = "mistral-nemo", },
             new() { Model = "dbrx", },
             new() { Model = "qwen2:72b", },
             new() { Model = "command-r", },
@@ -334,6 +339,7 @@ public static class TestUtils
         ApiModels = new()
         {
             ["mistral"] = "open-mistral-7b",
+            ["mistral-nemo"] = "open-mistral-nemo",
             ["mixtral"] = "open-mixtral-8x7b",
             ["mixtral:8x22b"] = "open-mixtral-8x22b",
             ["mistral-small"] = "mistral-small-latest",
