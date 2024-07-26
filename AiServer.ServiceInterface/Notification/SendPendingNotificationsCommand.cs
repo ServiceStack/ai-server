@@ -23,50 +23,87 @@ public class SendPendingNotificationsCommand(ILogger<SendPendingNotificationsCom
     {
         if (Interlocked.CompareExchange(ref running, 1, 0) == 0)
         {
+            TaskType pendingType = TaskType.OpenAiChat;
             try
             {
                 if (appData.IsStopped)
                     return;
 
-                using var db = await dbFactory.OpenDbConnectionAsync();
-                var pendingNotifications = await db.SelectAsync(db.From<OpenAiChatTask>()
-                    .Where(x => x.CompletedDate != null && x.Response != null && x.NotificationDate == null && x.Retries <= 3 && x.ReplyTo != null));
-                    
-                foreach (var task in pendingNotifications)
-                {
-                    var json = task.Response.ToJson();
-                    mq.Publish(new NotificationTasks
-                    {
-                        NotificationRequest = new()
-                        {
-                            Url = task.ReplyTo!,
-                            ContentType = MimeTypes.Json,
-                            Body = json,
-                            CompleteNotification = new()
-                            {
-                                Type = TaskType.OpenAiChat,
-                                Id = task.Id,
-                            },
-                        },
-                    });
-                }
-
-                if (pendingNotifications.Count > 0)
-                    log.LogInformation("[Chat] Delegated {PendingCount} pending notifications, exiting...", pendingNotifications.Count);
+                await HandleChat();
+                pendingType = TaskType.Comfy;
+                await HandleComfy();
             }
             catch (TaskCanceledException)
             {
-                log.LogInformation("[Chat] Notification tasks was cancelled, exiting...");
+                log.LogInformation($"[{pendingType.ToString()}] Notification tasks was cancelled, exiting...");
             }
             catch (Exception ex)
             {
-                log.LogError(ex, "[Chat] Error sending task notifications, exiting...");
+                log.LogError(ex, $"[{pendingType.ToString()}] Error sending task notifications, exiting...");
             }
             finally
             {
                 Interlocked.Decrement(ref running);
             }
         }
+    }
+    
+    private async Task HandleComfy()
+    {
+        using var db = await dbFactory.OpenDbConnectionAsync();
+        var pendingNotifications = await db.SelectAsync(db.From<ComfyGenerationTask>()
+            .Where(x => x.CompletedDate != null && x.Response != null && x.NotificationDate == null && x.Retries <= 3 && x.ReplyTo != null));
+                    
+        foreach (var task in pendingNotifications)
+        {
+            var json = task.Response.ToJson();
+            mq.Publish(new NotificationTasks
+            {
+                NotificationRequest = new()
+                {
+                    Url = task.ReplyTo!,
+                    ContentType = MimeTypes.Json,
+                    Body = json,
+                    CompleteNotification = new()
+                    {
+                        Type = TaskType.Comfy,
+                        Id = task.Id,
+                    },
+                },
+            });
+        }
+
+        if (pendingNotifications.Count > 0)
+            log.LogInformation("[Comfy] Delegated {PendingCount} pending notifications, exiting...", pendingNotifications.Count);
+    }
+
+    private async Task HandleChat()
+    {
+        using var db = await dbFactory.OpenDbConnectionAsync();
+        var pendingNotifications = await db.SelectAsync(db.From<OpenAiChatTask>()
+            .Where(x => x.CompletedDate != null && x.Response != null && x.NotificationDate == null && x.Retries <= 3 && x.ReplyTo != null));
+                    
+        foreach (var task in pendingNotifications)
+        {
+            var json = task.Response.ToJson();
+            mq.Publish(new NotificationTasks
+            {
+                NotificationRequest = new()
+                {
+                    Url = task.ReplyTo!,
+                    ContentType = MimeTypes.Json,
+                    Body = json,
+                    CompleteNotification = new()
+                    {
+                        Type = TaskType.OpenAiChat,
+                        Id = task.Id,
+                    },
+                },
+            });
+        }
+
+        if (pendingNotifications.Count > 0)
+            log.LogInformation("[Chat] Delegated {PendingCount} pending notifications, exiting...", pendingNotifications.Count);
     }
 }
 

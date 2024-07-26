@@ -7,17 +7,118 @@ public class Migration1002 : MigrationBase
 {
     public class ComfyGenerationTask : Migration1000.TaskBase
     {
-        [AutoIncrement] public long Id { get; set; }
-        public object Request { get; set; }
-        public string WorkflowTemplate { get; set; }
+        public ComfyWorkflowRequest Request { get; set; }
+
+        public ComfyWorkflowResponse? Response { get; set; }
+    
+        public ComfyWorkflowStatus? Status { get; set; }
+
         public ComfyTaskType TaskType { get; set; }
-        public ComfyWorkflowResponse Response { get; set; }
+        public string WorkflowTemplate { get; set; }
+    }
+    
+    public class ComfyWorkflowStatus
+    {
+        public string StatusMessage { get; set; }
+        public bool Completed { get; set; }
+        public List<ComfyOutput> Outputs { get; set; } = new();
+    }
+    
+    public class ComfyFileOutput
+    {
+        public string Filename { get; set; }
+        public string Type { get; set; }
+        public string Subfolder { get; set; }
     }
 
-    public class ComfyTaskSummary
+    public class ComfyTextOutput
     {
-        [AutoIncrement] public long Id { get; set; }
+        public string? Text { get; set; }
+    }
+    
+    public class ComfyOutput
+    {
+        public List<ComfyFileOutput> Files { get; set; } = new();
+        public List<ComfyTextOutput> Texts { get; set; } = new();
+    }
+    
+    public class ComfyFileInput
+    {
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public string Subfolder { get; set; }
+    }
+    
+    public class ComfyWorkflowRequest
+    {
+        public string? Model { get; set; }
 
+        public int? Steps { get; set; }
+
+        public int BatchSize { get; set; }
+
+        public int? Seed { get; set; }
+        public string? PositivePrompt { get; set; }
+        public string? NegativePrompt { get; set; }
+
+        public ComfyFileInput? Image { get; set; }
+        public ComfyFileInput? Speech { get; set; }
+        public ComfyFileInput? Mask { get; set; }
+
+        public Stream? ImageInput { get; set; }
+        public Stream? SpeechInput { get; set; }
+        public Stream? MaskInput { get; set; }
+
+        public ComfySampler? Sampler { get; set; }
+        public ArtStyle? ArtStyle { get; set; }
+        public string? Scheduler { get; set; } = "normal";
+        public double? CfgScale { get; set; }
+        public double? Denoise { get; set; }
+
+        public string? UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
+
+        public int? Width { get; set; }
+        public int? Height { get; set; }
+
+        public ComfyTaskType TaskType { get; set; }
+        public string? Clip { get; set; }
+        public double? SampleLength { get; set; }
+        public ComfyMaskSource MaskChannel { get; set; }
+    }
+    
+    public enum ComfyMaskSource
+    {
+        red,
+        blue,
+        green,
+        alpha
+    }
+    
+    public enum ArtStyle
+    {
+        ThreeDModel,
+        AnalogFilm,
+        Anime,
+        Cinematic,
+        ComicBook,
+        DigitalArt,
+        Enhance,
+        FantasyArt,
+        Isometric,
+        LineArt,
+        LowPoly,
+        ModelingCompound,
+        NeonPunk,
+        Origami,
+        Photographic,
+        PixelArt,
+        TileTexture
+    }
+
+    public class ComfySummary
+    {
+        public long Id { get; set; }
+    
         /// <summary>
         /// The type of Task
         /// </summary>
@@ -110,11 +211,6 @@ public class Migration1002 : MigrationBase
         public string Name { get; set; }
 
         /// <summary>
-        /// The behavior for this API Provider
-        /// </summary>
-        public int ApiTypeId { get; set; }
-
-        /// <summary>
         /// The API Key to use for this Provider
         /// </summary>
         public string? ApiKey { get; set; }
@@ -134,10 +230,8 @@ public class Migration1002 : MigrationBase
         /// </summary>
         public string? HeartbeatUrl { get; set; }
 
-        /// <summary>
-        /// Override API Paths for different AI Tasks
-        /// </summary>
-        public Dictionary<ComfyTaskType, string>? TaskPaths { get; set; }
+        
+        public Dictionary<ComfyTaskType, string>? TaskWorkflows { get; set; }
 
         /// <summary>
         /// How many requests should be made concurrently
@@ -164,19 +258,17 @@ public class Migration1002 : MigrationBase
         /// </summary>
         public DateTime CreatedDate { get; set; }
 
-        [Reference] public ComfyApiType ApiType { get; set; }
-
         [Reference] public List<ComfyApiProviderModel> Models { get; set; }
     }
 
     public class ComfyApiProviderModel
     {
         [AutoIncrement] public int Id { get; set; }
-
-        [References(typeof(ComfyApiProvider))]
+        
+        [ForeignKey(typeof(ComfyApiProvider), OnDelete = "CASCADE")]
         public int ComfyApiProviderId { get; set; }
         
-        [References(typeof(ComfyApiModel))]
+        [ForeignKey(typeof(ComfyApiModel), OnDelete = "CASCADE")]
         public int ComfyApiModelId { get; set; }
         
         [Reference]
@@ -219,9 +311,6 @@ public class Migration1002 : MigrationBase
     {
         [AutoIncrement] 
         public int Id { get; set; }
-
-        public int ApiProviderId { get; set; }
-
         public string Name { get; set; }
         
         public string? Description { get; set; }
@@ -244,7 +333,7 @@ public class Migration1002 : MigrationBase
         [AutoIncrement]
         public int Id { get; set; }
         
-        [References(typeof(ComfyApiModel))]
+        [ForeignKey(typeof(ComfyApiModel), OnDelete = "CASCADE")]
         public int ComfyApiModelId { get; set; }
         
         public double? CfgScale { get; set; }
@@ -271,7 +360,7 @@ public class Migration1002 : MigrationBase
         Db.CreateTable<ComfyApiModelSettings>();
         
         Db.CreateTable<ComfyGenerationTask>();
-        Db.CreateTable<ComfyTaskSummary>();
+        Db.CreateTable<ComfySummary>();
         
         // Initialize providers, models, model settings into database
         
@@ -282,86 +371,62 @@ public class Migration1002 : MigrationBase
         // Inference settings due to how they are trained or fine tuned.
         // A `ProviderModel` is the relationship between agents and what models they have available.
 
-        var apiType = new ComfyApiType
-        {
-            Name = "agent-comfy",
-            Website = "https://github.com/ServiceStack/agent-comfy",
-            ApiBaseUrl = "https://comfy-dell.pvq.app/api",
-            TaskPaths = new Dictionary<ComfyTaskType, string>
-            {
-                { ComfyTaskType.TextToImage, "/prompt" },
-                { ComfyTaskType.ImageToImage, "/prompt" },
-                { ComfyTaskType.ImageToImageUpscale, "/prompt" },
-                { ComfyTaskType.ImageToImageWithMask, "/prompt" },
-                { ComfyTaskType.TextToAudio, "/prompt" },
-                { ComfyTaskType.TextToSpeech, "/prompt" },
-                { ComfyTaskType.SpeechToText, "/prompt" }
-            },
-            HeartbeatUrl = "/"
-        };
-
-        var apiTypeId = (int)Db.Insert(apiType, selectIdentity: true);
-        apiType.Id = apiTypeId;
-
-        var provider = new ComfyApiProvider
-        {
-            Name = "comfy-dell.pvq.app",
-            ApiBaseUrl = "https://comfy-dell.pvq.app/api",
-            Concurrency = 1,
-            HeartbeatUrl = "/",
-            TaskPaths = apiType.TaskPaths,
-            Enabled = true,
-            CreatedDate = DateTime.UtcNow,
-            Priority = 1,
-            ApiKey = "testtest1234",
-            ApiTypeId = apiTypeId,
-        };
-
-        var providerId = (int)Db.Insert(provider, selectIdentity: true);
-        provider.Id = providerId;
-
-        var model = new ComfyApiModel
-        {
-            Name = "SDXL Lightning 4-Step",
-            Filename = "sdxl_lightning_4step.safetensors",
-            DownloadUrl =
-                "https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step.safetensors?download=true",
-            CreatedDate = DateTime.UtcNow,
-            Url = "https://huggingface.co/ByteDance/SDXL-Lightning",
-            ApiProviderId = providerId
-        };
-
-        var modelId = (int)Db.Insert(model, selectIdentity: true);
-        model.Id = modelId;
-
-        var modelSetting = new ComfyApiModelSettings
-        {
-            Width = 1024,
-            Height = 1024,
-            Sampler = ComfySampler.euler,
-            Scheduler = "sgm_uniform",
-            Steps = 4,
-            CfgScale = 1.0,
-            ComfyApiModelId = modelId
-        };
-
-        var modelSettingId = (int)Db.Insert(modelSetting, selectIdentity: true);
-        modelSetting.Id = modelSettingId;
-
-        var providerModel = new ComfyApiProviderModel
-        {
-            ComfyApiModelId = modelId,
-            ComfyApiProviderId = providerId
-        };
-
-        Db.Insert(providerModel);
+        // var provider = new ComfyApiProvider
+        // {
+        //     Name = "comfy-dell.pvq.app",
+        //     ApiBaseUrl = "https://comfy-dell.pvq.app/api",
+        //     Concurrency = 1,
+        //     HeartbeatUrl = "/",
+        //     Enabled = true,
+        //     CreatedDate = DateTime.UtcNow,
+        //     Priority = 1,
+        //     ApiKey = "testtest1234",
+        // };
+        //
+        // var providerId = (int)Db.Insert(provider, selectIdentity: true);
+        // provider.Id = providerId;
+        //
+        // var model = new ComfyApiModel
+        // {
+        //     Name = "SDXL Lightning 4-Step",
+        //     Filename = "sdxl_lightning_4step.safetensors",
+        //     DownloadUrl =
+        //         "https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step.safetensors?download=true",
+        //     CreatedDate = DateTime.UtcNow,
+        //     Url = "https://huggingface.co/ByteDance/SDXL-Lightning"
+        // };
+        //
+        // var modelId = (int)Db.Insert(model, selectIdentity: true);
+        // model.Id = modelId;
+        //
+        // var modelSetting = new ComfyApiModelSettings
+        // {
+        //     Width = 1024,
+        //     Height = 1024,
+        //     Sampler = ComfySampler.euler,
+        //     Scheduler = "sgm_uniform",
+        //     Steps = 4,
+        //     CfgScale = 1.0,
+        //     ComfyApiModelId = modelId
+        // };
+        //
+        // var modelSettingId = (int)Db.Insert(modelSetting, selectIdentity: true);
+        // modelSetting.Id = modelSettingId;
+        //
+        // var providerModel = new ComfyApiProviderModel
+        // {
+        //     ComfyApiModelId = modelId,
+        //     ComfyApiProviderId = providerId
+        // };
+        //
+        // Db.Insert(providerModel);
 
     }
 
     public override void Down()
     {
         Db.DropTable<ComfyGenerationTask>();
-        Db.DropTable<ComfyTaskSummary>();
+        Db.DropTable<ComfySummary>();
         Db.DropTable<ComfyApiModelSettings>();
         Db.DropTable<ComfyApiType>();
         Db.DropTable<ComfyApiProviderModel>();

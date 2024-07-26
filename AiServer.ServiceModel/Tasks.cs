@@ -181,6 +181,7 @@ public abstract class TaskBase : IHasLongId
 [EnumAsInt]
 public enum TaskType
 {
-    OpenAiChat = 1
+    OpenAiChat = 1,
+    Comfy = 2,
 }
 

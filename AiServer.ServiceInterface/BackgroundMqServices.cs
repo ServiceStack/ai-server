@@ -62,10 +62,19 @@ public class AppDbWrites : IReturn<EmptyResponse>
     public FailComfyGeneration? FailComfyGeneration { get; set; }
     
     [Command<ChangeComfyProviderStatusCommand>]
-    public ChangeComfyProviderStatus? ChangeComfyProviderStatus { get; set; }
+    public ChangeComfyProviderStatus? RecordOfflineComfyProvider { get; set; }
     
     [Command<RequestComfyGenerationTasksCommand>]
     public RequestComfyGenerationTasks? RequestComfyGenerationTasks { get; set; }
+    
+    [Command<ReserveComfyGenerationTaskCommand>]
+    public ReserveComfyGenerationTask? ReserveComfyGenerationTask { get; set; }
+    
+    [Command<RequeueIncompleteComfyTasksCommand>]
+    public RequeueIncompleteComfyTasks? RequeueIncompleteComfyTasks { get; set; }
+    
+    [Command<ResetFailedComfyTasksCommand>]
+    public SelectedTasks? ResetFailedComfyTasks { get; set; }
 }
 
 [Tag(Tag.Tasks)]
@@ -74,6 +83,9 @@ public class QueueTasks : IReturn<EmptyResponse>
 {
     [Command<DelegateOpenAiChatTasksCommand>]
     public DelegateOpenAiChatTasks? DelegateOpenAiChatTasks { get; set; }
+    
+    [Command<DelegateComfyWorkflowTasksCommand>]
+    public DelegateComfyWorkflowTasks? DelegateComfyTasks { get; set; }
 }
 
 [Tag(Tag.Tasks)]
@@ -93,6 +105,9 @@ public class ExecutorTasks : IReturn<EmptyResponse>
 {
     [Command<ExecuteOpenAiChatTasksCommand>]
     public ExecuteTasks? ExecuteOpenAiChatTasks { get; set; }
+    
+    [Command<ExecuteComfyGenerationTasksCommand>]
+    public ExecuteTasks? ExecuteComfyGenerationTasks { get; set; }
     
     [Command<ExecutorPeriodicTasksCommand>]
     public PeriodicTasks? PeriodicTasks { get; set; } 

@@ -1,5 +1,6 @@
 using AiServer.ServiceModel.Types;
 using ServiceStack;
+using ServiceStack.DataAnnotations;
 
 namespace AiServer.ServiceModel;
 
@@ -21,6 +22,8 @@ public class CompleteComfyGeneration : IPost, IReturn<EmptyResponse>
     public string Provider { get; set; }
     public int DurationMs { get; set; }
     public ComfyWorkflowResponse Response { get; set; }
+    
+    public ComfyWorkflowStatus Status { get; set; }
 }
 
 [Tag(ServiceModel.Tag.Comfy)]

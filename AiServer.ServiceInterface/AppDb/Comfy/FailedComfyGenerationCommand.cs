@@ -7,6 +7,7 @@ using ServiceStack.OrmLite;
 
 namespace AiServer.ServiceInterface.AppDb.Comfy;
 
+[Tag(Tags.ComfyWorkflow)]
 public class FailComfyGenerationCommand(IDbConnectionFactory dbFactory) : IAsyncCommand<FailComfyGeneration>
 {
     public async Task ExecuteAsync(FailComfyGeneration request)

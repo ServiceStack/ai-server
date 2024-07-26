@@ -6,6 +6,7 @@ using ServiceStack.OrmLite;
 
 namespace AiServer.ServiceInterface.AppDb.Comfy;
 
+[Tag(Tags.ComfyWorkflow)]
 public class CompleteComfyGenerationCommand(IDbConnection db) : IAsyncCommand<CompleteComfyGeneration>
 {
     public async Task ExecuteAsync(CompleteComfyGeneration request)
@@ -15,6 +16,7 @@ public class CompleteComfyGenerationCommand(IDbConnection db) : IAsyncCommand<Co
             Provider = request.Provider,
             DurationMs = request.DurationMs,
             Response = request.Response,
+            Status = request.Status,
             CompletedDate = DateTime.UtcNow,
         }, where: x => x.Id == request.Id);
     }
