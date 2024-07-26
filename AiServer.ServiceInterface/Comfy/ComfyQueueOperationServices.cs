@@ -124,29 +124,3 @@ public class ComfyQueueOperationServices(AppData appData, IDbConnectionFactory d
         return new EmptyResponse();
     }
 }
-
-public class GetActiveComfyProvidersResponse
-{
-    public ComfyApiProvider[] Results { get; set; }
-}
-
-public class FireComfyPeriodicTask
-{
-    public PeriodicFrequency Frequency { get; set; }
-}
-
-public class ResetActiveComfyProviders
-{
-}
-
-public class RestartComfyWorkers
-{
-}
-
-public class StartComfyWorkers
-{
-}
-
-public class StopComfyWorkers
-{
-}
