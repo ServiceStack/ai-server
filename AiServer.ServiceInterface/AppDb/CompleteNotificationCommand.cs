@@ -1,3 +1,5 @@
+using System.Data;
+using AiServer.ServiceInterface.Comfy;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.Logging;
@@ -105,31 +107,7 @@ public class CompleteNotificationCommand(
                 }, where: x => x.Id == request.Id);
             }
 
-            var monthDbName = dbFactory.GetNamedMonthDb(task.CreatedDate);
-            using var dbMonth = HostContext.AppHost.GetDbConnection(monthDbName);
-
-            if (succeeded)
-            {
-                var status = await comfyClient.GetWorkflowStatusAsync(task.Response.PromptId);
-                var completedTask = task.ToComfyGenerationCompleted(status);
-                await db.UpdateOnlyAsync(() => new ComfySummary() {
-                    Type = ComfyTaskType.TextToImage,
-                    Model = task.Model,
-                    Provider = task.Provider,
-                    DurationMs = task.DurationMs,
-                    Tag = task.Tag,
-                    RefId = task.RefId,
-                    CreatedDate = task.CreatedDate,
-                }, x => x.Id == task.Id);
-                await dbMonth.InsertAsync(completedTask);
-            }
-            else
-            {
-                var failedTask = task.ToComfyGenerationFailed();
-                await dbMonth.InsertAsync(failedTask);
-            }
-            
-            await db.DeleteByIdAsync<ComfyGenerationTask>(request.Id);
+            await dbFactory.CompleteComfyGenerationAsync(db, task, comfyClient);
         }
     }
 }
@@ -169,5 +147,37 @@ public static class CompleteUtils
             
         await db.DeleteByIdAsync<OpenAiChatTask>(task.Id);
     }
-    
+
+    public static async Task CompleteComfyGenerationAsync(this IDbConnectionFactory dbFactory,
+        IDbConnection db, ComfyGenerationTask task, IComfyClient comfyClient)
+    {
+        var monthDbName = dbFactory.GetNamedMonthDb(task.CreatedDate);
+        using var dbMonth = HostContext.AppHost.GetDbConnection(monthDbName);
+
+        var succeeded = task.Error == null;
+        if (succeeded)
+        {
+            var status = await comfyClient.GetWorkflowStatusAsync(task.Response.PromptId);
+            var completedTask = task.ToComfyGenerationCompleted(status);
+            await db.UpdateOnlyAsync(() => new ComfySummary()
+            {
+                Type = ComfyTaskType.TextToImage,
+                Model = task.Model,
+                Provider = task.Provider,
+                DurationMs = task.DurationMs,
+                Tag = task.Tag,
+                RefId = task.RefId,
+                CreatedDate = task.CreatedDate,
+            }, x => x.Id == task.Id);
+            await dbMonth.InsertAsync(completedTask);
+        }
+        else
+        {
+            var failedTask = task.ToComfyGenerationFailed();
+            await dbMonth.InsertAsync(failedTask);
+        }
+
+        await db.DeleteByIdAsync<ComfyGenerationTask>(task.Id);
+    }
+
 }

@@ -1,4 +1,5 @@
-﻿using ServiceStack;
+﻿using AiServer.ServiceModel.Types;
+using ServiceStack;
 using ServiceStack.DataAnnotations;
 
 namespace AiServer.ServiceModel;

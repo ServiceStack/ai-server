@@ -290,7 +290,6 @@ public class ComfyApiProviderTests
         // Run workflow via CreateComfyGeneration
         var createComfyGeneration = new CreateComfyGeneration
         {
-            Provider = "comfy-dell.pvq.app",
             Request = new ComfyWorkflowRequest()
             {
                 Model = ComfyApiModels[0].Name,
