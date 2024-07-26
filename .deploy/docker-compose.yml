@@ -8,7 +8,7 @@ services:
         environment:                                    
             VIRTUAL_HOST: ${HOST_DOMAIN}
             VIRTUAL_PORT: 8080 # New default ASP.NET port -> https://learn.microsoft.com/en-us/dotnet/core/compatibility/containers/8.0/aspnet-port
-            LETSENCRYPT_HOST: ${HOST_DOMAIN}           
+            LETSENCRYPT_HOST: ${HOST_DOMAIN},cdn.${HOST_DOMAIN}     
             LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}    
         volumes:
             - ./App_Data:/app/App_Data  
