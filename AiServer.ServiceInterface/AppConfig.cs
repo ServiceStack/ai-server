@@ -11,6 +11,9 @@ namespace AiServer.ServiceInterface
         public Dictionary<string, ArtStyleEntry> ArtStyleModelMappings { get; set; }
         
         public string CivitAiApiKey { get; set; }
+        
+        public string ApplicationBaseUrl { get; set; }
+        public string AssetsBaseUrl { get; set; }
     }
     
     public class ArtStyleEntry

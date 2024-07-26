@@ -106,7 +106,7 @@ public class QueryFailedComfyTasks : QueryDb<ComfyGenerationFailed>
     public string? Db { get; set; }
 }
 
-[Tag(ServiceModel.Tag.OpenAi)]
+[Tag(ServiceModel.Tag.Comfy)]
 [ValidateApiKey]
 public class CreateComfyGeneration : ICreateDb<ComfyGenerationTask>, IReturn<CreateComfyGenerationResponse>
 {
@@ -134,5 +134,7 @@ public class GetComfyGeneration : IReturn<GetComfyGenerationResponse>
 
 public class GetComfyGenerationResponse
 {
+    public List<AiServerHostedComfyFile>? Outputs { get; set; }
     public ComfyGenerationTask? Result { get; set; }
+    public ResponseStatus? ResponseStatus { get; set; }
 }

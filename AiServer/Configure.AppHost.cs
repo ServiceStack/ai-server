@@ -27,6 +27,10 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             services.AddSingleton<ComfyProvider>();
             services.AddSingleton<ComfyProviderFactory>();
             
+            services.AddHttpClient("ComfyClientFileDownload", client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(300); // Set a reasonable timeout
+            });
             
             services.AddSingleton<IComfyClient>(c => 
                 new ComfyClient("https://comfy-dell.pvq.app/api",

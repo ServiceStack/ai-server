@@ -195,9 +195,9 @@ public class ComfyProviderWorker : IComfyProviderWorker
                 var completedTaskIds = new List<long>();
                 while (!IsOffline && WorkflowQueue.TryTake(out var requestId))
                 {
-                    var chatTasks = await db.SelectAsync(db.From<ComfyGenerationTask>().Where(x =>
+                    var workflowTask = await db.SelectAsync(db.From<ComfyGenerationTask>().Where(x =>
                         x.RequestId == requestId && x.CompletedDate == null && x.ErrorCode == null), token:token);
-                    var concurrentTasks = chatTasks.Select(x => ExecuteComfyWorkflowTaskAsync(log, mq, x));
+                    var concurrentTasks = workflowTask.Select(x => ExecuteComfyWorkflowTaskAsync(log, mq, x));
 
                     completedTaskIds.AddRange((await Task.WhenAll(concurrentTasks)).Where(x => x.HasValue)
                         .Select(x => x!.Value));

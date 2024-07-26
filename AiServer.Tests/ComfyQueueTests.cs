@@ -308,8 +308,83 @@ public class ComfyApiProviderTests
             var createResponse = await client.ApiAsync(createComfyGeneration);
             createResponse.ThrowIfError();    
         }
+    }
+
+    [Test]
+    public async Task RunTextToImageViaQueueAndDownloadResult()
+    {
+        // Create new provider
+        var client = TestUtils.CreateAuthSecretClient();
+        await CreateComfyApiProviders(client);
+        await CreateComfyApiModels(client);
+        await Assign_ComfyApiModelToProvider();
+        // Start workers
+        var startWorkers = await client.ApiAsync(new StartWorkers());
+        startWorkers.ThrowIfError();
+        await ChangeComfyApiProviderStatus_Online();
         
+        // Validate provider is online
+        var api = await client.ApiAsync(new QueryComfyApiProviders
+        {
+            Name = ComfyApiProviders[0].Name,
+        });
+        api.ThrowIfError();
+        var provider = api.Response!.Results.FirstOrDefault();
+        Assert.That(provider, Is.Not.Null);
+        Assert.That(provider!.OfflineDate, Is.Null);
         
+
         
+        // Run workflow via CreateComfyGeneration
+        var createComfyGeneration = new CreateComfyGeneration
+        {
+            Request = new ComfyWorkflowRequest()
+            {
+                Model = ComfyApiModels[0].Name,
+                TaskType = ComfyTaskType.TextToImage,
+                Height = 1024,
+                Width = 1024,
+                Sampler = ComfySampler.euler_ancestral,
+                BatchSize = 1,
+                PositivePrompt = "Ocean sunset",
+            }
+        };
+
+        var createResponse = await client.ApiAsync(createComfyGeneration);
+        createResponse.ThrowIfError();
+        
+        Assert.That(createResponse.Response, Is.Not.Null);
+        
+        // Query for the result using 'WaitFor'
+        var query = new WaitForComfyGeneration
+        {
+            RefId = createResponse.Response.RefId
+        };
+        var queryResponse = await client.ApiAsync(query);
+        queryResponse.ThrowIfError();
+        
+        Assert.That(queryResponse.Response, Is.Not.Null);
+        Assert.That(queryResponse.Response.Outputs, Is.Not.Null);
+        Assert.That(queryResponse.Response.Outputs.Count, Is.GreaterThan(0));
+        
+        var files = queryResponse.Response.Outputs;
+
+        // Create a new HttpClient that ignores Tls issues to make local testing easier
+        var httpClient = new HttpClient(new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+        });
+        foreach (var file in files)
+        {
+            Console.WriteLine("Downloading: " + file.Url);
+            var download = await httpClient.GetStreamAsync($"{file.Url}");
+            // Save to disk
+            // Ensure downloads directory exists
+            if(!Directory.Exists("downloads"))
+                Directory.CreateDirectory("downloads");
+            var filePath = Path.Combine("downloads", file.FileName);
+            await download.WriteToAsync(File.OpenWrite(filePath));
+            Assert.That(File.Exists(filePath), Is.True);
+        }
     }
 }

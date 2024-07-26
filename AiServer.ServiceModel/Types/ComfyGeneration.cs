@@ -61,6 +61,13 @@ public class ComfyHostedFileOutput
     public string FileName { get; set; }
 }
 
+public class AiServerHostedComfyFile
+{
+    public string Url { get; set; }
+    public string FileName { get; set; }
+    public string ContentType { get; set; }
+}
+
 public class ComfyWorkflowRequest
 {
     public string? Model { get; set; }

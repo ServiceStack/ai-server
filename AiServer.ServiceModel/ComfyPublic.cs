@@ -186,3 +186,12 @@ public class DownloadConfgiuredArtStyleModel : IReturn<ComfyAgentDownloadStatus>
 {
     public ArtStyle? ArtStyle { get; set; }
 }
+
+[Route("/comfy/{Year}/{Month}/{Day}/{Filename}")]
+public class DownloadComfyFile : IReturn<Stream>
+{
+    public int? Year { get; set; }
+    public int? Month { get; set; }
+    public int? Day { get; set; }
+    public string? FileName { get; set; }
+}
