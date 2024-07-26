@@ -109,9 +109,6 @@ public class ComfyQueueOperationServices(AppData appData, IDbConnectionFactory d
 
         var res = await Db.InsertAsync(comfyApiProviderModel,selectIdentity:true);
         var providerModel = await Db.LoadSingleByIdAsync<ComfyApiProviderModel>(res);
-        MessageProducer.Publish(new QueueTasks {
-            DelegateComfyTasks = new()
-        });
         return providerModel;
     }
 

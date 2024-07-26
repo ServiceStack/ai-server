@@ -23,7 +23,7 @@ public class ApiProviderWorker : IApiProviderWorker
 {
     public int Id => apiProvider.Id;
     public string Name => apiProvider.Name;
-    public string[] Models { get; }
+    public readonly string[] Models;
 
     // Can be modified at runtime
     public int Concurrency => apiProvider.Concurrency;
