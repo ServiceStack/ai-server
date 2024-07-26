@@ -72,3 +72,67 @@ public class QueueComfyWorkflowResponse
     public List<ComfyHostedFileOutput> FileOutputs { get; set; }
     public List<ComfyTextOutput> TextOutputs { get; set; }
 }
+
+
+[Tag(Tag.Comfy)]
+[ValidateApiKey]
+public class FetchComfyGenerationRequests
+{
+    public string[] Models { get; set; }
+    public string? Provider { get; set; }
+    
+    public int? Take { get; set; }
+}
+
+public class FetchComfyGenerationRequestsResponse
+{
+    public required ComfyGenerationRequest[] Results { get; set; }
+    public ResponseStatus? ResponseStatus { get; set; }
+}
+
+[Tag(Tag.Comfy)]
+[ValidateApiKey]
+public class QueryCompletedComfyTasks : QueryDb<ComfyGenerationCompleted>
+{
+    public string? Db { get; set; }
+    public int? Id { get; set; }
+    public string? RefId { get; set; }
+}
+
+[Tag(Tag.Comfy)]
+[ValidateApiKey]
+public class QueryFailedComfyTasks : QueryDb<ComfyGenerationFailed>
+{
+    public string? Db { get; set; }
+}
+
+[Tag(ServiceModel.Tag.OpenAi)]
+[ValidateApiKey]
+public class CreateComfyGeneration : ICreateDb<ComfyGenerationTask>, IReturn<CreateComfyGenerationResponse>
+{
+    public string? RefId { get; set; }
+    public string? Provider { get; set; }
+    public string? ReplyTo { get; set; }
+    public string? Tag { get; set; }
+    public ComfyWorkflowRequest Request { get; set; }
+}
+
+public class CreateComfyGenerationResponse
+{
+    public long Id { get; set; }
+    public string RefId { get; set; }
+    public ResponseStatus? ResponseStatus { get; set; }
+}
+
+[Tag(Tag.Comfy)]
+[ValidateApiKey]
+public class GetComfyGeneration : IReturn<GetComfyGenerationResponse>
+{
+    public long? Id { get; set; }
+    public string? RefId { get; set; }
+}
+
+public class GetComfyGenerationResponse
+{
+    public ComfyGenerationTask? Result { get; set; }
+}
