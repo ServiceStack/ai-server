@@ -69,6 +69,9 @@ public static class TestUtils
     };
 
     public static JsonApiClient CreatePublicAdminClient() => new(PublicAiServerBaseUrl) {
+        Headers = {
+            [Keywords.AuthSecret] = Environment.GetEnvironmentVariable("AUTH_SECRET"),
+        },
         BearerToken = Environment.GetEnvironmentVariable("AK_ADMIN"),
     };
 

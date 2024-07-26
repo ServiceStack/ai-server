@@ -32,7 +32,8 @@ public class AdminTasks
             },
         };
 
-        var client = TestUtils.CreateAdminClient();
+        // var client = TestUtils.CreateAdminClient();
+        var client = TestUtils.CreatePublicAdminClient();
         var response = await client.ApiAsync(newModel);
         response.ThrowIfError();
     }
