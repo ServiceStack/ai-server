@@ -178,13 +178,15 @@ public class CreateComfyApiProvider : ICreateDb<ComfyApiProvider>, IReturn<IdRes
 
     public List<ComfyApiProviderModel> Models { get; set; }
 }
-
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
 public class DeleteComfyApiProvider : IDeleteDb<ComfyApiProvider>, IReturn<IdResponse>
 {
     public int? Id { get; set; }
     public string? Name { get; set; }
 }
-
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
 public class DeleteComfyApiModel : IDeleteDb<ComfyApiModel>, IReturn<IdResponse>
 {
     public int? Id { get; set; }
@@ -210,17 +212,20 @@ public class CreateComfyApiModel : ICreateDb<ComfyApiModel>, IReturn<IdResponse>
 
     public ComfyApiModelSettings? ModelSettings { get; set; }
 }
-
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
 public class QueryComfyApiProviders : QueryDb<ComfyApiProvider>
 {
     public string? Name { get; set; }
 }
-
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
 public class QueryComfyApiModels : QueryDb<ComfyApiModel>
 {
     public string? Name { get; set; }
 }
-
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
 public class UpdateComfyApiProvider : IUpdateDb<ComfyApiProvider>, IReturn<IdResponse>
 {
     public int Id { get; set; }
@@ -243,6 +248,8 @@ public class UpdateComfyApiProvider : IUpdateDb<ComfyApiProvider>, IReturn<IdRes
     public bool? Enabled { get; set; }
 }
 
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
 public class AddComfyProviderModel : IPost, IReturn<IdResponse>
 {
     public int ComfyApiProviderId { get; set; }
