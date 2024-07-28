@@ -75,7 +75,7 @@
 import { createApp, ref, onMounted, shallowRef } from "vue"
 import { JsonApiClient, leftPart, rightPart, appendQueryString, humanize, setQueryString } from "@servicestack/client"
 import ServiceStackVue, { useClient, useAuth, useMetadata } from "@servicestack/vue"
-import { Authenticate, AdminData } from "dtos.mjs"
+import { Authenticate, AdminData, GetApiWorkerStats } from "dtos.mjs"
 import OpenAiChat from "/mjs/components/OpenAiChat.mjs"
 
 const { loadMetadata, metadataApi, typeOf } = useMetadata()
@@ -89,19 +89,28 @@ const sections = {
         component: {
             template:`
             <div>
-              <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-                <div v-for="stat in stats" @click="$emit('nav',stat.label)" class="cursor-pointer hover:bg-gray-50 overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-                  <dt class="truncate text-sm font-medium text-gray-500">Total {{humanize(stat.label)}}</dt>
-                  <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{{formatNumber(stat.total)}}</dd>
+                <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                    <div v-for="stat in stats" @click="$emit('nav',stat.label)" class="cursor-pointer hover:bg-gray-50 overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                      <dt class="truncate text-sm font-medium text-gray-500">Total {{humanize(stat.label)}}</dt>
+                      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{{formatNumber(stat.total)}}</dd>
+                    </div>
+                </dl>
+                <div class="pt-4">
+                    <h2 class="lg:block pt-4 mb-2 text-3xl font-bold leading-tight tracking-tight text-gray-900">Workers</h2>
+                    <div>
+                        <DataGrid :items="workerStats" />
+                    </div>
                 </div>
-              </dl>
             </div>`,
             setup() {
                 const client = useClient()
                 const stats = ref([])
                 client.swr(new AdminData(), r => stats.value = r.response?.pageStats || [])
+                const workerStats = ref([])
+                client.swr(new GetApiWorkerStats(), r => workerStats.value = r.response?.results || [])
                 const formatNumber = value => new Intl.NumberFormat().format(value)
-                return { stats, humanize, formatNumber }
+                
+                return { stats, workerStats, humanize, formatNumber }
             }
         },
     },
@@ -118,12 +127,6 @@ const sections = {
     },
     ApiProvider: {
         type: 'ApiProvider',
-        component: {
-            template:`<AutoQueryGrid :type="type" />`,
-        },
-    },
-    ApiType: {
-        type: 'ApiType',
         component: {
             template:`<AutoQueryGrid :type="type" />`,
         },

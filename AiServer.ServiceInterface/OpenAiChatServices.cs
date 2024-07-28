@@ -100,6 +100,23 @@ public class OpenAiChatServices(
             }
             await Task.Delay(500);
         }
+
+        if (summary != null)
+        {
+            var response = await GetOpenAiChatAsync(summary);
+            if (response?.ResponseStatus != null)
+                return new GetOpenAiChatResponse { ResponseStatus = response.ResponseStatus };
+
+            using var monthDb = dbFactory.GetMonthDbConnection(summary.CreatedDate);
+            var failedTask = await monthDb.SingleByIdAsync<OpenAiChatCompleted>(summary.Id);
+            if (failedTask != null)
+            {
+                return new GetOpenAiChatResponse {
+                    ResponseStatus = failedTask.Error
+                };
+            }
+        }
+        
         return HttpError.NotFound("Task not found");
     }
 
