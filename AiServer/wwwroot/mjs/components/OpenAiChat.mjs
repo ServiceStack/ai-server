@@ -3,7 +3,6 @@ import { queryString, setQueryString } from "@servicestack/client"
 import { useFormatters } from "@servicestack/vue"
 import { marked } from "../markdown.mjs"
 import { ActiveApiModels, CreateOpenAiChat, WaitForOpenAiChat, OpenAiChat, OpenAiChatTask } from "dtos.mjs"
-//import { mock } from "./mock.mjs"
 
 const { truncate } = useFormatters()
 
@@ -70,7 +69,7 @@ export default {
             </div>
         </div>
           
-        <div class="sticky absolute bottom-0 md:pt-2 dark:border-white/20 md:border-transparent md:dark:border-transparent w-full bg-white">
+        <div class="fixed bottom-0 md:pt-2 dark:border-white/20 md:border-transparent md:dark:border-transparent bg-white pr-8" style="width:calc(max(100% - 18rem - 18rem - 2.25rem, 20rem))">
             <div class="text-base px-3 md:px-4 m-auto md:px-5 lg:px-1 xl:px-5">
                 <div class="flex flex-1 gap-4 text-base md:gap-5 lg:gap-6 md:max-w-3xl lg:max-w-[40rem] xl:max-w-[48rem]">
                     <form :disabled="waitingOnResponse" class="w-full" type="button" @submit.prevent="sendMessage">
@@ -91,7 +90,8 @@ export default {
                                         </div>
                                         <button :disabled="!validPrompt || waitingOnResponse" title="Send (CTRL+Enter)" 
                                             class="mb-1 me-1 flex h-8 w-8 items-center justify-center rounded-full bg-black text-white transition-colors hover:opacity-70 focus-visible:outline-none focus-visible:outline-black disabled:bg-[#D7D7D7] disabled:text-[#f4f4f4] disabled:hover:opacity-100 dark:bg-white dark:text-black dark:focus-visible:outline-white disabled:dark:bg-token-text-quaternary dark:disabled:text-token-main-surface-secondary">
-                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m3.165 19.503l7.362-16.51c.59-1.324 2.355-1.324 2.946 0l7.362 16.51c.667 1.495-.814 3.047-2.202 2.306l-5.904-3.152c-.459-.245-1-.245-1.458 0l-5.904 3.152c-1.388.74-2.87-.81-2.202-2.306"/></svg>
+                                            <svg v-if="!waitingOnResponse" class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m3.165 19.503l7.362-16.51c.59-1.324 2.355-1.324 2.946 0l7.362 16.51c.667 1.495-.814 3.047-2.202 2.306l-5.904-3.152c-.459-.245-1-.245-1.458 0l-5.904 3.152c-1.388.74-2.87-.81-2.202-2.306"/></svg>
+                                            <svg v-else class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M8 16h8V8H8zm4 6q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"/></svg>
                                         </button>
                                     </div>
                                 </div>
@@ -143,6 +143,7 @@ export default {
         const client = inject('client')
 
         const noPrompt = '[ None ]'
+        const customPrompt = 'Custom...'
         const id = ref(0)
         const history = ref([])
         const chat = ref()
@@ -162,6 +163,7 @@ export default {
         const refMessage = ref()
         const refBottom = ref()
         const historyGroups = computed(() => groupTasks(history.value))
+        const workerStats = ref([])
 
         watch(() =>  prefs.value.model, () => savePrefs())
         watch(() =>  selectedPrompt.value, () => {
@@ -224,11 +226,7 @@ export default {
             yearsDesc.forEach(year => {
                 groups.push({ title: year, tasks: Years[year] })
             })
-
-            console.log('groups',groups)
-            console.log(Months)
-            console.log(Years)
-            
+            // console.log('groups',groups)
             return groups
         }
 
@@ -324,7 +322,7 @@ export default {
             } else {
                 systemPrompt.value = ''
             }
-            showSystemPrompt.value = !!systemPrompt.value
+            showSystemPrompt.value = !!systemPrompt.value || prefs.value.prompt === customPrompt
             nextTick(() => {
                 const refPrompt = document.getElementById('systemPrompt')
                 if (!refPrompt) return
@@ -409,6 +407,7 @@ export default {
             const r = await fetch('/lib/data/prompts.json')
             const json = await r.text()
             prompts.value = JSON.parse(json)
+            prompts.value.unshift({name:customPrompt, prompt:``})
             prompts.value.unshift({name:noPrompt, prompt:``})
             
             updatePrompt()
