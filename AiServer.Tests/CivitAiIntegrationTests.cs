@@ -16,7 +16,7 @@ public class CivitAiClientTests
     public void Setup()
     {
         var httpClientFactory = new DefaultHttpClientFactory();
-        client = new CivitAiClient(httpClientFactory, "b7e45e0094559bccd51ba9946d1aa342"); // Replace with your actual API key
+        client = new CivitAiClient(httpClientFactory, Environment.GetEnvironmentVariable("CIVITAI_API_KEY") ?? ""); 
     }
 
     [Test]
