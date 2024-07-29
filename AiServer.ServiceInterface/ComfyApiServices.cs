@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using AiServer.ServiceInterface.Comfy;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
@@ -146,6 +147,17 @@ public class ComfyApiServices(IComfyClient comfyClient,
         if(downloadJob.Progress != 100)
             throw new Exception("Model download failed");
     }
+    
+    // public async Task<object> Any(ImportCivitAiModel request)
+    // {
+    //     var regexModelId = new Regex(@"models/(\d+)/");
+    //     var regexModelVersionId = new Regex(@"modelVersionId=(\d+)");
+    //     var modelId = regexModelId.Match(request.ModelUrl).Groups[1].Value;
+    //     var modelVersionId = regexModelVersionId.Match(request.ModelUrl).Groups[1].Value;
+    //     
+    //     // Import the model using the extracted modelId and modelVersionId
+    //     
+    // }
 
     private void ApplyFiles(ComfyWorkflowRequest request)
     {
@@ -162,4 +174,10 @@ public class ComfyApiServices(IComfyClient comfyClient,
         var fullPath = Path.Combine(path, fileName);
         return fullPath;
     }
+}
+
+public class ImportCivitAiModel
+{
+    public string Provider { get; set; }
+    public string ModelUrl { get; set; }
 }

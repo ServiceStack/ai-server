@@ -59,8 +59,18 @@ public class ComfyApiProviderTests
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        Environment.SetEnvironmentVariable("AUTH_SECRET","p@55wOrd");
+        if (useLocal)
+        {
+            Environment.SetEnvironmentVariable("AUTH_SECRET","p@55wOrd");
+            aiServerClient = TestUtils.CreateAuthSecretClient();
+        }
+        else
+        {
+            aiServerClient = TestUtils.CreatePublicAuthSecretClient();
+        }
     }
+
+    private static JsonApiClient aiServerClient;
     
     
     private async Task DeleteComfyApiModels(JsonApiClient client)
@@ -148,20 +158,18 @@ public class ComfyApiProviderTests
     [Test]
     public async Task Create_Local_ComfyApiProviders_and_Models()
     {
-        var client = TestUtils.CreateAuthSecretClient();
-        await CreateComfyApiProviders(client);
-        await CreateComfyApiModels(client);
+        await CreateComfyApiProviders(aiServerClient);
+        await CreateComfyApiModels(aiServerClient);
         // Update provider to use model
     }
     
     [Test]
     public async Task Assign_ComfyApiModelToProvider()
     {
-        var client = TestUtils.CreateAuthSecretClient();
         // Create provider
-        await CreateComfyApiProviders(client);
+        await CreateComfyApiProviders(aiServerClient);
         // Query provider
-        var resProvider = await client.ApiAsync(new QueryComfyApiProviders
+        var resProvider = await aiServerClient.ApiAsync(new QueryComfyApiProviders
         {
             Name = ComfyApiProviders[0].Name,
         });
@@ -171,9 +179,9 @@ public class ComfyApiProviderTests
             throw new Exception("ComfyApiProvider not found");
         
         // Create model
-        await CreateComfyApiModels(client);
+        await CreateComfyApiModels(aiServerClient);
         // Query model
-        var resModel = await client.ApiAsync(new QueryComfyApiModels
+        var resModel = await aiServerClient.ApiAsync(new QueryComfyApiModels
         {
             Name = ComfyApiModels[0].Name,
         });
@@ -182,7 +190,7 @@ public class ComfyApiProviderTests
         if (model == null)
             throw new Exception("ComfyApiModel not found");
 
-        var api = await client.ApiAsync(new AddComfyProviderModel
+        var api = await aiServerClient.ApiAsync(new AddComfyProviderModel
         {
             ComfyApiProviderId = existingProvider.Id,
             ComfyApiModelId = model.Id,
@@ -194,11 +202,10 @@ public class ComfyApiProviderTests
     [Test]
     public async Task Update_ComfyApiProvider()
     {
-        var client = TestUtils.CreateAuthSecretClient();
-        await CreateComfyApiProviders(client);
+        await CreateComfyApiProviders(aiServerClient);
         var providerToUpdate = ComfyApiProviders[0]; // Assuming we want to update the first provider
 
-        var apiQuery = await client.ApiAsync(new QueryComfyApiProviders
+        var apiQuery = await aiServerClient.ApiAsync(new QueryComfyApiProviders
         {
             Name = providerToUpdate.Name,
         });
@@ -207,7 +214,7 @@ public class ComfyApiProviderTests
         if (existingProvider == null)
             throw new Exception("ComfyApiProvider not found");
 
-        var api = await client.ApiAsync(new UpdateComfyApiProvider
+        var api = await aiServerClient.ApiAsync(new UpdateComfyApiProvider
         {
             Id = existingProvider.Id,
             Enabled = providerToUpdate.Enabled,
@@ -223,10 +230,9 @@ public class ComfyApiProviderTests
     [Test]
     public async Task ChangeComfyApiProviderStatus_Offline()
     {
-        var client = TestUtils.CreateAuthSecretClient();
         // Create
-        await CreateComfyApiProviders(client);
-        var api = await client.ApiAsync(new ChangeComfyApiProviderStatus
+        await CreateComfyApiProviders(aiServerClient);
+        var api = await aiServerClient.ApiAsync(new ChangeComfyApiProviderStatus
         {
             Provider = ComfyApiProviders[0].Name,
             Online = false,
@@ -237,10 +243,9 @@ public class ComfyApiProviderTests
     [Test]
     public async Task ChangeComfyApiProviderStatus_Online()
     {
-        var client = TestUtils.CreateAuthSecretClient();
         // Create
-        await CreateComfyApiProviders(client);
-        var api = await client.ApiAsync(new ChangeComfyApiProviderStatus
+        await CreateComfyApiProviders(aiServerClient);
+        var api = await aiServerClient.ApiAsync(new ChangeComfyApiProviderStatus
         {
             Provider = ComfyApiProviders[0].Name,
             Online = true,
@@ -252,12 +257,9 @@ public class ComfyApiProviderTests
     public async Task EnsureProviderIsCreatedAndOnline()
     {
         // Create new provider
-        var client = TestUtils.CreateAuthSecretClient();
-        await CreateComfyApiProviders(client);
-        await CreateComfyApiModels(client);
         await Assign_ComfyApiModelToProvider();
         // Start workers
-        var startWorkers = await client.ApiAsync(new StartWorkers());
+        var startWorkers = await aiServerClient.ApiAsync(new StartWorkers());
         startWorkers.ThrowIfError();
         await ChangeComfyApiProviderStatus_Online();
     }
@@ -266,17 +268,16 @@ public class ComfyApiProviderTests
     public async Task CanSetupNewProviderWithNewModelAndRunWorkflow()
     {
         // Create new provider
-        var client = TestUtils.CreateAuthSecretClient();
-        await CreateComfyApiProviders(client);
-        await CreateComfyApiModels(client);
+        await CreateComfyApiProviders(aiServerClient);
+        await CreateComfyApiModels(aiServerClient);
         await Assign_ComfyApiModelToProvider();
         // Start workers
-        var startWorkers = await client.ApiAsync(new StartWorkers());
+        var startWorkers = await aiServerClient.ApiAsync(new StartWorkers());
         startWorkers.ThrowIfError();
         await ChangeComfyApiProviderStatus_Online();
         
         // Validate provider is online
-        var api = await client.ApiAsync(new QueryComfyApiProviders
+        var api = await aiServerClient.ApiAsync(new QueryComfyApiProviders
         {
             Name = ComfyApiProviders[0].Name,
         });
@@ -305,7 +306,7 @@ public class ComfyApiProviderTests
         for (int i = 0; i < 5; i++)
         {
             createComfyGeneration.Request.PositivePrompt = $"Ocean sunset {i}";
-            var createResponse = await client.ApiAsync(createComfyGeneration);
+            var createResponse = await aiServerClient.ApiAsync(createComfyGeneration);
             createResponse.ThrowIfError();    
         }
     }
@@ -314,17 +315,16 @@ public class ComfyApiProviderTests
     public async Task RunTextToImageViaQueueAndDownloadResult()
     {
         // Create new provider
-        var client = TestUtils.CreateAuthSecretClient();
-        await CreateComfyApiProviders(client);
-        await CreateComfyApiModels(client);
+        await CreateComfyApiProviders(aiServerClient);
+        await CreateComfyApiModels(aiServerClient);
         await Assign_ComfyApiModelToProvider();
         // Start workers
-        var startWorkers = await client.ApiAsync(new StartWorkers());
+        var startWorkers = await aiServerClient.ApiAsync(new StartWorkers());
         startWorkers.ThrowIfError();
         await ChangeComfyApiProviderStatus_Online();
         
         // Validate provider is online
-        var api = await client.ApiAsync(new QueryComfyApiProviders
+        var api = await aiServerClient.ApiAsync(new QueryComfyApiProviders
         {
             Name = ComfyApiProviders[0].Name,
         });
@@ -350,7 +350,7 @@ public class ComfyApiProviderTests
             }
         };
 
-        var createResponse = await client.ApiAsync(createComfyGeneration);
+        var createResponse = await aiServerClient.ApiAsync(createComfyGeneration);
         createResponse.ThrowIfError();
         
         Assert.That(createResponse.Response, Is.Not.Null);
@@ -360,7 +360,7 @@ public class ComfyApiProviderTests
         {
             RefId = createResponse.Response.RefId
         };
-        var queryResponse = await client.ApiAsync(query);
+        var queryResponse = await aiServerClient.ApiAsync(query);
         queryResponse.ThrowIfError();
         
         Assert.That(queryResponse.Response, Is.Not.Null);
