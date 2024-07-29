@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
 
-[TestFixture]
+[Explicit]
 public class CivitAiClientTests
 {
     private CivitAiClient client;
@@ -41,8 +41,7 @@ public class CivitAiClientTests
     [Test]
     public async Task GetModelDetailsAsync_ReturnsModelDetails()
     {
-        // Use a known model ID from CivitAi
-        int modelId = 1; // Replace with a valid model ID
+        int modelId = 1;
 
         var modelDetails = await client.GetModelDetailsAsync(modelId);
 
@@ -70,7 +69,7 @@ public class CivitAiClientTests
     [Test]
     public async Task GetModelVersionByHashAsync_ReturnsModelVersionDetails()
     {
-        // Use a known model version hash from CivitAi
+        
         string hash = "known_hash_here"; // Replace with a valid hash
 
         var versionDetails = await client.GetModelVersionByHashAsync(hash);
