@@ -162,3 +162,67 @@ public class DownloadComfyProviderModelResponse
 {
     public ComfyAgentDownloadStatus? DownloadStatus { get; set; }
 }
+
+[Tag(Tag.Comfy)]
+[ValidateApiKey]
+public class CreateComfyApiModelSettings : ICreateDb<ComfyApiModelSettings>, IReturn<IdResponse>
+{
+    public int ComfyApiModelId { get; set; }
+    public double? CfgScale { get; set; }
+
+    public string? Scheduler { get; set; }
+
+    public ComfySampler? Sampler { get; set; }
+
+    public int? Width { get; set; }
+
+    public int? Height { get; set; }
+
+    public int? Steps { get; set; }
+
+    public string? NegativePrompt { get; set; }
+}
+
+[Tag(Tag.Comfy)]
+[ValidateApiKey]
+public class DeleteComfyApiModelSettings : IDeleteDb<ComfyApiModelSettings>, IReturn<EmptyResponse>
+{
+    public int Id { get; set; }
+}
+
+[Tag(Tag.Comfy)]
+[ValidateApiKey]
+public class UpdateComfyApiModelSettings : IUpdateDb<ComfyApiModelSettings>, IReturn<EmptyResponse>
+{
+    public int Id { get; set; }
+    public double? CfgScale { get; set; }
+
+    public string? Scheduler { get; set; }
+
+    public ComfySampler? Sampler { get; set; }
+
+    public int? Width { get; set; }
+
+    public int? Height { get; set; }
+
+    public int? Steps { get; set; }
+
+    public string? NegativePrompt { get; set; }
+}
+
+[Tag(Tag.Comfy)]
+[ValidateApiKey]
+public class UpdateComfyApiProviderModel : IUpdateDb<ComfyApiProviderModel>, IReturn<EmptyResponse>
+{
+    public int Id { get; set; }
+    public int ComfyApiModelId { get; set; }
+    public int ComfyApiProviderId { get; set; }
+}
+
+[Tag(Tag.Comfy)]
+[ValidateApiKey]
+public class DeleteComfyApiProviderModel : IDeleteDb<ComfyApiProviderModel>, IReturn<EmptyResponse>
+{
+    public int Id { get; set; }
+}
+

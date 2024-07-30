@@ -10,6 +10,10 @@ public class UpdateComfyModelInfo
     public ComfyApiModel? UpdateModel { get; set; }
     public ComfyApiProviderModel? RelateProviderModel { get; set; }
     public ComfyApiModel? CreateModel { get; set; }
+    
+    public ComfyApiModelSettings? AddModelSettings { get; set; }
+    
+    public int? UseModelSettingsId { get; set; }
 }
 
 public class UpdateComfyModelInfoCommand(IDbConnectionFactory dbFactory) : IAsyncCommand<UpdateComfyModelInfo>
@@ -47,6 +51,31 @@ public class UpdateComfyModelInfoCommand(IDbConnectionFactory dbFactory) : IAsyn
                     ComfyApiProviderId = request.RelateProviderModel.ComfyApiProviderId
                 });
         }
-        
+
+        if (request.AddModelSettings != null)
+        {
+            // Check if already exists
+            var existingSettings = await db.SingleAsync<ComfyApiModelSettings>(x =>
+                x.ComfyApiModelId == request.AddModelSettings.ComfyApiModelId);
+            if(existingSettings != null)
+                await db.UpdateAsync(request.AddModelSettings);
+            else if (modelId != null)
+            {
+                request.AddModelSettings.ComfyApiModelId = modelId.Value;
+                await db.InsertAsync(request.AddModelSettings);
+            }
+        }
+
+        if (request.UseModelSettingsId != null)
+        {
+            var exists = await db.SingleAsync<ComfyApiModelSettings>(x => x.Id == request.UseModelSettingsId);
+            if (exists != null && modelId != null)
+            {
+                // Create a new entry using same details
+                exists.ComfyApiModelId = modelId.Value;
+                exists.Id = 0;
+                await db.InsertAsync(exists);
+            }
+        }
     }
 }
