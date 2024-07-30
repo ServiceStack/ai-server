@@ -38,16 +38,6 @@ public class ComfyApiServices(IComfyClient comfyClient,
         // Convert the request DTO to a ComfyWorkflowRequest
         var comfyReq = request.ToComfy(appConfig,modelSettings);
 
-        var availableModels = await comfyClient.GetModelsListAsync();
-        
-        // Check if model is available
-        if (availableModels.All(x => x.Name != comfyReq.Model) &&
-            availableModels.All(x => x.Id != comfyReq.Model))
-        {
-            // Try downloading the model
-            await TryDownloadModel(apiModel);
-        }
-        
         // Apply files to the request
          ApplyFiles(comfyReq);
 
@@ -117,49 +107,6 @@ public class ComfyApiServices(IComfyClient comfyClient,
         });
 
         return fileOutputs;
-    }
-
-    private async Task TryDownloadModel(ComfyApiModel defaultModel)
-    {
-        // Check if download already in progress
-        var downloadJob = await comfyClient.GetDownloadStatusAsync(defaultModel.Filename);
-
-        if (downloadJob.Name == defaultModel.Filename && downloadJob.Progress == -1)
-        {
-            // Delete file and try again
-            await comfyClient.DeleteModelAsync(defaultModel.Filename);
-        } 
-        else if(downloadJob.Name == defaultModel.Filename && downloadJob.Progress < 100)
-        {
-            throw new Exception("Model download already in progress");
-        }
-            
-        if(appConfig.CivitAiApiKey.IsNullOrEmpty())
-            downloadJob = await comfyClient.DownloadModelAsync(
-                defaultModel.DownloadUrl, 
-                defaultModel.Filename
-            );
-        else
-            downloadJob = await comfyClient.DownloadModelAsync(
-                defaultModel.DownloadUrl, 
-                defaultModel.Filename,
-                apiKey: appConfig.CivitAiApiKey,
-                "bearer"
-            );
-            
-        // Set a max timeout of 5 minutes for the download job
-        var timeout = DateTime.UtcNow.AddMinutes(5);
-            
-        // Poll the download job until it's complete
-        while ((timeout - DateTime.UtcNow).TotalSeconds > 0 && 
-               downloadJob.Name != defaultModel.Filename || downloadJob.Progress != 100)
-        {
-            await Task.Delay(1000);
-            downloadJob = await comfyClient.GetDownloadStatusAsync(defaultModel.Filename);
-        }
-            
-        if(downloadJob.Progress != 100)
-            throw new Exception("Model download failed");
     }
     
     public async Task<object> Any(ImportCivitAiModel request)
