@@ -75,6 +75,10 @@ public class AppDbWrites : IReturn<EmptyResponse>
     
     [Command<ResetFailedComfyTasksCommand>]
     public SelectedTasks? ResetFailedComfyTasks { get; set; }
+    
+    // Command to update Comfy model info
+    [Command<UpdateComfyModelInfoCommand>]
+    public UpdateComfyModelInfo? UpdateComfyModelInfo { get; set; }
 }
 
 [Tag(Tag.Tasks)]

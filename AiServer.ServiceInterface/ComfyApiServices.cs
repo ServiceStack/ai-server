@@ -7,10 +7,12 @@ using ServiceStack;
 using ServiceStack.Data;
 using ServiceStack.Host;
 using ServiceStack.Messaging;
+using ServiceStack.OrmLite;
 
 namespace AiServer.ServiceInterface;
 
 public class ComfyApiServices(IComfyClient comfyClient,
+    CivitAiClient civitAiClient,
     ILogger<ComfyApiServices> log,
     IMessageProducer mq,
     AppConfig appConfig) : Service
@@ -148,16 +150,95 @@ public class ComfyApiServices(IComfyClient comfyClient,
             throw new Exception("Model download failed");
     }
     
-    // public async Task<object> Any(ImportCivitAiModel request)
-    // {
-    //     var regexModelId = new Regex(@"models/(\d+)/");
-    //     var regexModelVersionId = new Regex(@"modelVersionId=(\d+)");
-    //     var modelId = regexModelId.Match(request.ModelUrl).Groups[1].Value;
-    //     var modelVersionId = regexModelVersionId.Match(request.ModelUrl).Groups[1].Value;
-    //     
-    //     // Import the model using the extracted modelId and modelVersionId
-    //     
-    // }
+    public async Task<object> Any(ImportCivitAiModel request)
+    {
+        // Check if provider name is valid by looking it up in database
+        var provider = await Db.SingleAsync<ComfyApiProvider>(x => 
+            x.Name == request.Provider);
+        
+        if(provider == null)
+            throw new Exception("Invalid provider name");
+        
+        // Extract modelId and modelVersionId from the ModelUrl
+        var regexModelId = new Regex(@"models\/(\d+)");
+        var regexModelVersionId = new Regex(@"modelVersionId=(\d+)");
+        var modelId = regexModelId.Match(request.ModelUrl).Success ? 
+            regexModelId.Match(request.ModelUrl).Groups[1].Value : null;
+        var modelVersionId = regexModelVersionId.Match(request.ModelUrl).Success ? 
+            regexModelVersionId.Match(request.ModelUrl).Groups[1].Value : null;
+        
+        // Import the model using the extracted modelId and modelVersionId
+        // Only need one
+        if (modelId == null || modelVersionId == null)
+            throw new Exception("ModelId and ModelVersionId not found in ModelUrl");
+
+        // Ensure modelVersionId and modelId are numbers
+        if (!int.TryParse(modelId, out _))
+            throw new Exception("ModelId is not a number");
+        
+        if (!int.TryParse(modelVersionId, out _))
+            throw new Exception("ModelVersionId is not a number");
+        
+        // Prioritize modelVersionId over modelId
+        var modelVersion = await civitAiClient.GetModelVersionDetailsAsync(int.Parse(modelVersionId));
+        var model = await civitAiClient.GetModelDetailsAsync(int.Parse(modelId));
+        
+        // extract safetensors file
+        var safetensorsFile =
+            modelVersion.Files.FirstOrDefault(x => x.Metadata.Format.ToLower() == "safetensor");
+        
+        if(safetensorsFile == null)
+            throw new Exception("No safetensors file found in model version");
+
+        var comfyModel = new ComfyApiModel
+        {
+            Filename = safetensorsFile.Name,
+            Name = modelVersion.Name,
+            CreatedDate = modelVersion.CreatedAt,
+            Description = modelVersion.Description,
+            DownloadUrl = modelVersion.DownloadUrl,
+            Url = request.ModelUrl,
+            IconUrl = modelVersion.Images.FirstOrDefault()?.Url ?? "",
+            Tags = model.Tags.Join(",")
+        };
+        
+        // Check if model already exists in database
+        var existingModel = await Db.SingleAsync<ComfyApiModel>(x => 
+            x.Filename == comfyModel.Filename);
+
+        var appDbWrites = new AppDbWrites
+        {
+            UpdateComfyModelInfo = new()
+        };
+        var comfyModelId = existingModel?.Id ?? 0;
+        if (existingModel != null)
+        {
+            // Update details of existing model
+            comfyModel.Id = existingModel.Id;
+            appDbWrites.UpdateComfyModelInfo.UpdateModel = comfyModel;
+        }
+        else
+        {
+            // Insert new model
+            appDbWrites.UpdateComfyModelInfo.CreateModel = comfyModel;
+        }
+        
+        // Relate model to provider
+        appDbWrites.UpdateComfyModelInfo.RelateProviderModel = new ComfyApiProviderModel
+        {
+            ComfyApiProviderId = provider.Id,
+            ComfyApiModelId = comfyModelId
+        };
+        
+        // Publish the AppDbWrites to the message queue
+        mq.Publish(appDbWrites);
+
+        return new ImportCivitAiModelResponse
+        {
+            Provider = provider,
+            Model = comfyModel
+        };
+    }
 
     private void ApplyFiles(ComfyWorkflowRequest request)
     {
@@ -176,8 +257,3 @@ public class ComfyApiServices(IComfyClient comfyClient,
     }
 }
 
-public class ImportCivitAiModel
-{
-    public string Provider { get; set; }
-    public string ModelUrl { get; set; }
-}

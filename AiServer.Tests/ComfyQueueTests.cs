@@ -1,4 +1,5 @@
 using AiServer.ServiceInterface;
+using AiServer.ServiceInterface.Comfy;
 using AiServer.ServiceModel;
 using NUnit.Framework;
 using ServiceStack;
@@ -386,5 +387,27 @@ public class ComfyApiProviderTests
             await download.WriteToAsync(File.OpenWrite(filePath));
             Assert.That(File.Exists(filePath), Is.True);
         }
+    }
+
+    [Test]
+    public async Task CanImportModelFromCivitAiToExistingProvider()
+    {
+        await CreateComfyApiProviders(aiServerClient);
+        var importModelRequest = new ImportCivitAiModel
+        {
+            Provider = ComfyApiProviders[0].Name,
+            ModelUrl = "https://civitai.com/models/194768?modelVersionId=672019"
+        };
+        var importResponse = await aiServerClient.ApiAsync(importModelRequest);
+        importResponse.ThrowIfError();
+        
+        Assert.That(importResponse.Response, Is.Not.Null);
+        Assert.That(importResponse.Response.Model, Is.Not.Null);
+        Assert.That(importResponse.Response.Model.Name, Is.Not.Null);
+        Assert.That(importResponse.Response.Model.Filename, Is.Not.Null);
+        Assert.That(importResponse.Response.Model.DownloadUrl, Is.Not.Null);
+        Assert.That(importResponse.Response.Provider, Is.Not.Null);
+        Assert.That(importResponse.Response.Provider.Name, Is.Not.Null);
+
     }
 }

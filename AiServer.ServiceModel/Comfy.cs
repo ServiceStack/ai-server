@@ -138,3 +138,17 @@ public class GetComfyGenerationResponse
     public ComfyGenerationTask? Result { get; set; }
     public ResponseStatus? ResponseStatus { get; set; }
 }
+
+[Tag(Tag.Comfy)]
+[ValidateApiKey]
+public class ImportCivitAiModel : IReturn<ImportCivitAiModelResponse>
+{
+    public string Provider { get; set; }
+    public string ModelUrl { get; set; }
+}
+
+public class ImportCivitAiModelResponse
+{
+    public ComfyApiModel Model { get; set; }
+    public ComfyApiProvider Provider { get; set; }
+}
