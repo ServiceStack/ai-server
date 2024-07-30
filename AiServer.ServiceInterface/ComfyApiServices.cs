@@ -16,7 +16,8 @@ public class ComfyApiServices(IComfyClient comfyClient,
     CivitAiClient civitAiClient,
     ILogger<ComfyApiServices> log,
     IMessageProducer mq,
-    AppConfig appConfig) : Service
+    AppConfig appConfig,
+    AppData appData) : Service
 {
     public async Task<object> Post(QueueComfyWorkflow request)
     {
@@ -24,32 +25,15 @@ public class ComfyApiServices(IComfyClient comfyClient,
         var provider = request.Provider.IsNullOrEmpty() ? 
             await Db.SingleAsync<ComfyApiProvider>(x => x.Name == request.Provider) : null;
         
+        // Try Look up specified model
+        var requestedModel = await Db.SingleAsync<ComfyApiModel>(x => x.Filename == request.Model || 
+                                                             x.Name == request.Model);
+        ComfyApiModel? apiModel = requestedModel ?? appConfig.DefaultModel;
         // Check if model string is provided
-        if (request.Model.IsNullOrEmpty() && provider == null)
-            throw new Exception("Model or Provider must be provided");
-
-        ComfyApiModelSettings? modelSettings = null;
-        ComfyApiModel? apiModel = appConfig.DefaultModel;
-        if(provider != null && request.Model.IsNullOrEmpty())
-        {
-            // Check if provider has a model
-            var providerModel = await Db.SelectAsync<ComfyApiProviderModel>(x => 
-                x.ComfyApiProviderId == provider.Id);
-            
-            if(providerModel.IsNullOrEmpty())
-                throw new Exception("Can't infer model from provider as no models are related to it");
-            
-            // Get the first model related to the provider
-            var model = await Db.SingleByIdAsync<ComfyApiModel>(providerModel[0].ComfyApiModelId);
-            apiModel = model;
-            request.Model = model.Filename;
-            
-            // Get related model settings
-            modelSettings = await Db.SingleByIdAsync<ComfyApiModelSettings>(model.Id) ?? appConfig.DefaultModelSettings;
-        }
-        
         if (apiModel == null)
             throw new Exception("Model not found");
+        
+        ComfyApiModelSettings? modelSettings = appConfig.DefaultModelSettings;
         
         // Convert the request DTO to a ComfyWorkflowRequest
         var comfyReq = request.ToComfy(appConfig,modelSettings);
