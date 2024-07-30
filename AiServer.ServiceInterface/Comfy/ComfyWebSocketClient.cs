@@ -11,7 +11,6 @@ public class ComfyWebSocketClient(Uri serverUrl, ClientWebSocket clientWebSocket
     private readonly ConcurrentQueue<string> messageQueue = new();
     
     private readonly CancellationTokenSource cancellationTokenSource = new();
-    private int MaxReconnectAttempts = 20;
     private const int ReconnectDelayMs = 3000;
 
     public Action<string>? OnMessageReceived { get; set; }
@@ -21,28 +20,20 @@ public class ComfyWebSocketClient(Uri serverUrl, ClientWebSocket clientWebSocket
 
     public async Task ConnectAndListenAsync()
     {
-        int reconnectAttempts = 0;
 
         while (!cancellationTokenSource.IsCancellationRequested)
         {
             try
             {
                 await ConnectAsync();
-                reconnectAttempts = 0; // Reset reconnect attempts on successful connection
-
                 await ReceiveMessagesAsync();
             }
             catch (Exception ex)
             {
                 logger?.LogError($"Error: {ex.Message}");
                 logger?.LogDebug($"Stack Trace: {ex.StackTrace}");
-
-                if (++reconnectAttempts > MaxReconnectAttempts)
-                {
-                    logger?.LogError("Max reconnection attempts reached. Stopping.");
-                    break;
-                }
-
+                
+                // Attempt to reconnect
                 logger?.LogInformation($"Attempting to reconnect in {ReconnectDelayMs / 1000} seconds...");
                 await Task.Delay(ReconnectDelayMs);
             }

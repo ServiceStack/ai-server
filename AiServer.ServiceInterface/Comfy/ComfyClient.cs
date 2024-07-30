@@ -81,8 +81,8 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         
         // Initialize WebSocket Client
         var webSocketUrl = new Uri(baseUrl.Replace("http", "ws") + "/ws?clientId=" + clientId);
-        webSocketClient = new ComfyWebSocketClient(webSocketUrl, new ClientWebSocket(), apiKey,loggerFactory?.CreateLogger(typeof(ComfyWebSocketClient)));
-        
+        var webSocketClient = new ComfyWebSocketClient(webSocketUrl, new ClientWebSocket(), apiKey,loggerFactory?.CreateLogger(typeof(ComfyWebSocketClient)));
+
         // Subscribe to events
         webSocketClient.OnGenerationCompleted = OnGenerationCompleted;
         
@@ -91,7 +91,6 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     }
     
     private readonly Dictionary<ComfyTaskType, string> comfyWorkflowMapping = new();
-    private readonly ComfyWebSocketClient? webSocketClient;
 
     public async Task<string> QueueWorkflowAsync(string apiJson)
     {
@@ -396,6 +395,5 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         {
             OnGenerationComplete.TryRemove(comfyPromptId, out _);
         }
-        
     }
 }

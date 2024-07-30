@@ -69,8 +69,7 @@ public class CivitAiClientTests
     [Test]
     public async Task GetModelVersionByHashAsync_ReturnsModelVersionDetails()
     {
-        
-        string hash = "known_hash_here"; // Replace with a valid hash
+        string hash = "E80275529B041EE10796CAD5069A56AFD0190894FA9AFD58E1C1C19DCD3352E0";
 
         var versionDetails = await client.GetModelVersionByHashAsync(hash);
 
