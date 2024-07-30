@@ -181,12 +181,6 @@ public class ComfyAgentDownloadStatus
     public int? Progress { get; set; }
 }
 
-[Tag(Tag.Comfy)]
-public class DownloadConfgiuredArtStyleModel : IReturn<ComfyAgentDownloadStatus>
-{
-    public ArtStyle? ArtStyle { get; set; }
-}
-
 [Route("/comfy/{Year}/{Month}/{Day}/{Filename}")]
 public class DownloadComfyFile : IReturn<Stream>
 {

@@ -34,27 +34,6 @@ public class ComfyGenerationRequest
     public ComfyWorkflowRequest Request { get; set; }
 }
 
-public enum ArtStyle
-{
-    ThreeDModel,
-    AnalogFilm,
-    Anime,
-    Cinematic,
-    ComicBook,
-    DigitalArt,
-    Enhance,
-    FantasyArt,
-    Isometric,
-    LineArt,
-    LowPoly,
-    ModelingCompound,
-    NeonPunk,
-    Origami,
-    Photographic,
-    PixelArt,
-    TileTexture
-}
-
 public class ComfyHostedFileOutput
 {
     public string Url { get; set; }
@@ -89,7 +68,6 @@ public class ComfyWorkflowRequest
     public Stream? MaskInput { get; set; }
 
     public ComfySampler? Sampler { get; set; }
-    public ArtStyle? ArtStyle { get; set; }
     public string? Scheduler { get; set; } = "normal";
     public double? CfgScale { get; set; }
     public double? Denoise { get; set; }

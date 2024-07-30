@@ -35,22 +35,7 @@ public class ComfyFriendlyApiTests
 
             container.AddSingleton(new AppConfig
             {
-                ArtStyleModelMappings = new Dictionary<string, ArtStyleEntry>
-                {
-                    {
-                        "Photographic", @"{
-        ""name"": ""OpenXL Version 3.0 Cinematic"",
-        ""downloadUrl"": ""https://civitai.com/api/download/models/506622"",
-        ""filename"": ""openxlVersion30_v30.safetensors"",
-        ""width"": 1024,
-        ""height"": 1024,
-        ""steps"": 25,
-        ""cfgScale"": 7,
-        ""sampler"": ""dpmpp_2m_sde_gpu"",
-        ""scheduler"": ""normal""
-      }".FromJson<ArtStyleEntry>()
-                    }
-                }
+
             });
         }
     }

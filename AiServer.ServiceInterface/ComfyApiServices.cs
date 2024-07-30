@@ -19,16 +19,37 @@ public class ComfyApiServices(IComfyClient comfyClient,
 {
     public async Task<object> Post(QueueComfyWorkflow request)
     {
+        // Look up provider if present
+        var provider = request.Provider.IsNullOrEmpty() ? 
+            await Db.SingleAsync<ComfyApiProvider>(x => x.Name == request.Provider) : null;
+        
+        // Check if model string is provided
+        if (request.Model.IsNullOrEmpty() && provider == null)
+            throw new Exception("Model or Provider must be provided");
+
+        ComfyApiModelSettings? modelSettings = null;
+        if(provider != null && request.Model.IsNullOrEmpty())
+        {
+            // Check if provider has a model
+            var providerModel = await Db.SelectAsync<ComfyApiProviderModel>(x => 
+                x.ComfyApiProviderId == provider.Id);
+            
+            if(providerModel.IsNullOrEmpty())
+                throw new Exception("Can't infer model from provider as no models are related to it");
+            
+            // Get the first model related to the provider
+            var model = await Db.SingleByIdAsync<ComfyApiModel>(providerModel[0].ComfyApiModelId);
+            request.Model = model.Filename;
+            
+            // Get related model settings
+            modelSettings = await Db.SingleByIdAsync<ComfyApiModelSettings>(model.Id) ?? appConfig.DefaultModelSettings;
+        }
+        
         // Convert the request DTO to a ComfyWorkflowRequest
-        var comfyReq = request.ToComfy(appConfig);
+        var comfyReq = request.ToComfy(appConfig,modelSettings);
 
         var availableModels = await comfyClient.GetModelsListAsync();
-        if(appConfig.ArtStyleModelMappings.IsNullOrEmpty())
-            log.LogWarning("ArtStyleModelMappings is empty");
-        var artStyle = (comfyReq.ArtStyle ?? ArtStyle.Photographic).ToString();
-        if(!appConfig.ArtStyleModelMappings.ContainsKey(artStyle))
-            throw new Exception($"ArtStyleModelMappings does not contain key: {artStyle}");
-        var defaultModel = appConfig.ArtStyleModelMappings[artStyle];
+        var defaultModel = appConfig.DefaultModel!;
         
         if (string.IsNullOrEmpty(comfyReq.Model) && availableModels.All(x => x.Name != comfyReq.Model) &&
             availableModels.All(x => x.Name != defaultModel.Filename))
@@ -107,7 +128,7 @@ public class ComfyApiServices(IComfyClient comfyClient,
         return fileOutputs;
     }
 
-    private async Task TryDownloadModel(ArtStyleEntry defaultModel)
+    private async Task TryDownloadModel(ComfyApiModel defaultModel)
     {
         // Check if download already in progress
         var downloadJob = await comfyClient.GetDownloadStatusAsync(defaultModel.Filename);

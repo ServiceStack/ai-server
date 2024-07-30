@@ -212,6 +212,16 @@ public class CreateComfyApiModel : ICreateDb<ComfyApiModel>, IReturn<IdResponse>
 
     public ComfyApiModelSettings? ModelSettings { get; set; }
 }
+
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
+[Description("Update a Comfy API Model that can be used by Comfy API Providers")]
+public class CreateComfyApiProviderModel : ICreateDb<ComfyApiProviderModel>, IReturn<IdResponse>
+{
+    public int ComfyApiProviderId { get; set; }
+    public int ComfyApiModelId { get; set; }
+}
+
 [Tag(Tag.Admin)]
 [ValidateAuthSecret]
 public class QueryComfyApiProviders : QueryDb<ComfyApiProvider>

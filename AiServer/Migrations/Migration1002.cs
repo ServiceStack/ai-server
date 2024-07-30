@@ -70,7 +70,6 @@ public class Migration1002 : MigrationBase
         public Stream? MaskInput { get; set; }
 
         public ComfySampler? Sampler { get; set; }
-        public ArtStyle? ArtStyle { get; set; }
         public string? Scheduler { get; set; } = "normal";
         public double? CfgScale { get; set; }
         public double? Denoise { get; set; }
@@ -92,27 +91,6 @@ public class Migration1002 : MigrationBase
         blue,
         green,
         alpha
-    }
-    
-    public enum ArtStyle
-    {
-        ThreeDModel,
-        AnalogFilm,
-        Anime,
-        Cinematic,
-        ComicBook,
-        DigitalArt,
-        Enhance,
-        FantasyArt,
-        Isometric,
-        LineArt,
-        LowPoly,
-        ModelingCompound,
-        NeonPunk,
-        Origami,
-        Photographic,
-        PixelArt,
-        TileTexture
     }
 
     public class ComfySummary

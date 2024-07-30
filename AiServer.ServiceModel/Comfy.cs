@@ -42,9 +42,7 @@ public class QueueComfyWorkflow : IReturn<QueueComfyWorkflowResponse>
     public Stream? SpeechInput { get; set; }
     [Input(Type = "file")]
     public Stream? MaskInput { get; set; }
-    
     public ComfySampler? Sampler { get; set; }
-    public ArtStyle? ArtStyle { get; set; }
     public string? Scheduler { get; set; } = "normal";
     public int? CfgScale { get; set; }
     public double? Denoise { get; set; }

@@ -5,51 +5,50 @@ namespace AiServer.ServiceInterface.Comfy;
 
 public static class ComfyExtensions
 {
-    public static ComfyWorkflowRequest ToComfy(this QueueComfyWorkflow request, 
-        AppConfig appConfig)
+    public static ComfyWorkflowRequest ToComfy(this QueueComfyWorkflow request, AppConfig appConfig, ComfyApiModelSettings? modelSettings)
     {
-        var artStyle = request.ArtStyle ?? ArtStyle.Photographic;
-        var artStyleString = artStyle.ToString();
-        var artStyleEntry = appConfig.ArtStyleModelMappings[artStyleString];
 
         ComfyWorkflowRequest resObject;
+        if(string.IsNullOrEmpty(request.Model) && (appConfig.DefaultModel is null || string.IsNullOrEmpty(appConfig.DefaultModel.Filename)))
+            throw new Exception("Model missing and no default model is configured.");
         
         switch (request.TaskType)
         {
             case ComfyTaskType.TextToImage:
+                
                 resObject = new ComfyWorkflowRequest()
                 {
-                    Model = request.Model is null or "" ? artStyleEntry.Filename : request.Model,
-                    Width = request.Width is null or 0 ? artStyleEntry.Width ?? 1024 : request.Width,
-                    Height = request.Height is null or 0 ? artStyleEntry.Height ?? 1024 : request.Height,
+                    Model = request.Model ?? appConfig.DefaultModel?.Filename!,
+                    Width = request.Width is null or 0 ? modelSettings?.Width ?? 1024 : request.Width,
+                    Height = request.Height is null or 0 ? modelSettings?.Height ?? 1024 : request.Height,
                     BatchSize = request.BatchSize is null or 0 ? 1 : request.BatchSize ?? 1,
                     Seed = request.Seed is null or 0 ? Random.Shared.Next() : request.Seed,
                     PositivePrompt = request.PositivePrompt,
                     NegativePrompt = request.NegativePrompt is null or "" ? 
-                        (artStyleEntry.NegativePrompt ?? "low quality, blurry, noisy, compression artifacts") : 
+                        (modelSettings?.NegativePrompt ?? "low quality, blurry, noisy, compression artifacts") : 
                         request.NegativePrompt,
-                    Scheduler = request.Scheduler is null or "" ? artStyleEntry.Scheduler ?? "normal" : request.Scheduler,
-                    Steps = request.Steps is null or 0 ? artStyleEntry.Steps ?? 25 : request.Steps,
-                    CfgScale = request.CfgScale is null or 0 ? artStyleEntry.CfgScale ?? 7 : request.CfgScale,
-                    Sampler = request.Sampler ?? (artStyleEntry.Sampler ?? ComfySampler.euler_ancestral),
+                    Scheduler = request.Scheduler is null or "" ? modelSettings?.Scheduler ?? "normal" : request.Scheduler,
+                    Steps = request.Steps is null or 0 ? modelSettings?.Steps ?? 25 : request.Steps,
+                    CfgScale = request.CfgScale is null or 0 ? modelSettings?.CfgScale ?? 7 : request.CfgScale,
+                    Sampler = request.Sampler ?? (modelSettings?.Sampler ?? ComfySampler.euler_ancestral),
                     TaskType = ComfyTaskType.TextToImage
                 };
                 break;
             case ComfyTaskType.ImageToImage:
                 resObject = new ComfyWorkflowRequest
                 {
-                    Model = request.Model is null or "" ? artStyleEntry.Filename : request.Model,
+                    Model = request.Model ?? appConfig.DefaultModel?.Filename!,
                     Denoise = request.Denoise is null or 0 ? 0.5d : request.Denoise,
                     BatchSize = request.BatchSize is null or 0 ? 1 : request.BatchSize ?? 1,
                     Seed = request.Seed is null or 0 ? Random.Shared.Next() : request.Seed,
                     PositivePrompt = request.PositivePrompt,
                     NegativePrompt = request.NegativePrompt is null or "" ? 
-                        (artStyleEntry.NegativePrompt ?? "low quality, blurry, noisy, compression artifacts") : 
+                        (modelSettings?.NegativePrompt ?? "low quality, blurry, noisy, compression artifacts") : 
                         request.NegativePrompt,
-                    Scheduler = request.Scheduler is null or "" ? artStyleEntry.Scheduler ?? "normal" : request.Scheduler,
-                    Steps = request.Steps is null or 0 ? artStyleEntry.Steps ?? 25 : request.Steps,
-                    CfgScale = request.CfgScale is null or 0 ? artStyleEntry.CfgScale ?? 7 : request.CfgScale,
-                    Sampler = request.Sampler ?? (artStyleEntry.Sampler ?? ComfySampler.euler_ancestral),
+                    Scheduler = request.Scheduler is null or "" ? modelSettings?.Scheduler ?? "normal" : request.Scheduler,
+                    Steps = request.Steps is null or 0 ? modelSettings?.Steps ?? 25 : request.Steps,
+                    CfgScale = request.CfgScale is null or 0 ? modelSettings?.CfgScale ?? 7 : request.CfgScale,
+                    Sampler = request.Sampler ?? (modelSettings?.Sampler ?? ComfySampler.euler_ancestral),
                     TaskType = ComfyTaskType.ImageToImage
                 };
                 break;
@@ -63,18 +62,18 @@ public static class ComfyExtensions
             case ComfyTaskType.ImageToImageWithMask:
                 resObject = new ComfyWorkflowRequest
                 {
-                    Model = request.Model is null or "" ? artStyleEntry.Filename : request.Model,
+                    Model = request.Model ?? appConfig.DefaultModel?.Filename!,
                     Denoise = request.Denoise ?? 0.5d,
                     BatchSize = request.BatchSize is null or 0 ? 1 : request.BatchSize ?? 1,
                     Seed = request.Seed is null or 0 ? Random.Shared.Next() : request.Seed,
                     PositivePrompt = request.PositivePrompt,
                     NegativePrompt = request.NegativePrompt is null or "" ? 
-                        (artStyleEntry.NegativePrompt ?? "low quality, blurry, noisy, compression artifacts") : 
+                        (modelSettings?.NegativePrompt ?? "low quality, blurry, noisy, compression artifacts") : 
                         request.NegativePrompt,
-                    Scheduler = request.Scheduler is null or "" ? artStyleEntry.Scheduler ?? "normal" : request.Scheduler,
-                    Steps = request.Steps is null or 0 ? artStyleEntry.Steps ?? 25 : request.Steps,
-                    CfgScale = request.CfgScale is null or 0 ? artStyleEntry.CfgScale ?? 7 : request.CfgScale,
-                    Sampler = request.Sampler ?? (artStyleEntry.Sampler ?? ComfySampler.euler_ancestral),
+                    Scheduler = request.Scheduler is null or "" ? modelSettings?.Scheduler ?? "normal" : request.Scheduler,
+                    Steps = request.Steps is null or 0 ? modelSettings?.Steps ?? 25 : request.Steps,
+                    CfgScale = request.CfgScale is null or 0 ? modelSettings?.CfgScale ?? 7 : request.CfgScale,
+                    Sampler = request.Sampler ?? (modelSettings?.Sampler ?? ComfySampler.euler_ancestral),
                     MaskChannel = ComfyMaskSource.red,
                     TaskType = ComfyTaskType.ImageToImageWithMask
                 };
@@ -119,8 +118,6 @@ public static class ComfyExtensions
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        
-        resObject.ArtStyle = artStyle;
 
         return resObject;
     }

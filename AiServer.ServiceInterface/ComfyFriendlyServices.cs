@@ -140,25 +140,5 @@ public class ComfyFriendlyServices(AppConfig appConfig,IComfyClient comfyClient)
             request.Filename);
         return resp;
     }
-
-    public async Task<object> Post(DownloadConfgiuredArtStyleModel request)
-    {
-        if(request?.ArtStyle == null)
-            throw new ArgumentException("ArtStyle is required.");
-        
-        // Resolve artstyle from AppConfig
-        var artStyle = appConfig.ArtStyleModelMappings.FirstOrDefault(x => x.Key == request.ArtStyle.ToString());
-        if(artStyle.Value == null)
-            throw new ArgumentException("ArtStyle not found in AppConfig.");
-        
-        // Send a request to the configured agent to download the model
-        var downloadRequest = new ConfigureAndDownloadModel
-        {
-            DownloadUrl = artStyle.Value.DownloadUrl,
-            Name = artStyle.Value.Name,
-            Filename = artStyle.Value.Filename
-        };
-        return await Post(downloadRequest);
-    }
 }
 
