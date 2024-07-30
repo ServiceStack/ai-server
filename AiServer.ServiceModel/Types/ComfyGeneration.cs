@@ -232,6 +232,7 @@ public class ComfyApiModel
 {
     [AutoIncrement] public int Id { get; set; }
     
+    [Index(Unique = true)]
     public string Name { get; set; }
 
     public string? Description { get; set; }

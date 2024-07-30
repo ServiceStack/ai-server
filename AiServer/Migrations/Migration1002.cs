@@ -289,6 +289,7 @@ public class Migration1002 : MigrationBase
     {
         [AutoIncrement] 
         public int Id { get; set; }
+        [Index(Unique = true)]
         public string Name { get; set; }
         
         public string? Description { get; set; }
