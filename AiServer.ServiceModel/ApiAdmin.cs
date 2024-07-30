@@ -228,6 +228,15 @@ public class QueryComfyApiProviders : QueryDb<ComfyApiProvider>
 {
     public string? Name { get; set; }
 }
+
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
+public class QueryComfyApiProviderModels : QueryDb<ComfyApiProviderModel>
+{
+    public int? ComfyApiProviderId { get; set; }
+    public int? ComfyApiModelId { get; set; }
+}
+
 [Tag(Tag.Admin)]
 [ValidateAuthSecret]
 public class QueryComfyApiModels : QueryDb<ComfyApiModel>

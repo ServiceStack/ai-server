@@ -115,6 +115,10 @@ public class ExecutorTasks : IReturn<EmptyResponse>
     
     [Command<ExecutorPeriodicTasksCommand>]
     public PeriodicTasks? PeriodicTasks { get; set; } 
+    
+    // Execute download comfy model for a provider
+    [Command<DownloadComfyModelCommand>]
+    public DownloadComfyModel? DownloadComfyModel { get; set; }
 }
 
 public class SelectedTasks

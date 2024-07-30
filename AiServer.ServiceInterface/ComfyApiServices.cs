@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using AiServer.ServiceInterface.Comfy;
+using AiServer.ServiceInterface.Executor;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.Logging;
@@ -28,6 +29,7 @@ public class ComfyApiServices(IComfyClient comfyClient,
             throw new Exception("Model or Provider must be provided");
 
         ComfyApiModelSettings? modelSettings = null;
+        ComfyApiModel? apiModel = appConfig.DefaultModel;
         if(provider != null && request.Model.IsNullOrEmpty())
         {
             // Check if provider has a model
@@ -39,22 +41,27 @@ public class ComfyApiServices(IComfyClient comfyClient,
             
             // Get the first model related to the provider
             var model = await Db.SingleByIdAsync<ComfyApiModel>(providerModel[0].ComfyApiModelId);
+            apiModel = model;
             request.Model = model.Filename;
             
             // Get related model settings
             modelSettings = await Db.SingleByIdAsync<ComfyApiModelSettings>(model.Id) ?? appConfig.DefaultModelSettings;
         }
         
+        if (apiModel == null)
+            throw new Exception("Model not found");
+        
         // Convert the request DTO to a ComfyWorkflowRequest
         var comfyReq = request.ToComfy(appConfig,modelSettings);
 
         var availableModels = await comfyClient.GetModelsListAsync();
-        var defaultModel = appConfig.DefaultModel!;
         
-        if (string.IsNullOrEmpty(comfyReq.Model) && availableModels.All(x => x.Name != comfyReq.Model) &&
-            availableModels.All(x => x.Name != defaultModel.Filename))
+        // Check if model is available
+        if (availableModels.All(x => x.Name != comfyReq.Model) &&
+            availableModels.All(x => x.Id != comfyReq.Model))
         {
-            await TryDownloadModel(defaultModel);
+            // Try downloading the model
+            await TryDownloadModel(apiModel);
         }
         
         // Apply files to the request
@@ -253,11 +260,62 @@ public class ComfyApiServices(IComfyClient comfyClient,
         
         // Publish the AppDbWrites to the message queue
         mq.Publish(appDbWrites);
+        
+        // Download model job
+        var downloadModel = new DownloadComfyModel
+        {
+            Provider = provider,
+            DownloadModel = comfyModel
+        };
+        
+        mq.Publish(new ExecutorTasks
+        {
+            DownloadComfyModel = downloadModel
+        });
 
         return new ImportCivitAiModelResponse
         {
             Provider = provider,
             Model = comfyModel
+        };
+    }
+    
+    public async Task<object> Any(DownloadComfyProviderModel request)
+    {
+        // Ensure ComfyApiProviderModelId exists
+        if (request.ComfyApiProviderModelId == null)
+            throw new Exception("ComfyApiProviderModelId must be provided");
+        
+        // Get the ComfyApiProviderModel
+        var providerModel = await Db.SingleByIdAsync<ComfyApiProviderModel>(request.ComfyApiProviderModelId);
+        if(providerModel == null)
+            throw new Exception("ComfyApiProviderModel not found");
+        
+        // Get the ComfyApiModel
+        var model = await Db.SingleByIdAsync<ComfyApiModel>(providerModel.ComfyApiModelId);
+        if(model == null)
+            throw new Exception("ComfyApiModel not found");
+        
+        var provider = await Db.SingleByIdAsync<ComfyApiProvider>(providerModel.ComfyApiProviderId);
+        if(provider == null)
+            throw new Exception("ComfyApiProvider not found");
+        
+        var downloadProviderModel = new DownloadComfyModel
+        {
+            Provider = provider,
+            DownloadModel = model
+        };
+        
+        mq.Publish(new ExecutorTasks
+        {
+            DownloadComfyModel = downloadProviderModel
+        });
+        
+        var comfyClient = new ComfyClient(provider.ApiBaseUrl, provider.ApiKey);
+        var downloadStatus = await comfyClient.GetDownloadStatusAsync(model.Filename);
+        return new DownloadComfyProviderModelResponse
+        {
+            DownloadStatus = downloadStatus
         };
     }
 

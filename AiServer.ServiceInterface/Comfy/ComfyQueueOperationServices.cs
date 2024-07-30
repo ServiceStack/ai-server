@@ -106,6 +106,16 @@ public class ComfyQueueOperationServices(AppData appData, IDbConnectionFactory d
             ComfyApiModelId = request.ComfyApiModelId,
             ComfyApiProviderId = request.ComfyApiProviderId
         };
+        
+        // Existing ComfyApiProviderModel
+        var existing = await Db.LoadSelectAsync<ComfyApiProviderModel>(x =>
+            x.ComfyApiModelId == request.ComfyApiModelId &&
+            x.ComfyApiProviderId == request.ComfyApiProviderId);
+        if (existing.FirstOrDefault() != null)
+            return new IdResponse
+            {
+                Id = existing[0].Id.ToString()
+            };
 
         var res = await Db.InsertAsync(comfyApiProviderModel,selectIdentity:true);
         var providerModel = await Db.LoadSingleByIdAsync<ComfyApiProviderModel>(res);

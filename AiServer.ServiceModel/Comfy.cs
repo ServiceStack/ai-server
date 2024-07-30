@@ -150,3 +150,15 @@ public class ImportCivitAiModelResponse
     public ComfyApiModel Model { get; set; }
     public ComfyApiProvider Provider { get; set; }
 }
+
+[Tag(Tag.Comfy)]
+[ValidateApiKey]
+public class DownloadComfyProviderModel : IReturn<DownloadComfyProviderModelResponse>
+{
+    public int? ComfyApiProviderModelId { get; set; }
+}
+
+public class DownloadComfyProviderModelResponse
+{
+    public ComfyAgentDownloadStatus? DownloadStatus { get; set; }
+}

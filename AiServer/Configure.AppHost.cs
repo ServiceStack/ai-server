@@ -27,8 +27,11 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             services.AddSingleton<ComfyProvider>();
             services.AddSingleton<ComfyProviderFactory>();
             
-            services.AddSingleton(x => new CivitAiClient(x.GetService<IHttpClientFactory>(), AppConfig.Instance.CivitAiApiKey));
+            var civitAiApiKey = AppConfig.Instance.CivitAiApiKey ?? Environment.GetEnvironmentVariable("CIVIT_AI_API_KEY");
             
+            services.AddSingleton(x => new CivitAiClient(x.GetService<IHttpClientFactory>(), 
+                civitAiApiKey
+                ));
             services.AddHttpClient("ComfyClientFileDownload", client =>
             {
                 client.Timeout = TimeSpan.FromSeconds(300); // Set a reasonable timeout
