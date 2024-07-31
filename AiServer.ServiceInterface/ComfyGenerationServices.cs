@@ -67,7 +67,7 @@ public class ComfyGenerationServices(
             throw new ArgumentNullException(nameof(request.Request));
         
         var model = request.Request.Model;
-        if (!await Db.ExistsAsync<ComfyApiModel>(x => x.Name == model))
+        if (!await Db.ExistsAsync<ComfyApiModel>(x => x.Name == model || x.Filename == model))
             throw HttpError.NotFound($"Model {model} not found");
         
         // Find model
