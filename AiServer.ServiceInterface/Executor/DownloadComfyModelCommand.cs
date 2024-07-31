@@ -50,6 +50,7 @@ public class DownloadComfyModelCommand(AppConfig appConfig, IDbConnectionFactory
                     request.DownloadModel.DownloadUrl,
                     request.DownloadModel.Filename);
             }
+            logger.LogInformation($"Download status response: {res.ToJson()}");
         }
     }
 }

@@ -32,8 +32,7 @@ public class ComfyApiProviderTests
             },
             Enabled = true,
             Priority = 1,
-            ApiKey = "testtest1234",
-            Models = new List<ComfyApiProviderModel>()
+            ApiKey = "testtest1234"
         }
     };
     

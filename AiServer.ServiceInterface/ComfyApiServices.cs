@@ -127,21 +127,40 @@ public class ComfyApiServices(IComfyClient comfyClient,
             regexModelVersionId.Match(request.ModelUrl).Groups[1].Value : null;
         
         // Import the model using the extracted modelId and modelVersionId
-        // Only need one
-        if (modelId == null || modelVersionId == null)
+        if (modelId == null && modelVersionId == null)
             throw new Exception("ModelId and ModelVersionId not found in ModelUrl");
 
+        int modelIdInt = 0;
+        int modelVersionIdInt = 0;
+        
         // Ensure modelVersionId and modelId are numbers
-        if (!int.TryParse(modelId, out _))
+        if (!int.TryParse(modelId, out modelIdInt))
             throw new Exception("ModelId is not a number");
         
-        if (!int.TryParse(modelVersionId, out _))
-            throw new Exception("ModelVersionId is not a number");
+        // If only modelId is found, use the latest modelVersionId by looking it up
+        CivitModelDetails? model = null;
+        CivitModelVersionDetails? modelVersion = null;
+
+        if (modelVersionId == null)
+        {
+            model = await civitAiClient.GetModelDetailsAsync(int.Parse(modelId));
+            if(model == null)
+                throw new Exception("Model not found");
+            modelVersionIdInt = model.ModelVersions.MaxBy(x => x.CreatedAt).Id;
+        }
+
+        if (modelVersionIdInt == 0 && modelVersionId != null)
+            int.TryParse(modelVersionId, out modelVersionIdInt);
         
-        // Prioritize modelVersionId over modelId
-        var modelVersion = await civitAiClient.GetModelVersionDetailsAsync(int.Parse(modelVersionId));
-        var model = await civitAiClient.GetModelDetailsAsync(int.Parse(modelId));
-        
+        if (modelVersionId == null && modelVersionIdInt == 0)
+            throw new Exception("ModelVersionId Invalid");
+
+        if (modelVersionIdInt == 0 || modelIdInt == 0)
+            throw new Exception("Unable to resolve model details from Url");
+
+        model ??= await civitAiClient.GetModelDetailsAsync(modelIdInt);
+        modelVersion ??= await civitAiClient.GetModelVersionDetailsAsync(modelVersionIdInt);
+
         // extract safetensors file
         var safetensorsFile =
             modelVersion.Files.FirstOrDefault(x => x.Metadata.Format.ToLower() == "safetensor");
@@ -152,7 +171,7 @@ public class ComfyApiServices(IComfyClient comfyClient,
         var comfyModel = new ComfyApiModel
         {
             Filename = safetensorsFile.Name,
-            Name = modelVersion.Name,
+            Name = $"{model.Name} - {modelVersion.Name}",
             CreatedDate = modelVersion.CreatedAt,
             Description = modelVersion.Description,
             DownloadUrl = modelVersion.DownloadUrl,

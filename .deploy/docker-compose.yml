@@ -10,6 +10,7 @@ services:
             VIRTUAL_PORT: 8080 # New default ASP.NET port -> https://learn.microsoft.com/en-us/dotnet/core/compatibility/containers/8.0/aspnet-port
             LETSENCRYPT_HOST: ${HOST_DOMAIN},ai-server-cdn.diffusion.works
             LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+            CIVIT_AI_API_KEY: ${CIVIT_AI_API_KEY}
             HTTPS_METHOD: noredirect # Disable HTTPS redirect since Cloudflare infinite loop redirects when default
         volumes:
             - ./App_Data:/app/App_Data  

@@ -11,7 +11,7 @@ namespace AiServer.ServiceInterface
         public ComfyApiModel? DefaultModel { get; set; }
         public ComfyApiModelSettings? DefaultModelSettings { get; set; }
         
-        public string CivitAiApiKey { get; set; }
+        public string? CivitAiApiKey { get; set; }
         
         public string ApplicationBaseUrl { get; set; }
         public string AssetsBaseUrl { get; set; }
