@@ -143,6 +143,8 @@ public class ImportCivitAiModel : IReturn<ImportCivitAiModelResponse>
 {
     public string Provider { get; set; }
     public string ModelUrl { get; set; }
+    
+    public ComfyApiModelSettings? Settings { get; set; }
 }
 
 public class ImportCivitAiModelResponse

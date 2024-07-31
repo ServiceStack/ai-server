@@ -207,6 +207,11 @@ public class ComfyApiServices(IComfyClient comfyClient,
             ComfyApiProviderId = provider.Id,
             ComfyApiModelId = comfyModelId
         };
+
+        if (request.Settings != null)
+        {
+            appDbWrites.UpdateComfyModelInfo.AddModelSettings = request.Settings;
+        }
         
         // Publish the AppDbWrites to the message queue
         mq.Publish(appDbWrites);

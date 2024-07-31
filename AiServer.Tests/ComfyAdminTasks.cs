@@ -60,6 +60,58 @@ public class ComfyAdminTasks
         "https://civitai.com/models/129403?modelVersionId=259194",
         "https://civitai.com/models/283312/psyfi-xl-lcm"
     };
+
+    public static Dictionary<string, ComfyApiModelSettings> ImportCivitAiModelSettings = new()
+    {
+        {
+            "https://civitai.com/models/194768/jib-mix-realistic-xl?modelVersionId=610292",
+            new ComfyApiModelSettings
+            {
+                Height = 1024,
+                Width = 1024,
+                Sampler = ComfySampler.dpmpp_2m_sde,
+                Scheduler = "karras",
+                CfgScale = 6.0,
+                Steps = 30
+            }
+        },
+        {
+            "https://civitai.com/models/553410/crazycaricaturesxl?modelVersionId=615871",
+            new ComfyApiModelSettings
+            {
+                Height = 1024,
+                Width = 1024,
+                Sampler = ComfySampler.euler_ancestral,
+                Scheduler = "normal",
+                CfgScale = 8.0,
+                Steps = 30
+            }
+        },
+        {
+            "https://civitai.com/models/129403?modelVersionId=259194",
+            new ComfyApiModelSettings
+            {
+                Height = 1024,
+                Width = 1024,
+                Sampler = ComfySampler.euler_ancestral,
+                Scheduler = "normal",
+                CfgScale = 3.0,
+                Steps = 12
+            }
+        },
+        {
+            "https://civitai.com/models/283312/psyfi-xl-lcm",
+            new ComfyApiModelSettings
+            {
+                Height = 1024,
+                Width = 1024,
+                Sampler = ComfySampler.lcm,
+                Scheduler = "normal",
+                CfgScale = 1.0,
+                Steps = 7
+            }
+        }
+    };
     
     private JsonApiClient IgnoreSslValidation(JsonApiClient client)
     {
@@ -99,15 +151,16 @@ public class ComfyAdminTasks
         var providerNames = ComfyApiProviders.Select(x => x.Name).ToList();
         
         // Import CivitAi models
-        foreach (var url in ImportCivitAiModelUrls)
+        foreach (var modelImport in ImportCivitAiModelSettings)
         {
             foreach (var providerName in providerNames)
             {
                 var response = await client.ApiAsync(
                     new ImportCivitAiModel
                     {
-                        ModelUrl = url, 
-                        Provider = providerName
+                        ModelUrl = modelImport.Key, 
+                        Provider = providerName,
+                        Settings = modelImport.Value
                     });
                 response.ThrowIfError();
             }
