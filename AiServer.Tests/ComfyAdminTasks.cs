@@ -8,7 +8,7 @@ namespace AiServer.Tests;
 [Explicit]
 public class ComfyAdminTasks
 {
-    private static bool useLocal = true;
+    private static bool useLocal = false;
     
     private static List<CreateComfyApiProvider> ComfyApiProviders = new()
     {
@@ -74,7 +74,7 @@ public class ComfyAdminTasks
     }
     
     [Test]
-    public async Task ConfigureComfyDellProvider()
+    public async Task ConfigureComfyProviders()
     {
         var client = TestUtils.CreateAdminClient();
         client = IgnoreSslValidation(client);

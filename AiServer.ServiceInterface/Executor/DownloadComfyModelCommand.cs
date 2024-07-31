@@ -25,9 +25,12 @@ public class DownloadComfyModelCommand(AppConfig appConfig, IDbConnectionFactory
             
             // Check if download already in progress by looking at status
             var downloadStatus = await comfyClient.GetDownloadStatusAsync(model.Filename);
-            if(downloadStatus.Progress > 0)
+            if(downloadStatus.Progress >= 0)
             {
-                logger.LogWarning("Download already in progress for {Filename}, currently {Complete}% complete.", model.Filename, downloadStatus.Progress);
+                if(downloadStatus.Progress < 100)
+                    logger.LogWarning("Download already in progress for {Filename}, currently {Complete}% complete.", model.Filename, downloadStatus.Progress);
+                else
+                    logger.LogWarning("Download already completed for {Filename}, skipping.", model.Filename);
                 return;
             }
             // If the model has civitai in model details, use the civitai api key
@@ -51,6 +54,15 @@ public class DownloadComfyModelCommand(AppConfig appConfig, IDbConnectionFactory
                     request.DownloadModel.Filename);
             }
             logger.LogInformation($"Download status response: {res.ToJson()}");
+            
+            // Poll for download status for max 10 minutes, this is partly to prevent starting too many downloads
+            var endTime = DateTime.UtcNow.AddMinutes(10);
+            while(res.Progress < 100 && res.Progress >= 0 && DateTime.UtcNow < endTime)
+            {
+                await Task.Delay(5000);
+                res = await comfyClient.GetDownloadStatusAsync(model.Filename);
+                logger.LogInformation("Download progress for {Filename}: {Progress}%", model.Filename, res.Progress);
+            }
         }
     }
 }
