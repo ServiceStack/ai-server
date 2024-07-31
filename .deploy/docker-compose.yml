@@ -6,13 +6,13 @@ services:
             - "8080"                                     
         container_name: ${APP_NAME}_app                
         environment:                                    
-            VIRTUAL_HOST: ${HOST_DOMAIN},cdn.openai.servicestack.net
+            VIRTUAL_HOST: ${HOST_DOMAIN},ai-server-cdn.diffusion.works
             VIRTUAL_PORT: 8080 # New default ASP.NET port -> https://learn.microsoft.com/en-us/dotnet/core/compatibility/containers/8.0/aspnet-port
-            LETSENCRYPT_HOST: ${HOST_DOMAIN},cdn.openai.servicestack.net
-            LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}    
+            LETSENCRYPT_HOST: ${HOST_DOMAIN},ai-server-cdn.diffusion.works
+            LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+            HTTPS_METHOD: noredirect # Disable HTTPS redirect since Cloudflare infinite loop redirects when default
         volumes:
             - ./App_Data:/app/App_Data  
-
 
     app-migration:
         image: ghcr.io/${IMAGE_REPO}:${RELEASE_VERSION} 
