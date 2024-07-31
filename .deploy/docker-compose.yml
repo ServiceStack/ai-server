@@ -6,7 +6,7 @@ services:
             - "8080"                                     
         container_name: ${APP_NAME}_app                
         environment:                                    
-            VIRTUAL_HOST: ${HOST_DOMAIN}
+            VIRTUAL_HOST: ${HOST_DOMAIN},ai-server.diffusion.works
             VIRTUAL_PORT: 8080 # New default ASP.NET port -> https://learn.microsoft.com/en-us/dotnet/core/compatibility/containers/8.0/aspnet-port
             LETSENCRYPT_HOST: ${HOST_DOMAIN},ai-server.diffusion.works
             LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}    
