@@ -1,6 +1,6 @@
 {
-  "last_node_id": 10,
-  "last_link_id": 10,
+  "last_node_id": 11,
+  "last_link_id": 11,
   "nodes": [
     {
       "id": 7,
@@ -14,7 +14,7 @@
         "1": 180.6060791015625
       },
       "flags": {},
-      "order": 3,
+      "order": 4,
       "mode": 0,
       "inputs": [
         {
@@ -52,7 +52,7 @@
         "1": 164.31304931640625
       },
       "flags": {},
-      "order": 2,
+      "order": 3,
       "mode": 0,
       "inputs": [
         {
@@ -123,7 +123,7 @@
         "1": 262
       },
       "flags": {},
-      "order": 4,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
@@ -205,9 +205,7 @@
         {
           "name": "VAE",
           "type": "VAE",
-          "links": [
-            8
-          ],
+          "links": [],
           "slot_index": 2
         }
       ],
@@ -230,7 +228,7 @@
         "1": 46
       },
       "flags": {},
-      "order": 5,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -241,7 +239,7 @@
         {
           "name": "vae",
           "type": "VAE",
-          "link": 8
+          "link": 11
         }
       ],
       "outputs": [
@@ -262,15 +260,15 @@
       "id": 10,
       "type": "PreviewImage",
       "pos": [
-        1607,
-        278
+        1454,
+        194
       ],
       "size": {
         "0": 210,
         "1": 26
       },
       "flags": {},
-      "order": 6,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -282,6 +280,38 @@
       "properties": {
         "Node name for S&R": "PreviewImage"
       }
+    },
+    {
+      "id": 11,
+      "type": "VAELoader",
+      "pos": [
+        872,
+        502
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            11
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "sdxl_vae.safetensors"
+      ]
     }
   ],
   "links": [
@@ -342,20 +372,20 @@
       "LATENT"
     ],
     [
-      8,
-      4,
-      2,
-      8,
-      1,
-      "VAE"
-    ],
-    [
       10,
       8,
       0,
       10,
       0,
       "IMAGE"
+    ],
+    [
+      11,
+      11,
+      0,
+      8,
+      1,
+      "VAE"
     ]
   ],
   "groups": [],
@@ -364,8 +394,8 @@
     "ds": {
       "scale": 1,
       "offset": {
-        "0": -450,
-        "1": 29
+        "0": -10.849609375,
+        "1": -22.595718383789062
       }
     }
   },

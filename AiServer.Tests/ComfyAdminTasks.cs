@@ -52,14 +52,6 @@ public class ComfyAdminTasks
         //     Priority = 1
         // }
     };
-    
-    private static List<string> ImportCivitAiModelUrls = new()
-    {
-        "https://civitai.com/models/194768/jib-mix-realistic-xl?modelVersionId=610292",
-        "https://civitai.com/models/553410/crazycaricaturesxl?modelVersionId=615871",
-        "https://civitai.com/models/129403?modelVersionId=259194",
-        "https://civitai.com/models/283312/psyfi-xl-lcm"
-    };
 
     public static Dictionary<string, ComfyApiModelSettings> ImportCivitAiModelSettings = new()
     {
@@ -128,9 +120,9 @@ public class ComfyAdminTasks
     [Test]
     public async Task ConfigureComfyProviders()
     {
-        // var client = TestUtils.CreateAdminClient();
-        // client = IgnoreSslValidation(client);
-        var client = TestUtils.CreatePublicAdminClient();
+        var client = TestUtils.CreateAdminClient();
+        client = IgnoreSslValidation(client);
+        // var client = TestUtils.CreatePublicAdminClient();
         // Create providers
         foreach (var provider in ComfyApiProviders)
         {

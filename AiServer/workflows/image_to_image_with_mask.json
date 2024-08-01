@@ -1,6 +1,6 @@
 {
-  "last_node_id": 18,
-  "last_link_id": 24,
+  "last_node_id": 19,
+  "last_link_id": 25,
   "nodes": [
     {
       "id": 7,
@@ -14,7 +14,7 @@
         "1": 180.6060791015625
       },
       "flags": {},
-      "order": 5,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -92,7 +92,7 @@
         "1": 46
       },
       "flags": {},
-      "order": 9,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -103,7 +103,7 @@
         {
           "name": "vae",
           "type": "VAE",
-          "link": 8
+          "link": 25
         }
       ],
       "outputs": [
@@ -132,7 +132,7 @@
         "1": 262
       },
       "flags": {},
-      "order": 8,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -191,7 +191,7 @@
         "1": 164.31304931640625
       },
       "flags": {},
-      "order": 4,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
@@ -229,7 +229,7 @@
         "1": 46
       },
       "flags": {},
-      "order": 6,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -270,7 +270,7 @@
         "1": 46
       },
       "flags": {},
-      "order": 7,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -311,7 +311,7 @@
         "1": 246
       },
       "flags": {},
-      "order": 10,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -331,10 +331,10 @@
         -580,
         -260
       ],
-      "size": [
-        315,
-        314.00001525878906
-      ],
+      "size": {
+        "0": 315,
+        "1": 314
+      },
       "flags": {},
       "order": 1,
       "mode": 0,
@@ -399,7 +399,6 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            8,
             19
           ],
           "slot_index": 2
@@ -424,7 +423,7 @@
         "1": 58
       },
       "flags": {},
-      "order": 3,
+      "order": 4,
       "mode": 0,
       "inputs": [
         {
@@ -449,6 +448,38 @@
       },
       "widgets_values": [
         "{{MaskChannel}}"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "VAELoader",
+      "pos": [
+        873,
+        506
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            25
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "sdxl_vae.safetensors"
       ]
     }
   ],
@@ -492,14 +523,6 @@
       8,
       0,
       "LATENT"
-    ],
-    [
-      8,
-      4,
-      2,
-      8,
-      1,
-      "VAE"
     ],
     [
       11,
@@ -564,16 +587,24 @@
       3,
       3,
       "LATENT"
+    ],
+    [
+      25,
+      19,
+      0,
+      8,
+      1,
+      "VAE"
     ]
   ],
   "groups": [],
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.8264462809917358,
+      "scale": 0.8264462809917356,
       "offset": {
-        "0": 338.11895751953125,
-        "1": 224.0247344970703
+        "0": -31.727294921875,
+        "1": -8.042630195617676
       }
     }
   },
