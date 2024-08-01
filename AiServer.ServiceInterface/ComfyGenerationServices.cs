@@ -71,7 +71,11 @@ public class ComfyGenerationServices(
             throw HttpError.NotFound($"Model {model} not found");
         
         // Find model
-        var comfyApiModel = await Db.SingleAsync<ComfyApiModel>(x => x.Name == model);
+        var comfyApiModel = await Db.SingleAsync<ComfyApiModel>(x => x.Name == model || 
+                                                                     x.Filename == model);
+        
+        if(comfyApiModel == null)
+            throw HttpError.NotFound($"Model {model} not found");
         var comfyApiModeId = comfyApiModel.Id;
         var modelWithSettings = await Db.LoadSingleByIdAsync<ComfyApiModel>(comfyApiModeId);
         
