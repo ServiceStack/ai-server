@@ -27,10 +27,10 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             services.AddSingleton<ComfyProvider>();
             services.AddSingleton<ComfyProviderFactory>();
             
-            var civitAiApiKey = AppConfig.Instance.CivitAiApiKey ?? Environment.GetEnvironmentVariable("CIVIT_AI_API_KEY");
+            AppConfig.Instance.CivitAiApiKey ??= Environment.GetEnvironmentVariable("CIVIT_AI_API_KEY");
             
             services.AddSingleton(x => new CivitAiClient(x.GetService<IHttpClientFactory>(), 
-                civitAiApiKey
+                AppConfig.Instance.CivitAiApiKey
                 ));
             services.AddHttpClient("ComfyClientFileDownload", client =>
             {

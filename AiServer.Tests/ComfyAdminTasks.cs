@@ -32,25 +32,25 @@ public class ComfyAdminTasks
             Priority = 1,
             ApiKey = "testtest1234"
         },
-        // new CreateComfyApiProvider
-        // {
-        //     Name = "comfy-supermicro.pvq.app",
-        //     ApiBaseUrl = "https://comfy-supermicro.pvq.app/api",
-        //     Concurrency = 1,
-        //     HeartbeatUrl = "/",
-        //     TaskWorkflows = new Dictionary<ComfyTaskType, string>
-        //     {
-        //         { ComfyTaskType.TextToImage, "text_to_image.json" },
-        //         { ComfyTaskType.ImageToImage, "image_to_image.json" },
-        //         { ComfyTaskType.ImageToImageUpscale, "image_to_image_upscale.json" },
-        //         { ComfyTaskType.ImageToImageWithMask, "image_to_image_with_mask.json" },
-        //         { ComfyTaskType.TextToAudio, "text_to_audio.json" },
-        //         { ComfyTaskType.TextToSpeech, "text_to_speech.json" },
-        //         { ComfyTaskType.SpeechToText, "speech_to_text.json" }
-        //     },
-        //     Enabled = true,
-        //     Priority = 1
-        // }
+        new CreateComfyApiProvider
+        {
+            Name = "comfy-supermicro.pvq.app",
+            ApiBaseUrl = "https://comfy-supermicro.pvq.app/api",
+            Concurrency = 1,
+            HeartbeatUrl = "/",
+            TaskWorkflows = new Dictionary<ComfyTaskType, string>
+            {
+                { ComfyTaskType.TextToImage, "text_to_image.json" },
+                { ComfyTaskType.ImageToImage, "image_to_image.json" },
+                { ComfyTaskType.ImageToImageUpscale, "image_to_image_upscale.json" },
+                { ComfyTaskType.ImageToImageWithMask, "image_to_image_with_mask.json" },
+                { ComfyTaskType.TextToAudio, "text_to_audio.json" },
+                { ComfyTaskType.TextToSpeech, "text_to_speech.json" },
+                { ComfyTaskType.SpeechToText, "speech_to_text.json" }
+            },
+            Enabled = true,
+            Priority = 1
+        }
     };
 
     public static Dictionary<string, ComfyApiModelSettings> ImportCivitAiModelSettings = new()

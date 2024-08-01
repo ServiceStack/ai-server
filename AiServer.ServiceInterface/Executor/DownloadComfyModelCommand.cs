@@ -55,13 +55,18 @@ public class DownloadComfyModelCommand(AppConfig appConfig, IDbConnectionFactory
             }
             logger.LogInformation($"Download status response: {res.ToJson()}");
             
-            // Poll for download status for max 10 minutes, this is partly to prevent starting too many downloads
-            var endTime = DateTime.UtcNow.AddMinutes(10);
+            // Poll for download status for max 30 minutes, this is partly to prevent starting too many downloads
+            var endTime = DateTime.UtcNow.AddMinutes(30);
             while(res.Progress < 100 && res.Progress >= 0 && DateTime.UtcNow < endTime)
             {
-                await Task.Delay(5000);
+                await Task.Delay(30000); // poll every 30 seconds
                 res = await comfyClient.GetDownloadStatusAsync(model.Filename);
                 logger.LogInformation("Download progress for {Filename}: {Progress}%", model.Filename, res.Progress);
+            }
+            
+            if(res.Progress < 100)
+            {
+                logger.LogWarning("Download of {Filename} failed to complete in 30 minutes. Download may still be in progress.", model.Filename);
             }
         }
     }
