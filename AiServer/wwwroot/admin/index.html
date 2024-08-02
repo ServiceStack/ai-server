@@ -167,6 +167,18 @@ const sections = {
             template:`<AutoQueryGrid :type="type" />`,
         },
     },
+    ComfyGenerationTask: {
+        type: 'ComfyGenerationTask',
+        component: {
+            template:`<AutoQueryGrid :type="type" />`,
+        },
+    },
+    ComfySummary: {
+        type: 'ComfySummary',
+        component: {
+            template:`<AutoQueryGrid :type="type" />`,
+        },
+    },
 }
 function getIcon(id) {
     const section = sections[id]

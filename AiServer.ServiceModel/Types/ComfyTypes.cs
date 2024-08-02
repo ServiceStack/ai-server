@@ -54,7 +54,9 @@ public enum ComfyMaskSource
 public enum ComfySampler
 {
     euler,
+    euler_cfg_pp,
     euler_ancestral,
+    euler_ancestral_cfg_pp,
     huen,
     huenpp2,
     dpm_2,

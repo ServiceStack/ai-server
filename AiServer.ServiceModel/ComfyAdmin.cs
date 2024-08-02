@@ -43,8 +43,22 @@ public class StopComfyWorkers
 {
 }
 
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
+public class QueryComfyGenerationTasks : QueryDb<ComfyGenerationTask>
+{
+    public string? RefId { get; set; }
+    public string? Provider { get; set; }
+    public ComfyWorkflowStatus? Status { get; set; }
+}
 
-
+[Tag(Tag.Admin)]
+[ValidateAuthSecret]
+public class QueryComfySummary : QueryDb<ComfySummary>
+{
+    public string? RefId { get; set; }
+    public string? Provider { get; set; }
+}
 
 [Tag(Tag.Admin)]
 [ValidateAuthSecret]
