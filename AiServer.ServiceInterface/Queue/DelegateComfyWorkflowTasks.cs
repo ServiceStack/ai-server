@@ -50,7 +50,7 @@ public class DelegateComfyWorkflowTasksCommand(ILogger<DelegateComfyWorkflowTask
                         return;
                 
                     // Don't assign more work to provider until their work queue is empty
-                    if (apiWorker is { WorkflowQueueCount: > 0 })
+                    if (apiWorker.WorkflowQueueCount > 0)
                         continue;
                     
                     var requestId = appData.CreateRequestId();

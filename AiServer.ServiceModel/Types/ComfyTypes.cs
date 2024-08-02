@@ -5,6 +5,8 @@ namespace AiServer.ServiceModel.Types;
 public class ComfyWorkflowStatus
 {
     public string StatusMessage { get; set; }
+    
+    public string? Error { get; set; }
     public bool Completed { get; set; }
     public List<ComfyOutput> Outputs { get; set; } = new();
 }

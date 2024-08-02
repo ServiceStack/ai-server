@@ -64,7 +64,7 @@ public class ComfyAdminTasks
                 Sampler = ComfySampler.dpmpp_2m_sde,
                 Scheduler = "karras",
                 CfgScale = 6.0,
-                Steps = 30
+                Steps = 18
             }
         },
         {
@@ -76,7 +76,7 @@ public class ComfyAdminTasks
                 Sampler = ComfySampler.euler_ancestral,
                 Scheduler = "normal",
                 CfgScale = 8.0,
-                Steps = 30
+                Steps = 18
             }
         },
         {

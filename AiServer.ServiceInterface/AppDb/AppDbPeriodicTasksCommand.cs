@@ -1,3 +1,5 @@
+using AiServer.ServiceInterface.AppDb.Comfy;
+using AiServer.ServiceInterface.Comfy;
 using Microsoft.Extensions.Logging;
 using ServiceStack;
 using AiServer.ServiceInterface.Executor;
@@ -19,44 +21,102 @@ public class AppDbPeriodicTasksCommand(ILogger<AppDbPeriodicTasksCommand> log, A
         if (request.PeriodicFrequency == PeriodicFrequency.Minute)
         {
             var activeWorkers = appData.GetActiveWorkers().ToList();
-            var allStats = activeWorkers.Select(x => x.GetStats()).ToList();
-            var allStatsTable = Inspect.dumpTable(allStats, new TextDumpOptions {
-                Caption = "Worker Stats",
-                Headers = [
-                    nameof(WorkerStats.Name),
-                    nameof(WorkerStats.Queued),
-                    nameof(WorkerStats.Received),
-                    nameof(WorkerStats.Completed),
-                    nameof(WorkerStats.Retries),
-                    nameof(WorkerStats.Failed),
-                    nameof(WorkerStats.Offline),
-                    nameof(WorkerStats.Running),
-                ],
-            }).Trim();
-            var offlineWorkers = appData.ApiProviders.Where(x => x is { Enabled: true, OfflineDate: not null }).Map(x => x.Name);
-            var disabledWorkers = appData.ApiProviders.Where(x => 
-                    activeWorkers.All(a => a.Name != x.Name) && !offlineWorkers.Contains(x.Name))
-                .Map(x => x.Name); 
-
-            log.LogInformation("""
-                               Workers:
-                               {Stats}
-                               
-                               Offline:    {Offline}
-                               Disabled:   {Disabled}
-                               
-                               Delegating: {Delegating}
-                               Executing:  {Executing}
-                               """, 
-                appData.StoppedAt == null ? allStatsTable : $"Stopped at {appData.StoppedAt}",
-                offlineWorkers.IsEmpty() ? "None" : offlineWorkers.Join(", "),
-                disabledWorkers.IsEmpty() ? "None" : disabledWorkers.Join(", "),
-                DelegateOpenAiChatTasksCommand.Running,
-                ExecuteOpenAiChatTasksCommand.Running);
+            var allStatsTable = LogActiveApiWorkerStats(activeWorkers);
+            LogDisabledOfflineWorkerStats(activeWorkers, allStatsTable);
             
+            var activeComfyWorkers = appData.GetActiveComfyWorkers().ToList();
+            var allComfyStatsTable = LogActiveComfyWorkerStats(activeComfyWorkers);
+            LogDisabledOfflineComfyWorkerStats(activeComfyWorkers, allComfyStatsTable);
+
             if (request.PeriodicFrequency == PeriodicFrequency.Minute)
                 await DoFrequentTasksAsync();
         }
+    }
+    
+    private static string LogActiveComfyWorkerStats(List<ComfyProviderWorker> activeWorkers)
+    {
+        var allStats = activeWorkers.Select(x => x.GetStats()).ToList();
+        var allStatsTable = Inspect.dumpTable(allStats, new TextDumpOptions {
+            Caption = "Worker Stats",
+            Headers = [
+                nameof(WorkerStats.Name),
+                nameof(WorkerStats.Queued),
+                nameof(WorkerStats.Received),
+                nameof(WorkerStats.Completed),
+                nameof(WorkerStats.Retries),
+                nameof(WorkerStats.Failed),
+                nameof(WorkerStats.Offline),
+                nameof(WorkerStats.Running),
+            ],
+        }).Trim();
+        return allStatsTable;
+    }
+    
+    private void LogDisabledOfflineComfyWorkerStats(List<ComfyProviderWorker> activeWorkers, string allComfyStatsTable)
+    {
+        var offlineWorkers = appData.ComfyApiProviders.Where(x => x is { Enabled: true, OfflineDate: not null }).Map(x => x.Name);
+        var disabledWorkers = appData.ComfyApiProviders.Where(x => 
+                activeWorkers.All(a => a.Name != x.Name) && !offlineWorkers.Contains(x.Name))
+            .Map(x => x.Name); 
+
+        log.LogInformation("""
+                           Workers:
+                           {Stats}
+
+                           Offline:    {Offline}
+                           Disabled:   {Disabled}
+
+                           Delegating: {Delegating}
+                           Executing:  {Executing}
+                           """, 
+            appData.StoppedAt == null ? allComfyStatsTable : $"Stopped at {appData.StoppedAt}",
+            offlineWorkers.IsEmpty() ? "None" : offlineWorkers.Join(", "),
+            disabledWorkers.IsEmpty() ? "None" : disabledWorkers.Join(", "),
+            DelegateComfyWorkflowTasksCommand.Running,
+            ExecuteComfyGenerationTasksCommand.Running);
+    }
+
+    private void LogDisabledOfflineWorkerStats(List<ApiProviderWorker> activeWorkers, string allStatsTable)
+    {
+        var offlineWorkers = appData.ApiProviders.Where(x => x is { Enabled: true, OfflineDate: not null }).Map(x => x.Name);
+        var disabledWorkers = appData.ApiProviders.Where(x => 
+                activeWorkers.All(a => a.Name != x.Name) && !offlineWorkers.Contains(x.Name))
+            .Map(x => x.Name); 
+
+        log.LogInformation("""
+                           Workers:
+                           {Stats}
+
+                           Offline:    {Offline}
+                           Disabled:   {Disabled}
+
+                           Delegating: {Delegating}
+                           Executing:  {Executing}
+                           """, 
+            appData.StoppedAt == null ? allStatsTable : $"Stopped at {appData.StoppedAt}",
+            offlineWorkers.IsEmpty() ? "None" : offlineWorkers.Join(", "),
+            disabledWorkers.IsEmpty() ? "None" : disabledWorkers.Join(", "),
+            DelegateOpenAiChatTasksCommand.Running,
+            ExecuteOpenAiChatTasksCommand.Running);
+    }
+
+    private static string LogActiveApiWorkerStats(List<ApiProviderWorker> activeWorkers)
+    {
+        var allStats = activeWorkers.Select(x => x.GetStats()).ToList();
+        var allStatsTable = Inspect.dumpTable(allStats, new TextDumpOptions {
+            Caption = "Worker Stats",
+            Headers = [
+                nameof(WorkerStats.Name),
+                nameof(WorkerStats.Queued),
+                nameof(WorkerStats.Received),
+                nameof(WorkerStats.Completed),
+                nameof(WorkerStats.Retries),
+                nameof(WorkerStats.Failed),
+                nameof(WorkerStats.Offline),
+                nameof(WorkerStats.Running),
+            ],
+        }).Trim();
+        return allStatsTable;
     }
 
     async Task DoFrequentTasksAsync()
@@ -85,28 +145,59 @@ public class AppDbPeriodicTasksCommand(ILogger<AppDbPeriodicTasksCommand> log, A
             });
         
             // Check if any offline providers are back online
-            var offlineApiProviders = appData.ApiProviderWorkers.Where(x => x is { Enabled:true, IsOffline:true }).ToList();
-            if (offlineApiProviders.Count > 0)
+            await CheckOpenAiProviderOnlineStatus(frequency, token);
+            await CheckComfyProviderOnlineStatus(frequency, token);
+        }
+        catch (TaskCanceledException) {}
+    }
+    
+    private async Task CheckComfyProviderOnlineStatus(PeriodicFrequency frequency, CancellationToken token)
+    {
+        var offlineComfyProviders = appData.ComfyProviderWorkers.Where(x => x is { Enabled:true, IsOffline:true }).ToList();
+        if (offlineComfyProviders.Count > 0)
+        {
+            log.LogInformation("[{Frequency}] Rechecking {OfflineCount} offline providers", frequency, offlineComfyProviders.Count);
+            foreach (var comfyProvider in offlineComfyProviders)
             {
-                log.LogInformation("[{Frequency}] Rechecking {OfflineCount} offline providers", frequency, offlineApiProviders.Count);
-                foreach (var apiProvider in offlineApiProviders)
+                var provider = comfyProvider.GetProvider();
+                if (await provider.IsOnlineAsync(comfyProvider, token))
                 {
-                    var chatProvider = apiProvider.GetOpenAiProvider();
-                    if (await chatProvider.IsOnlineAsync(apiProvider, token))
-                    {
-                        if (appData.IsStopped)
-                            return;
+                    if (appData.IsStopped)
+                        return;
 
-                        log.LogInformation("[{Frequency}] Provider {Provider} is back online", frequency, apiProvider.Name);
-                        var changeStatusCommand = executor.Command<ChangeProviderStatusCommand>();
-                        await changeStatusCommand.ExecuteAsync(new() {
-                            Name = apiProvider.Name,
-                            OfflineDate = null,
-                        });
-                    }
+                    log.LogInformation("[{Frequency}] Provider {Provider} is back online", frequency, comfyProvider.Name);
+                    var changeStatusCommand = executor.Command<ChangeComfyProviderStatusCommand>();
+                    await changeStatusCommand.ExecuteAsync(new() {
+                        Name = comfyProvider.Name,
+                        OfflineDate = null,
+                    });
                 }
             }
         }
-        catch (TaskCanceledException) {}
+    }
+
+    private async Task CheckOpenAiProviderOnlineStatus(PeriodicFrequency frequency, CancellationToken token)
+    {
+        var offlineApiProviders = appData.ApiProviderWorkers.Where(x => x is { Enabled:true, IsOffline:true }).ToList();
+        if (offlineApiProviders.Count > 0)
+        {
+            log.LogInformation("[{Frequency}] Rechecking {OfflineCount} offline providers", frequency, offlineApiProviders.Count);
+            foreach (var apiProvider in offlineApiProviders)
+            {
+                var chatProvider = apiProvider.GetOpenAiProvider();
+                if (await chatProvider.IsOnlineAsync(apiProvider, token))
+                {
+                    if (appData.IsStopped)
+                        return;
+
+                    log.LogInformation("[{Frequency}] Provider {Provider} is back online", frequency, apiProvider.Name);
+                    var changeStatusCommand = executor.Command<ChangeProviderStatusCommand>();
+                    await changeStatusCommand.ExecuteAsync(new() {
+                        Name = apiProvider.Name,
+                        OfflineDate = null,
+                    });
+                }
+            }
+        }
     }
 }

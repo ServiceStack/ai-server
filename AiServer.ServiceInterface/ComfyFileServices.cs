@@ -54,6 +54,12 @@ public class ComfyFileServices(AppData appData,
                     .ToList()
             };
 
+        if (activeTask is { Status: { Error: not null } })
+        {
+            log.LogError($"Error in ComfyGenerationTask: {activeTask.ToJson()}");
+            return null;
+        }
+
         if (string.IsNullOrEmpty(summary.RefId))
         {
             log.LogWarning($"RefId is null for ComfySummary: {summary.ToJson()}");
@@ -121,6 +127,10 @@ public class ComfyFileServices(AppData appData,
         log.LogInformation($"fullFileName: {fullFileName}, promptId: {promptId}, comfyFile: {comfyFile}");
         
         var task = await Db.SingleAsync<ComfyGenerationTask>(x => x.RefId == promptId);
+        
+        if (task != null && task.Status?.Error != null)
+            throw HttpError.NotFound("File not found - Error in task");
+        
         if (task == null || task.Status?.Completed != true)
             throw HttpError.NotFound("File not found");
         

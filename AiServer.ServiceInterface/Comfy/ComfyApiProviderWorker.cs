@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Net;
 using System.Net.Http.Headers;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
@@ -40,13 +41,11 @@ public class ComfyProvider : IComfyProvider
                 ? req => req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", worker.ApiKey)
                 : null;
 
-            var heartbeatUrl = worker.HeartbeatUrl;
-            if (heartbeatUrl != null)
-            {
-                await heartbeatUrl.GetStringFromUrlAsync(requestFilter:requestFilter, token: token);
-            }
+            var heartbeatResult = await worker.GetComfyClient().GetClientHealthAsync();
             
-            return true;
+            var isHealthy = heartbeatResult.StatusCode == (HttpStatusCode)200;
+            
+            return isHealthy;
         }
         catch (Exception e)
         {
@@ -79,7 +78,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
     public int Id => apiProvider.Id;
     public string Name => apiProvider.Name;
     public string? ApiKey { get; }
-    public string? HeartbeatUrl { get; }
+    public string? HeartbeatUrl => GetHeartbeatUrl(apiProvider);
     
     public int Concurrency => apiProvider.Concurrency;
     
@@ -123,10 +122,35 @@ public class ComfyProviderWorker : IComfyProviderWorker
         this.anyTasksRemaining = anyTasksRemaining ?? (() => false);
         Models = apiProvider.Models?.Select(x => x.ComfyApiModel.Filename).ToArray();
     }
+    
+    public bool IsRunning => Interlocked.Read(ref running) > 0;
+    
+    public WorkerStats GetStats() => new()
+    {
+        Name = Name,
+        Queued = WorkflowQueueCount,
+        Received = Interlocked.Read(ref received),
+        Completed = Interlocked.Read(ref completed),
+        Retries = Interlocked.Read(ref retries),
+        Failed = Interlocked.Read(ref failed),
+        Offline = apiProvider.OfflineDate,
+        Running = Interlocked.Read(ref running) > 0,
+    };
 
     public string GetHealthCheckEndpoint()
     {
         return apiProvider.ApiBaseUrl.CombineWith("/");
+    }
+    
+    private static string? GetHeartbeatUrl(ComfyApiProvider apiProvider)
+    {
+        var heartbeatUrl = apiProvider.HeartbeatUrl;
+        if (heartbeatUrl == null)
+        {
+            return apiProvider.ApiBaseUrl.CombineWith("/");
+        }
+
+        return heartbeatUrl;
     }
 
     public string? GetPreferredApiModel()
@@ -187,7 +211,7 @@ public class ComfyProviderWorker : IComfyProviderWorker
         try
         {
             using var db = await dbFactory.OpenDbConnectionAsync(token:token);
-            while (Executor.ExecuteComfyGenerationTasksCommand.ShouldContinueRunning)
+            while (this.WorkflowQueueCount > 0)
             {
                 if (ShouldStopRunning())
                     return;
@@ -256,6 +280,10 @@ public class ComfyProviderWorker : IComfyProviderWorker
                     }
                 }
             }
+        }
+        catch (Exception e)
+        {
+            log.LogError(e, "[{Name}] Error executing Comfy Generation Tasks: {Message}", Name, e.Message);
         }
         finally
         {

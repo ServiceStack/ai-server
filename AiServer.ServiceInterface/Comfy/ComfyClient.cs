@@ -4,6 +4,7 @@ using System.Text;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using ServiceStack;
 using ServiceStack.Script;
 using ServiceStack.Text;
@@ -23,12 +24,10 @@ public interface IComfyClient
     Task<List<ComfyModel>> GetModelsListAsync();
     Task<Stream> DownloadComfyOutputAsync(ComfyFileOutput output);
     Task<ComfyWorkflowStatus> GetWorkflowStatusAsync(string promptId);
-
-    public Task<ComfyFileInput> UploadImageAssetAsync(Stream fileStream, string filename);
-    
-    public Task<ComfyFileInput> UploadAudioAssetAsync(Stream fileStream, string filename);
     
     string? GetTemplateContentsByType(ComfyTaskType taskType);
+
+    Task<HttpResponseMessage> GetClientHealthAsync();
 }
 
 public partial class ComfyClient(HttpClient httpClient) : IComfyClient
@@ -55,6 +54,8 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     private string clientId = Guid.NewGuid().ToString();
     
     ILoggerFactory? loggerFactory;
+    
+    private ILogger<ComfyClient> Logger => loggerFactory?.CreateLogger<ComfyClient>() ?? new NullLogger<ComfyClient>();
 
     public ComfyClient(string baseUrl,string? apiKey = null, ILoggerFactory? loggerFactory = null)
         : this(string.IsNullOrEmpty(apiKey) ? new HttpClient
@@ -299,8 +300,18 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         // Handle the case where the status is an empty object
         if (parsedStatus.AsObject().Count == 0)
             return new ComfyWorkflowStatus();
+
+        ComfyWorkflowStatus status;
+        try
+        {
+            status = ParseWorkflowStatus(parsedStatus.AsObject(), promptId);
+        }
+        catch (Exception e)
+        {
+            Logger?.LogError(e,"Failed to parse workflow status: {StatusJson}", statusJson);
+            throw new Exception("Failed to parse workflow status");
+        }
         
-        var status = ParseWorkflowStatus(parsedStatus.AsObject(), promptId);
         // Convert to ComfyWorkflowStatus
         return status;
     }
@@ -360,12 +371,17 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         return File.ReadAllText(Path.Combine(WorkflowTemplatePath, path));
     }
 
+    public async Task<HttpResponseMessage> GetClientHealthAsync()
+    {
+        return await httpClient.GetAsync("/");
+    }
+
     private ConcurrentDictionary<string,string> missedGenerationCompleteMapping = new();
 
     private async void OnGenerationCompleted(string comfyPromptId)
     {
         string innerPromptId;
-        Action<string, ComfyWorkflowStatus>? callback = null;
+        Action<string, ComfyWorkflowStatus?>? callback = null;
         lock (lockObj)
         {
             if(!promptIdToInnerPromptIdMapping.TryGetValue(comfyPromptId, out innerPromptId))

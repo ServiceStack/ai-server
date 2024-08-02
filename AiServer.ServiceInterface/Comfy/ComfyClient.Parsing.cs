@@ -175,7 +175,13 @@ public partial class ComfyClient
         {
             // Check for error messages
             var errorMessages = status["messages"][2][1].AsObject();
-            throw new Exception($"Error in job {jobId}: {errorMessages.ToJsonString()}");
+
+            return new ComfyWorkflowStatus
+            {
+                StatusMessage = "Failed",
+                Completed = false,
+                Error = errorMessages.ToJsonString()
+            };
         }
 
         var outputNodeIds = prompt[4].AsArray().GetValues<string>();
