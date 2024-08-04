@@ -6,11 +6,6 @@ using ServiceStack.Messaging;
 
 namespace AiServer;
 
-/**
-  Register Services you want available via MQ in your AppHost, e.g:
-    var mqServer = appHost.Resolve<IMessageService>();
-    mqServer.RegisterHandler<MyRequest>(ExecuteMessage);
-*/
 public class ConfigureMq : IHostingStartup
 {
     public void Configure(IWebHostBuilder builder) => builder
@@ -20,7 +15,6 @@ public class ConfigureMq : IHostingStartup
                 DisablePublishingToOutq = true,
                 DisablePublishingResponses = true,
             });
-            services.AddPlugin(new CommandsFeature());
             services.AddHostedService<TimedHostedService>();
         })
         .ConfigureAppHost(afterAppHostInit: appHost => {
