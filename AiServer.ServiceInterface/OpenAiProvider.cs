@@ -9,16 +9,16 @@ namespace AiServer.ServiceInterface;
 
 public class OpenAiProvider(ILogger<OpenAiProvider> log) : IOpenAiProvider
 {
-    public async Task<OpenAiChatResult> ChatAsync(IApiProviderWorker worker, OpenAiChat request, CancellationToken token = default)
+    public async Task<OpenAiChatResult> ChatAsync(ApiProvider provider, OpenAiChat request, CancellationToken token = default)
     {
         var sw = Stopwatch.StartNew();
-        var openApiChatEndpoint = worker.GetApiEndpointUrlFor(TaskType.OpenAiChat);
+        var openApiChatEndpoint = provider.GetApiEndpointUrlFor(TaskType.OpenAiChat);
 
-        Action<HttpRequestMessage>? requestFilter = worker.ApiKey != null
-            ? req => req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", worker.ApiKey)
+        Action<HttpRequestMessage>? requestFilter = provider.ApiKey != null
+            ? req => req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", provider.ApiKey)
             : null;
 
-        request.Model = worker.GetApiModel(request.Model);
+        request.Model = provider.GetApiModel(request.Model);
         Exception? firstEx = null;
 
         var retries = 0;
@@ -59,11 +59,11 @@ public class OpenAiProvider(ILogger<OpenAiProvider> log) : IOpenAiProvider
             }
             catch (HttpRequestException e)
             {
-                log.LogInformation("[{Name}] Headers:\n{Headers}", worker.Name, string.Join('\n', headers));
-                log.LogInformation("[{Name}] Content Headers:\n{Headers}", worker.Name, string.Join('\n', contentHeaders));
+                log.LogInformation("[{Name}] Headers:\n{Headers}", provider.Name, string.Join('\n', headers));
+                log.LogInformation("[{Name}] Content Headers:\n{Headers}", provider.Name, string.Join('\n', contentHeaders));
                 if (!string.IsNullOrEmpty(errorResponse))
                 {
-                    log.LogError("[{Name}] Error Response:\n{ErrorResponse}", worker.Name, errorResponse);
+                    log.LogError("[{Name}] Error Response:\n{ErrorResponse}", provider.Name, errorResponse);
                 }
 
                 firstEx ??= e;
@@ -72,30 +72,30 @@ public class OpenAiProvider(ILogger<OpenAiProvider> log) : IOpenAiProvider
                     if (retryAfter > 0)
                         sleepMs = retryAfter * 1000;
                     log.LogInformation("[{Name}] {Message} for {Url}, retrying after {SleepMs}ms", 
-                        worker.Name, e.Message, openApiChatEndpoint, sleepMs);
+                        provider.Name, e.Message, openApiChatEndpoint, sleepMs);
                     await Task.Delay(sleepMs, token);
                 }
                 else throw;
             }
         }
-        throw firstEx ?? new Exception($"[{worker.Name}] Failed to complete OpenAI Chat request after {retries} retries");
+        throw firstEx ?? new Exception($"[{provider.Name}] Failed to complete OpenAI Chat request after {retries} retries");
     }
 
-    public async Task<bool> IsOnlineAsync(IApiProviderWorker worker, CancellationToken token = default)
+    public async Task<bool> IsOnlineAsync(ApiProvider provider, CancellationToken token = default)
     {
         try
         {
-            Action<HttpRequestMessage>? requestFilter = worker.ApiKey != null
-                ? req => req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", worker.ApiKey)
+            Action<HttpRequestMessage>? requestFilter = provider.ApiKey != null
+                ? req => req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", provider.ApiKey)
                 : null;
 
-            var heartbeatUrl = worker.HeartbeatUrl;
+            var heartbeatUrl = provider.HeartbeatUrl;
             if (heartbeatUrl != null)
             {
                 await heartbeatUrl.GetStringFromUrlAsync(requestFilter:requestFilter, token: token);
             }
 
-            var apiModel = worker.GetPreferredApiModel();
+            var apiModel = provider.GetPreferredApiModel();
             var request = new OpenAiChat
             {
                 Model = apiModel,
@@ -106,7 +106,7 @@ public class OpenAiProvider(ILogger<OpenAiProvider> log) : IOpenAiProvider
                 Stream = false,
             };
 
-            var openApiChatEndpoint = worker.GetApiEndpointUrlFor(TaskType.OpenAiChat);
+            var openApiChatEndpoint = provider.GetApiEndpointUrlFor(TaskType.OpenAiChat);
             await openApiChatEndpoint.PostJsonToUrlAsync(request, requestFilter:requestFilter, token: token);
             return true;
         }

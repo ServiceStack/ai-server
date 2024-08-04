@@ -10,4 +10,8 @@
     <PackageReference Include="ServiceStack.Interfaces" Version="8.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceStack.Jobs\ServiceStack.Jobs.csproj" />
+  </ItemGroup>
+
 </Project>

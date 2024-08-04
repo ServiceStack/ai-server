@@ -34,28 +34,6 @@ public static class AppExtensions
         return response?.Choices?.FirstOrDefault()?.Message?.Content;
     }
     
-    public static string GetTableName(TaskType taskType) => taskType switch  {
-        TaskType.OpenAiChat => nameof(OpenAiChatTask),
-        _ => throw new NotSupportedException($"Unsupported TaskType: {taskType}")
-    };
-
-    public static OpenAiChatCompleted ToOpenAiChatCompleted(this OpenAiChatTask from)
-    {
-        var to = from.CreateNew<OpenAiChatCompleted>();
-        to.Request = from.Request;
-        to.Response = from.Response;
-        return to;
-    }
-
-    public static OpenAiChatFailed ToOpenAiChatFailed(this OpenAiChatTask from)
-    {
-        var to = from.CreateNew<OpenAiChatFailed>();
-        to.Request = from.Request;
-        to.Response = from.Response;
-        to.FailedDate = DateTime.UtcNow;
-        return to;
-    }
-    
     public static ComfyGenerationCompleted ToComfyGenerationCompleted(this ComfyGenerationTask from, ComfyWorkflowStatus status)
     {
         var to = from.CreateNew<ComfyGenerationCompleted>();
@@ -99,5 +77,37 @@ public static class AppExtensions
             Error = x.Error,
         };
         return to;
+    }
+    
+    public static string GetPreferredApiModel(this ApiProvider apiProvider)
+    {
+        var apiProviderModel = apiProvider.Models.FirstOrDefault()
+                               ?? throw new ArgumentNullException(nameof(apiProvider.Models));
+        var model = apiProviderModel.Model;
+        return apiProvider.GetApiModel(model) ?? throw new ArgumentNullException(nameof(model));
+    }
+
+    public static string GetApiModel(this ApiProvider apiProvider, string model)
+    {
+        var apiModel = apiProvider.Models.Find(x => x.Model == model);
+        if (apiModel?.ApiModel != null)
+            return apiModel.ApiModel;
+
+        return apiProvider.ApiType?.ApiModels.TryGetValue(model, out var apiModelAlias) == true
+            ? apiModelAlias
+            : model;
+    }
+
+    public static string GetApiEndpointUrlFor(this ApiProvider apiProvider, TaskType taskType)
+    {
+        var apiBaseUrl = apiProvider.ApiBaseUrl ?? apiProvider.ApiType?.ApiBaseUrl
+            ?? throw new NotSupportedException($"[{apiProvider.Name}] No ApiBaseUrl found in ApiProvider or ApiType");
+        var chatPath = apiProvider.TaskPaths?.TryGetValue(taskType, out var path) == true ? path : null;
+        if (chatPath == null)
+            apiProvider.ApiType?.TaskPaths.TryGetValue(taskType, out chatPath);
+        if (chatPath == null)
+            throw new NotSupportedException($"[{apiProvider.Name}] TaskPath found for TaskType.OpenAiChat in ApiType or ApiProvider");
+
+        return apiBaseUrl.CombineWith(chatPath);
     }
 }

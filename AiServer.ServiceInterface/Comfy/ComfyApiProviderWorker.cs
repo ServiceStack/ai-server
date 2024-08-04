@@ -6,6 +6,7 @@ using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.Logging;
 using ServiceStack;
 using ServiceStack.Data;
+using ServiceStack.Jobs;
 using ServiceStack.Messaging;
 using ServiceStack.OrmLite;
 
@@ -133,8 +134,8 @@ public class ComfyProviderWorker : IComfyProviderWorker
         Completed = Interlocked.Read(ref completed),
         Retries = Interlocked.Read(ref retries),
         Failed = Interlocked.Read(ref failed),
-        Offline = apiProvider.OfflineDate,
-        Running = Interlocked.Read(ref running) > 0,
+        // Offline = apiProvider.OfflineDate,
+        // Running = Interlocked.Read(ref running) > 0,
     };
 
     public string GetHealthCheckEndpoint()

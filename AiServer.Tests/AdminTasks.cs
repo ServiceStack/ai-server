@@ -37,4 +37,30 @@ public class AdminTasks
         var response = await client.ApiAsync(newModel);
         response.ThrowIfError();
     }
+    
+    [Test]
+    public async Task Add_DeepSeek_Coder2_236B()
+    {
+        var model = "deepseek-coder-v2:236b";
+        AdminAddModel newModel = new()
+        {
+            Model = new() {
+                Name = model,
+                Parameters = "236B",
+            },
+            ApiTypes = new()
+            {
+                ["openrouter"] = new() { Name = model, Value = "deepseek/deepseek-coder" },
+            },
+            ApiProviders = new()
+            {
+                ["openrouter"] = new() { Model = model },
+            },
+        };
+
+        // var client = TestUtils.CreateAdminClient();
+        var client = TestUtils.CreatePublicAdminClient();
+        var response = await client.ApiAsync(newModel);
+        response.ThrowIfError();
+    }
 }

@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AiServer.ServiceInterface\AiServer.ServiceInterface.csproj" />
     <ProjectReference Include="..\AiServer.ServiceModel\AiServer.ServiceModel.csproj" />
+    <ProjectReference Include="..\ServiceStack.Jobs\ServiceStack.Jobs.csproj" />
   </ItemGroup>
 
   <ItemGroup>

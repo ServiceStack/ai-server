@@ -23,13 +23,13 @@ public class GoogleOpenAiProvider(ILogger<GoogleOpenAiProvider> log) : IOpenAiPr
         new() { Category = "HARM_CATEGORY_SEXUALLY_EXPLICIT", Threshold = "BLOCK_ONLY_HIGH" },
     ];
 
-    public async Task<OpenAiChatResult> ChatAsync(IApiProviderWorker worker, OpenAiChat request, CancellationToken token = default)
+    public async Task<OpenAiChatResult> ChatAsync(ApiProvider provider, OpenAiChat request, CancellationToken token = default)
     {
-        if (string.IsNullOrEmpty(worker.ApiKey))
+        if (string.IsNullOrEmpty(provider.ApiKey))
             throw new NotSupportedException("GoogleOpenAiProvider requires an ApiKey");
 
         var sw = Stopwatch.StartNew();
-        var responseJson = await SendRequestAsync(worker, request, token);
+        var responseJson = await SendRequestAsync(provider, request, token);
 
         var res = (Dictionary<string, object>)JSON.parse(responseJson);
         var durationMs = (int)sw.ElapsedMilliseconds;
@@ -71,12 +71,12 @@ public class GoogleOpenAiProvider(ILogger<GoogleOpenAiProvider> log) : IOpenAiPr
         return new(to, durationMs);
     }
     
-    private async Task<string> SendRequestAsync(IApiProviderWorker worker, OpenAiChat request, CancellationToken token)
+    private async Task<string> SendRequestAsync(ApiProvider provider, OpenAiChat request, CancellationToken token)
     {
-        var baseUrl = worker.GetApiEndpointUrlFor(TaskType.OpenAiChat);
-        request.Model = worker.GetApiModel(request.Model);
+        var baseUrl = provider.GetApiEndpointUrlFor(TaskType.OpenAiChat);
+        request.Model = provider.GetApiModel(request.Model);
         var url = baseUrl.Replace("${MODEL}", request.Model)
-            .AddQueryParam("key", worker.ApiKey);
+            .AddQueryParam("key", provider.ApiKey);
         
         var generationConfig = new Dictionary<string, object>();
         if (request.Temperature != null)
@@ -178,11 +178,11 @@ public class GoogleOpenAiProvider(ILogger<GoogleOpenAiProvider> log) : IOpenAiPr
             }
             catch (HttpRequestException e)
             {
-                log.LogInformation("[{Name}] Headers:\n{Headers}", worker.Name, string.Join('\n', headers));
-                log.LogInformation("[{Name}] Content Headers:\n{Headers}", worker.Name, string.Join('\n', contentHeaders));
+                log.LogInformation("[{Name}] Headers:\n{Headers}", provider.Name, string.Join('\n', headers));
+                log.LogInformation("[{Name}] Content Headers:\n{Headers}", provider.Name, string.Join('\n', contentHeaders));
                 if (!string.IsNullOrEmpty(errorResponse))
                 {
-                    log.LogError("[{Name}] Error Response:\n{ErrorResponse}", worker.Name, errorResponse);
+                    log.LogError("[{Name}] Error Response:\n{ErrorResponse}", provider.Name, errorResponse);
                 }
 
                 firstEx ??= e;
@@ -191,20 +191,20 @@ public class GoogleOpenAiProvider(ILogger<GoogleOpenAiProvider> log) : IOpenAiPr
                     // if (retryAfter > 0)
                     //     sleepMs = retryAfter * 1000;
                     log.LogInformation("[{Name}] {Message} for {Url}, retrying after {SleepMs}ms", 
-                        worker.Name, e.Message, url, sleepMs);
+                        provider.Name, e.Message, url, sleepMs);
                     await Task.Delay(sleepMs, token);
                 }
                 else throw;
             }
         }
-        throw firstEx ?? new Exception($"[{worker.Name}] Failed to complete Google Chat request after {retries} retries");
+        throw firstEx ?? new Exception($"[{provider.Name}] Failed to complete Google Chat request after {retries} retries");
     }
 
-    public async Task<bool> IsOnlineAsync(IApiProviderWorker worker, CancellationToken token = default)
+    public async Task<bool> IsOnlineAsync(ApiProvider provider, CancellationToken token = default)
     {
         try
         {
-            var apiModel = worker.GetPreferredApiModel();
+            var apiModel = provider.GetPreferredApiModel();
             var request = new OpenAiChat
             {
                 Model = apiModel,
@@ -214,7 +214,7 @@ public class GoogleOpenAiProvider(ILogger<GoogleOpenAiProvider> log) : IOpenAiPr
                 MaxTokens = 2,
                 Stream = false,
             };
-            await SendRequestAsync(worker, request, token);
+            await SendRequestAsync(provider, request, token);
             return true;
         }
         catch (Exception e)

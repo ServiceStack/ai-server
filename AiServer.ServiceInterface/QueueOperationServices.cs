@@ -27,17 +27,6 @@ public class QueueOperationServices(AppData appData, IDbConnectionFactory dbFact
         return new EmptyResponse();
     }
     
-    public object Any(ResetActiveProviders request)
-    {
-        appData.RestartWorkers(Db);
-        MessageProducer.Publish(new AppDbWrites {
-            ResetTaskQueue = new()
-        });
-        return new GetActiveProvidersResponse {
-            Results = appData.ApiProviders
-        };
-    }
-
     public object Any(ChangeApiProviderStatus request)
     {
         var apiProvider = appData.ApiProviders.FirstOrDefault(x => x.Name == request.Provider)
@@ -60,22 +49,6 @@ public class QueueOperationServices(AppData appData, IDbConnectionFactory dbFact
                 ? $"{apiProvider.Name} is back online" 
                 : $"{apiProvider.Name} was taken offline"
         };
-    }
-
-    public async Task<object> Any(UpdateApiProvider request)
-    {
-        var result = await autoQuery.PartialUpdateAsync<ApiProvider>(request, base.Request);
-        var worker = appData.ApiProviderWorkers.FirstOrDefault(x => x.Id == request.Id);
-        worker?.Update(request);
-
-        if (request.Enabled == true || request.Concurrency > 0)
-        {
-            MessageProducer.Publish(new QueueTasks {
-                DelegateOpenAiChatTasks = new()
-            });
-        }
-        
-        return result;
     }
 
     public object Any(FirePeriodicTask request)

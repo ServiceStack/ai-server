@@ -14,13 +14,9 @@ public class AppData(ILogger<AppData> log,
     ComfyProviderFactory comfyFactory, 
     IMessageService mqServer)
 {
-    public static object SyncRoot = new();
     public static AppData Instance { get; set; }
 
     // OpenAI/standard-specific properties
-    private long nextChatTaskId = -1;
-    private static readonly object chatLock = new();
-    public ApiProviderWorker[] ApiProviderWorkers { get; set; } = [];
     public ApiProvider[] ApiProviders { get; set; } = [];
 
     // Comfy-specific properties
@@ -35,14 +31,8 @@ public class AppData(ILogger<AppData> log,
     public DateTime? StoppedAt { get; private set; }
     public bool IsStopped => StoppedAt != null;
 
-    // OpenAI/standard-specific methods
-    public void SetInitialChatTaskId(long initialValue) => Interlocked.Exchange(ref nextChatTaskId, initialValue);
-    public long LastChatTaskId => Interlocked.Read(ref nextChatTaskId);
-    public long GetNextChatTaskId() => Interlocked.Increment(ref nextChatTaskId);
-    public IEnumerable<ApiProviderWorker> GetActiveWorkers() => ApiProviderWorkers.Where(x => x is { Enabled: true, Concurrency: > 0 });
-    public HashSet<string> GetActiveWorkerModels() => GetActiveWorkers().SelectMany(x => x.Models).ToSet();
-    public bool HasAnyChatTasksQueued() => GetActiveWorkers().Any(x => x.ChatQueueCount > 0);
-    public int ChatTasksQueuedCount() => GetActiveWorkers().Sum(x => x.ChatQueueCount);
+    public ApiProvider AssertApiProvider(string name) => ApiProviders.FirstOrDefault(x => x.Name == name)
+        ?? throw new NotSupportedException($"API Provider {name} not found");
 
     // Comfy-specific methods
     public void SetInitialComfyTaskId(long initialValue) => Interlocked.Exchange(ref nextComfyTaskId, initialValue);
@@ -55,9 +45,6 @@ public class AppData(ILogger<AppData> log,
 
     public void ResetInitialTaskIds(IDbConnection db)
     {
-        var maxChatId = db.Scalar<long>($"SELECT MAX(Id) FROM {nameof(TaskSummary)}");
-        SetInitialChatTaskId(maxChatId);
-
         var maxComfyId = db.Scalar<long>($"SELECT MAX(Id) FROM {nameof(ComfySummary)}");
         SetInitialComfyTaskId(maxComfyId);
     }
@@ -95,21 +82,16 @@ public class AppData(ILogger<AppData> log,
 
         using var mq = mqServer.CreateMessageProducer();
         mq.Publish(new QueueTasks {
-            DelegateOpenAiChatTasks = new(),
             DelegateComfyTasks = new()
         });
     }
 
     private void StartApiWorkers(ApiProvider[] apiProviders)
     {
-        lock (chatLock)
-        {
-            log.LogInformation("Starting {Count} API Workers...", apiProviders.Length);
-            StoppedAt = null;
-            ApiProviders = apiProviders;
-            ApiProviderWorkers = apiProviders.Select(x => new ApiProviderWorker(x, aiFactory, HasAnyChatTasksQueued, cts.Token)).ToArray();
-        }
-        LogWorkerInfo(ApiProviderWorkers, "API");
+        log.LogInformation("Starting {Count} API Workers...", apiProviders.Length);
+        StoppedAt = null;
+        ApiProviders = apiProviders;
+        LogWorkerInfo(apiProviders, "API");
     }
 
     private void StartComfyWorkers(ComfyApiProvider[] comfyProviders)
@@ -124,9 +106,9 @@ public class AppData(ILogger<AppData> log,
         LogWorkerInfo(ComfyProviderWorkers, "Comfy");
     }
 
-    private void LogWorkerInfo(ApiProviderWorker[] workers, string workerType)
+    private void LogWorkerInfo(ApiProvider[] apiProviders, string workerType)
     {
-        foreach (var worker in workers)
+        foreach (var worker in apiProviders.Where(x => x.Enabled))
         {
             log.LogInformation(
                 """
@@ -139,9 +121,9 @@ public class AppData(ILogger<AppData> log,
                 workerType,
                 worker.Name,
                 worker.Enabled ? "Enabled" : "Disabled",
-                worker.IsOffline ? "Offline" : "Online",
+                worker.OfflineDate != null ? "Offline" : "Online",
                 worker.Concurrency, 
-                string.Join("\n    ", worker.Models));
+                string.Join("\n    ", worker.Models.Select(x => x.Model)));
         }
     }
     
@@ -178,14 +160,9 @@ public class AppData(ILogger<AppData> log,
 
     private void StopApiWorkers()
     {
-        lock (chatLock)
-        {
-            log.LogInformation("Stopping {Count} API Workers...", ApiProviderWorkers.Length);
-            StoppedAt = DateTime.UtcNow;
-            DisposeWorkers(ApiProviderWorkers);
-            ApiProviders = [];
-            ApiProviderWorkers = [];
-        }
+        log.LogInformation("Stopping {Count} API Workers...", ApiProviders.Length);
+        StoppedAt = DateTime.UtcNow;
+        ApiProviders = [];
     }
 
     private void StopComfyWorkers()
@@ -209,4 +186,7 @@ public class AppData(ILogger<AppData> log,
     }
     
     public string CreateRequestId() => Guid.NewGuid().ToString("N");
+    
+    public IOpenAiProvider GetOpenAiProvider(ApiProvider apiProvider) => 
+        aiFactory.GetOpenAiProvider(apiProvider.ApiType?.OpenAiProvider);
 }

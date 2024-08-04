@@ -94,101 +94,6 @@ public class OpenAiChatTaskTests
     }
 
     [Test]
-    public async Task Can_FetchOpenAiChatRequests()
-    {
-        var client = TestUtils.CreateSystemClient();
-
-        var api = await client.ApiAsync(new FetchOpenAiChatRequests
-        {
-            Provider = "ollama",
-            Worker = nameof(OpenAiChatTaskTests),
-            Models = ["phi3"],
-            Take = 3,
-        });
-        
-        Assert.That(api.ErrorMessage, Is.Null);
-        Assert.That(api.Response!.Results.Length, Is.EqualTo(3));
-        Assert.That(api.Response!.Results.All(x => x.Request.Model == "phi3"));
-
-        api = await client.ApiAsync(new FetchOpenAiChatRequests
-        {
-            Provider = "ollama",
-            Worker = nameof(OpenAiChatTaskTests),
-            Models = ["llama3:8b"],
-            Take = 3,
-        });
-        
-        Assert.That(api.ErrorMessage, Is.Null);
-        Assert.That(api.Response!.Results.Length, Is.EqualTo(3));
-        Assert.That(api.Response!.Results.All(x => x.Request.Model == "llama3:8b"));
-    }
-
-    [Test]
-    public async Task Can_FetchOpenAiChatRequests_with_multiple_models()
-    {
-        var client = TestUtils.CreateAdminClient();
-        var api = await client.ApiAsync(new FetchOpenAiChatRequests
-        {
-            Provider = "ollama",
-            Worker = nameof(OpenAiChatTaskTests),
-            Models = ["phi3", "llama3:8b"],
-            Take = 3,
-        });
-        
-        Assert.That(api.ErrorMessage, Is.Null);
-        Assert.That(api.Response!.Results.Length, Is.EqualTo(3));
-        Assert.That(api.Response!.Results.All(x => x.Request.Model is "phi3" or "llama3:8b"));
-    }
-
-    [Test]
-    public async Task Can_FetchOpenAiChatRequests_with_openrouter()
-    {
-        var client = TestUtils.CreateAdminClient();
-        var api = await client.ApiAsync(new FetchOpenAiChatRequests
-        {
-            Provider = "openrouter",
-            Worker = nameof(OpenAiChatTaskTests),
-            Models = ["phi3", "llama3:8b"],
-            Take = 3,
-        });
-        
-        Assert.That(api.ErrorMessage, Is.Null);
-        Assert.That(api.Response!.Results.Length, Is.EqualTo(3));
-        Assert.That(api.Response!.Results.All(x => x is { Provider: null or "openrouter", Model: "phi3" or "llama3:8b" }));
-    }
-
-    [Test]
-    public async Task Can_FetchOpenAiChatRequests_with_openrouter_and_mixtral()
-    {
-        var client = TestUtils.CreateAdminClient();
-        var api = await client.ApiAsync(new FetchOpenAiChatRequests
-        {
-            Provider = "openrouter",
-            Worker = nameof(OpenAiChatTaskTests),
-            Models = ["mixtral"],
-            Take = 3,
-        });
-        
-        Assert.That(api.ErrorMessage, Is.Null);
-        api.Response!.Results.PrintDump();
-        Assert.That(api.Response!.Results.Length, Is.EqualTo(3));
-        Assert.That(api.Response!.Results.All(x => x is { Provider: null or "openrouter", Model: "mixtral" }));
-    }
-
-    [Test]
-    public async Task Can_RequeueIncompleteTasks()
-    {
-        var client = TestUtils.CreateAdminClient();
-
-        var api = await client.ApiAsync(new ChatOperations
-        {
-            RequeueIncompleteTasks = true
-        });
-        api.Response.PrintDump();
-        api.Error.PrintDump();
-    }
-
-    [Test]
     public async Task Can_queue_pvq_answer_to_question()
     {
         var pvqApi = TestUtils.PvqApiClient();
@@ -196,10 +101,10 @@ public class OpenAiChatTaskTests
         {
             provider = "credentials",
             UserName = TestUtils.PvqUsername,
-            Password = TestUtils.PvqPassword,
+            Password = "L1v3demos$",
         });
 
-        var model = "phi3";
+        var model = "mistral-nemo";
         var postId = 100000001;
         var question = await pvqApi.ApiAsync(new GetQuestionBody
         {
@@ -219,46 +124,31 @@ public class OpenAiChatTaskTests
     }
 
     [Test]
-    public async Task Can_execute_ollama_task()
-    {
-        var model = "phi3";
-        var client = TestUtils.CreatePvqClient();
-
-        var api = await client.ApiAsync(new FetchOpenAiChatRequests
-        {
-            Provider = "ollama",
-            Worker = nameof(OpenAiChatTaskTests),
-            Models = ["phi3"],
-            Take = 1,
-        });
-        api.ThrowIfError();
-        
-        var entry = api.Response!.Results.First();
-        var chatRequest = entry.Request;
-
-        var sw = Stopwatch.StartNew();
-        var openApiChatEndpoint = "http://macbook.pvq.app/v1/chat/completions";
-        var responseJson = await openApiChatEndpoint.PostJsonToUrlAsync(chatRequest);
-        var durationMs = (int)sw.ElapsedMilliseconds;
-        
-        var response = responseJson.FromJson<OpenAiChatResponse>();
-        response.PrintDump();
-
-        var completeApi = await client.ApiAsync(new CompleteOpenAiChat
-        {
-            Id = entry.Id,
-            Provider = "ollama",
-            DurationMs = durationMs,
-            Response = response,
-        });
-        
-        completeApi.ThrowIfError();
-    }
-
-    [Test]
     public async Task Can_execute_answers_for_llama3()
     {
         var models = new[] { "llama3:8b" };
+
+        var testFolder = new DirectoryInfo(Path.Combine(TestUtils.GetQuestionsDir(), "100/000"));
+        
+        var postId = 100000001;
+        
+        var questionFiles = testFolder.GetMatchingFiles("???.json").ToList();
+        foreach (var model in models)
+        {
+            var replyTo = TestUtils.PvqBaseUrl.CombineWith("api/CreateAnswerCallback")
+                .AddQueryParams(new() {
+                    ["PostId"] = postId,
+                    ["UserId"] = TestUtils.ModerUserIds[model]
+                });
+            
+            await CreateQuestionTasks(questionFiles, model:model, replyTo:replyTo);
+        }
+    }
+
+    [Test]
+    public async Task Can_execute_answers_for_DeepSeekCoderV2()
+    {
+        var models = new[] { "deepseek-coder-v2:236b" };
 
         var testFolder = new DirectoryInfo(Path.Combine(TestUtils.GetQuestionsDir(), "100/000"));
         

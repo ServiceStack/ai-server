@@ -1,5 +1,5 @@
 /* Options:
-Date: 2024-07-23 21:02:38
+Date: 2024-08-04 23:20:48
 Version: 8.31
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5005
@@ -13,11 +13,13 @@ BaseUrl: https://localhost:5005
 */
 
 "use strict";
-/** @typedef {'euler'|'euler_ancestral'|'huen'|'huenpp2'|'dpm_2'|'dpm_2_ancestral'|'lms'|'dpm_fast'|'dpm_adaptive'|'dpmpp_2s_ancestral'|'dpmpp_sde'|'dpmpp_sde_gpu'|'dpmpp_2m'|'dpmpp_2m_sde'|'dpmpp_2m_sde_gpu'|'dpmpp_3m_sde'|'dpmpp_3m_sde_gpu'|'ddpm'|'lcm'|'ddim'|'uni_pc'|'uni_pc_bh2'} */
+/** @typedef {'euler'|'euler_cfg_pp'|'euler_ancestral'|'euler_ancestral_cfg_pp'|'huen'|'huenpp2'|'dpm_2'|'dpm_2_ancestral'|'lms'|'dpm_fast'|'dpm_adaptive'|'dpmpp_2s_ancestral'|'dpmpp_sde'|'dpmpp_sde_gpu'|'dpmpp_2m'|'dpmpp_2m_sde'|'dpmpp_2m_sde_gpu'|'dpmpp_3m_sde'|'dpmpp_3m_sde_gpu'|'ddpm'|'lcm'|'ddim'|'uni_pc'|'uni_pc_bh2'} */
 export var ComfySampler;
 (function (ComfySampler) {
     ComfySampler["euler"] = "euler"
+    ComfySampler["euler_cfg_pp"] = "euler_cfg_pp"
     ComfySampler["euler_ancestral"] = "euler_ancestral"
+    ComfySampler["euler_ancestral_cfg_pp"] = "euler_ancestral_cfg_pp"
     ComfySampler["huen"] = "huen"
     ComfySampler["huenpp2"] = "huenpp2"
     ComfySampler["dpm_2"] = "dpm_2"
@@ -39,27 +41,6 @@ export var ComfySampler;
     ComfySampler["uni_pc"] = "uni_pc"
     ComfySampler["uni_pc_bh2"] = "uni_pc_bh2"
 })(ComfySampler || (ComfySampler = {}));
-/** @typedef {'ThreeDModel'|'AnalogFilm'|'Anime'|'Cinematic'|'ComicBook'|'DigitalArt'|'Enhance'|'FantasyArt'|'Isometric'|'LineArt'|'LowPoly'|'ModelingCompound'|'NeonPunk'|'Origami'|'Photographic'|'PixelArt'|'TileTexture'} */
-export var ArtStyle;
-(function (ArtStyle) {
-    ArtStyle["ThreeDModel"] = "ThreeDModel"
-    ArtStyle["AnalogFilm"] = "AnalogFilm"
-    ArtStyle["Anime"] = "Anime"
-    ArtStyle["Cinematic"] = "Cinematic"
-    ArtStyle["ComicBook"] = "ComicBook"
-    ArtStyle["DigitalArt"] = "DigitalArt"
-    ArtStyle["Enhance"] = "Enhance"
-    ArtStyle["FantasyArt"] = "FantasyArt"
-    ArtStyle["Isometric"] = "Isometric"
-    ArtStyle["LineArt"] = "LineArt"
-    ArtStyle["LowPoly"] = "LowPoly"
-    ArtStyle["ModelingCompound"] = "ModelingCompound"
-    ArtStyle["NeonPunk"] = "NeonPunk"
-    ArtStyle["Origami"] = "Origami"
-    ArtStyle["Photographic"] = "Photographic"
-    ArtStyle["PixelArt"] = "PixelArt"
-    ArtStyle["TileTexture"] = "TileTexture"
-})(ArtStyle || (ArtStyle = {}));
 /** @typedef {number} */
 export var ComfyTaskType;
 (function (ComfyTaskType) {
@@ -72,6 +53,28 @@ export var ComfyTaskType;
     ComfyTaskType[ComfyTaskType["TextToSpeech"] = 7] = "TextToSpeech"
     ComfyTaskType[ComfyTaskType["SpeechToText"] = 8] = "SpeechToText"
 })(ComfyTaskType || (ComfyTaskType = {}));
+export class ComfyApiModelSettings {
+    /** @param {{id?:number,comfyApiModelId?:number,cfgScale?:number,scheduler?:string,sampler?:ComfySampler,width?:number,height?:number,steps?:number,negativePrompt?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {number} */
+    comfyApiModelId;
+    /** @type {?number} */
+    cfgScale;
+    /** @type {?string} */
+    scheduler;
+    /** @type {?ComfySampler} */
+    sampler;
+    /** @type {?number} */
+    width;
+    /** @type {?number} */
+    height;
+    /** @type {?number} */
+    steps;
+    /** @type {?string} */
+    negativePrompt;
+}
 export class ComfyFileInput {
     /** @param {{name?:string,type?:string,subfolder?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -180,6 +183,219 @@ export class TaskBase {
     errorCode;
     /** @type {?ResponseStatus} */
     error;
+}
+export class ComfyWorkflowRequest {
+    /** @param {{model?:string,steps?:number,batchSize?:number,seed?:number,positivePrompt?:string,negativePrompt?:string,image?:ComfyFileInput,speech?:ComfyFileInput,mask?:ComfyFileInput,imageInput?:string,speechInput?:string,maskInput?:string,sampler?:ComfySampler,scheduler?:string,cfgScale?:number,denoise?:number,upscaleModel?:string,width?:number,height?:number,taskType?:ComfyTaskType,clip?:string,sampleLength?:number,maskChannel?:ComfyMaskSource}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?string} */
+    model;
+    /** @type {?number} */
+    steps;
+    /** @type {number} */
+    batchSize;
+    /** @type {?number} */
+    seed;
+    /** @type {?string} */
+    positivePrompt;
+    /** @type {?string} */
+    negativePrompt;
+    /** @type {?ComfyFileInput} */
+    image;
+    /** @type {?ComfyFileInput} */
+    speech;
+    /** @type {?ComfyFileInput} */
+    mask;
+    /** @type {?string} */
+    imageInput;
+    /** @type {?string} */
+    speechInput;
+    /** @type {?string} */
+    maskInput;
+    /** @type {?ComfySampler} */
+    sampler;
+    /** @type {?string} */
+    scheduler;
+    /** @type {?number} */
+    cfgScale;
+    /** @type {?number} */
+    denoise;
+    /** @type {?string} */
+    upscaleModel;
+    /** @type {?number} */
+    width;
+    /** @type {?number} */
+    height;
+    /** @type {ComfyTaskType} */
+    taskType;
+    /** @type {?string} */
+    clip;
+    /** @type {?number} */
+    sampleLength;
+    /** @type {ComfyMaskSource} */
+    maskChannel;
+}
+export class NodeError {
+    constructor(init) { Object.assign(this, init) }
+}
+export class ComfyWorkflowResponse {
+    /** @param {{promptId?:string,number?:number,nodeErrors?:NodeError[]}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    promptId;
+    /** @type {number} */
+    number;
+    /** @type {NodeError[]} */
+    nodeErrors;
+}
+export class ComfyFileOutput {
+    /** @param {{filename?:string,type?:string,subfolder?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    filename;
+    /** @type {string} */
+    type;
+    /** @type {string} */
+    subfolder;
+}
+export class ComfyTextOutput {
+    /** @param {{text?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?string} */
+    text;
+}
+export class ComfyOutput {
+    /** @param {{files?:ComfyFileOutput[],texts?:ComfyTextOutput[]}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {ComfyFileOutput[]} */
+    files;
+    /** @type {ComfyTextOutput[]} */
+    texts;
+}
+export class ComfyWorkflowStatus {
+    /** @param {{statusMessage?:string,error?:string,completed?:boolean,outputs?:ComfyOutput[]}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    statusMessage;
+    /** @type {?string} */
+    error;
+    /** @type {boolean} */
+    completed;
+    /** @type {ComfyOutput[]} */
+    outputs;
+}
+export class ComfyGenerationTask extends TaskBase {
+    /** @param {{request?:ComfyWorkflowRequest,response?:ComfyWorkflowResponse,status?:ComfyWorkflowStatus,taskType?:ComfyTaskType,workflowTemplate?:string,id?:number,model?:string,provider?:string,refId?:string,tag?:string,replyTo?:string,createdDate?:string,createdBy?:string,worker?:string,workerIp?:string,requestId?:string,startedDate?:string,completedDate?:string,durationMs?:number,retryLimit?:number,retries?:number,notificationDate?:string,errorCode?:string,error?:ResponseStatus}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /** @type {ComfyWorkflowRequest} */
+    request;
+    /** @type {?ComfyWorkflowResponse} */
+    response;
+    /** @type {?ComfyWorkflowStatus} */
+    status;
+    /** @type {ComfyTaskType} */
+    taskType;
+    /** @type {string} */
+    workflowTemplate;
+}
+export class ComfyGenerationCompleted extends ComfyGenerationTask {
+    /** @param {{request?:ComfyWorkflowRequest,response?:ComfyWorkflowResponse,status?:ComfyWorkflowStatus,taskType?:ComfyTaskType,workflowTemplate?:string,id?:number,model?:string,provider?:string,refId?:string,tag?:string,replyTo?:string,createdDate?:string,createdBy?:string,worker?:string,workerIp?:string,requestId?:string,startedDate?:string,completedDate?:string,durationMs?:number,retryLimit?:number,retries?:number,notificationDate?:string,errorCode?:string,error?:ResponseStatus}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+}
+export class ComfyGenerationFailed extends ComfyGenerationTask {
+    /** @param {{failedDate?:string,request?:ComfyWorkflowRequest,response?:ComfyWorkflowResponse,status?:ComfyWorkflowStatus,taskType?:ComfyTaskType,workflowTemplate?:string,id?:number,model?:string,provider?:string,refId?:string,tag?:string,replyTo?:string,createdDate?:string,createdBy?:string,worker?:string,workerIp?:string,requestId?:string,startedDate?:string,completedDate?:string,durationMs?:number,retryLimit?:number,retries?:number,notificationDate?:string,errorCode?:string,error?:ResponseStatus}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /** @type {string} */
+    failedDate;
+}
+/** @typedef {'Queued'|'Started'|'Executed'|'Completed'|'Failed'|'Cancelled'} */
+export var BackgroundJobState;
+(function (BackgroundJobState) {
+    BackgroundJobState["Queued"] = "Queued"
+    BackgroundJobState["Started"] = "Started"
+    BackgroundJobState["Executed"] = "Executed"
+    BackgroundJobState["Completed"] = "Completed"
+    BackgroundJobState["Failed"] = "Failed"
+    BackgroundJobState["Cancelled"] = "Cancelled"
+})(BackgroundJobState || (BackgroundJobState = {}));
+export class BackgroundJob {
+    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,callback?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,requestUserId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,durationMs?:number,timeoutSecs?:number,retryLimit?:number,attempts?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index: string]: string; },meta?:{ [index: string]: string; },transient?:boolean}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {?number} */
+    parentId;
+    /** @type {?string} */
+    refId;
+    /** @type {?string} */
+    worker;
+    /** @type {?string} */
+    tag;
+    /** @type {?string} */
+    callback;
+    /** @type {string} */
+    createdDate;
+    /** @type {?string} */
+    createdBy;
+    /** @type {?string} */
+    requestId;
+    /** @type {string} */
+    requestType;
+    /** @type {?string} */
+    command;
+    /** @type {string} */
+    request;
+    /** @type {string} */
+    requestBody;
+    /** @type {?string} */
+    requestUserId;
+    /** @type {string} */
+    response;
+    /** @type {string} */
+    responseBody;
+    /** @type {BackgroundJobState} */
+    state;
+    /** @type {?string} */
+    startedDate;
+    /** @type {?string} */
+    completedDate;
+    /** @type {?string} */
+    notifiedDate;
+    /** @type {number} */
+    durationMs;
+    /** @type {?number} */
+    timeoutSecs;
+    /** @type {?number} */
+    retryLimit;
+    /** @type {number} */
+    attempts;
+    /** @type {?number} */
+    progress;
+    /** @type {?string} */
+    status;
+    /** @type {?string} */
+    logs;
+    /** @type {?string} */
+    lastActivityDate;
+    /** @type {?string} */
+    replyTo;
+    /** @type {?string} */
+    errorCode;
+    /** @type {?ResponseStatus} */
+    error;
+    /** @type {?{ [index: string]: string; }} */
+    args;
+    /** @type {?{ [index: string]: string; }} */
+    meta;
+    /** @type {boolean} */
+    transient;
+}
+export class CompletedJob extends BackgroundJob {
+    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,callback?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,requestUserId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,durationMs?:number,timeoutSecs?:number,retryLimit?:number,attempts?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index: string]: string; },meta?:{ [index: string]: string; },transient?:boolean}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+}
+export class FailedJob extends BackgroundJob {
+    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,callback?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,requestUserId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,durationMs?:number,timeoutSecs?:number,retryLimit?:number,attempts?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index: string]: string; },meta?:{ [index: string]: string; },transient?:boolean}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
 }
 export class OpenAiMessage {
     /** @param {{content?:string,role?:string,name?:string,tool_calls?:ToolCall[],tool_call_id?:string}} [init] */
@@ -304,6 +520,266 @@ export class OpenAiChat {
      * @description A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. */
     user;
 }
+export class ApiModel {
+    /** @param {{id?:number,name?:string,parameters?:string,contextSize?:number,website?:string,developer?:string,notes?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {string} */
+    name;
+    /** @type {?string} */
+    parameters;
+    /** @type {?number} */
+    contextSize;
+    /** @type {?string} */
+    website;
+    /** @type {?string} */
+    developer;
+    /** @type {?string} */
+    notes;
+}
+export class Property {
+    /** @param {{name?:string,value?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    name;
+    /** @type {string} */
+    value;
+}
+export class ApiProviderModel {
+    /** @param {{id?:number,apiProviderId?:number,model?:string,apiModel?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {number} */
+    apiProviderId;
+    /** @type {string} */
+    model;
+    /** @type {?string} */
+    apiModel;
+}
+/** @typedef {'Minute'|'Hourly'|'Daily'|'Monthly'} */
+export var PeriodicFrequency;
+(function (PeriodicFrequency) {
+    PeriodicFrequency["Minute"] = "Minute"
+    PeriodicFrequency["Hourly"] = "Hourly"
+    PeriodicFrequency["Daily"] = "Daily"
+    PeriodicFrequency["Monthly"] = "Monthly"
+})(PeriodicFrequency || (PeriodicFrequency = {}));
+export class ComfyApiProvider {
+    /** @param {{id?:number,name?:string,apiKey?:string,apiKeyHeader?:string,apiBaseUrl?:string,heartbeatUrl?:string,taskWorkflows?:{ [index: string]: string; },concurrency?:number,priority?:number,enabled?:boolean,offlineDate?:string,createdDate?:string,models?:ComfyApiProviderModel[]}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {string} */
+    name;
+    /** @type {?string} */
+    apiKey;
+    /** @type {?string} */
+    apiKeyHeader;
+    /** @type {?string} */
+    apiBaseUrl;
+    /** @type {?string} */
+    heartbeatUrl;
+    /** @type {?{ [index: string]: string; }} */
+    taskWorkflows;
+    /** @type {number} */
+    concurrency;
+    /** @type {number} */
+    priority;
+    /** @type {boolean} */
+    enabled;
+    /** @type {?string} */
+    offlineDate;
+    /** @type {string} */
+    createdDate;
+    /** @type {?ComfyApiProviderModel[]} */
+    models;
+}
+export class ComfyApiModel {
+    /** @param {{id?:number,name?:string,description?:string,tags?:string,filename?:string,downloadUrl?:string,iconUrl?:string,url?:string,createdDate?:string,modelSettings?:ComfyApiModelSettings}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {string} */
+    name;
+    /** @type {?string} */
+    description;
+    /** @type {?string} */
+    tags;
+    /** @type {string} */
+    filename;
+    /** @type {string} */
+    downloadUrl;
+    /** @type {string} */
+    iconUrl;
+    /** @type {string} */
+    url;
+    /** @type {string} */
+    createdDate;
+    /** @type {?ComfyApiModelSettings} */
+    modelSettings;
+}
+export class ComfyApiProviderModel {
+    /** @param {{id?:number,comfyApiProviderId?:number,comfyApiModelId?:number,comfyApiProvider?:ComfyApiProvider,comfyApiModel?:ComfyApiModel}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {number} */
+    comfyApiProviderId;
+    /** @type {number} */
+    comfyApiModelId;
+    /** @type {ComfyApiProvider} */
+    comfyApiProvider;
+    /** @type {ComfyApiModel} */
+    comfyApiModel;
+}
+/** @typedef {number} */
+export var TaskType;
+(function (TaskType) {
+    TaskType[TaskType["OpenAiChat"] = 1] = "OpenAiChat"
+    TaskType[TaskType["Comfy"] = 2] = "Comfy"
+})(TaskType || (TaskType = {}));
+export class ApiType {
+    /** @param {{id?:number,name?:string,website?:string,apiBaseUrl?:string,heartbeatUrl?:string,openAiProvider?:string,taskPaths?:{ [index: string]: string; },apiModels?:{ [index: string]: string; }}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {string} */
+    name;
+    /** @type {string} */
+    website;
+    /** @type {string} */
+    apiBaseUrl;
+    /** @type {?string} */
+    heartbeatUrl;
+    /** @type {?string} */
+    openAiProvider;
+    /** @type {{ [index: string]: string; }} */
+    taskPaths;
+    /** @type {{ [index: string]: string; }} */
+    apiModels;
+}
+export class ApiProvider {
+    /** @param {{id?:number,name?:string,apiTypeId?:number,apiKey?:string,apiKeyHeader?:string,apiBaseUrl?:string,heartbeatUrl?:string,taskPaths?:{ [index: string]: string; },concurrency?:number,priority?:number,enabled?:boolean,offlineDate?:string,createdDate?:string,apiType?:ApiType,models?:ApiProviderModel[]}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {string} */
+    name;
+    /** @type {number} */
+    apiTypeId;
+    /** @type {?string} */
+    apiKey;
+    /** @type {?string} */
+    apiKeyHeader;
+    /** @type {?string} */
+    apiBaseUrl;
+    /** @type {?string} */
+    heartbeatUrl;
+    /** @type {?{ [index: string]: string; }} */
+    taskPaths;
+    /** @type {number} */
+    concurrency;
+    /** @type {number} */
+    priority;
+    /** @type {boolean} */
+    enabled;
+    /** @type {?string} */
+    offlineDate;
+    /** @type {string} */
+    createdDate;
+    /** @type {ApiType} */
+    apiType;
+    /** @type {ApiProviderModel[]} */
+    models;
+}
+export class ComfySummary {
+    /** @param {{id?:number,type?:ComfyTaskType,model?:string,provider?:string,refId?:string,tag?:string,durationMs?:number,createdDate?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {ComfyTaskType} */
+    type;
+    /** @type {string} */
+    model;
+    /** @type {?string} */
+    provider;
+    /** @type {?string} */
+    refId;
+    /** @type {?string} */
+    tag;
+    /** @type {number} */
+    durationMs;
+    /** @type {string} */
+    createdDate;
+}
+export class TaskSummary {
+    /** @param {{id?:number,type?:TaskType,model?:string,provider?:string,refId?:string,tag?:string,promptTokens?:number,completionTokens?:number,durationMs?:number,createdDate?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {TaskType} */
+    type;
+    /** @type {string} */
+    model;
+    /** @type {?string} */
+    provider;
+    /** @type {?string} */
+    refId;
+    /** @type {?string} */
+    tag;
+    /** @type {number} */
+    promptTokens;
+    /** @type {number} */
+    completionTokens;
+    /** @type {number} */
+    durationMs;
+    /** @type {string} */
+    createdDate;
+}
+export class ComfyHostedFileOutput {
+    /** @param {{url?:string,fileName?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    url;
+    /** @type {string} */
+    fileName;
+}
+export class AiServerHostedComfyFile {
+    /** @param {{url?:string,fileName?:string,contentType?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    url;
+    /** @type {string} */
+    fileName;
+    /** @type {string} */
+    contentType;
+}
+export class PageStats {
+    /** @param {{label?:string,total?:number}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    label;
+    /** @type {number} */
+    total;
+}
+export class WorkerStats {
+    /** @param {{name?:string,queued?:number,received?:number,completed?:number,retries?:number,failed?:number}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    name;
+    /** @type {number} */
+    queued;
+    /** @type {number} */
+    received;
+    /** @type {number} */
+    completed;
+    /** @type {number} */
+    retries;
+    /** @type {number} */
+    failed;
+}
 export class ChoiceMessage {
     /** @param {{content?:string,tool_calls?:ToolCall[],role?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -352,334 +828,6 @@ export class OpenAiUsage {
      * @description Total number of tokens used in the request (prompt + completion). */
     total_tokens;
 }
-export class OpenAiChatResponse {
-    /** @param {{id?:string,choices?:Choice[],created?:number,model?:string,system_fingerprint?:string,object?:string,usage?:OpenAiUsage}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /**
-     * @type {string}
-     * @description A unique identifier for the chat completion. */
-    id;
-    /**
-     * @type {Choice[]}
-     * @description A list of chat completion choices. Can be more than one if n is greater than 1. */
-    choices;
-    /**
-     * @type {number}
-     * @description The Unix timestamp (in seconds) of when the chat completion was created. */
-    created;
-    /**
-     * @type {string}
-     * @description The model used for the chat completion. */
-    model;
-    /**
-     * @type {string}
-     * @description This fingerprint represents the backend configuration that the model runs with. */
-    system_fingerprint;
-    /**
-     * @type {string}
-     * @description The object type, which is always chat.completion. */
-    object;
-    /**
-     * @type {OpenAiUsage}
-     * @description Usage statistics for the completion request. */
-    usage;
-}
-export class OpenAiChatTask extends TaskBase {
-    /** @param {{request?:OpenAiChat,response?:OpenAiChatResponse,id?:number,model?:string,provider?:string,refId?:string,tag?:string,replyTo?:string,createdDate?:string,createdBy?:string,worker?:string,workerIp?:string,requestId?:string,startedDate?:string,completedDate?:string,durationMs?:number,retryLimit?:number,retries?:number,notificationDate?:string,errorCode?:string,error?:ResponseStatus}} [init] */
-    constructor(init) { super(init); Object.assign(this, init) }
-    /** @type {OpenAiChat} */
-    request;
-    /** @type {?OpenAiChatResponse} */
-    response;
-}
-export class OpenAiChatCompleted extends OpenAiChatTask {
-    /** @param {{request?:OpenAiChat,response?:OpenAiChatResponse,id?:number,model?:string,provider?:string,refId?:string,tag?:string,replyTo?:string,createdDate?:string,createdBy?:string,worker?:string,workerIp?:string,requestId?:string,startedDate?:string,completedDate?:string,durationMs?:number,retryLimit?:number,retries?:number,notificationDate?:string,errorCode?:string,error?:ResponseStatus}} [init] */
-    constructor(init) { super(init); Object.assign(this, init) }
-}
-export class OpenAiChatFailed extends OpenAiChatTask {
-    /** @param {{failedDate?:string,request?:OpenAiChat,response?:OpenAiChatResponse,id?:number,model?:string,provider?:string,refId?:string,tag?:string,replyTo?:string,createdDate?:string,createdBy?:string,worker?:string,workerIp?:string,requestId?:string,startedDate?:string,completedDate?:string,durationMs?:number,retryLimit?:number,retries?:number,notificationDate?:string,errorCode?:string,error?:ResponseStatus}} [init] */
-    constructor(init) { super(init); Object.assign(this, init) }
-    /** @type {string} */
-    failedDate;
-}
-/** @typedef {number} */
-export var TaskType;
-(function (TaskType) {
-    TaskType[TaskType["OpenAiChat"] = 1] = "OpenAiChat"
-})(TaskType || (TaskType = {}));
-export class ApiType {
-    /** @param {{id?:number,name?:string,website?:string,apiBaseUrl?:string,heartbeatUrl?:string,openAiProvider?:string,taskPaths?:{ [index: string]: string; },apiModels?:{ [index: string]: string; }}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {number} */
-    id;
-    /** @type {string} */
-    name;
-    /** @type {string} */
-    website;
-    /** @type {string} */
-    apiBaseUrl;
-    /** @type {?string} */
-    heartbeatUrl;
-    /** @type {?string} */
-    openAiProvider;
-    /** @type {{ [index: string]: string; }} */
-    taskPaths;
-    /** @type {{ [index: string]: string; }} */
-    apiModels;
-}
-export class ApiProviderModel {
-    /** @param {{id?:number,apiProviderId?:number,model?:string,apiModel?:string}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {number} */
-    id;
-    /** @type {number} */
-    apiProviderId;
-    /** @type {string} */
-    model;
-    /** @type {?string} */
-    apiModel;
-}
-export class ApiProvider {
-    /** @param {{id?:number,name?:string,apiTypeId?:number,apiKey?:string,apiKeyHeader?:string,apiBaseUrl?:string,heartbeatUrl?:string,taskPaths?:{ [index: string]: string; },concurrency?:number,priority?:number,enabled?:boolean,offlineDate?:string,createdDate?:string,apiType?:ApiType,models?:ApiProviderModel[]}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {number} */
-    id;
-    /** @type {string} */
-    name;
-    /** @type {number} */
-    apiTypeId;
-    /** @type {?string} */
-    apiKey;
-    /** @type {?string} */
-    apiKeyHeader;
-    /** @type {?string} */
-    apiBaseUrl;
-    /** @type {?string} */
-    heartbeatUrl;
-    /** @type {?{ [index: string]: string; }} */
-    taskPaths;
-    /** @type {number} */
-    concurrency;
-    /** @type {number} */
-    priority;
-    /** @type {boolean} */
-    enabled;
-    /** @type {?string} */
-    offlineDate;
-    /** @type {string} */
-    createdDate;
-    /** @type {ApiType} */
-    apiType;
-    /** @type {ApiProviderModel[]} */
-    models;
-}
-/** @typedef {'Minute'|'Hourly'|'Daily'|'Monthly'} */
-export var PeriodicFrequency;
-(function (PeriodicFrequency) {
-    PeriodicFrequency["Minute"] = "Minute"
-    PeriodicFrequency["Hourly"] = "Hourly"
-    PeriodicFrequency["Daily"] = "Daily"
-    PeriodicFrequency["Monthly"] = "Monthly"
-})(PeriodicFrequency || (PeriodicFrequency = {}));
-export class ApiModel {
-    /** @param {{id?:number,name?:string,parameters?:string,contextSize?:number,website?:string,developer?:string,notes?:string}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {number} */
-    id;
-    /** @type {string} */
-    name;
-    /** @type {?string} */
-    parameters;
-    /** @type {?number} */
-    contextSize;
-    /** @type {?string} */
-    website;
-    /** @type {?string} */
-    developer;
-    /** @type {?string} */
-    notes;
-}
-export class TaskSummary {
-    /** @param {{id?:number,type?:TaskType,model?:string,provider?:string,refId?:string,tag?:string,promptTokens?:number,completionTokens?:number,durationMs?:number,createdDate?:string}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {number} */
-    id;
-    /** @type {TaskType} */
-    type;
-    /** @type {string} */
-    model;
-    /** @type {?string} */
-    provider;
-    /** @type {?string} */
-    refId;
-    /** @type {?string} */
-    tag;
-    /** @type {number} */
-    promptTokens;
-    /** @type {number} */
-    completionTokens;
-    /** @type {number} */
-    durationMs;
-    /** @type {string} */
-    createdDate;
-}
-export class ComfyWorkflowRequest {
-    /** @param {{id?:number,model?:string,steps?:number,batchSize?:number,seed?:number,positivePrompt?:string,negativePrompt?:string,image?:ComfyFileInput,speech?:ComfyFileInput,mask?:ComfyFileInput,imageInput?:string,speechInput?:string,maskInput?:string,sampler?:ComfySampler,artStyle?:ArtStyle,scheduler?:string,cfgScale?:number,denoise?:number,upscaleModel?:string,width?:number,height?:number,taskType?:ComfyTaskType,refId?:string,provider?:string,replyTo?:string,tag?:string,clip?:string,sampleLength?:number,maskChannel?:ComfyMaskSource}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {number} */
-    id;
-    /** @type {?string} */
-    model;
-    /** @type {?number} */
-    steps;
-    /** @type {number} */
-    batchSize;
-    /** @type {?number} */
-    seed;
-    /** @type {?string} */
-    positivePrompt;
-    /** @type {?string} */
-    negativePrompt;
-    /** @type {?ComfyFileInput} */
-    image;
-    /** @type {?ComfyFileInput} */
-    speech;
-    /** @type {?ComfyFileInput} */
-    mask;
-    /** @type {?string} */
-    imageInput;
-    /** @type {?string} */
-    speechInput;
-    /** @type {?string} */
-    maskInput;
-    /** @type {?ComfySampler} */
-    sampler;
-    /** @type {?ArtStyle} */
-    artStyle;
-    /** @type {?string} */
-    scheduler;
-    /** @type {?number} */
-    cfgScale;
-    /** @type {?number} */
-    denoise;
-    /** @type {?string} */
-    upscaleModel;
-    /** @type {?number} */
-    width;
-    /** @type {?number} */
-    height;
-    /** @type {ComfyTaskType} */
-    taskType;
-    /** @type {?string} */
-    refId;
-    /** @type {?string} */
-    provider;
-    /** @type {?string} */
-    replyTo;
-    /** @type {?string} */
-    tag;
-    /** @type {?string} */
-    clip;
-    /** @type {?number} */
-    sampleLength;
-    /** @type {ComfyMaskSource} */
-    maskChannel;
-}
-export class ComfyFileOutput {
-    /** @param {{filename?:string,type?:string,subfolder?:string}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {string} */
-    filename;
-    /** @type {string} */
-    type;
-    /** @type {string} */
-    subfolder;
-}
-export class ComfyTextOutput {
-    /** @param {{text?:string}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {?string} */
-    text;
-}
-export class ComfyOutput {
-    /** @param {{files?:ComfyFileOutput[],texts?:ComfyTextOutput[]}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {ComfyFileOutput[]} */
-    files;
-    /** @type {ComfyTextOutput[]} */
-    texts;
-}
-export class ComfyWorkflowStatus {
-    /** @param {{statusMessage?:string,completed?:boolean,outputs?:ComfyOutput[]}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {string} */
-    statusMessage;
-    /** @type {boolean} */
-    completed;
-    /** @type {ComfyOutput[]} */
-    outputs;
-}
-export class NodeError {
-    constructor(init) { Object.assign(this, init) }
-}
-export class ComfyWorkflowResponse {
-    /** @param {{promptId?:string,number?:number,nodeErrors?:NodeError[]}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {string} */
-    promptId;
-    /** @type {number} */
-    number;
-    /** @type {NodeError[]} */
-    nodeErrors;
-}
-export class ComfyHostedFileOutput {
-    /** @param {{url?:string,fileName?:string}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {string} */
-    url;
-    /** @type {string} */
-    fileName;
-}
-export class PageStats {
-    /** @param {{label?:string,total?:number}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {string} */
-    label;
-    /** @type {number} */
-    total;
-}
-export class OpenAiChatRequest {
-    /** @param {{id?:number,model?:string,provider?:string,request?:OpenAiChat}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {number} */
-    id;
-    /** @type {string} */
-    model;
-    /** @type {string} */
-    provider;
-    /** @type {OpenAiChat} */
-    request;
-}
-export class WorkerStats {
-    /** @param {{name?:string,queued?:number,received?:number,completed?:number,retries?:number,failed?:number,offline?:string,running?:boolean}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {string} */
-    name;
-    /** @type {number} */
-    queued;
-    /** @type {number} */
-    received;
-    /** @type {number} */
-    completed;
-    /** @type {number} */
-    retries;
-    /** @type {number} */
-    failed;
-    /** @type {?string} */
-    offline;
-    /** @type {boolean} */
-    running;
-}
 export class SummaryStats {
     /** @param {{name?:string,totalTasks?:number,totalPromptTokens?:number,totalCompletionTokens?:number,totalMinutes?:number,tokensPerSecond?:number}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -727,6 +875,38 @@ export class QueueComfyWorkflowResponse {
     fileOutputs;
     /** @type {ComfyTextOutput[]} */
     textOutputs;
+}
+export class ImportCivitAiModelResponse {
+    /** @param {{model?:ComfyApiModel,provider?:ComfyApiProvider}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {ComfyApiModel} */
+    model;
+    /** @type {ComfyApiProvider} */
+    provider;
+}
+export class ComfyAgentDownloadStatus {
+    /** @param {{name?:string,progress?:number}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?string} */
+    name;
+    /** @type {?number} */
+    progress;
+}
+export class DownloadComfyProviderModelResponse {
+    /** @param {{downloadStatus?:ComfyAgentDownloadStatus}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?ComfyAgentDownloadStatus} */
+    downloadStatus;
+}
+export class GetComfyGenerationResponse {
+    /** @param {{outputs?:AiServerHostedComfyFile[],result?:ComfyGenerationTask,responseStatus?:ResponseStatus}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?AiServerHostedComfyFile[]} */
+    outputs;
+    /** @type {?ComfyGenerationTask} */
+    result;
+    /** @type {?ResponseStatus} */
+    responseStatus;
 }
 export class ComfyTextToImageResponse {
     /** @param {{promptId?:string,request?:ComfyWorkflowRequest,images?:ComfyHostedFileOutput[]}} [init] */
@@ -808,13 +988,30 @@ export class ComfyTextToAudioResponse {
     /** @type {?ComfyHostedFileOutput[]} */
     sounds;
 }
-export class ComfyAgentDownloadStatus {
-    /** @param {{name?:string,progress?:number}} [init] */
+/** @typedef T {any} */
+export class QueryResponse {
+    /** @param {{offset?:number,total?:number,results?:T[],meta?:{ [index: string]: string; },responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
-    /** @type {?string} */
-    name;
-    /** @type {?number} */
-    progress;
+    /** @type {number} */
+    offset;
+    /** @type {number} */
+    total;
+    /** @type {T[]} */
+    results;
+    /** @type {{ [index: string]: string; }} */
+    meta;
+    /** @type {ResponseStatus} */
+    responseStatus;
+}
+export class CreateComfyGenerationResponse {
+    /** @param {{id?:number,refId?:string,responseStatus?:ResponseStatus}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {string} */
+    refId;
+    /** @type {?ResponseStatus} */
+    responseStatus;
 }
 export class HelloResponse {
     /** @param {{result?:string}} [init] */
@@ -838,27 +1035,12 @@ export class StringsResponse {
     /** @type {ResponseStatus} */
     responseStatus;
 }
-export class GetOpenAiChatResponse {
-    /** @param {{result?:OpenAiChatTask,responseStatus?:ResponseStatus}} [init] */
+export class GetWorkerStatsResponse {
+    /** @param {{results?:WorkerStats[],responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
-    /** @type {?OpenAiChatTask} */
-    result;
-    /** @type {?ResponseStatus} */
-    responseStatus;
-}
-/** @typedef T {any} */
-export class QueryResponse {
-    /** @param {{offset?:number,total?:number,results?:T[],meta?:{ [index: string]: string; },responseStatus?:ResponseStatus}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {number} */
-    offset;
-    /** @type {number} */
-    total;
-    /** @type {T[]} */
+    /** @type {WorkerStats[]} */
     results;
-    /** @type {{ [index: string]: string; }} */
-    meta;
-    /** @type {ResponseStatus} */
+    /** @type {?ResponseStatus} */
     responseStatus;
 }
 export class CreateOpenAiChatResponse {
@@ -871,27 +1053,11 @@ export class CreateOpenAiChatResponse {
     /** @type {?ResponseStatus} */
     responseStatus;
 }
-export class FetchOpenAiChatRequestsResponse {
-    /** @param {{results?:OpenAiChatRequest[],responseStatus?:ResponseStatus}} [init] */
+export class GetOpenAiChatResponse {
+    /** @param {{result?:BackgroundJob,responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
-    /** @type {OpenAiChatRequest[]} */
-    results;
-    /** @type {?ResponseStatus} */
-    responseStatus;
-}
-export class EmptyResponse {
-    /** @param {{responseStatus?:ResponseStatus}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {ResponseStatus} */
-    responseStatus;
-}
-export class ChatNotifyCompletedTasksResponse {
-    /** @param {{errors?:{ [index: number]: string; },results?:number[],responseStatus?:ResponseStatus}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {{ [index: number]: string; }} */
-    errors;
-    /** @type {number[]} */
-    results;
+    /** @type {?BackgroundJob} */
+    result;
     /** @type {?ResponseStatus} */
     responseStatus;
 }
@@ -902,6 +1068,38 @@ export class GetActiveProvidersResponse {
     results;
     /** @type {?ResponseStatus} */
     responseStatus;
+}
+export class OpenAiChatResponse {
+    /** @param {{id?:string,choices?:Choice[],created?:number,model?:string,system_fingerprint?:string,object?:string,usage?:OpenAiUsage}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /**
+     * @type {string}
+     * @description A unique identifier for the chat completion. */
+    id;
+    /**
+     * @type {Choice[]}
+     * @description A list of chat completion choices. Can be more than one if n is greater than 1. */
+    choices;
+    /**
+     * @type {number}
+     * @description The Unix timestamp (in seconds) of when the chat completion was created. */
+    created;
+    /**
+     * @type {string}
+     * @description The model used for the chat completion. */
+    model;
+    /**
+     * @type {string}
+     * @description This fingerprint represents the backend configuration that the model runs with. */
+    system_fingerprint;
+    /**
+     * @type {string}
+     * @description The object type, which is always chat.completion. */
+    object;
+    /**
+     * @type {OpenAiUsage}
+     * @description Usage statistics for the completion request. */
+    usage;
 }
 export class CreateApiKeyResponse {
     /** @param {{id?:number,key?:string,name?:string,userId?:string,userName?:string,visibleKey?:string,createdDate?:string,expiryDate?:string,cancelledDate?:string,notes?:string}} [init] */
@@ -927,22 +1125,10 @@ export class CreateApiKeyResponse {
     /** @type {?string} */
     notes;
 }
-export class GetApiWorkerStatsResponse {
-    /** @param {{results?:WorkerStats[],responseStatus?:ResponseStatus}} [init] */
+export class EmptyResponse {
+    /** @param {{responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
-    /** @type {WorkerStats[]} */
-    results;
-    /** @type {?ResponseStatus} */
-    responseStatus;
-}
-export class RerunCompletedTasksResponse {
-    /** @param {{errors?:{ [index: number]: string; },results?:number[],responseStatus?:ResponseStatus}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {{ [index: number]: string; }} */
-    errors;
-    /** @type {number[]} */
-    results;
-    /** @type {?ResponseStatus} */
+    /** @type {ResponseStatus} */
     responseStatus;
 }
 export class StringResponse {
@@ -955,14 +1141,6 @@ export class StringResponse {
     /** @type {ResponseStatus} */
     responseStatus;
 }
-export class IdResponse {
-    /** @param {{id?:string,responseStatus?:ResponseStatus}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {string} */
-    id;
-    /** @type {ResponseStatus} */
-    responseStatus;
-}
 export class GetSummaryStatsResponse {
     /** @param {{providerStats?:SummaryStats[],modelStats?:SummaryStats[],monthStats?:SummaryStats[]}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -972,6 +1150,14 @@ export class GetSummaryStatsResponse {
     modelStats;
     /** @type {SummaryStats[]} */
     monthStats;
+}
+export class IdResponse {
+    /** @param {{id?:string,responseStatus?:ResponseStatus}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    id;
+    /** @type {ResponseStatus} */
+    responseStatus;
 }
 export class AuthenticateResponse {
     /** @param {{userId?:string,sessionId?:string,userName?:string,displayName?:string,referrerUrl?:string,bearerToken?:string,refreshToken?:string,refreshTokenExpiry?:string,profileUrl?:string,roles?:string[],permissions?:string[],responseStatus?:ResponseStatus,meta?:{ [index: string]: string; }}} [init] */
@@ -1004,7 +1190,7 @@ export class AuthenticateResponse {
     meta;
 }
 export class QueueComfyWorkflow {
-    /** @param {{model?:string,steps?:number,batchSize?:number,seed?:number,positivePrompt?:string,negativePrompt?:string,imageInput?:string,speechInput?:string,maskInput?:string,sampler?:ComfySampler,artStyle?:ArtStyle,scheduler?:string,cfgScale?:number,denoise?:number,upscaleModel?:string,width?:number,height?:number,clip?:string,sampleLength?:number,taskType?:ComfyTaskType,refId?:string,provider?:string,replyTo?:string,tag?:string}} [init] */
+    /** @param {{model?:string,steps?:number,batchSize?:number,seed?:number,positivePrompt?:string,negativePrompt?:string,imageInput?:string,speechInput?:string,maskInput?:string,sampler?:ComfySampler,scheduler?:string,cfgScale?:number,denoise?:number,upscaleModel?:string,width?:number,height?:number,clip?:string,sampleLength?:number,taskType?:ComfyTaskType,refId?:string,provider?:string,replyTo?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {?string} */
     model;
@@ -1026,8 +1212,6 @@ export class QueueComfyWorkflow {
     maskInput;
     /** @type {?ComfySampler} */
     sampler;
-    /** @type {?ArtStyle} */
-    artStyle;
     /** @type {?string} */
     scheduler;
     /** @type {?number} */
@@ -1057,6 +1241,54 @@ export class QueueComfyWorkflow {
     getTypeName() { return 'QueueComfyWorkflow' }
     getMethod() { return 'POST' }
     createResponse() { return new QueueComfyWorkflowResponse() }
+}
+export class ImportCivitAiModel {
+    /** @param {{provider?:string,modelUrl?:string,settings?:ComfyApiModelSettings}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    provider;
+    /** @type {string} */
+    modelUrl;
+    /** @type {?ComfyApiModelSettings} */
+    settings;
+    getTypeName() { return 'ImportCivitAiModel' }
+    getMethod() { return 'POST' }
+    createResponse() { return new ImportCivitAiModelResponse() }
+}
+export class DownloadComfyProviderModel {
+    /** @param {{comfyApiProviderModelId?:number}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?number} */
+    comfyApiProviderModelId;
+    getTypeName() { return 'DownloadComfyProviderModel' }
+    getMethod() { return 'POST' }
+    createResponse() { return new DownloadComfyProviderModelResponse() }
+}
+export class WaitForComfyGeneration {
+    /** @param {{id?:number,refId?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?number} */
+    id;
+    /** @type {?string} */
+    refId;
+    getTypeName() { return 'WaitForComfyGeneration' }
+    getMethod() { return 'POST' }
+    createResponse() { return new GetComfyGenerationResponse() }
+}
+export class DownloadComfyFile {
+    /** @param {{year?:number,month?:number,day?:number,fileName?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?number} */
+    year;
+    /** @type {?number} */
+    month;
+    /** @type {?number} */
+    day;
+    /** @type {?string} */
+    fileName;
+    getTypeName() { return 'DownloadComfyFile' }
+    getMethod() { return 'GET' }
+    createResponse() { return new Blob() }
 }
 export class ComfyTextToImage {
     /** @param {{seed?:number,cfgScale?:number,height?:number,width?:number,sampler?:ComfySampler,batchSize?:number,steps?:number,model?:string,positivePrompt?:string,negativePrompt?:string,scheduler?:string}} [init] */
@@ -1247,14 +1479,68 @@ export class ConfigureAndDownloadModel {
     getMethod() { return 'POST' }
     createResponse() { return new ComfyAgentDownloadStatus() }
 }
-export class DownloadConfgiuredArtStyleModel {
-    /** @param {{artStyle?:ArtStyle}} [init] */
+export class GetComfyGeneration {
+    /** @param {{id?:number,refId?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
-    /** @type {?ArtStyle} */
-    artStyle;
-    getTypeName() { return 'DownloadConfgiuredArtStyleModel' }
+    /** @type {?number} */
+    id;
+    /** @type {?string} */
+    refId;
+    getTypeName() { return 'GetComfyGeneration' }
     getMethod() { return 'POST' }
-    createResponse() { return new ComfyAgentDownloadStatus() }
+    createResponse() { return new GetComfyGenerationResponse() }
+}
+export class QueryCompletedComfyTasks extends QueryDb {
+    /** @param {{db?:string,id?:number,refId?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /** @type {?string} */
+    db;
+    /** @type {?number} */
+    id;
+    /** @type {?string} */
+    refId;
+    getTypeName() { return 'QueryCompletedComfyTasks' }
+    getMethod() { return 'GET' }
+    createResponse() { return new QueryResponse() }
+}
+export class QueryFailedComfyTasks extends QueryDb {
+    /** @param {{db?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /** @type {?string} */
+    db;
+    getTypeName() { return 'QueryFailedComfyTasks' }
+    getMethod() { return 'GET' }
+    createResponse() { return new QueryResponse() }
+}
+export class CreateComfyGeneration {
+    /** @param {{refId?:string,provider?:string,replyTo?:string,tag?:string,request?:ComfyWorkflowRequest}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?string} */
+    refId;
+    /** @type {?string} */
+    provider;
+    /** @type {?string} */
+    replyTo;
+    /** @type {?string} */
+    tag;
+    /** @type {ComfyWorkflowRequest} */
+    request;
+    getTypeName() { return 'CreateComfyGeneration' }
+    getMethod() { return 'POST' }
+    createResponse() { return new CreateComfyGenerationResponse() }
+}
+export class FetchComfyGenerationRequests {
+    /** @param {{models?:string[],provider?:string,take?:number}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string[]} */
+    models;
+    /** @type {?string} */
+    provider;
+    /** @type {?number} */
+    take;
+    getTypeName() { return 'FetchComfyGenerationRequests' }
+    getMethod() { return 'POST' }
+    createResponse () { };
 }
 export class Hello {
     /** @param {{name?:string}} [init] */
@@ -1277,27 +1563,20 @@ export class ActiveApiModels {
     getMethod() { return 'GET' }
     createResponse() { return new StringsResponse() }
 }
-export class GetOpenAiChat {
-    /** @param {{id?:number,refId?:string}} [init] */
+export class GetWorkerStats {
     constructor(init) { Object.assign(this, init) }
-    /** @type {?number} */
-    id;
-    /** @type {?string} */
-    refId;
-    getTypeName() { return 'GetOpenAiChat' }
+    getTypeName() { return 'GetWorkerStats' }
     getMethod() { return 'GET' }
-    createResponse() { return new GetOpenAiChatResponse() }
+    createResponse() { return new GetWorkerStatsResponse() }
 }
-export class WaitForOpenAiChat {
-    /** @param {{id?:number,refId?:string}} [init] */
+export class GetModelImage {
+    /** @param {{model?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
-    /** @type {?number} */
-    id;
-    /** @type {?string} */
-    refId;
-    getTypeName() { return 'WaitForOpenAiChat' }
+    /** @type {string} */
+    model;
+    getTypeName() { return 'GetModelImage' }
     getMethod() { return 'GET' }
-    createResponse() { return new GetOpenAiChatResponse() }
+    createResponse() { return new Blob() }
 }
 export class QueryCompletedChatTasks extends QueryDb {
     /** @param {{db?:string,id?:number,refId?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
@@ -1338,66 +1617,27 @@ export class CreateOpenAiChat {
     getMethod() { return 'POST' }
     createResponse() { return new CreateOpenAiChatResponse() }
 }
-export class FetchOpenAiChatRequests {
-    /** @param {{models?:string[],provider?:string,worker?:string,take?:number}} [init] */
+export class WaitForOpenAiChat {
+    /** @param {{id?:number,refId?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
-    /** @type {string[]} */
-    models;
-    /** @type {string} */
-    provider;
-    /** @type {?string} */
-    worker;
     /** @type {?number} */
-    take;
-    getTypeName() { return 'FetchOpenAiChatRequests' }
-    getMethod() { return 'POST' }
-    createResponse() { return new FetchOpenAiChatRequestsResponse() }
-}
-export class ChatOperations {
-    /** @param {{resetTaskQueue?:boolean,requeueIncompleteTasks?:boolean}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {?boolean} */
-    resetTaskQueue;
-    /** @type {?boolean} */
-    requeueIncompleteTasks;
-    getTypeName() { return 'ChatOperations' }
-    getMethod() { return 'POST' }
-    createResponse() { return new EmptyResponse() }
-}
-export class ChatFailedTasks {
-    /** @param {{resetErrorState?:boolean,requeueFailedTaskIds?:number[]}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {?boolean} */
-    resetErrorState;
-    /** @type {?number[]} */
-    requeueFailedTaskIds;
-    getTypeName() { return 'ChatFailedTasks' }
-    getMethod() { return 'POST' }
-    createResponse() { return new EmptyResponse() }
-}
-export class ChatNotifyCompletedTasks {
-    /** @param {{ids?:number[]}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {number[]} */
-    ids;
-    getTypeName() { return 'ChatNotifyCompletedTasks' }
-    getMethod() { return 'POST' }
-    createResponse() { return new ChatNotifyCompletedTasksResponse() }
-}
-export class CompleteOpenAiChat {
-    /** @param {{id?:number,provider?:string,durationMs?:number,response?:OpenAiChatResponse}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {number} */
     id;
-    /** @type {string} */
-    provider;
-    /** @type {number} */
-    durationMs;
-    /** @type {OpenAiChatResponse} */
-    response;
-    getTypeName() { return 'CompleteOpenAiChat' }
-    getMethod() { return 'POST' }
-    createResponse() { return new EmptyResponse() }
+    /** @type {?string} */
+    refId;
+    getTypeName() { return 'WaitForOpenAiChat' }
+    getMethod() { return 'GET' }
+    createResponse() { return new GetOpenAiChatResponse() }
+}
+export class GetOpenAiChat {
+    /** @param {{id?:number,refId?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?number} */
+    id;
+    /** @type {?string} */
+    refId;
+    getTypeName() { return 'GetOpenAiChat' }
+    getMethod() { return 'GET' }
+    createResponse() { return new GetOpenAiChatResponse() }
 }
 export class GetActiveProviders {
     constructor(init) { Object.assign(this, init) }
@@ -1445,20 +1685,18 @@ export class CreateApiKey {
     getMethod() { return 'POST' }
     createResponse() { return new CreateApiKeyResponse() }
 }
-export class GetApiWorkerStats {
+export class AdminAddModel {
+    /** @param {{model?:ApiModel,apiTypes?:{ [index: string]: Property; },apiProviders?:{ [index: string]: ApiProviderModel; }}} [init] */
     constructor(init) { Object.assign(this, init) }
-    getTypeName() { return 'GetApiWorkerStats' }
-    getMethod() { return 'GET' }
-    createResponse() { return new GetApiWorkerStatsResponse() }
-}
-export class RerunCompletedTasks {
-    /** @param {{ids?:number[]}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {number[]} */
-    ids;
-    getTypeName() { return 'RerunCompletedTasks' }
+    /** @type {ApiModel} */
+    model;
+    /** @type {?{ [index: string]: Property; }} */
+    apiTypes;
+    /** @type {?{ [index: string]: ApiProviderModel; }} */
+    apiProviders;
+    getTypeName() { return 'AdminAddModel' }
     getMethod() { return 'POST' }
-    createResponse() { return new RerunCompletedTasksResponse() }
+    createResponse() { return new EmptyResponse() }
 }
 export class StopWorkers {
     constructor(init) { Object.assign(this, init) }
@@ -1478,12 +1716,6 @@ export class RestartWorkers {
     getMethod() { return 'POST' }
     createResponse() { return new EmptyResponse() }
 }
-export class ResetActiveProviders {
-    constructor(init) { Object.assign(this, init) }
-    getTypeName() { return 'ResetActiveProviders' }
-    getMethod() { return 'GET' }
-    createResponse() { return new GetActiveProvidersResponse() }
-}
 export class ChangeApiProviderStatus {
     /** @param {{provider?:string,online?:boolean}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -1494,27 +1726,6 @@ export class ChangeApiProviderStatus {
     getTypeName() { return 'ChangeApiProviderStatus' }
     getMethod() { return 'POST' }
     createResponse() { return new StringResponse() }
-}
-export class UpdateApiProvider {
-    /** @param {{id?:number,apiKey?:string,apiBaseUrl?:string,heartbeatUrl?:string,concurrency?:number,priority?:number,enabled?:boolean}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {number} */
-    id;
-    /** @type {?string} */
-    apiKey;
-    /** @type {?string} */
-    apiBaseUrl;
-    /** @type {?string} */
-    heartbeatUrl;
-    /** @type {?number} */
-    concurrency;
-    /** @type {?number} */
-    priority;
-    /** @type {?boolean} */
-    enabled;
-    getTypeName() { return 'UpdateApiProvider' }
-    getMethod() { return 'PATCH' }
-    createResponse() { return new IdResponse() }
 }
 export class FirePeriodicTask {
     /** @param {{frequency?:PeriodicFrequency}} [init] */
@@ -1535,6 +1746,92 @@ export class GetSummaryStats {
     getTypeName() { return 'GetSummaryStats' }
     getMethod() { return 'GET' }
     createResponse() { return new GetSummaryStatsResponse() }
+}
+export class StopComfyWorkers {
+    constructor(init) { Object.assign(this, init) }
+    getTypeName() { return 'StopComfyWorkers' }
+    getMethod() { return 'POST' }
+    createResponse () { };
+}
+export class StartComfyWorkers {
+    constructor(init) { Object.assign(this, init) }
+    getTypeName() { return 'StartComfyWorkers' }
+    getMethod() { return 'POST' }
+    createResponse () { };
+}
+export class RestartComfyWorkers {
+    constructor(init) { Object.assign(this, init) }
+    getTypeName() { return 'RestartComfyWorkers' }
+    getMethod() { return 'POST' }
+    createResponse () { };
+}
+export class ResetActiveComfyProviders {
+    constructor(init) { Object.assign(this, init) }
+    getTypeName() { return 'ResetActiveComfyProviders' }
+    getMethod() { return 'POST' }
+    createResponse () { };
+}
+export class ChangeComfyApiProviderStatus {
+    /** @param {{provider?:string,online?:boolean}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    provider;
+    /** @type {boolean} */
+    online;
+    getTypeName() { return 'ChangeComfyApiProviderStatus' }
+    getMethod() { return 'POST' }
+    createResponse() { return new StringResponse() }
+}
+export class UpdateComfyApiProvider {
+    /** @param {{id?:number,name?:string,apiKey?:string,apiKeyHeader?:string,apiBaseUrl?:string,heartbeatUrl?:string,taskPaths?:{ [index: string]: string; },concurrency?:number,priority?:number,enabled?:boolean}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {string} */
+    name;
+    /** @type {?string} */
+    apiKey;
+    /** @type {?string} */
+    apiKeyHeader;
+    /** @type {?string} */
+    apiBaseUrl;
+    /** @type {?string} */
+    heartbeatUrl;
+    /** @type {?{ [index: string]: string; }} */
+    taskPaths;
+    /** @type {?number} */
+    concurrency;
+    /** @type {?number} */
+    priority;
+    /** @type {?boolean} */
+    enabled;
+    getTypeName() { return 'UpdateComfyApiProvider' }
+    getMethod() { return 'PUT' }
+    createResponse() { return new IdResponse() }
+}
+export class AddComfyProviderModel {
+    /** @param {{comfyApiProviderId?:number,comfyApiModelId?:number,comfyApiModelName?:string,comfyApiProviderName?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    comfyApiProviderId;
+    /** @type {number} */
+    comfyApiModelId;
+    /** @type {?string} */
+    comfyApiModelName;
+    /** @type {?string} */
+    comfyApiProviderName;
+    getTypeName() { return 'AddComfyProviderModel' }
+    getMethod() { return 'POST' }
+    createResponse() { return new IdResponse() }
+}
+export class FireComfyPeriodicTask {
+    /** @param {{frequency?:PeriodicFrequency}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {PeriodicFrequency} */
+    frequency;
+    getTypeName() { return 'FireComfyPeriodicTask' }
+    getMethod() { return 'POST' }
+    createResponse () { };
 }
 export class Authenticate {
     /** @param {{provider?:string,userName?:string,password?:string,rememberMe?:boolean,accessToken?:string,accessTokenSecret?:string,returnUrl?:string,errorView?:string,meta?:{ [index: string]: string; }}} [init] */
@@ -1599,14 +1896,76 @@ export class QueryApiType extends QueryDb {
     getMethod() { return 'GET' }
     createResponse() { return new QueryResponse() }
 }
-export class QueryOpenAiChat extends QueryDb {
+export class QueryComfyGenerationTasks extends QueryDb {
+    /** @param {{refId?:string,provider?:string,status?:ComfyWorkflowStatus,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /** @type {?string} */
+    refId;
+    /** @type {?string} */
+    provider;
+    /** @type {?ComfyWorkflowStatus} */
+    status;
+    getTypeName() { return 'QueryComfyGenerationTasks' }
+    getMethod() { return 'GET' }
+    createResponse() { return new QueryResponse() }
+}
+export class QueryComfySummary extends QueryDb {
+    /** @param {{refId?:string,provider?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /** @type {?string} */
+    refId;
+    /** @type {?string} */
+    provider;
+    getTypeName() { return 'QueryComfySummary' }
+    getMethod() { return 'GET' }
+    createResponse() { return new QueryResponse() }
+}
+export class QueryComfyApiProviders extends QueryDb {
+    /** @param {{name?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /** @type {?string} */
+    name;
+    getTypeName() { return 'QueryComfyApiProviders' }
+    getMethod() { return 'GET' }
+    createResponse() { return new QueryResponse() }
+}
+export class QueryComfyApiProviderModels extends QueryDb {
+    /** @param {{comfyApiProviderId?:number,comfyApiModelId?:number,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /** @type {?number} */
+    comfyApiProviderId;
+    /** @type {?number} */
+    comfyApiModelId;
+    getTypeName() { return 'QueryComfyApiProviderModels' }
+    getMethod() { return 'GET' }
+    createResponse() { return new QueryResponse() }
+}
+export class QueryComfyApiModels extends QueryDb {
+    /** @param {{name?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /** @type {?string} */
+    name;
+    getTypeName() { return 'QueryComfyApiModels' }
+    getMethod() { return 'GET' }
+    createResponse() { return new QueryResponse() }
+}
+export class QueryComfyApiModelSettings extends QueryDb {
+    /** @param {{comfyApiModelId?:number,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /** @type {?number} */
+    comfyApiModelId;
+    getTypeName() { return 'QueryComfyApiModelSettings' }
+    getMethod() { return 'GET' }
+    createResponse() { return new QueryResponse() }
+}
+export class QueryBackgroundJobs extends QueryDb {
     /** @param {{id?:number,refId?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     /** @type {?number} */
     id;
     /** @type {?string} */
     refId;
-    getTypeName() { return 'QueryOpenAiChat' }
+    getTypeName() { return 'QueryBackgroundJobs' }
     getMethod() { return 'GET' }
     createResponse() { return new QueryResponse() }
 }
@@ -1738,6 +2097,187 @@ export class CreateApiModel {
     notes;
     getTypeName() { return 'CreateApiModel' }
     getMethod() { return 'POST' }
+    createResponse() { return new IdResponse() }
+}
+export class CreateComfyApiProvider {
+    /** @param {{name?:string,apiKey?:string,apiKeyHeader?:string,apiBaseUrl?:string,heartbeatUrl?:string,taskWorkflows?:{ [index: string]: string; },concurrency?:number,priority?:number,enabled?:boolean,models?:ComfyApiProviderModel[]}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    name;
+    /** @type {?string} */
+    apiKey;
+    /** @type {?string} */
+    apiKeyHeader;
+    /** @type {?string} */
+    apiBaseUrl;
+    /** @type {?string} */
+    heartbeatUrl;
+    /** @type {?{ [index: string]: string; }} */
+    taskWorkflows;
+    /** @type {number} */
+    concurrency;
+    /** @type {number} */
+    priority;
+    /** @type {boolean} */
+    enabled;
+    /** @type {ComfyApiProviderModel[]} */
+    models;
+    getTypeName() { return 'CreateComfyApiProvider' }
+    getMethod() { return 'POST' }
+    createResponse() { return new IdResponse() }
+}
+export class DeleteComfyApiProvider {
+    /** @param {{id?:number,name?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?number} */
+    id;
+    /** @type {?string} */
+    name;
+    getTypeName() { return 'DeleteComfyApiProvider' }
+    getMethod() { return 'DELETE' }
+    createResponse() { return new IdResponse() }
+}
+export class DeleteComfyApiModel {
+    /** @param {{id?:number,name?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?number} */
+    id;
+    /** @type {?string} */
+    name;
+    getTypeName() { return 'DeleteComfyApiModel' }
+    getMethod() { return 'DELETE' }
+    createResponse() { return new IdResponse() }
+}
+export class CreateComfyApiModel {
+    /** @param {{name?:string,description?:string,tags?:string,filename?:string,downloadUrl?:string,iconUrl?:string,url?:string,modelSettings?:ComfyApiModelSettings}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    name;
+    /** @type {?string} */
+    description;
+    /** @type {?string} */
+    tags;
+    /** @type {string} */
+    filename;
+    /** @type {string} */
+    downloadUrl;
+    /** @type {string} */
+    iconUrl;
+    /** @type {string} */
+    url;
+    /** @type {?ComfyApiModelSettings} */
+    modelSettings;
+    getTypeName() { return 'CreateComfyApiModel' }
+    getMethod() { return 'POST' }
+    createResponse() { return new IdResponse() }
+}
+export class CreateComfyApiProviderModel {
+    /** @param {{comfyApiProviderId?:number,comfyApiModelId?:number}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    comfyApiProviderId;
+    /** @type {number} */
+    comfyApiModelId;
+    getTypeName() { return 'CreateComfyApiProviderModel' }
+    getMethod() { return 'POST' }
+    createResponse() { return new IdResponse() }
+}
+export class CreateComfyApiModelSettings {
+    /** @param {{comfyApiModelId?:number,cfgScale?:number,scheduler?:string,sampler?:ComfySampler,width?:number,height?:number,steps?:number,negativePrompt?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    comfyApiModelId;
+    /** @type {?number} */
+    cfgScale;
+    /** @type {?string} */
+    scheduler;
+    /** @type {?ComfySampler} */
+    sampler;
+    /** @type {?number} */
+    width;
+    /** @type {?number} */
+    height;
+    /** @type {?number} */
+    steps;
+    /** @type {?string} */
+    negativePrompt;
+    getTypeName() { return 'CreateComfyApiModelSettings' }
+    getMethod() { return 'POST' }
+    createResponse() { return new IdResponse() }
+}
+export class DeleteComfyApiModelSettings {
+    /** @param {{id?:number}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    getTypeName() { return 'DeleteComfyApiModelSettings' }
+    getMethod() { return 'DELETE' }
+    createResponse() { return new EmptyResponse() }
+}
+export class UpdateComfyApiModelSettings {
+    /** @param {{id?:number,cfgScale?:number,scheduler?:string,sampler?:ComfySampler,width?:number,height?:number,steps?:number,negativePrompt?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {?number} */
+    cfgScale;
+    /** @type {?string} */
+    scheduler;
+    /** @type {?ComfySampler} */
+    sampler;
+    /** @type {?number} */
+    width;
+    /** @type {?number} */
+    height;
+    /** @type {?number} */
+    steps;
+    /** @type {?string} */
+    negativePrompt;
+    getTypeName() { return 'UpdateComfyApiModelSettings' }
+    getMethod() { return 'PUT' }
+    createResponse() { return new EmptyResponse() }
+}
+export class UpdateComfyApiProviderModel {
+    /** @param {{id?:number,comfyApiModelId?:number,comfyApiProviderId?:number}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {number} */
+    comfyApiModelId;
+    /** @type {number} */
+    comfyApiProviderId;
+    getTypeName() { return 'UpdateComfyApiProviderModel' }
+    getMethod() { return 'PUT' }
+    createResponse() { return new EmptyResponse() }
+}
+export class DeleteComfyApiProviderModel {
+    /** @param {{id?:number}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    getTypeName() { return 'DeleteComfyApiProviderModel' }
+    getMethod() { return 'DELETE' }
+    createResponse() { return new EmptyResponse() }
+}
+export class UpdateApiProvider {
+    /** @param {{id?:number,apiKey?:string,apiBaseUrl?:string,heartbeatUrl?:string,concurrency?:number,priority?:number,enabled?:boolean}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {?string} */
+    apiKey;
+    /** @type {?string} */
+    apiBaseUrl;
+    /** @type {?string} */
+    heartbeatUrl;
+    /** @type {?number} */
+    concurrency;
+    /** @type {?number} */
+    priority;
+    /** @type {?boolean} */
+    enabled;
+    getTypeName() { return 'UpdateApiProvider' }
+    getMethod() { return 'PATCH' }
     createResponse() { return new IdResponse() }
 }
 

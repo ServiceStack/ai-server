@@ -18,7 +18,7 @@ public class OpenAiProviderTests
     public async Task Can_Send_Ollama_Phi3_Request()
     {
         var openAi = factory.GetOpenAiProvider();
-        var response = await openAi.ChatAsync(new ApiProviderWorker(TestUtils.MacbookApiProvider, factory), new OpenAiChat
+        var response = await openAi.ChatAsync(TestUtils.MacbookApiProvider, new OpenAiChat
         {
             Model = "phi3",
             Messages =
@@ -39,7 +39,7 @@ public class OpenAiProviderTests
     public async Task Can_Send_Ollama_Gemma2_27B_Request()
     {
         var openAi = factory.GetOpenAiProvider();
-        var response = await openAi.ChatAsync(new ApiProviderWorker(TestUtils.SupermicroApiProvider, factory), new OpenAiChat
+        var response = await openAi.ChatAsync(TestUtils.SupermicroApiProvider, new OpenAiChat
         {
             Model = "gemma2:27b",
             Messages =
@@ -60,7 +60,7 @@ public class OpenAiProviderTests
     public async Task Can_Send_Ollama_Qwen2_Request()
     {
         var openAi = factory.GetOpenAiProvider();
-        var response = await openAi.ChatAsync(new ApiProviderWorker(TestUtils.OpenRouterProvider, factory), new OpenAiChat
+        var response = await openAi.ChatAsync(TestUtils.OpenRouterProvider, new OpenAiChat
         {
             Model = "qwen2:72b",
             Messages =
@@ -81,7 +81,7 @@ public class OpenAiProviderTests
     public async Task Can_Send_Ollama_Sonnet3_5_Request()
     {
         var openAi = factory.GetOpenAiProvider();
-        var response = await openAi.ChatAsync(new ApiProviderWorker(TestUtils.OpenRouterProvider, factory), new OpenAiChat
+        var response = await openAi.ChatAsync(TestUtils.OpenRouterProvider, new OpenAiChat
         {
             Model = "anthropic/claude-3.5-sonnet",
             Messages =
@@ -102,7 +102,7 @@ public class OpenAiProviderTests
     public async Task Can_Send_Google_GeminiPro_Request()
     {
         var openAi = factory.GetOpenAiProvider(nameof(GoogleOpenAiProvider));
-        var response = await openAi.ChatAsync(new ApiProviderWorker(TestUtils.GoogleApiProvider, factory), new OpenAiChat
+        var response = await openAi.ChatAsync(TestUtils.GoogleApiProvider, new OpenAiChat
         {
             Model = "gemini-pro",
             Messages =
@@ -123,7 +123,7 @@ public class OpenAiProviderTests
     public async Task Can_Send_Google_GeminiPro_PVQ_Request()
     {
         var openAi = factory.GetOpenAiProvider(nameof(GoogleOpenAiProvider));
-        var response = await openAi.ChatAsync(new ApiProviderWorker(TestUtils.GoogleApiProvider, factory), new OpenAiChat
+        var response = await openAi.ChatAsync(TestUtils.GoogleApiProvider, new OpenAiChat
         {
             Model = "gemini-pro",
             Messages =
@@ -149,7 +149,7 @@ public class OpenAiProviderTests
         var model = "codestral";
 
         var openAi = factory.GetOpenAiProvider();
-        var response = await openAi.ChatAsync(new ApiProviderWorker(TestUtils.MistralProvider, factory), new OpenAiChat
+        var response = await openAi.ChatAsync(TestUtils.MistralProvider, new OpenAiChat
         {
             Model = model,
             Messages =
@@ -183,9 +183,7 @@ public class OpenAiProviderTests
     public async Task Can_detect_OpenRouterProvider_IsOnline()
     {
         var openAi = factory.GetOpenAiProvider();
-
-        var openRouter = new ApiProviderWorker(TestUtils.OpenRouterProvider, factory);
-        var isOnline = await openAi.IsOnlineAsync(openRouter);
+        var isOnline = await openAi.IsOnlineAsync(TestUtils.OpenRouterProvider);
         Assert.That(isOnline);
     }
 
@@ -193,9 +191,7 @@ public class OpenAiProviderTests
     public async Task Can_detect_Groq_IsOnline()
     {
         var openAi = factory.GetOpenAiProvider();
-
-        var openRouter = new ApiProviderWorker(TestUtils.GroqProvider, factory);
-        var isOnline = await openAi.IsOnlineAsync(openRouter);
+        var isOnline = await openAi.IsOnlineAsync(TestUtils.GroqProvider);
         Assert.That(isOnline);
     }
 }

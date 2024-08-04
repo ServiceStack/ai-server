@@ -75,7 +75,7 @@
 import { createApp, ref, onMounted, shallowRef } from "vue"
 import { JsonApiClient, leftPart, rightPart, appendQueryString, humanize, setQueryString } from "@servicestack/client"
 import ServiceStackVue, { useClient, useAuth, useMetadata } from "@servicestack/vue"
-import { Authenticate, AdminData, GetApiWorkerStats } from "dtos.mjs"
+import { Authenticate, AdminData, GetWorkerStats } from "dtos.mjs"
 import OpenAiChat from "/mjs/components/OpenAiChat.mjs"
 
 const { loadMetadata, metadataApi, typeOf } = useMetadata()
@@ -107,7 +107,7 @@ const sections = {
                 const stats = ref([])
                 client.swr(new AdminData(), r => stats.value = r.response?.pageStats || [])
                 const workerStats = ref([])
-                client.swr(new GetApiWorkerStats(), r => workerStats.value = r.response?.results || [])
+                client.swr(new GetWorkerStats(), r => workerStats.value = r.response?.results || [])
                 const formatNumber = value => new Intl.NumberFormat().format(value)
                 
                 return { stats, workerStats, humanize, formatNumber }
@@ -131,14 +131,14 @@ const sections = {
             template:`<AutoQueryGrid :type="type" />`,
         },
     },
-    TaskSummary: {
-        type: 'TaskSummary',
+    JobSummary: {
+        type: 'JobSummary',
         component: {
             template:`<AutoQueryGrid :type="type" />`,
         },
     },
-    OpenAiChatTask: {
-        type: 'OpenAiChatTask',
+    BackgroundJob: {
+        type: 'BackgroundJob',
         component: {
             template:`<AutoQueryGrid :type="type" />`,
         },

@@ -2,7 +2,7 @@ import {ref, computed, onMounted, inject, watch, nextTick, getCurrentInstance} f
 import { queryString, setQueryString } from "@servicestack/client"
 import { useFormatters } from "@servicestack/vue"
 import { marked } from "../markdown.mjs"
-import { ActiveApiModels, CreateOpenAiChat, WaitForOpenAiChat, OpenAiChat, OpenAiChatTask } from "dtos.mjs"
+import { ActiveApiModels, CreateOpenAiChat, WaitForOpenAiChat, OpenAiChat, BackgroundJob } from "dtos.mjs"
 
 const { truncate } = useFormatters()
 
@@ -114,7 +114,7 @@ export default {
         
         <div v-for="group in historyGroups">
             <h4 class="pl-2 text-gray-500 uppercase pt-2 text-sm leading-6 font-semibold">{{group.title}}</h4>
-            <div v-for="item in group.tasks">
+            <div v-for="item in group.chats">
                 <div v-hash="{id:item.id}" :class="['pl-4 hover:text-indigo-600 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6', item.id == id ? 'bg-gray-50 text-indigo-600 font-semibold' : 'cursor-pointer text-gray-700']">
                     <div class="w-64 overflow-hidden whitespace-nowrap text-ellipsis" 
                         @contextmenu.prevent.stop="showChatMenu=showChatMenu==item.id ? null : item.id">
@@ -162,7 +162,7 @@ export default {
         const error = ref()
         const refMessage = ref()
         const refBottom = ref()
-        const historyGroups = computed(() => groupTasks(history.value))
+        const historyGroups = computed(() => groupChats(history.value))
         const workerStats = ref([])
 
         watch(() =>  prefs.value.model, () => savePrefs())
@@ -184,7 +184,7 @@ export default {
             localStorage.setItem('chat.history', JSON.stringify(history.value))
         }
         
-        function groupTasks(chats) {
+        function groupChats(chats) {
             const sorted = chats.sort((a,b) => b.id - a.id)
             
             let Today = []
@@ -216,15 +216,15 @@ export default {
                 }
             })
             
-            if (Today.length) groups.push({ title: 'Today', tasks: Today })
-            if (LastWeek.length) groups.push({ title: 'Previous 7 Days', tasks: LastWeek })
+            if (Today.length) groups.push({ title: 'Today', chats: Today })
+            if (LastWeek.length) groups.push({ title: 'Previous 7 Days', chats: LastWeek })
 
             Object.keys(Months).forEach(month => {
-                groups.push({ title: month, tasks: Months[month] })
+                groups.push({ title: month, chats: Months[month] })
             })
             const yearsDesc = Object.keys(Years).sort((a,b) => b.localeCompare(a))
             yearsDesc.forEach(year => {
-                groups.push({ title: year, tasks: Years[year] })
+                groups.push({ title: year, chats: Years[year] })
             })
             // console.log('groups',groups)
             return groups
@@ -238,7 +238,7 @@ export default {
             chat.value = chat.value ?? {
                 id: new Date().valueOf(),
                 title: truncate(newMessage.value, 80),
-                tasks: [],
+                chats: [],
                 model: prefs.value.model,
                 prompt: prefs.value.prompt,
             }
@@ -272,15 +272,17 @@ export default {
                 error.value = api.error
                 
                 if (api.response?.result) {
-                    const task = api.response.result
-                    const taskKey = `chat:${task.id}`
-                    chat.value.tasks.push(taskKey)
+                    /** @type {BackgroundJob} */
+                    const job = api.response.result
+                    const jobKey = `chat:${job.id}`
+                    const chatResponse = JSON.parse(job.responseBody)
+                    chat.value.chats.push(jobKey)
                     if (!history.value.find(x => x.id === chat.value.id)) {
                         history.value.push(chat.value)
                     }
                     localStorage.setItem('chat.history', JSON.stringify(history.value))
-                    localStorage.setItem(taskKey, JSON.stringify(task))
-                    messages.value.push({ role: "assistant", content: task.response.choices[0]?.message?.content })
+                    localStorage.setItem(jobKey, JSON.stringify(job))
+                    messages.value.push({ role: "assistant", content: chatResponse.choices[0]?.message?.content })
                     if (id.value !== chat.value.id) {
                         location.hash = setQueryString(location.hash, { id:chat.value.id })
                     } else {
@@ -350,15 +352,18 @@ export default {
                         prefs.value.model = chat.value.model
                         selectPrompt(chat.value.prompt)
 
-                        const taskIds = chat.value.tasks
-                        const lastTaskId = taskIds[taskIds.length - 1]
-                        const task = JSON.parse(localStorage.getItem(lastTaskId))
-                        if (task?.request.messages) {
-                            messages.value.push(...task.request.messages)
+                        const chatIds = chat.value.chats
+                        const lastChatId = chatIds[chatIds.length - 1]
+                        const job = JSON.parse(localStorage.getItem(lastChatId))
+                        /** @type {CreateOpenAiChat} */
+                        const chatRequest = JSON.parse(job.requestBody)
+                        if (chatRequest?.request?.messages) {
+                            messages.value.push(...chatRequest.request.messages)
                         }
                         
-                        if (task.response) {
-                            messages.value.push({ role: "assistant", content: task.response.choices[0]?.message?.content })
+                        const chatResponse = JSON.parse(job.responseBody)
+                        if (chatResponse) {
+                            messages.value.push({ role: "assistant", content: chatResponse.choices[0]?.message?.content })
                         }
                         
                         nextTick(scrollBottomIntoView)
@@ -388,7 +393,7 @@ export default {
                 if (idx >= 0) {
                     history.value.splice(idx, 1)
                     localStorage.setItem('chat.history', JSON.stringify(history.value))
-                    for (const key of item.tasks) {
+                    for (const key of item.chats) {
                         localStorage.removeItem(key)
                     }
                     if (id.value === item.id) {

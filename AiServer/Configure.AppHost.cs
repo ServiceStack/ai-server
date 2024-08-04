@@ -30,8 +30,7 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             AppConfig.Instance.CivitAiApiKey ??= Environment.GetEnvironmentVariable("CIVIT_AI_API_KEY");
             
             services.AddSingleton(x => new CivitAiClient(x.GetService<IHttpClientFactory>(), 
-                AppConfig.Instance.CivitAiApiKey
-                ));
+                AppConfig.Instance.CivitAiApiKey));
             services.AddHttpClient("ComfyClientFileDownload", client =>
             {
                 client.Timeout = TimeSpan.FromSeconds(300); // Set a reasonable timeout
@@ -73,8 +72,6 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             dbFactory.RegisterConnection(monthDb, $"DataSource={dataSource};Cache=Shared", SqliteDialect.Provider);
 
         var db = dbFactory.OpenDbConnection(monthDb);
-        db.CreateTableIfNotExists<OpenAiChatCompleted>();
-        db.CreateTableIfNotExists<OpenAiChatFailed>();
         db.CreateTableIfNotExists<ComfyGenerationCompleted>();
         db.CreateTableIfNotExists<ComfyGenerationFailed>();
 

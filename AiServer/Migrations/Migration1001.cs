@@ -191,6 +191,7 @@ public class Migration1001 : MigrationBase
             new() { Name = "gemma", Parameters = "7B" },
             new() { Name = "deepseek-coder:6.7b", Parameters = "6.7B" },
             new() { Name = "deepseek-coder:33b", Parameters = "33B" },
+            new() { Name = "deepseek-coder-v2:236b", Parameters = "236B" },
             new() { Name = "mistral", Parameters = "7B" },
             new() { Name = "mistral-nemo", Parameters = "12B" },
             new() { Name = "mixtral", Parameters = "8x7B" },
@@ -251,6 +252,7 @@ public class Migration1001 : MigrationBase
                 ["wizardlm2:8x22b"] = "microsoft/wizardlm-2-8x22b",
                 ["mistral-small"] = "mistralai/mistral-small",
                 ["mistral-large"] = "mistralai/mistral-large",
+                ["deepseek-coder-v2:236b"] = "deepseek/deepseek-coder",
                 ["dbrx"] = "databricks/dbrx-instruct",
 
                 ["command-r"] = "cohere/command-r",

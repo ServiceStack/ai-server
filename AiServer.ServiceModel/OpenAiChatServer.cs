@@ -1,11 +1,22 @@
 ﻿using AiServer.ServiceModel.Types;
 using ServiceStack;
+using ServiceStack.Jobs;
 
 namespace AiServer.ServiceModel;
 
+[ConnectionInfo(NamedConnection = Databases.Jobs)]
 [Tag(Tag.OpenAi)]
 [ValidateApiKey]
-public class QueryOpenAiChat : QueryDb<OpenAiChatTask>
+public class QueryBackgroundJobs : QueryDb<BackgroundJob>
+{
+    public int? Id { get; set; }
+    public string? RefId { get; set; }
+}
+
+[ConnectionInfo(NamedConnection = Databases.Jobs)]
+[Tag(Tag.OpenAi)]
+[ValidateApiKey]
+public class QueryJobSummary : QueryDb<JobSummary>
 {
     public int? Id { get; set; }
     public string? RefId { get; set; }
@@ -20,7 +31,7 @@ public class GetOpenAiChat : IGet, IReturn<GetOpenAiChatResponse>
 }
 public class GetOpenAiChatResponse
 {
-    public OpenAiChatTask? Result { get; set; }
+    public BackgroundJob? Result { get; set; }
     public ResponseStatus? ResponseStatus { get; set; }
 }
 
@@ -42,7 +53,7 @@ public class GetModelImage : IGet, IReturn<byte[]>
 
 [Tag(ServiceModel.Tag.OpenAi)]
 [ValidateApiKey]
-public class CreateOpenAiChat : ICreateDb<OpenAiChatTask>, IReturn<CreateOpenAiChatResponse>
+public class CreateOpenAiChat : IReturn<CreateOpenAiChatResponse>
 {
     public string? RefId { get; set; }
     public string? Provider { get; set; }
@@ -54,26 +65,6 @@ public class CreateOpenAiChatResponse
 {
     public long Id { get; set; }
     public string RefId { get; set; }
-    public ResponseStatus? ResponseStatus { get; set; }
-}
-
-[Tag(Tag.OpenAi)]
-[ValidateApiKey]
-public class FetchOpenAiChatRequests : IPost, IReturn<FetchOpenAiChatRequestsResponse>
-{
-    [ValidateNotEmpty]
-    public string[] Models { get; set; }
-
-    [ValidateNotEmpty]
-    public string Provider { get; set; }
-    
-    public string? Worker { get; set; }
-    
-    public int? Take { get; set; }
-}
-public class FetchOpenAiChatRequestsResponse
-{
-    public required OpenAiChatRequest[] Results { get; set; }
     public ResponseStatus? ResponseStatus { get; set; }
 }
 
@@ -100,18 +91,18 @@ public class FailOpenAiChat : IPost, IReturn<EmptyResponse>
 
 [Tag(Tag.OpenAi)]
 [ValidateApiKey]
-public class QueryCompletedChatTasks : QueryDb<OpenAiChatCompleted>
+public class QueryCompletedChatTasks : QueryDb<CompletedJob>
 {
-    public string? Db { get; set; }
+    public DateTime? Db { get; set; }
     public int? Id { get; set; }
     public string? RefId { get; set; }
 }
 
 [Tag(Tag.OpenAi)]
 [ValidateApiKey]
-public class QueryFailedChatTasks : QueryDb<OpenAiChatFailed>
+public class QueryFailedChatTasks : QueryDb<FailedJob>
 {
-    public string? Db { get; set; }
+    public DateTime? Db { get; set; }
 }
 
 [Tag(Tag.Info)]
@@ -179,40 +170,10 @@ public class CreateApiKeyResponse
 
 [Tag(Tag.Admin)]
 [ValidateAuthSecret]
-public class GetApiWorkerStats : IGet, IReturn<GetApiWorkerStatsResponse> { }
-public class GetApiWorkerStatsResponse
+public class GetWorkerStats : IGet, IReturn<GetWorkerStatsResponse> { }
+public class GetWorkerStatsResponse
 {
     public List<WorkerStats> Results { get; set; }
-    public ResponseStatus? ResponseStatus { get; set; }
-}
-
-public class WorkerStats
-{
-    public string Name { get; init; }
-    public long Queued { get; init; }
-    public long Received { get; init; }
-    public long Completed { get; init; }
-    public long Retries { get; init; }
-    public long Failed { get; init; }
-    public DateTime? Offline { get; init; }
-    public bool Running { get; init; }
-}
-
-[Tag(Tag.Admin)]
-[ValidateAuthSecret]
-public class QueryTaskSummary : QueryDb<TaskSummary> {}
-
-[Tag(Tag.Admin)]
-[ValidateAuthSecret]
-public class RerunCompletedTasks : IPost, IReturn<RerunCompletedTasksResponse>
-{
-    [Input(Type = "tag"), FieldCss(Field = "col-span-12")]
-    public List<long> Ids { get; set; }
-}
-public class RerunCompletedTasksResponse
-{
-    public Dictionary<long, string> Errors { get; set; } = new();
-    public List<long> Results { get; set; } = [];
     public ResponseStatus? ResponseStatus { get; set; }
 }
 
@@ -227,4 +188,3 @@ public class AdminAddModel : IPost, IReturn<EmptyResponse>
 
     public Dictionary<string, ApiProviderModel>? ApiProviders { get; set; }
 }
-

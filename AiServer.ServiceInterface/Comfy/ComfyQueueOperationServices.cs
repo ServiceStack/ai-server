@@ -31,9 +31,6 @@ public class ComfyQueueOperationServices(AppData appData, IDbConnectionFactory d
     public object Any(ResetActiveComfyProviders request)
     {
         appData.RestartWorkers(Db);
-        MessageProducer.Publish(new AppDbWrites {
-            ResetTaskQueue = new()
-        });
         return new GetActiveComfyProvidersResponse {
             Results = appData.ComfyApiProviders
         };

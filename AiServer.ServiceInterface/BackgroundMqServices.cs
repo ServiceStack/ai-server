@@ -14,35 +14,8 @@ namespace AiServer.ServiceInterface;
 [Restrict(RequestAttributes.MessageQueue), ExcludeMetadata]
 public class AppDbWrites : IReturn<EmptyResponse>
 {
-    [Command<CreateOpenAiChatTaskCommand>]
-    public OpenAiChatTask? CreateOpenAiChatTask { get; set; }
-    
-    [Command<ReserveOpenAiChatTaskCommand>]
-    public ReserveOpenAiChatTask? ReserveOpenAiChatTask { get; set; }
-    
-    [Command<RequestOpenAiChatTasksCommand>]
-    public RequestOpenAiChatTasks? RequestOpenAiChatTasks { get; set; }
-    
-    [Command<RequeueIncompleteTasksCommand>]
-    public RequeueIncompleteTasks? RequeueIncompleteTasks { get; set; }
-    
-    [Command<ResetTaskQueueCommand>]
-    public ResetTaskQueue? ResetTaskQueue { get; set; }
-    
-    [Command<ResetFailedTasksCommand>]
-    public SelectedTasks? ResetFailedTasks { get; set; }
-    
-    [Command<RequeueFailedTasksCommand>]
-    public SelectedTasks? RequeueFailedTasks { get; set; }
-    
-    [Command<CompleteOpenAiChatCommand>]
-    public CompleteOpenAiChat? CompleteOpenAiChat { get; set; }
-    
     [Command<CompleteNotificationCommand>]
     public CompleteNotification? CompleteNotification { get; set; }
-    
-    [Command<FailOpenAiChatCommand>]
-    public FailOpenAiChat? FailOpenAiChat { get; set; }
     
     [Command<ChangeProviderStatusCommand>]
     public ChangeProviderStatus? RecordOfflineProvider { get; set; }
@@ -85,9 +58,6 @@ public class AppDbWrites : IReturn<EmptyResponse>
 [Restrict(RequestAttributes.MessageQueue), ExcludeMetadata]
 public class QueueTasks : IReturn<EmptyResponse>
 {
-    [Command<DelegateOpenAiChatTasksCommand>]
-    public DelegateOpenAiChatTasks? DelegateOpenAiChatTasks { get; set; }
-    
     [Command<DelegateComfyWorkflowTasksCommand>]
     public DelegateComfyWorkflowTasks? DelegateComfyTasks { get; set; }
 }
@@ -103,13 +73,12 @@ public class NotificationTasks : IReturn<EmptyResponse>
     public SendPendingNotifications? SendPendingNotifications { get; set; }
 }
 
+public class ExecuteTasks {}
+
 [Tag(Tag.Tasks)]
 [Restrict(RequestAttributes.MessageQueue), ExcludeMetadata]
 public class ExecutorTasks : IReturn<EmptyResponse>
 {
-    [Command<ExecuteOpenAiChatTasksCommand>]
-    public ExecuteTasks? ExecuteOpenAiChatTasks { get; set; }
-    
     [Command<ExecuteComfyGenerationTasksCommand>]
     public ExecuteTasks? ExecuteComfyGenerationTasks { get; set; }
     

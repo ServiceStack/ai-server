@@ -29,7 +29,6 @@ public class SendPendingNotificationsCommand(ILogger<SendPendingNotificationsCom
                 if (appData.IsStopped)
                     return;
 
-                await HandleChat();
                 pendingType = TaskType.Comfy;
                 await HandleComfy();
             }
@@ -75,35 +74,6 @@ public class SendPendingNotificationsCommand(ILogger<SendPendingNotificationsCom
 
         if (pendingNotifications.Count > 0)
             log.LogInformation("[Comfy] Delegated {PendingCount} pending notifications, exiting...", pendingNotifications.Count);
-    }
-
-    private async Task HandleChat()
-    {
-        using var db = await dbFactory.OpenDbConnectionAsync();
-        var pendingNotifications = await db.SelectAsync(db.From<OpenAiChatTask>()
-            .Where(x => x.CompletedDate != null && x.Response != null && x.NotificationDate == null && x.Retries <= 3 && x.ReplyTo != null));
-                    
-        foreach (var task in pendingNotifications)
-        {
-            var json = task.Response.ToJson();
-            mq.Publish(new NotificationTasks
-            {
-                NotificationRequest = new()
-                {
-                    Url = task.ReplyTo!,
-                    ContentType = MimeTypes.Json,
-                    Body = json,
-                    CompleteNotification = new()
-                    {
-                        Type = TaskType.OpenAiChat,
-                        Id = task.Id,
-                    },
-                },
-            });
-        }
-
-        if (pendingNotifications.Count > 0)
-            log.LogInformation("[Chat] Delegated {PendingCount} pending notifications, exiting...", pendingNotifications.Count);
     }
 }
 

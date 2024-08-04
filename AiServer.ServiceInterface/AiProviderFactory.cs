@@ -6,9 +6,9 @@ public record OpenAiChatResult(OpenAiChatResponse Response, int DurationMs);
 
 public interface IOpenAiProvider
 {
-    Task<bool> IsOnlineAsync(IApiProviderWorker worker, CancellationToken token = default);
+    Task<bool> IsOnlineAsync(ApiProvider provider, CancellationToken token = default);
 
-    Task<OpenAiChatResult> ChatAsync(IApiProviderWorker worker, OpenAiChat request, CancellationToken token = default);
+    Task<OpenAiChatResult> ChatAsync(ApiProvider provider, OpenAiChat request, CancellationToken token = default);
 }
 
 public class AiProviderFactory(OpenAiProvider openAiProvider, GoogleOpenAiProvider googleProvider)

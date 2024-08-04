@@ -6,12 +6,13 @@ using AiServer.ServiceInterface.Executor;
 using AiServer.ServiceInterface.Queue;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
+using ServiceStack.Jobs;
 using ServiceStack.Messaging;
 
 namespace AiServer.ServiceInterface.AppDb;
 
 [Tag(Tags.Database)]
-public class AppDbPeriodicTasksCommand(ILogger<AppDbPeriodicTasksCommand> log, AppData appData, IMessageProducer mq, ICommandExecutor executor) 
+public class AppDbPeriodicTasksCommand(ILogger<AppDbPeriodicTasksCommand> log, AppData appData, IMessageProducer mq, ICommandExecutor executor, BackgroundsJobFeature jobs) 
     : IAsyncCommand<PeriodicTasks>
 {
     public async Task ExecuteAsync(PeriodicTasks request)
@@ -20,9 +21,8 @@ public class AppDbPeriodicTasksCommand(ILogger<AppDbPeriodicTasksCommand> log, A
 
         if (request.PeriodicFrequency == PeriodicFrequency.Minute)
         {
-            var activeWorkers = appData.GetActiveWorkers().ToList();
-            var allStatsTable = LogActiveApiWorkerStats(activeWorkers);
-            LogDisabledOfflineWorkerStats(activeWorkers, allStatsTable);
+            var allStatsTable = LogActiveApiProviderStats();
+            LogDisabledOfflineWorkerStats(allStatsTable);
             
             var activeComfyWorkers = appData.GetActiveComfyWorkers().ToList();
             var allComfyStatsTable = LogActiveComfyWorkerStats(activeComfyWorkers);
@@ -45,8 +45,6 @@ public class AppDbPeriodicTasksCommand(ILogger<AppDbPeriodicTasksCommand> log, A
                 nameof(WorkerStats.Completed),
                 nameof(WorkerStats.Retries),
                 nameof(WorkerStats.Failed),
-                nameof(WorkerStats.Offline),
-                nameof(WorkerStats.Running),
             ],
         }).Trim();
         return allStatsTable;
@@ -76,33 +74,24 @@ public class AppDbPeriodicTasksCommand(ILogger<AppDbPeriodicTasksCommand> log, A
             ExecuteComfyGenerationTasksCommand.Running);
     }
 
-    private void LogDisabledOfflineWorkerStats(List<ApiProviderWorker> activeWorkers, string allStatsTable)
+    private void LogDisabledOfflineWorkerStats(string allStatsTable)
     {
-        var offlineWorkers = appData.ApiProviders.Where(x => x is { Enabled: true, OfflineDate: not null }).Map(x => x.Name);
-        var disabledWorkers = appData.ApiProviders.Where(x => 
-                activeWorkers.All(a => a.Name != x.Name) && !offlineWorkers.Contains(x.Name))
-            .Map(x => x.Name); 
+        var offlineWorkers = appData.ApiProviders
+            .Where(x => x is { Enabled: true, OfflineDate: not null }).Map(x => x.Name);
 
         log.LogInformation("""
                            Workers:
                            {Stats}
 
                            Offline:    {Offline}
-                           Disabled:   {Disabled}
-
-                           Delegating: {Delegating}
-                           Executing:  {Executing}
                            """, 
             appData.StoppedAt == null ? allStatsTable : $"Stopped at {appData.StoppedAt}",
-            offlineWorkers.IsEmpty() ? "None" : offlineWorkers.Join(", "),
-            disabledWorkers.IsEmpty() ? "None" : disabledWorkers.Join(", "),
-            DelegateOpenAiChatTasksCommand.Running,
-            ExecuteOpenAiChatTasksCommand.Running);
+            offlineWorkers.IsEmpty() ? "None" : offlineWorkers.Join(", "));
     }
 
-    private static string LogActiveApiWorkerStats(List<ApiProviderWorker> activeWorkers)
+    private string LogActiveApiProviderStats()
     {
-        var allStats = activeWorkers.Select(x => x.GetStats()).ToList();
+        var allStats = jobs.Jobs.GetWorkerStats();
         var allStatsTable = Inspect.dumpTable(allStats, new TextDumpOptions {
             Caption = "Worker Stats",
             Headers = [
@@ -112,8 +101,6 @@ public class AppDbPeriodicTasksCommand(ILogger<AppDbPeriodicTasksCommand> log, A
                 nameof(WorkerStats.Completed),
                 nameof(WorkerStats.Retries),
                 nameof(WorkerStats.Failed),
-                nameof(WorkerStats.Offline),
-                nameof(WorkerStats.Running),
             ],
         }).Trim();
         return allStatsTable;
@@ -128,18 +115,10 @@ public class AppDbPeriodicTasksCommand(ILogger<AppDbPeriodicTasksCommand> log, A
             if (appData.IsStopped)
                 return;
 
-            // Requeue incomplete tasks
-            var requeueCommand = executor.Command<RequeueIncompleteTasksCommand>();
-            await requeueCommand.ExecuteAsync(new RequeueIncompleteTasks());
-
             if (appData.IsStopped)
                 return;
-            log.LogInformation("[{Frequency}] Requeued {Requeued} incomplete tasks", frequency, requeueCommand.Requeued);
+            log.LogInformation("[{Frequency}]", frequency);
 
-            mq.Publish(new QueueTasks {
-                DelegateOpenAiChatTasks = new()
-            });
-            
             mq.Publish(new NotificationTasks {
                 SendPendingNotifications = new()
             });
@@ -178,13 +157,13 @@ public class AppDbPeriodicTasksCommand(ILogger<AppDbPeriodicTasksCommand> log, A
 
     private async Task CheckOpenAiProviderOnlineStatus(PeriodicFrequency frequency, CancellationToken token)
     {
-        var offlineApiProviders = appData.ApiProviderWorkers.Where(x => x is { Enabled:true, IsOffline:true }).ToList();
+        var offlineApiProviders = appData.ApiProviders.Where(x => x is { Enabled:true, OfflineDate:not null }).ToList();
         if (offlineApiProviders.Count > 0)
         {
             log.LogInformation("[{Frequency}] Rechecking {OfflineCount} offline providers", frequency, offlineApiProviders.Count);
             foreach (var apiProvider in offlineApiProviders)
             {
-                var chatProvider = apiProvider.GetOpenAiProvider();
+                var chatProvider = appData.GetOpenAiProvider(apiProvider);
                 if (await chatProvider.IsOnlineAsync(apiProvider, token))
                 {
                     if (appData.IsStopped)
