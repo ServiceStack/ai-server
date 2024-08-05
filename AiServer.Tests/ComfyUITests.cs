@@ -640,7 +640,7 @@ public class ComfyUITests
         };
         
         // Convert template to JSON
-        var jsonTemplate = await client.PopulateWorkflow(testDto,client.ImageToImageUpscaleTemplate);
+        var jsonTemplate = await client.PopulateWorkflow(testDto,client.DefaultImageToImageUpscaleTemplate);
         
         // Assert that the JSON template is not null
         Assert.That(jsonTemplate, Is.Not.Null);
@@ -680,7 +680,7 @@ public class ComfyUITests
         };
         
         // Convert template to JSON
-        var jsonTemplate = await client.PopulateWorkflow(testDto,client.ImageToImageTemplate);
+        var jsonTemplate = await client.PopulateWorkflow(testDto,client.DefaultImageToImageTemplate);
         
         // Assert that the JSON template is not null
         Assert.That(jsonTemplate, Is.Not.Null);
@@ -717,7 +717,7 @@ public class ComfyUITests
         };
         
         // Convert template to JSON
-        var jsonTemplate = await client.PopulateWorkflow(testDto,client.TextToImageTemplate);
+        var jsonTemplate = await client.PopulateWorkflow(testDto,client.DefaultTextToImageTemplate);
         
         // Assert that the JSON template is not null
         Assert.That(jsonTemplate, Is.Not.Null);

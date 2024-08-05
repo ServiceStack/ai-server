@@ -92,15 +92,15 @@ public class ComfyAdminTasks
             }
         },
         {
-            "https://civitai.com/models/283312/psyfi-xl-lcm",
+            "https://civitai.com/models/157665/lah-hongchen-or-sdxl-and-sd15",
             new ComfyApiModelSettings
             {
                 Height = 1024,
                 Width = 1024,
-                Sampler = ComfySampler.lcm,
+                Sampler = ComfySampler.euler,
                 Scheduler = "normal",
                 CfgScale = 1.0,
-                Steps = 7
+                Steps = 8
             }
         }
     };

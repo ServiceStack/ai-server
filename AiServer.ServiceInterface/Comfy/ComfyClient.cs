@@ -36,16 +36,27 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     private static ScriptContext context = new ScriptContext().Init();
 
     public string WorkflowTemplatePath { get; set; } = "workflows";
-    public string TextToImageTemplate { get; set; } = "text_to_image.json";
-    public string ImageToTextTemplate { get; set; } = "image_to_text.json";
-    public string ImageToImageTemplate { get; set; } = "image_to_image.json";
-    public string ImageToImageUpscaleTemplate { get; set; } = "image_to_image_upscale.json";
-    public string ImageToImageWithMaskTemplate { get; set; } = "image_to_image_with_mask.json";
-    public string TextToSpeechTemplate { get; set; } = "text_to_speech.json";
-    public string TextToAudioTemplate { get; set; } = "text_to_audio.json";
-    public string AudioToTextTemplate { get; set; } = "audio_to_text.json";
+    public string DefaultTextToImageTemplate { get; set; } = "text_to_image.json";
+    public string DefaultImageToTextTemplate { get; set; } = "image_to_text.json";
+    public string DefaultImageToImageTemplate { get; set; } = "image_to_image.json";
+    public string DefaultImageToImageUpscaleTemplate { get; set; } = "image_to_image_upscale.json";
+    public string DefaultImageToImageWithMaskTemplate { get; set; } = "image_to_image_with_mask.json";
+    public string DefaultTextToSpeechTemplate { get; set; } = "text_to_speech.json";
+    public string DefaultTextToAudioTemplate { get; set; } = "text_to_audio.json";
+    public string DefaultAudioToTextTemplate { get; set; } = "audio_to_text.json";
     
-    public string SpeechToTextTemplate { get; set; } = "speech_to_text.json";
+    public string DefaultSpeechToTextTemplate { get; set; } = "speech_to_text.json";
+    
+    // Mapping for each workflow type to a template file path, from a matching model name
+    public Dictionary<string,string> TextToImageModelOverrides { get; set; } = new();
+    public Dictionary<string,string> ImageToTextModelOverrides { get; set; } = new();
+    public Dictionary<string,string> ImageToImageModelOverrides { get; set; } = new();
+    public Dictionary<string,string> ImageToImageUpscaleModelOverrides { get; set; } = new();
+    public Dictionary<string,string> ImageToImageWithMaskModelOverrides { get; set; } = new();
+    public Dictionary<string,string> TextToSpeechModelOverrides { get; set; } = new();
+    public Dictionary<string,string> TextToAudioModelOverrides { get; set; } = new();
+    public Dictionary<string,string> AudioToTextModelOverrides { get; set; } = new();
+    public Dictionary<string,string> SpeechToTextModelOverrides { get; set; } = new();
     
     public ConcurrentDictionary<string,Action<string,ComfyWorkflowStatus>> OnGenerationComplete = new();
     private ConcurrentDictionary<string,string> innerPromptIdToPromptIdMapping = new();
@@ -69,14 +80,14 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
                 "Authorization", $"Bearer {apiKey}"}}})
     {
         // Initialize ComfyWorkflowMapping
-        comfyWorkflowMapping[ComfyTaskType.TextToImage] = TextToImageTemplate;
-        comfyWorkflowMapping[ComfyTaskType.ImageToImage] = ImageToImageTemplate;
-        comfyWorkflowMapping[ComfyTaskType.ImageToImageUpscale] = ImageToImageUpscaleTemplate;
-        comfyWorkflowMapping[ComfyTaskType.ImageToImageWithMask] = ImageToImageWithMaskTemplate;
-        comfyWorkflowMapping[ComfyTaskType.ImageToText] = ImageToTextTemplate;
-        comfyWorkflowMapping[ComfyTaskType.TextToSpeech] = TextToSpeechTemplate;
-        comfyWorkflowMapping[ComfyTaskType.TextToAudio] = TextToAudioTemplate;
-        comfyWorkflowMapping[ComfyTaskType.SpeechToText] = SpeechToTextTemplate;
+        comfyWorkflowMapping[ComfyTaskType.TextToImage] = DefaultTextToImageTemplate;
+        comfyWorkflowMapping[ComfyTaskType.ImageToImage] = DefaultImageToImageTemplate;
+        comfyWorkflowMapping[ComfyTaskType.ImageToImageUpscale] = DefaultImageToImageUpscaleTemplate;
+        comfyWorkflowMapping[ComfyTaskType.ImageToImageWithMask] = DefaultImageToImageWithMaskTemplate;
+        comfyWorkflowMapping[ComfyTaskType.ImageToText] = DefaultImageToTextTemplate;
+        comfyWorkflowMapping[ComfyTaskType.TextToSpeech] = DefaultTextToSpeechTemplate;
+        comfyWorkflowMapping[ComfyTaskType.TextToAudio] = DefaultTextToAudioTemplate;
+        comfyWorkflowMapping[ComfyTaskType.SpeechToText] = DefaultSpeechToTextTemplate;
         
         this.loggerFactory = loggerFactory;
         
@@ -140,12 +151,33 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         return await workflowPageResult.RenderToStringAsync();
     }
     
+    private string GetModelTemplatePath(ComfyTaskType taskType, string? modelName)
+    {
+        if(!comfyWorkflowMapping.TryGetValue(taskType, out var templatePath))
+            throw new Exception($"No default template found for task type {taskType}");
+        
+        if(modelName == null)
+            return templatePath;
+        
+        return taskType switch
+        {
+            ComfyTaskType.TextToImage => TextToImageModelOverrides.ContainsKey(modelName) ? TextToImageModelOverrides[modelName] : DefaultTextToImageTemplate,
+            ComfyTaskType.ImageToText => ImageToTextModelOverrides.ContainsKey(modelName) ? ImageToTextModelOverrides[modelName] : DefaultImageToTextTemplate,
+            ComfyTaskType.ImageToImage => ImageToImageModelOverrides.ContainsKey(modelName) ? ImageToImageModelOverrides[modelName] : DefaultImageToImageTemplate,
+            ComfyTaskType.ImageToImageUpscale => ImageToImageUpscaleModelOverrides.ContainsKey(modelName) ? ImageToImageUpscaleModelOverrides[modelName] : DefaultImageToImageUpscaleTemplate,
+            ComfyTaskType.ImageToImageWithMask => ImageToImageWithMaskModelOverrides.ContainsKey(modelName) ? ImageToImageWithMaskModelOverrides[modelName] : DefaultImageToImageWithMaskTemplate,
+            ComfyTaskType.TextToSpeech => TextToSpeechModelOverrides.ContainsKey(modelName) ? TextToSpeechModelOverrides[modelName] : DefaultTextToSpeechTemplate,
+            ComfyTaskType.TextToAudio => TextToAudioModelOverrides.ContainsKey(modelName) ? TextToAudioModelOverrides[modelName] : DefaultTextToAudioTemplate,
+            //ComfyTaskType.AudioToText => AudioToTextModelOverrides.ContainsKey(modelName) ? AudioToTextModelOverrides[modelName] : DefaultAudioToTextTemplate,
+            ComfyTaskType.SpeechToText => SpeechToTextModelOverrides.ContainsKey(modelName) ? SpeechToTextModelOverrides[modelName] : DefaultSpeechToTextTemplate,
+            _ => throw new Exception("Unsupported task type")
+        };
+    }
+    
     public async Task<ComfyWorkflowResponse> PromptGeneration(ComfyWorkflowRequest comfyRequest, 
         Action<string,ComfyWorkflowStatus>? callback = null, bool waitResult = false)
     {
-        // Check if the request type is supported
-        if (!comfyWorkflowMapping.TryGetValue(comfyRequest.TaskType, out var templatePath))
-            throw new Exception($"Unsupported request type: {comfyRequest.TaskType}");
+        var templatePath = GetModelTemplatePath(comfyRequest.TaskType, comfyRequest.Model);
         
         // Before queuing the workflow, generate a local prompt ID to track to avoid race conditions
         var promptId = Guid.NewGuid().ToString();

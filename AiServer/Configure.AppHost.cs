@@ -95,6 +95,15 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             return client;
         };
         
+        // Get comfy client from IoC
+        if (TryResolve<IComfyClient>() is ComfyClient comfyClient)
+        {
+            // Add custom workflow template for flux
+            comfyClient.TextToImageModelOverrides.Add("flux1-schnell", "flux1/text_to_image.json");
+        }
+        else
+            Log.Warn("Unable to register custom workflow templates. Expected ComfyClient not registered in IoC");
+        
         #if DEBUG
         // Avoid having to re-renter AuthSecret and API Keys during Development
         PreRequestFilters.Add((req, res) =>
