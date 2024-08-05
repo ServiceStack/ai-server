@@ -6,13 +6,14 @@ using AiServer.ServiceInterface.Executor;
 using AiServer.ServiceInterface.Queue;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
+using Microsoft.Extensions.DependencyInjection;
 using ServiceStack.Jobs;
 using ServiceStack.Messaging;
 
 namespace AiServer.ServiceInterface.AppDb;
 
 [Tag(Tags.Database)]
-public class AppDbPeriodicTasksCommand(ILogger<AppDbPeriodicTasksCommand> log, AppData appData, IMessageProducer mq, ICommandExecutor executor, BackgroundsJobFeature jobs) 
+public class AppDbPeriodicTasksCommand(ILogger<AppDbPeriodicTasksCommand> log, AppData appData, IMessageProducer mq, ICommandExecutor executor, IServiceProvider services) 
     : IAsyncCommand<PeriodicTasks>
 {
     public async Task ExecuteAsync(PeriodicTasks request)
@@ -91,7 +92,8 @@ public class AppDbPeriodicTasksCommand(ILogger<AppDbPeriodicTasksCommand> log, A
 
     private string LogActiveApiProviderStats()
     {
-        var allStats = jobs.Jobs.GetWorkerStats();
+        var jobs = services.GetRequiredService<IBackgroundJobs>();
+        var allStats = jobs.GetWorkerStats();
         var allStatsTable = Inspect.dumpTable(allStats, new TextDumpOptions {
             Caption = "Worker Stats",
             Headers = [

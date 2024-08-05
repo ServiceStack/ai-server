@@ -16,13 +16,14 @@
     <PackageReference Include="ServiceStack" Version="8.*" />
     <PackageReference Include="ServiceStack.Server" Version="8.*" />
     <PackageReference Include="ServiceStack.Extensions" Version="8.*" />
+    <PackageReference Include="ServiceStack.Jobs" Version="8.*" />
     <PackageReference Include="ServiceStack.OrmLite.Sqlite.Data" Version="8.*" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AiServer.ServiceInterface\AiServer.ServiceInterface.csproj" />
     <ProjectReference Include="..\AiServer.ServiceModel\AiServer.ServiceModel.csproj" />
-    <ProjectReference Include="..\ServiceStack.Jobs\ServiceStack.Jobs.csproj" />
+<!--    <ProjectReference Include="..\ServiceStack.Jobs\ServiceStack.Jobs.csproj" />-->
   </ItemGroup>
 
   <ItemGroup>

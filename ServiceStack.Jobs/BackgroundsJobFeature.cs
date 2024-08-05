@@ -1,5 +1,3 @@
-#if NET6_0_OR_GREATER
-
 using Microsoft.Extensions.DependencyInjection;
 using System.Data;
 using ServiceStack.Data;
@@ -14,11 +12,11 @@ public class BackgroundsJobFeature : IPlugin, IConfigureServices, IRequiresSchem
     public Func<DateTime, string> DbMonthFile { get; set; } = DefaultDbMonthFile;
     public Func<IDbConnectionFactory, IDbConnection> ResolveAppDb { get; set; }
     public Func<IDbConnectionFactory, DateTime, IDbConnection> ResolveMonthDb { get; set; }
-    public IDbConnectionFactory? DbFactory { get; set; }
     public bool AutoInitSchema { get; set; } = true;
-    public IAppHostNetCore? AppHost { get; set; }
-    public CommandsFeature? CommandsFeature { get; set; }
-    public IBackgroundJobs Jobs { get; set; }
+    public IDbConnectionFactory DbFactory { get; set; } = null!;
+    public IAppHostNetCore AppHost { get; set; } = null!;
+    public CommandsFeature CommandsFeature { get; set; } = null!;
+    public IBackgroundJobs Jobs { get; set; } = null!;
     public int DefaultRetryLimit { get; set; } = 3;
     public int DefaultTimeoutSecs { get; set; } = 5 * 60; // 5 mins
     public Func<BackgroundJob,Exception,bool> ShouldRetry { get; set; } = (_,ex) => ex is not TaskCanceledException;
@@ -37,15 +35,13 @@ public class BackgroundsJobFeature : IPlugin, IConfigureServices, IRequiresSchem
 
     public void Register(IAppHost appHost)
     {
-        CommandsFeature = appHost.GetPlugin<CommandsFeature>()
+        CommandsFeature ??= appHost.GetPlugin<CommandsFeature>()
             ?? throw new Exception($"{nameof(CommandsFeature)} is required to use {nameof(BackgroundsJobFeature)}");
-        Jobs ??= appHost.TryResolve<IBackgroundJobs>() ?? throw new Exception($"{nameof(IBackgroundJobs)} is not registered");
+        Jobs ??= appHost.TryResolve<IBackgroundJobs>() 
+            ?? throw new Exception($"{nameof(IBackgroundJobs)} is not registered");
 
-        DbFactory ??= appHost.TryResolve<IDbConnectionFactory>();
-        if (DbFactory == null)
-        {
-            DbFactory = new OrmLiteConnectionFactory($"Data Source=:memory:", SqliteDialect.Provider);
-        }
+        DbFactory ??= appHost.TryResolve<IDbConnectionFactory>() 
+            ?? new OrmLiteConnectionFactory("Data Source=:memory:", SqliteDialect.Provider);
 
         var dateConverter = SqliteDialect.Provider.GetDateTimeConverter();
         if (dateConverter.DateStyle == DateTimeKind.Unspecified)
@@ -73,14 +69,14 @@ public class BackgroundsJobFeature : IPlugin, IConfigureServices, IRequiresSchem
         var monthDb = DbMonthFile(createdDate);
         if (!OrmLiteConnectionFactory.NamedConnections.ContainsKey(monthDb))
         {
-            var dataSource = AppHost!.HostingEnvironment.ContentRootPath.CombineWith(DbDir, monthDb);
+            var dataSource = AppHost.HostingEnvironment.ContentRootPath.CombineWith(DbDir, monthDb);
             dbFactory.RegisterConnection(monthDb, $"DataSource={dataSource};Cache=Shared", SqliteDialect.Provider);
         }
         return dbFactory.OpenDbConnection(monthDb);
     }
 
-    public IDbConnection OpenJobsDb() => ResolveAppDb(DbFactory!);
-    public IDbConnection OpenJobsMonthDb(DateTime createdDate) => ResolveMonthDb(DbFactory!, createdDate);
+    public IDbConnection OpenJobsDb() => ResolveAppDb(DbFactory);
+    public IDbConnection OpenJobsMonthDb(DateTime createdDate) => ResolveMonthDb(DbFactory, createdDate);
 
     public void InitSchema()
     {
@@ -103,5 +99,3 @@ public class BackgroundsJobFeature : IPlugin, IConfigureServices, IRequiresSchem
         jobs.Start();
     }
 }
-
-#endif

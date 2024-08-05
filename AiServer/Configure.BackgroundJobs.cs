@@ -1,8 +1,8 @@
 using ServiceStack.Jobs;
 
-[assembly: HostingStartup(typeof(MyApp.ConfigureBackgroundJobs))]
+[assembly: HostingStartup(typeof(AiServer.ConfigureBackgroundJobs))]
 
-namespace MyApp;
+namespace AiServer;
 
 public class ConfigureBackgroundJobs : IHostingStartup
 {

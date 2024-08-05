@@ -15,7 +15,6 @@ public class OpenAiChatServices(
     IMessageProducer mq,
     IAutoQueryDb autoQuery,
     AppData appData,
-    BackgroundsJobFeature feature,
     IBackgroundJobs jobs) : Service
 {
     public async Task<object> Any(ActiveApiModels request)
@@ -73,14 +72,14 @@ public class OpenAiChatServices(
     
     public async Task<object> Any(QueryCompletedChatTasks query)
     {
-        using var dbMonth = feature.OpenJobsMonthDb(query.Db ?? DateTime.UtcNow);
+        using var dbMonth = jobs.OpenJobsMonthDb(query.Db ?? DateTime.UtcNow);
         var q = autoQuery.CreateQuery(query, base.Request, dbMonth);
         return await autoQuery.ExecuteAsync(query, q, base.Request, dbMonth);    
     }
     
     public async Task<object> Any(QueryFailedChatTasks query)
     {
-        using var dbMonth = feature.OpenJobsMonthDb(query.Db ?? DateTime.UtcNow);
+        using var dbMonth = jobs.OpenJobsMonthDb(query.Db ?? DateTime.UtcNow);
         var q = autoQuery.CreateQuery(query, base.Request, dbMonth);
         return await autoQuery.ExecuteAsync(query, q, base.Request, dbMonth);    
     }
@@ -165,7 +164,7 @@ public class OpenAiChatServices(
             if (response?.ResponseStatus != null)
                 return new GetOpenAiChatResponse { ResponseStatus = response.ResponseStatus };
 
-            using var monthDb = feature.OpenJobsMonthDb(summary.CreatedDate);
+            using var monthDb = jobs.OpenJobsMonthDb(summary.CreatedDate);
             var failedTask = await monthDb.SingleByIdAsync<CompletedJob>(summary.Id);
             if (failedTask != null)
             {
@@ -180,7 +179,7 @@ public class OpenAiChatServices(
     
     public async Task<JobSummary?> GetJobSummaryAsync(int? id, string? refId)
     {
-        using var db = feature.OpenJobsDb();
+        using var db = jobs.OpenJobsDb();
         var q = db.From<JobSummary>();
         if (refId != null)
             q.Where(x => x.RefId == refId);
@@ -195,13 +194,13 @@ public class OpenAiChatServices(
     
     public async Task<GetOpenAiChatResponse?> GetOpenAiChatAsync(JobSummary summary)
     {
-        using var db = feature.OpenJobsDb();
+        using var db = jobs.OpenJobsDb();
 
         var activeTask = await db.SingleByIdAsync<BackgroundJob>(summary.Id);
         if (activeTask != null)
             return new GetOpenAiChatResponse { Result = activeTask };
 
-        using var monthDb = feature.OpenJobsMonthDb(summary.CreatedDate);
+        using var monthDb = jobs.OpenJobsMonthDb(summary.CreatedDate);
         var completedTask = await monthDb.SingleByIdAsync<CompletedJob>(summary.Id);
         if (completedTask != null)
             return new GetOpenAiChatResponse { Result = completedTask };

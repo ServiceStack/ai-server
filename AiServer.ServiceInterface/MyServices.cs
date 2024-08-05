@@ -6,7 +6,7 @@ using ServiceStack.OrmLite;
 
 namespace AiServer.ServiceInterface;
 
-public class MyServices : Service
+public class MyServices(IBackgroundJobs jobs) : Service
 {
     public object Any(Hello request)
     {
@@ -35,7 +35,7 @@ public class MyServices : Service
         {
             (nameof(JobSummary),     typeof(JobSummary)),
         };
-        using var dbJobs = AssertPlugin<BackgroundsJobFeature>().OpenJobsDb();
+        using var dbJobs = jobs.OpenJobsDb();
         totalSql = jobTables.Map(x => $"SELECT '{x.Label}', COUNT(*) FROM {dialect.GetQuotedTableName(x.Type.GetModelMetadata())}")
             .Join(" UNION ");
         results = await dbJobs.DictionaryAsync<string,int>(totalSql);

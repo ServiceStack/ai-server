@@ -4,7 +4,7 @@ using ServiceStack.Jobs;
 
 namespace AiServer.ServiceModel;
 
-[ConnectionInfo(NamedConnection = Databases.Jobs)]
+[NamedConnection(Databases.Jobs)]
 [Tag(Tag.OpenAi)]
 [ValidateApiKey]
 public class QueryBackgroundJobs : QueryDb<BackgroundJob>
@@ -13,7 +13,7 @@ public class QueryBackgroundJobs : QueryDb<BackgroundJob>
     public string? RefId { get; set; }
 }
 
-[ConnectionInfo(NamedConnection = Databases.Jobs)]
+[NamedConnection(Databases.Jobs)]
 [Tag(Tag.OpenAi)]
 [ValidateApiKey]
 public class QueryJobSummary : QueryDb<JobSummary>

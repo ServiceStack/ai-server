@@ -1,5 +1,3 @@
-#if NET6_0_OR_GREATER
-
 using System.Collections.Concurrent;
 
 namespace ServiceStack.Jobs;
@@ -73,5 +71,3 @@ public class BackgroundJobsWorker(IBackgroundJobs jobs, CancellationToken ct)
         }
     }
 }
-
-#endif
