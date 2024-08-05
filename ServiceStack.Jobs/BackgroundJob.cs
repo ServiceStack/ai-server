@@ -67,6 +67,8 @@ public class BackgroundJob : IMeta
     public Dictionary<string, string>? Meta { get; set; }
 
     [Ignore] public bool Transient { get; set; }
+    [Ignore] public Action<object>? OnSuccess { get; set; }
+    [Ignore] public Action<Exception>? OnFailed { get; set; }
 }
 
 
