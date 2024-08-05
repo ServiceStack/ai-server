@@ -22,8 +22,6 @@ public class ConfigureMq : IHostingStartup
 
             //Register ServiceStack APIs you want to be able to invoke via MQ
             mqService.RegisterHandler<AppDbWrites>(appHost.ExecuteMessage);
-            mqService.RegisterHandler<QueueTasks>(appHost.ExecuteMessage);
-            mqService.RegisterHandler<NotificationTasks>(appHost.ExecuteMessage);
             mqService.RegisterHandler<ExecutorTasks>(appHost.ExecuteMessage);
 
             mqService.Start();

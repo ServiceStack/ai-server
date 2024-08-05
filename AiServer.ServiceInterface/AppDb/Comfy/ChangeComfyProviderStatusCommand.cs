@@ -20,8 +20,8 @@ public class ChangeComfyProviderStatusCommand(AppData appData, IDbConnection db)
             OfflineDate = request.OfflineDate,
         }, where:x => x.Name == request.Name);
         
-        var apiProvider = appData.ComfyProviderWorkers.FirstOrDefault(x => x.Name == request.Name);
+        var apiProvider = appData.ComfyApiProviders.FirstOrDefault(x => x.Name == request.Name);
         if (apiProvider != null)
-            apiProvider.IsOffline = request.OfflineDate != null;
+            apiProvider.OfflineDate = request.OfflineDate;
     }
 }

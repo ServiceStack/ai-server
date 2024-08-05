@@ -14,7 +14,7 @@ namespace AiServer.ServiceInterface.Comfy;
 using System.Net.Http;
 using System.Text.Json.Nodes;
 
-public interface IComfyClient
+public interface IComfyClient : IDisposable
 {
     Task<ComfyWorkflowResponse> PromptGeneration(ComfyWorkflowRequest comfyRequest, Action<string,ComfyWorkflowStatus>? callback = null, bool waitResult = false);
     Task<ComfyAgentDownloadStatus> DownloadModelAsync(string url, string filename, string apiKey = null, string apiKeyLocation = "");
@@ -151,7 +151,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         return await workflowPageResult.RenderToStringAsync();
     }
     
-    private string GetModelTemplatePath(ComfyTaskType taskType, string? modelName)
+    private string GetModelTemplatePath(ComfyTaskType taskType, string? modelName = null)
     {
         if(!comfyWorkflowMapping.TryGetValue(taskType, out var templatePath))
             throw new Exception($"No default template found for task type {taskType}");
@@ -397,10 +397,8 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
 
     public string? GetTemplateContentsByType(ComfyTaskType taskType)
     {
-        var path = comfyWorkflowMapping.ContainsKey(taskType) == false ? null : comfyWorkflowMapping[taskType];
-        if (path == null)
-            return null;
-        return File.ReadAllText(Path.Combine(WorkflowTemplatePath, path));
+        var path = GetModelTemplatePath(taskType);
+        return !File.Exists(path) ? null : File.ReadAllText(Path.Combine(WorkflowTemplatePath, path));
     }
 
     public async Task<HttpResponseMessage> GetClientHealthAsync()
@@ -443,5 +441,11 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         {
             OnGenerationComplete.TryRemove(comfyPromptId, out _);
         }
+    }
+
+    public void Dispose()
+    {
+        loggerFactory?.Dispose();
+        httpClient.Dispose();
     }
 }

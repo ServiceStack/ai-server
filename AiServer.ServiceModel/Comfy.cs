@@ -71,23 +71,6 @@ public class QueueComfyWorkflowResponse
     public List<ComfyTextOutput> TextOutputs { get; set; }
 }
 
-
-[Tag(Tag.Comfy)]
-[ValidateApiKey]
-public class FetchComfyGenerationRequests
-{
-    public string[] Models { get; set; }
-    public string? Provider { get; set; }
-    
-    public int? Take { get; set; }
-}
-
-public class FetchComfyGenerationRequestsResponse
-{
-    public required ComfyGenerationRequest[] Results { get; set; }
-    public ResponseStatus? ResponseStatus { get; set; }
-}
-
 [Tag(Tag.Comfy)]
 [ValidateApiKey]
 public class QueryCompletedComfyTasks : QueryDb<ComfyGenerationCompleted>

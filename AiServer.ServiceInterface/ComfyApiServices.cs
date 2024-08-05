@@ -1,12 +1,15 @@
 using System.Text.RegularExpressions;
+using AiServer.ServiceInterface.AppDb.Comfy;
 using AiServer.ServiceInterface.Comfy;
 using AiServer.ServiceInterface.Executor;
+using AiServer.ServiceInterface.Jobs;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.Logging;
 using ServiceStack;
 using ServiceStack.Data;
 using ServiceStack.Host;
+using ServiceStack.Jobs;
 using ServiceStack.Messaging;
 using ServiceStack.OrmLite;
 
@@ -15,7 +18,7 @@ namespace AiServer.ServiceInterface;
 public class ComfyApiServices(IComfyClient comfyClient,
     CivitAiClient civitAiClient,
     ILogger<ComfyApiServices> log,
-    IMessageProducer mq,
+    IBackgroundJobs jobs,
     AppConfig appConfig,
     AppData appData) : Service
 {
@@ -67,8 +70,9 @@ public class ComfyApiServices(IComfyClient comfyClient,
 
             tcs.TrySetResult(status.Outputs[0]);
             
-            mq?.Publish(new AppDbWrites {
-                CreateComfyGenerationTask = task,
+            jobs.EnqueueCommand<CreateComfyGenerationCommand>(task, new()
+            {
+                Worker = appData.ComfyApiProviders.First(x => x.Name == provider.Name).Name
             });
 
             return new QueueComfyWorkflowResponse
@@ -184,25 +188,23 @@ public class ComfyApiServices(IComfyClient comfyClient,
         var existingModel = await Db.SingleAsync<ComfyApiModel>(x => 
             x.Filename == comfyModel.Filename);
 
-        var appDbWrites = new AppDbWrites
-        {
-            UpdateComfyModelInfo = new()
-        };
+        var updateComfyModelInfo = new UpdateComfyModelInfo();
         var comfyModelId = existingModel?.Id ?? 0;
         if (existingModel != null)
         {
             // Update details of existing model
             comfyModel.Id = existingModel.Id;
-            appDbWrites.UpdateComfyModelInfo.UpdateModel = comfyModel;
+            updateComfyModelInfo.UpdateModel = comfyModel;
+            
         }
         else
         {
             // Insert new model
-            appDbWrites.UpdateComfyModelInfo.CreateModel = comfyModel;
+            updateComfyModelInfo.CreateModel = comfyModel;
         }
         
         // Relate model to provider
-        appDbWrites.UpdateComfyModelInfo.RelateProviderModel = new ComfyApiProviderModel
+        updateComfyModelInfo.RelateProviderModel = new ComfyApiProviderModel
         {
             ComfyApiProviderId = provider.Id,
             ComfyApiModelId = comfyModelId
@@ -210,11 +212,10 @@ public class ComfyApiServices(IComfyClient comfyClient,
 
         if (request.Settings != null)
         {
-            appDbWrites.UpdateComfyModelInfo.AddModelSettings = request.Settings;
+            updateComfyModelInfo.AddModelSettings = request.Settings;
         }
-        
-        // Publish the AppDbWrites to the message queue
-        mq.Publish(appDbWrites);
+
+        jobs.EnqueueCommand<UpdateComfyModelInfoCommand>(updateComfyModelInfo);
         
         // Download model job
         var downloadModel = new DownloadComfyModel
@@ -222,16 +223,16 @@ public class ComfyApiServices(IComfyClient comfyClient,
             Provider = provider,
             DownloadModel = comfyModel
         };
-        
-        mq.Publish(new ExecutorTasks
-        {
-            DownloadComfyModel = downloadModel
-        });
 
+        jobs.EnqueueCommand<DownloadComfyModelCommand>(downloadModel, new BackgroundJobOptions
+        {
+            Worker = $"{provider.Name}-Download"
+        });
+        
         return new ImportCivitAiModelResponse
         {
             Provider = provider,
-            Model = comfyModel
+            Model = comfyModel,
         };
     }
     
@@ -261,9 +262,9 @@ public class ComfyApiServices(IComfyClient comfyClient,
             DownloadModel = model
         };
         
-        mq.Publish(new ExecutorTasks
+        jobs.EnqueueCommand<DownloadComfyModelCommand>(downloadProviderModel, new BackgroundJobOptions
         {
-            DownloadComfyModel = downloadProviderModel
+            Worker = $"{provider.Name}-Download"
         });
         
         var comfyClient = new ComfyClient(provider.ApiBaseUrl, provider.ApiKey);
