@@ -26,15 +26,18 @@ public class ApiModel
     public string? Notes { get; set; }
 }
 
-public class TaskSummary
+public class ChatSummary
 {
+    /// <summary>
+    /// Same as BackgroundJob.Id
+    /// </summary>
     public long Id { get; set; }
 
     /// <summary>
-    /// The type of Task
+    /// User specified or System Generated BackgroundJob.RefId
     /// </summary>
-    public TaskType Type { get; set; }
-    
+    [Index(Unique = true)] public string RefId { get; set; }
+        
     /// <summary>
     /// The model to use for the Task
     /// </summary>
@@ -43,24 +46,18 @@ public class TaskSummary
     /// <summary>
     /// The specific provider used to complete the Task
     /// </summary>
-    public string? Provider { get; set; }
+    public string Provider { get; set; }
 
-    /// <summary>
-    /// Unique External Reference for the Task
-    /// </summary>
-    [Index(Unique = true)]
-    public string? RefId { get; set; }
-    
     /// <summary>
     /// Optional Tag to group related Tasks
     /// </summary>
     public string? Tag { get; set; }
-    
+        
     /// <summary>
     /// Number of tokens in the prompt.
     /// </summary>
     public int PromptTokens { get; set; }
-    
+        
     /// <summary>
     /// Number of tokens in the generated completion.
     /// </summary>

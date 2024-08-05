@@ -23,6 +23,11 @@ public class CreateOpenAiChatCommand(AppData appData, IBackgroundJobs jobs, AiPr
             var (response, durationMs) = await chatProvider.ChatAsync(apiProvider, request.Request);
             Result = response;
 
+            job.DurationMs = durationMs;
+            jobs.ExecuteTransientCommand<CompleteOpenAiChatCommand>(
+                new CompleteOpenAiChat(Request: request, Response: response, Job: job), 
+                new() { Worker = Databases.App });
+
             if (job.ReplyTo != null)
             {
                 jobs.EnqueueCommand<NotifyOpenAiChatResponseCommand>(response, new() {
@@ -30,7 +35,6 @@ public class CreateOpenAiChatCommand(AppData appData, IBackgroundJobs jobs, AiPr
                     ReplyTo = job.ReplyTo,
                 });
             }
-            return;
         }
         catch
         {

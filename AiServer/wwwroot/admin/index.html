@@ -97,8 +97,11 @@ const sections = {
                 </dl>
                 <div class="pt-4">
                     <h2 class="lg:block pt-4 mb-2 text-3xl font-bold leading-tight tracking-tight text-gray-900">Workers</h2>
-                    <div>
+                    <div v-if="workerStats.length">
                         <DataGrid :items="workerStats" />
+                    </div>
+                    <div v-else class="text-gray-500">
+                        No requests have been processed yet                 
                     </div>
                 </div>
             </div>`,

@@ -18,6 +18,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
     <PackageReference Include="ServiceStack" Version="8.*" />
     <PackageReference Include="ServiceStack.Kestrel" Version="8.*" />
+    <ProjectReference Include="..\AiServer\AiServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

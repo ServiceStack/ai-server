@@ -1,15 +1,16 @@
 ﻿using AiServer.ServiceModel;
 using ServiceStack;
+using ServiceStack.Jobs;
 using ServiceStack.OrmLite;
 
 namespace AiServer.ServiceInterface;
 
 // TODO: Capture Open AI Chat Stats
-public class TaskSummaryServices : Service
+public class ChatSummaryServices : Service
 {
     public async Task<object> Any(GetSummaryStats request)
     {
-        string[] groups = [nameof(TaskSummary.Provider), nameof(TaskSummary.Model), "strftime('%Y-%m',CreatedDate)"];
+        string[] groups = [nameof(ChatSummary.Provider), nameof(ChatSummary.Model), "strftime('%Y-%m',CreatedDate)"];
         var condition = "WHERE PromptTokens > 0";
         
         if (request.From != null)
@@ -27,12 +28,12 @@ public class TaskSummaryServices : Service
                               SUM(CompletionTokens) AS TotalCompletionTokens,
                               PRINTF("%.2f", SUM(DurationMs) / 1000 / 60.0) AS TotalMinutes,
                               PRINTF("%.2f", (SUM(PromptTokens) + SUM(CompletionTokens)) / (SUM(DurationMs) / 1000.0)) AS TokensPerSecond
-                       FROM TaskSummary {condition} GROUP BY 1;
+                       FROM ChatSummary {condition} GROUP BY 1;
                        """;
             var stats = await Db.SelectAsync<SummaryStats>(sql);
-            if (group == nameof(TaskSummary.Provider))
+            if (group == nameof(ChatSummary.Provider))
                 to.ProviderStats = stats;
-            else if (group == nameof(TaskSummary.Model))
+            else if (group == nameof(ChatSummary.Model))
                 to.ModelStats = stats;
             else
                 to.MonthStats = stats;
