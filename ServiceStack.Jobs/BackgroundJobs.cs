@@ -148,6 +148,8 @@ public class BackgroundJobs : IBackgroundJobs
                 await feature.AppHost.ServiceController.ExecuteMessageAsync(reqCtx.Message, reqCtx, cts.Token);
 
                 response = reqCtx.Response.Dto;
+                var onSuccess = job.OnSuccess;
+                onSuccess?.Invoke(response);
             }
             else throw new NotSupportedException($"Unsupported Job Request Type: '{job.RequestType}'");
 
@@ -155,12 +157,16 @@ public class BackgroundJobs : IBackgroundJobs
 
             await CompleteJobAsync(job, response);
         }
-        catch (TaskCanceledException)
+        catch (TaskCanceledException tex)
         {
+            var onFailed = job.OnFailed;
+            onFailed?.Invoke(tex);
             await CancelJobAsync(job);
         }
         catch (Exception ex)
         {
+            var onFailed = job.OnFailed;
+            onFailed?.Invoke(ex);
             await FailJobAsync(job, ex);
         }
     }
@@ -639,6 +645,8 @@ public static class BackgroundJobsExtensions
             ParentId = options?.ParentId,
             State = BackgroundJobState.Queued,
             Attempts = 1,
+            OnSuccess = options?.OnSuccess,
+            OnFailed = options?.OnFailed,
         };
     }
 

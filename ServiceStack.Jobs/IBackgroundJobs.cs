@@ -16,6 +16,8 @@ public class BackgroundJobOptions
     public int? TimeoutSecs { get; set; }
     public long? ParentId { get; set; }
     public Dictionary<string, string>? Args { get; set; } //= Provider
+    public Action<object>? OnSuccess { get; set; }
+    public Action<Exception>? OnFailed { get; set; }
 }
 
 public interface IBackgroundJobs : IDisposable
@@ -42,4 +44,14 @@ public class WorkerStats
     public long Completed { get; init; }
     public long Retries { get; init; }
     public long Failed { get; init; }
+}
+
+/// <summary>
+/// Execute AutoQuery Create/Update/Delete Request DTO in a background thread
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+public class WorkerAttribute : AttributeBase
+{
+    public string Name { get; set; }
+    public WorkerAttribute(string name) => Name = name;
 }
