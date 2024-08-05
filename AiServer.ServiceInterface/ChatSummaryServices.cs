@@ -1,12 +1,16 @@
-﻿using AiServer.ServiceModel;
+﻿using AiServer.ServiceInterface.Jobs;
+using AiServer.ServiceModel;
+using Microsoft.Extensions.Logging;
 using ServiceStack;
 using ServiceStack.Jobs;
 using ServiceStack.OrmLite;
+using ServiceStack.Text;
 
 namespace AiServer.ServiceInterface;
 
-// TODO: Capture Open AI Chat Stats
-public class ChatSummaryServices : Service
+public class PopulateChatSummary : IGet, IReturn<StringsResponse> {}
+
+public class ChatSummaryServices(ILogger<ChatSummaryServices> log, IBackgroundJobs jobs) : Service
 {
     public async Task<object> Any(GetSummaryStats request)
     {
@@ -37,6 +41,51 @@ public class ChatSummaryServices : Service
                 to.ModelStats = stats;
             else
                 to.MonthStats = stats;
+        }
+        return to;
+    }
+
+    public async Task<object> Any(PopulateChatSummary request)
+    {
+        var existingIds = await Db.ColumnAsync<long>(Db.From<ChatSummary>()
+            .Select(x => x.Id));
+
+        using var monthDb = jobs.OpenJobsMonthDb(DateTime.UtcNow);
+        var completedJobs = await monthDb.SelectAsync(monthDb.From<CompletedJob>()
+            .Where(x => x.Request == nameof(CreateOpenAiChat) && !existingIds.Contains(x.Id)));
+
+        var to = new StringsResponse();
+        foreach (var job in completedJobs)
+        {
+            CreateOpenAiChat? chatRequest = null;
+            OpenAiChatResponse? chatResponse = null;
+            try
+            {
+                chatRequest = ClientConfig.FromJson<CreateOpenAiChat>(job.RequestBody);
+                chatResponse = ClientConfig.FromJson<OpenAiChatResponse>(job.ResponseBody);
+                if (chatResponse.Usage == null)
+                    continue;
+                
+                await Db.InsertAsync(new ChatSummary
+                {
+                    Id = job.Id,
+                    RefId = job.RefId!,
+                    CreatedDate = job.CreatedDate,
+                    DurationMs = job.DurationMs,
+                    Tag = job.Tag,
+                    Model = chatRequest.Request.Model,
+                    Provider = job.Worker!,
+                    PromptTokens = chatResponse.Usage?.PromptTokens ?? 0, 
+                    CompletionTokens = chatResponse.Usage?.CompletionTokens ?? 0, 
+                });
+            }
+            catch (Exception e)
+            {
+                log.LogError(e, "Couldn't create ChatSummary for {Id}", job.Id);
+                chatRequest?.PrintDump();
+                chatResponse?.PrintDump();
+                to.Results.Add($"{job.Id}: {e.Message}");
+            }
         }
         return to;
     }
