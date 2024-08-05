@@ -115,7 +115,6 @@ public class ActiveApiModels : IGet, IReturn<StringsResponse> {}
 [Description("Different Models available in AI Server")]
 public class QueryApiModels : QueryDb<ApiModel> {}
 
-[Worker(Databases)]
 [Tag(Tag.Admin)]
 [ValidateAuthSecret]
 [Description("Different Models available for the API")]
