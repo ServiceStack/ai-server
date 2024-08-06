@@ -122,7 +122,7 @@ public class ComfyAdminTasks
     {
         var client = TestUtils.CreateAdminClient();
         client = IgnoreSslValidation(client);
-        ConfigureSecrets.SetSecrets();
+        //ConfigureSecrets.SetSecrets();
         
         foreach (var provider in ComfyApiProviders)
         {
@@ -171,7 +171,7 @@ public class ComfyAdminTasks
     {
         var client = TestUtils.CreateAdminClient();
         client = IgnoreSslValidation(client);
-        ConfigureSecrets.SetSecrets();
+        //ConfigureSecrets.SetSecrets();
         // var client = TestUtils.CreatePublicAdminClient();
         // Create providers
         foreach (var provider in ComfyApiProviders)
