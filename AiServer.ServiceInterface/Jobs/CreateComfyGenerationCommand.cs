@@ -10,9 +10,9 @@ using ServiceStack.Web;
 namespace AiServer.ServiceInterface.Jobs;
 
 public class CreateComfyGenerationCommand(AppData appData, IBackgroundJobs jobs, ComfyProviderFactory comfyProviderFactory) 
-    : IAsyncCommand<CreateComfyGeneration, ComfyWorkflowResponse>, IRequiresRequest
+    : IAsyncCommand<CreateComfyGeneration, ComfyWorkflowStatus>, IRequiresRequest
 {
-    public ComfyWorkflowResponse Result { get; set; }
+    public ComfyWorkflowStatus Result { get; set; }
     public IRequest Request { get; set; }
     
     public async Task ExecuteAsync(CreateComfyGeneration request)
@@ -26,7 +26,8 @@ public class CreateComfyGenerationCommand(AppData appData, IBackgroundJobs jobs,
         try
         {
             var (response, durationMs) = await comfyProvider.QueueWorkflow(apiProvider, request.Request);
-            Result = response;
+            var status = await comfyProvider.GetComfyClient(apiProvider).GetWorkflowStatusAsync(response.PromptId);
+            Result = status;
 
             if (job.ReplyTo != null)
             {

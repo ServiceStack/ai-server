@@ -18,6 +18,8 @@ public interface IComfyProvider
     Task<bool> IsOnlineAsync(ComfyApiProvider provider, CancellationToken token = default);
 
     Task<(ComfyWorkflowResponse,TimeSpan)> QueueWorkflow(ComfyApiProvider provider, ComfyWorkflowRequest request, CancellationToken token = default);
+    
+    IComfyClient GetComfyClient(ComfyApiProvider provider);
 }
 
 public class ComfyProvider : IComfyProvider
@@ -48,7 +50,7 @@ public class ComfyProvider : IComfyProvider
         }
     }
     
-    private IComfyClient GetComfyClient(ComfyApiProvider provider)
+    public IComfyClient GetComfyClient(ComfyApiProvider provider)
     {
         lock (lockObj)
         {

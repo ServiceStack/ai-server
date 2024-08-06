@@ -1,16 +1,20 @@
+using AiServer.ServiceInterface.Comfy;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.Logging;
 using ServiceStack;
 using ServiceStack.Data;
+using ServiceStack.Jobs;
 using ServiceStack.OrmLite;
 
 namespace AiServer.ServiceInterface;
 
 public class ComfyFileServices(AppData appData, 
     IHttpClientFactory httpClientFactory,
+    ComfyProviderFactory comfyProviderFactory,
     IDbConnectionFactory dbFactory,
     AppConfig appConfig,
+    BackgroundsJobFeature feature,
     ILogger<ComfyFileServices> log) : Service
 {
     private static TimeSpan waitforTimeout = TimeSpan.FromSeconds(120);
@@ -19,86 +23,39 @@ public class ComfyFileServices(AppData appData,
     {
         if (request.Id == null && request.RefId == null)
             throw new ArgumentNullException(nameof(request.Id));
-        
-        var q = Db.From<ComfySummary>();
-        if (request.Id != null)
-            q.Where(x => x.Id == request.Id);
-        else if (request.RefId != null)
-            q.Where(x => x.RefId == request.RefId);
 
-        ComfySummary? summary = null;
+        var summary = await feature.GetJobSummaryAsync(request.Id, request.RefId);
+        if (summary == null)
+            throw HttpError.NotFound("Job not found");
         
-        var startedAt = DateTime.UtcNow;
-        while(DateTime.UtcNow - startedAt < waitforTimeout)
+        // Loop waiting for completed task
+        var start = DateTime.UtcNow;
+        while (DateTime.UtcNow - start < waitforTimeout)
         {
-            summary ??= await GetComfySummary(request.Id, request.RefId);
-            if (summary != null)
+            var backgroundJob = await feature.GetBackgroundJob(summary);
+            if (backgroundJob?.CompletedDate != null)
             {
-                var response = await GetComfyGenerationResponse(summary);
-                if (response?.Result?.Response != null)
-                    return response;
-            }
-            await Task.Delay(500);
-        }
-        return HttpError.NotFound("Task not found");
-    }
-    
-    private async Task<GetComfyGenerationResponse?> GetComfyGenerationResponse(ComfySummary summary)
-    {
-        var activeTask = await Db.SingleByIdAsync<ComfyGenerationTask>(summary.Id);
-        if (activeTask is { Status.Completed: true })
-            return new GetComfyGenerationResponse
-            {
-                Result = activeTask,
-                Outputs = activeTask.Status?.Outputs.ToHostedComfyFiles(appConfig, activeTask.RefId, summary.CreatedDate.Year.ToString(), summary.CreatedDate.Month.ToString(), summary.CreatedDate.Day.ToString())
-                    .ToList()
+                var (req, res) = backgroundJob.ExtractRequestResponse<CreateComfyGeneration, ComfyWorkflowStatus>();
+                if (req != null && res != null)
+                {
+                    var outputs = res.Outputs.ToHostedComfyFiles(
+                        appConfig, backgroundJob.RefId, 
+                        summary.CreatedDate.Year.ToString(), 
+                        summary.CreatedDate.Month.ToString("00"), 
+                        summary.CreatedDate.Day.ToString("00"));
+                    return new GetComfyGenerationResponse
+                    {
+                        Request = req,
+                        Result = res,
+                        Outputs = outputs,
+                    };
+                }
             };
-
-        if (activeTask is { Status: { Error: not null } })
-        {
-            log.LogError($"Error in ComfyGenerationTask: {activeTask.ToJson()}");
-            return null;
+            await Task.Delay(1000);
         }
-
-        if (string.IsNullOrEmpty(summary.RefId))
-        {
-            log.LogWarning($"RefId is null for ComfySummary: {summary.ToJson()}");
-            return null;
-        }
-            
         
-        using var monthDb = dbFactory.GetMonthDbConnection(summary.CreatedDate);
-        var completedTask = await monthDb.SingleByIdAsync<ComfyGenerationCompleted>(summary.Id);
-        if (completedTask != null)
-            return new GetComfyGenerationResponse
-            {
-                Result = completedTask.ConvertTo<ComfyGenerationTask>(),
-                Outputs = completedTask.Status?.Outputs.ToHostedComfyFiles(appConfig, summary.RefId, summary.CreatedDate.Year.ToString(), summary.CreatedDate.Month.ToString(), summary.CreatedDate.Day.ToString())
-                    .ToList()
-            };
-        
-        var failedTask = await monthDb.SingleByIdAsync<ComfyGenerationFailed>(summary.Id);
-        if (failedTask != null)
-            return new GetComfyGenerationResponse
-            {
-                Result = failedTask.ConvertTo<ComfyGenerationTask>(),
-                ResponseStatus = failedTask.Error
-            };
-        
-        return null;
+        return HttpError.NotFound("Job not found");
     }
-    
-    private async Task<ComfySummary?> GetComfySummary(int? id, string? refId)
-    {
-        var q = Db.From<ComfySummary>();
-        if (id != null && id != 0)
-            q.Where(x => x.Id == id);
-        else if (!string.IsNullOrEmpty(refId))
-            q.Where(x => x.RefId == refId);
-        
-        return await Db.SingleAsync(q);
-    }
-
     public async Task<object> Get(DownloadComfyFile request)
     {
         if (request.FileName == null)
@@ -126,36 +83,36 @@ public class ComfyFileServices(AppData appData,
         
         log.LogInformation($"fullFileName: {fullFileName}, promptId: {promptId}, comfyFile: {comfyFile}");
         
-        var task = await Db.SingleAsync<ComfyGenerationTask>(x => x.RefId == promptId);
+        var summary = await feature.GetJobSummaryAsync(null, promptId);
+        if (summary == null)
+            throw HttpError.NotFound("Job not found");
         
-        if (task != null && task.Status?.Error != null)
+        var job = await feature.GetBackgroundJob(summary);
+        if (job == null)
+            throw HttpError.NotFound("Job not found");
+        
+        var (jobReq, jobRes) = job.ExtractRequestResponse<CreateComfyGeneration, ComfyWorkflowStatus>();
+        if (jobReq == null || jobRes == null)
+            throw HttpError.NotFound("Job not found");
+        
+        if (jobRes != null && jobRes.Error != null)
             throw HttpError.NotFound("File not found - Error in task");
         
-        if (task == null || task.Status?.Completed != true)
+        if (job == null || job.CompletedDate == null)
             throw HttpError.NotFound("File not found");
         
-        log.LogDebug($"task: {task.ToJson()}");
+        log.LogDebug($"task: {job.ToJson()}");
         
-        var output = task.Status.Outputs.FirstOrDefault(x => x.Files?.Any(y => y.Filename == comfyFile + "." + fileExt) == true);
+        var output = jobRes?.Outputs.FirstOrDefault(x => x.Files?.Any(y => y.Filename == comfyFile + "." + fileExt) == true);
         if (output == null)
             throw HttpError.NotFound("File not found");
         
         var file = output.Files.First(x => x.Filename == comfyFile + "." + fileExt);
         
-        var provider = await Db.SingleAsync<ComfyApiProvider>(x => x.Name == task.Provider);
-        if (provider == null)
-            throw HttpError.NotFound("File not found");
-        
-        var comfyFileUrl = file.GetComfyFileUrl(provider.ApiBaseUrl);
-        
-        var httpClient = httpClientFactory.CreateClient("ComfyClientFileDownload");
-        ConfigureHttpClient(httpClient, provider);
-
-        var response = await httpClient.GetAsync(comfyFileUrl);
-        if (!response.IsSuccessStatusCode)
-            throw HttpError.NotFound("File not found");
-
-        var contentStream = await response.Content.ReadAsStreamAsync();
+        var apiProvider = appData.AssertComfyProvider(job.Worker!);
+        var comfyProvider = comfyProviderFactory.GetComfyProvider(apiProvider.Name);
+        var comfyClient = comfyProvider.GetComfyClient(apiProvider);
+        var contentStream = await comfyClient.DownloadComfyOutputAsync(file);
 
         // Store the file in VirtualFiles asynchronously
         _ = Task.Run(async () =>
@@ -182,6 +139,78 @@ public class ComfyFileServices(AppData appData,
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", provider.ApiKey);
             }
         }
+    }
+}
+
+public static class BackgroundJobsFeatureExtensions
+{
+    public static Tuple<TReq?,TRes?> ExtractRequestResponse<TReq, TRes>(this BackgroundJob job)
+    where TReq : class
+    where TRes : class
+    {
+        var reqTypeName = job.Request;
+        var resTypeName = job.Response;
+        if (reqTypeName == typeof(TReq).Name && resTypeName == typeof(TRes).Name)
+        {
+            return new Tuple<TReq?, TRes?>(
+                job.RequestBody.FromJson<TReq>(),
+                job.ResponseBody.FromJson<TRes>()
+            );
+        }
+        if(reqTypeName != typeof(TReq).Name && resTypeName != typeof(TRes).Name)
+        {
+            return new Tuple<TReq?, TRes?>(null, null);
+        }
+        if(reqTypeName != typeof(TReq).Name)
+        {
+            return new Tuple<TReq?, TRes?>(
+                null,
+                job.ResponseBody.FromJson<TRes>()
+            );
+        }
+        return new Tuple<TReq?, TRes?>(
+            job.RequestBody.FromJson<TReq>(),
+            null
+        );
+    }
+    public static async Task<BackgroundJob?> GetBackgroundJob(
+        this BackgroundsJobFeature feature, 
+        JobSummary summary)
+    {
+        using var db = feature.OpenJobsDb();
+        
+        var activeTask = await db.SingleByIdAsync<BackgroundJob>(summary.Id);
+        if (activeTask != null)
+        {
+            // Task still active, so we don't have a result yet
+            return activeTask;
+        }
+
+        using var monthDb = feature.OpenJobsMonthDb(summary.CreatedDate);
+        var completedTask = await monthDb.SingleByIdAsync<CompletedJob>(summary.Id);
+        if (completedTask != null)
+        {
+            return completedTask;
+        }
+
+        var failedTask = await monthDb.SingleByIdAsync<FailedJob>(summary.Id);
+        return failedTask;
+    }
+    
+    public static async Task<JobSummary?> GetJobSummaryAsync(
+        this BackgroundsJobFeature feature,int? id, string? refId)
+    {
+        using var db = feature.OpenJobsDb();
+        var q = db.From<JobSummary>();
+        if (refId != null)
+            q.Where(x => x.RefId == refId);
+        else if (id != null)
+            q.Where(x => x.Id == id);
+        else
+            throw new ArgumentNullException(nameof(JobSummary.Id));
+        
+        var summary = await db.SingleAsync(q);
+        return summary;
     }
 }
 

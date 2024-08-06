@@ -39,7 +39,7 @@ public class ComfyApiServices(IComfyClient comfyClient,
         ComfyApiModelSettings? modelSettings = appConfig.DefaultModelSettings;
         
         // Convert the request DTO to a ComfyWorkflowRequest
-        var comfyReq = request.ToComfy(appConfig,modelSettings);
+        var comfyReq = request.ApplyModelDefaults(appConfig,modelSettings);
 
         // Apply files to the request
          ApplyFiles(comfyReq);
@@ -111,6 +111,31 @@ public class ComfyApiServices(IComfyClient comfyClient,
         });
 
         return fileOutputs;
+    }
+
+    public async Task<object> Delete(DeleteComfyApiProviderModel request)
+    {
+        var providerModel = await Db.SingleByIdAsync<ComfyApiProviderModel>(request.Id);
+        if(providerModel == null)
+            throw HttpError.NotFound("ComfyApiProviderModel not found");
+        var model = await Db.SingleByIdAsync<ComfyApiModel>(providerModel.ComfyApiModelId);
+        var provider = await Db.SingleByIdAsync<ComfyApiProvider>(providerModel.ComfyApiProviderId);
+        
+        if(model == null || provider == null)
+            throw HttpError.NotFound("Invalid ComfyApiProviderModel ID");
+        
+        jobs.EnqueueCommand<DeleteComfyModelCommand>(new DeleteComfyModel
+        {
+            Provider = provider.Name,
+            ModelFilename = model.Filename
+        }, new BackgroundJobOptions
+        {
+            Worker = Databases.App
+        });
+        return new IdResponse
+        {
+            Id = request.Id.ToString()
+        };
     }
     
     public async Task<object> Any(ImportCivitAiModel request)

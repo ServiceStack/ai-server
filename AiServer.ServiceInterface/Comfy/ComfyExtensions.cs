@@ -1,11 +1,18 @@
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
+using ServiceStack;
 
 namespace AiServer.ServiceInterface.Comfy;
 
 public static class ComfyExtensions
 {
-    public static ComfyWorkflowRequest ToComfy(this QueueComfyWorkflow request, AppConfig appConfig, ComfyApiModelSettings? modelSettings)
+    public static ComfyWorkflowRequest ApplyModelDefaults(this QueueComfyWorkflow request, AppConfig appConfig,
+        ComfyApiModelSettings? modelSettings)
+    {
+        var workflowRequest = request.ConvertTo<ComfyWorkflowRequest>();
+        return workflowRequest.ApplyModelDefaults(appConfig, modelSettings);
+    }
+    public static ComfyWorkflowRequest ApplyModelDefaults(this ComfyWorkflowRequest request, AppConfig appConfig, ComfyApiModelSettings? modelSettings)
     {
 
         ComfyWorkflowRequest resObject;
@@ -21,7 +28,7 @@ public static class ComfyExtensions
                     Model = request.Model ?? appConfig.DefaultModel?.Filename!,
                     Width = request.Width is null or 0 ? modelSettings?.Width ?? 1024 : request.Width,
                     Height = request.Height is null or 0 ? modelSettings?.Height ?? 1024 : request.Height,
-                    BatchSize = request.BatchSize is null or 0 ? 1 : request.BatchSize ?? 1,
+                    BatchSize = request.BatchSize is 0 ? 1 : request.BatchSize,
                     Seed = request.Seed is null or 0 ? Random.Shared.Next() : request.Seed,
                     PositivePrompt = request.PositivePrompt,
                     NegativePrompt = request.NegativePrompt is null or "" ? 
@@ -39,7 +46,7 @@ public static class ComfyExtensions
                 {
                     Model = request.Model ?? appConfig.DefaultModel?.Filename!,
                     Denoise = request.Denoise is null or 0 ? 0.5d : request.Denoise,
-                    BatchSize = request.BatchSize is null or 0 ? 1 : request.BatchSize ?? 1,
+                    BatchSize = request.BatchSize is 0 ? 1 : request.BatchSize,
                     Seed = request.Seed is null or 0 ? Random.Shared.Next() : request.Seed,
                     PositivePrompt = request.PositivePrompt,
                     NegativePrompt = request.NegativePrompt is null or "" ? 
@@ -64,7 +71,7 @@ public static class ComfyExtensions
                 {
                     Model = request.Model ?? appConfig.DefaultModel?.Filename!,
                     Denoise = request.Denoise ?? 0.5d,
-                    BatchSize = request.BatchSize is null or 0 ? 1 : request.BatchSize ?? 1,
+                    BatchSize = request.BatchSize is 0 ? 1 : request.BatchSize,
                     Seed = request.Seed is null or 0 ? Random.Shared.Next() : request.Seed,
                     PositivePrompt = request.PositivePrompt,
                     NegativePrompt = request.NegativePrompt is null or "" ? 

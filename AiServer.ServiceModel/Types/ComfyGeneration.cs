@@ -108,6 +108,8 @@ public class ComfySummary
     /// </summary>
     [Index(Unique = true)]
     public string? RefId { get; set; }
+    
+    public string? PromptId { get; set; }
 
     /// <summary>
     /// Optional Tag to group related Tasks
@@ -123,6 +125,8 @@ public class ComfySummary
     /// The Month DB the Task was created in
     /// </summary>
     public DateTime CreatedDate { get; set; }
+    
+    public long JobId { get; set; }
 }
 
 public class ComfyApiProvider
@@ -196,36 +200,6 @@ public class ComfyApiProviderModel
 
     [Reference] public ComfyApiProvider ComfyApiProvider { get; set; }
     [Reference] public ComfyApiModel ComfyApiModel { get; set; }
-}
-
-public class ComfyApiType
-{
-    [AutoIncrement] public int Id { get; set; }
-
-    /// <summary>
-    /// Name for this API Provider Type
-    /// </summary>
-    public string Name { get; set; }
-
-    /// <summary>
-    /// The website for this provider
-    /// </summary>
-    public string Website { get; set; }
-
-    /// <summary>
-    /// The API Base Url
-    /// </summary>
-    public string ApiBaseUrl { get; set; }
-
-    /// <summary>
-    /// The URL to check if the API is online
-    /// </summary>
-    public string? HeartbeatUrl { get; set; }
-
-    /// <summary>
-    /// API Paths for different AI Tasks
-    /// </summary>
-    public Dictionary<ComfyTaskType, string> TaskPaths { get; set; }
 }
 
 public class ComfyApiModel

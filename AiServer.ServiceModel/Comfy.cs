@@ -1,6 +1,5 @@
 using AiServer.ServiceModel.Types;
 using ServiceStack;
-using ServiceStack.DataAnnotations;
 
 namespace AiServer.ServiceModel;
 
@@ -115,8 +114,9 @@ public class GetComfyGeneration : IReturn<GetComfyGenerationResponse>
 
 public class GetComfyGenerationResponse
 {
+    public CreateComfyGeneration? Request { get; set; }
     public List<AiServerHostedComfyFile>? Outputs { get; set; }
-    public ComfyGenerationTask? Result { get; set; }
+    public ComfyWorkflowStatus? Result { get; set; }
     public ResponseStatus? ResponseStatus { get; set; }
 }
 
