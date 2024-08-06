@@ -1,8 +1,7 @@
-#if NET6_0_OR_GREATER
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
+using System.Data;
 using System.Reflection;
 using ServiceStack.Data;
 using ServiceStack.Host;
@@ -15,17 +14,15 @@ namespace ServiceStack.Jobs;
 
 public class BackgroundJobs : IBackgroundJobs
 {
-    private static object dbWrites = new();
+    private static readonly object dbWrites = new();
+    readonly ILogger<BackgroundJobs> log;
+    readonly BackgroundsJobFeature feature;
     
-    ILogger<BackgroundJobs> log; 
-    BackgroundsJobFeature feature;
-    IDbConnectionFactory dbFactory;
     public BackgroundJobs(ILogger<BackgroundJobs> log, BackgroundsJobFeature feature, IDbConnectionFactory dbFactory)
     {
         // Need to store local references to these dependencies otherwise wont exist on BG Thread callbacks
         this.log = log;
         this.feature = feature;
-        this.dbFactory = dbFactory;
 
         var dialect = dbFactory.GetDialectProvider();
         this.Table = dialect.GetTableName(typeof(BackgroundJob));
@@ -131,7 +128,7 @@ public class BackgroundJobs : IBackgroundJobs
                 {
                     requiresRequest.Request = reqCtx;
                 }
-                var commandResult = await feature.CommandsFeature!.ExecuteCommandAsync(command, reqCtx.Dto);
+                var commandResult = await feature.CommandsFeature.ExecuteCommandAsync(command, reqCtx.Dto);
 
                 var resultProp = commandInfo.Type.GetProperty("Result", BindingFlags.Instance | BindingFlags.Public);
                 var resultAccessor = TypeProperties.Get(commandInfo.Type).GetAccessor("Result");
@@ -141,7 +138,7 @@ public class BackgroundJobs : IBackgroundJobs
             }
             else if (job.RequestType == CommandResult.Api)
             {
-                var metadata = feature.AppHost!.Metadata;
+                var metadata = feature.AppHost.Metadata;
                 var requestType = metadata.GetRequestType(job.Request)
                     ?? throw new NotSupportedException($"API Request Type for '{job.Request}' not found.");
                 var reqCtx = CreateRequestContext(requestType, job);
@@ -257,7 +254,7 @@ public class BackgroundJobs : IBackgroundJobs
                 {
                     requiresRequest.Request = reqCtx;
                 }
-                var commandResult = await feature.CommandsFeature!.ExecuteCommandAsync(command, reqCtx.Dto);
+                var commandResult = await feature.CommandsFeature.ExecuteCommandAsync(command, reqCtx.Dto);
             }
             catch (Exception ex)
             {
@@ -348,6 +345,8 @@ public class BackgroundJobs : IBackgroundJobs
     }
 
     public List<WorkerStats> GetWorkerStats() => workers.Select(x => x.Value.GetStats()).ToList();
+    public IDbConnection OpenJobsDb() => feature.OpenJobsDb();
+    public IDbConnection OpenJobsMonthDb(DateTime createdDate) => feature.OpenJobsMonthDb(createdDate);
 
     ConcurrentDictionary<string, BackgroundJobsWorker> workers = new();
     public void Dispatch(BackgroundJob job)
@@ -371,7 +370,7 @@ public class BackgroundJobs : IBackgroundJobs
         LoadJobQueue();
         cts = new CancellationTokenSource();
         bgTask = Task.Factory.StartNew(Run, null, TaskCreationOptions.LongRunning);
-        log.LogInformation($"JOBS Starting...");
+        log.LogInformation("JOBS Starting...");
     }
 
     /// <summary>
@@ -590,7 +589,7 @@ public class BackgroundJobs : IBackgroundJobs
 
     public void Stop()
     {
-        log.LogInformation($"JOBS Stopping...");
+        log.LogInformation("JOBS Stopping...");
         cts.Cancel();
     }
 
@@ -605,128 +604,9 @@ public class BackgroundJobs : IBackgroundJobs
 
     public void Dispose()
     {
-        log.LogInformation($"JOBS Disposing...");
+        log.LogInformation("JOBS Disposing...");
         cts.Cancel();
         new IDisposable?[]{ cts, bgTask }.Dispose();
         bgTask = null;
     }
 }
-
-public static class BackgroundJobsExtensions
-{
-    public static BackgroundJobRef EnqueueApi<T>(this IBackgroundJobs jobs, T request, BackgroundJobOptions? options = null) where T : class =>
-        jobs.EnqueueApi(request.GetType().Name, request, options);
-
-    public static BackgroundJobRef EnqueueCommand<TCommand>(this IBackgroundJobs jobs, object request, BackgroundJobOptions? options = null) 
-        where TCommand : IAsyncCommand =>
-        jobs.EnqueueCommand(typeof(TCommand).Name, request, options);
-
-    public static BackgroundJob ExecuteTransientCommand<TCommand>(this IBackgroundJobs jobs, object request, BackgroundJobOptions? options = null) 
-        where TCommand : IAsyncCommand =>
-        jobs.ExecuteTransientCommand(typeof(TCommand).Name, request, options);
-
-    public static BackgroundJob ToBackgroundJob(this BackgroundJobOptions? options, string requestType, object arg)
-    {
-        return new BackgroundJob
-        {
-            RefId = options?.RefId ?? Guid.NewGuid().ToString("N"),
-            RequestId = Guid.NewGuid().ToString("N"),
-            RequestType = requestType,
-            Request = arg.GetType().Name,
-            RequestBody = ClientConfig.ToJson(arg),
-            Worker = options?.Worker,
-            Callback = options?.Callback,
-            Tag = options?.Tag,
-            CreatedBy = options?.CreatedBy,
-            CreatedDate = DateTime.UtcNow,
-            Args = options?.Args,
-            TimeoutSecs = options?.TimeoutSecs,
-            ReplyTo = options?.ReplyTo,
-            ParentId = options?.ParentId,
-            State = BackgroundJobState.Queued,
-            Attempts = 1,
-            OnSuccess = options?.OnSuccess,
-            OnFailed = options?.OnFailed,
-        };
-    }
-
-    public static T PopulateJob<T>(this BackgroundJob from, T to) where T : BackgroundJob
-    {
-        to.Id = from.Id;
-        to.ParentId = from.ParentId;
-        to.RefId = from.RefId;
-        to.Worker = from.Worker;
-        to.Tag = from.Tag;
-        to.Callback = from.Callback;
-        to.CreatedDate = from.CreatedDate;
-        to.CreatedBy = from.CreatedBy;
-        to.RequestId = from.RequestId;
-        to.RequestType = from.RequestType;
-        to.Command = from.Command;
-        to.Request = from.Request;
-        to.RequestBody = from.RequestBody;
-        to.RequestUserId = from.RequestUserId;
-        to.Response = from.Response;
-        to.ResponseBody = from.ResponseBody;
-        to.State = from.State;
-        to.StartedDate = from.StartedDate;
-        to.CompletedDate = from.CompletedDate;
-        to.DurationMs = from.DurationMs;
-        to.TimeoutSecs = from.TimeoutSecs;
-        to.RetryLimit = from.RetryLimit;
-        to.Attempts = from.Attempts;
-        to.Progress = from.Progress;
-        to.Status = from.Status;
-        to.Logs = from.Logs;
-        to.NotifiedDate = from.NotifiedDate;
-        to.LastActivityDate = from.LastActivityDate;
-        to.ReplyTo = from.ReplyTo;
-        to.ErrorCode = from.ErrorCode;
-        to.Error = from.Error;
-        to.Args = from.Args;
-        to.Meta = from.Meta;
-        return to;
-    }
-
-    public static JobSummary ToJobSummary(this BackgroundJob from)
-    {
-        return new JobSummary {
-            Id = from.Id,
-            ParentId = from.ParentId,
-            Tag = from.Tag,
-            RefId = from.RefId,
-            RequestId = from.RequestId,
-            Request = from.Request,
-            RequestType = from.RequestType,
-            Worker = from.Worker,
-            Callback = from.Callback,
-            CreatedBy = from.CreatedBy,
-            CreatedDate = from.CreatedDate,
-        };
-    }
-
-    public static void SetBackgroundJob(this IRequest req, BackgroundJob job)
-    {
-        req.Items[typeof(BackgroundJob).Name] = job;
-    }
-
-    public static BackgroundJob AssertBackgroundJob(this IRequest? req) => req.GetBackgroundJob()
-        ?? throw new Exception("BackgroundJob not found");
-
-    public static BackgroundJob? GetBackgroundJob(this IRequest? req)
-    {
-        return req?.Items.TryGetValue(nameof(BackgroundJob), out var oJob) == true
-            ? oJob as BackgroundJob
-            : null;
-    }
-
-    public static void UpdateBackgroundJobStatus(this IBackgroundJobs jobs, IRequest? req, double? progress=null, string? status=null, string? log=null)
-        => jobs.UpdateJobStatus(new(GetBackgroundJob(req) ?? throw new Exception("Background Job not found"), 
-            Progress: progress, Status: status, Log: log));
-    public static void UpdateBackgroundJobStatus(this IBackgroundJobs jobs, BackgroundJob job, double? progress=null, string? status=null, string? log=null)
-    {
-        jobs.UpdateJobStatus(new(job, Progress:progress, Status:status, Log:log));
-    }
-}
-
-#endif

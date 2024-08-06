@@ -4,7 +4,7 @@ using ServiceStack.Jobs;
 
 namespace AiServer.ServiceModel;
 
-[ConnectionInfo(NamedConnection = Databases.Jobs)]
+[NamedConnection(Databases.Jobs)]
 [Tag(Tag.OpenAi)]
 [ValidateApiKey]
 public class QueryBackgroundJobs : QueryDb<BackgroundJob>
@@ -13,7 +13,7 @@ public class QueryBackgroundJobs : QueryDb<BackgroundJob>
     public string? RefId { get; set; }
 }
 
-[ConnectionInfo(NamedConnection = Databases.Jobs)]
+[NamedConnection(Databases.Jobs)]
 [Tag(Tag.OpenAi)]
 [ValidateApiKey]
 public class QueryJobSummary : QueryDb<JobSummary>
@@ -66,27 +66,6 @@ public class CreateOpenAiChatResponse
     public long Id { get; set; }
     public string RefId { get; set; }
     public ResponseStatus? ResponseStatus { get; set; }
-}
-
-[Tag(Tag.OpenAi)]
-[ValidateApiKey]
-public class CompleteOpenAiChat : IPost, IReturn<EmptyResponse>
-{
-    public long Id { get; set; }
-    public string Provider { get; set; }
-    public int DurationMs { get; set; }
-    public OpenAiChatResponse Response { get; set; }
-    public virtual string? ReplyTo { get; set; } 
-}
-
-[Tag(Tag.OpenAi)]
-[ValidateApiKey]
-public class FailOpenAiChat : IPost, IReturn<EmptyResponse>
-{
-    public long Id { get; set; }
-    public string Provider { get; set; }
-    public int DurationMs { get; set; }
-    public ResponseStatus Error { get; set; }
 }
 
 [Tag(Tag.OpenAi)]
