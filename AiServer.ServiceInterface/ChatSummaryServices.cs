@@ -75,8 +75,8 @@ public class ChatSummaryServices(ILogger<ChatSummaryServices> log, IBackgroundJo
                     Tag = job.Tag,
                     Model = chatRequest.Request.Model,
                     Provider = job.Worker!,
-                    PromptTokens = chatResponse.Usage?.PromptTokens ?? 0, 
-                    CompletionTokens = chatResponse.Usage?.CompletionTokens ?? 0, 
+                    PromptTokens = chatResponse.Usage.PromptTokens, 
+                    CompletionTokens = chatResponse.Usage.CompletionTokens, 
                 });
             }
             catch (Exception e)
