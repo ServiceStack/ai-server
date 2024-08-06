@@ -7,6 +7,7 @@ namespace AiServer.ServiceModel;
 /// <summary>
 /// Different Models available in AI Server 
 /// </summary>
+[Icon(Svg = Icons.AiModel)]
 public class ApiModel
 {
     [AutoIncrement]
@@ -26,6 +27,7 @@ public class ApiModel
     public string? Notes { get; set; }
 }
 
+[Icon(Svg = Icons.Stats)]
 public class ChatSummary
 {
     /// <summary>

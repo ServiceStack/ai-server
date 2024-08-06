@@ -1,6 +1,6 @@
-import {ref, computed, onMounted, inject, watch, nextTick, getCurrentInstance} from "vue"
+import { ref, computed, onMounted, inject, watch, nextTick, getCurrentInstance} from "vue"
 import { queryString, setQueryString } from "@servicestack/client"
-import { useFormatters } from "@servicestack/vue"
+import { useFormatters, useClient } from "@servicestack/vue"
 import { marked } from "../markdown.mjs"
 import { ActiveApiModels, CreateOpenAiChat, WaitForOpenAiChat, OpenAiChat, BackgroundJob } from "dtos.mjs"
 
@@ -140,7 +140,7 @@ export default {
 `,
     setup() {
 
-        const client = inject('client')
+        const client = useClient()
 
         const noPrompt = '[ None ]'
         const customPrompt = 'Custom...'

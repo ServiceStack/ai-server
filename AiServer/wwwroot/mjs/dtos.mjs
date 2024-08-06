@@ -1,5 +1,5 @@
 /* Options:
-Date: 2024-08-04 23:20:48
+Date: 2024-08-06 17:36:30
 Version: 8.31
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5005
@@ -318,7 +318,7 @@ export var BackgroundJobState;
     BackgroundJobState["Cancelled"] = "Cancelled"
 })(BackgroundJobState || (BackgroundJobState = {}));
 export class BackgroundJob {
-    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,callback?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,requestUserId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,durationMs?:number,timeoutSecs?:number,retryLimit?:number,attempts?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index: string]: string; },meta?:{ [index: string]: string; },transient?:boolean}} [init] */
+    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,callback?:string,runAfter?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,requestUserId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,durationMs?:number,timeoutSecs?:number,retryLimit?:number,attempts?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index: string]: string; },meta?:{ [index: string]: string; },transient?:boolean,onSuccess?:Action<Object>,onFailed?:Action<Exception>}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {number} */
     id;
@@ -332,6 +332,8 @@ export class BackgroundJob {
     tag;
     /** @type {?string} */
     callback;
+    /** @type {?string} */
+    runAfter;
     /** @type {string} */
     createdDate;
     /** @type {?string} */
@@ -388,13 +390,17 @@ export class BackgroundJob {
     meta;
     /** @type {boolean} */
     transient;
+    /** @type {?Action<Object>} */
+    onSuccess;
+    /** @type {?Action<Exception>} */
+    onFailed;
 }
 export class CompletedJob extends BackgroundJob {
-    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,callback?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,requestUserId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,durationMs?:number,timeoutSecs?:number,retryLimit?:number,attempts?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index: string]: string; },meta?:{ [index: string]: string; },transient?:boolean}} [init] */
+    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,callback?:string,runAfter?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,requestUserId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,durationMs?:number,timeoutSecs?:number,retryLimit?:number,attempts?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index: string]: string; },meta?:{ [index: string]: string; },transient?:boolean,onSuccess?:Action<Object>,onFailed?:Action<Exception>}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
 }
 export class FailedJob extends BackgroundJob {
-    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,callback?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,requestUserId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,durationMs?:number,timeoutSecs?:number,retryLimit?:number,attempts?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index: string]: string; },meta?:{ [index: string]: string; },transient?:boolean}} [init] */
+    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,callback?:string,runAfter?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,requestUserId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,durationMs?:number,timeoutSecs?:number,retryLimit?:number,attempts?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index: string]: string; },meta?:{ [index: string]: string; },transient?:boolean,onSuccess?:Action<Object>,onFailed?:Action<Exception>}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
 }
 export class OpenAiMessage {
@@ -714,29 +720,75 @@ export class ComfySummary {
     /** @type {string} */
     createdDate;
 }
-export class TaskSummary {
-    /** @param {{id?:number,type?:TaskType,model?:string,provider?:string,refId?:string,tag?:string,promptTokens?:number,completionTokens?:number,durationMs?:number,createdDate?:string}} [init] */
+export class JobSummary {
+    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,request?:string,response?:string,requestUserId?:string,callback?:string,startedDate?:string,completedDate?:string,status?:BackgroundJobState,durationMs?:number,retryLimit?:number,retries?:number,errorCode?:string,errorMessage?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {number} */
     id;
-    /** @type {TaskType} */
-    type;
-    /** @type {string} */
-    model;
-    /** @type {?string} */
-    provider;
+    /** @type {?number} */
+    parentId;
     /** @type {?string} */
     refId;
     /** @type {?string} */
+    worker;
+    /** @type {?string} */
     tag;
-    /** @type {number} */
-    promptTokens;
-    /** @type {number} */
-    completionTokens;
-    /** @type {number} */
-    durationMs;
     /** @type {string} */
     createdDate;
+    /** @type {?string} */
+    createdBy;
+    /** @type {?string} */
+    requestId;
+    /** @type {string} */
+    requestType;
+    /** @type {string} */
+    request;
+    /** @type {string} */
+    response;
+    /** @type {?string} */
+    requestUserId;
+    /** @type {?string} */
+    callback;
+    /** @type {?string} */
+    startedDate;
+    /** @type {?string} */
+    completedDate;
+    /** @type {BackgroundJobState} */
+    status;
+    /** @type {number} */
+    durationMs;
+    /** @type {?number} */
+    retryLimit;
+    /** @type {number} */
+    retries;
+    /** @type {?string} */
+    errorCode;
+    /** @type {?string} */
+    errorMessage;
+}
+export class PageStats {
+    /** @param {{label?:string,total?:number}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    label;
+    /** @type {number} */
+    total;
+}
+export class SummaryStats {
+    /** @param {{name?:string,total?:number,totalPromptTokens?:number,totalCompletionTokens?:number,totalMinutes?:number,tokensPerSecond?:number}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    name;
+    /** @type {number} */
+    total;
+    /** @type {number} */
+    totalPromptTokens;
+    /** @type {number} */
+    totalCompletionTokens;
+    /** @type {number} */
+    totalMinutes;
+    /** @type {number} */
+    tokensPerSecond;
 }
 export class ComfyHostedFileOutput {
     /** @param {{url?:string,fileName?:string}} [init] */
@@ -755,14 +807,6 @@ export class AiServerHostedComfyFile {
     fileName;
     /** @type {string} */
     contentType;
-}
-export class PageStats {
-    /** @param {{label?:string,total?:number}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {string} */
-    label;
-    /** @type {number} */
-    total;
 }
 export class WorkerStats {
     /** @param {{name?:string,queued?:number,received?:number,completed?:number,retries?:number,failed?:number}} [init] */
@@ -828,22 +872,6 @@ export class OpenAiUsage {
      * @description Total number of tokens used in the request (prompt + completion). */
     total_tokens;
 }
-export class SummaryStats {
-    /** @param {{name?:string,totalTasks?:number,totalPromptTokens?:number,totalCompletionTokens?:number,totalMinutes?:number,tokensPerSecond?:number}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {string} */
-    name;
-    /** @type {number} */
-    totalTasks;
-    /** @type {number} */
-    totalPromptTokens;
-    /** @type {number} */
-    totalCompletionTokens;
-    /** @type {number} */
-    totalMinutes;
-    /** @type {number} */
-    tokensPerSecond;
-}
 export class ToolCall {
     /** @param {{id?:string,type?:string,function?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -859,6 +887,32 @@ export class ToolCall {
      * @type {string}
      * @description The function that the model called. */
     function;
+}
+export class AdminDataResponse {
+    /** @param {{pageStats?:PageStats[]}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {PageStats[]} */
+    pageStats;
+}
+export class GetSummaryStatsResponse {
+    /** @param {{providerStats?:SummaryStats[],modelStats?:SummaryStats[],monthStats?:SummaryStats[]}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {SummaryStats[]} */
+    providerStats;
+    /** @type {SummaryStats[]} */
+    modelStats;
+    /** @type {SummaryStats[]} */
+    monthStats;
+}
+export class StringsResponse {
+    /** @param {{results?:string[],meta?:{ [index: string]: string; },responseStatus?:ResponseStatus}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string[]} */
+    results;
+    /** @type {{ [index: string]: string; }} */
+    meta;
+    /** @type {ResponseStatus} */
+    responseStatus;
 }
 export class QueueComfyWorkflowResponse {
     /** @param {{request?:ComfyWorkflowRequest,status?:ComfyWorkflowStatus,workflowResponse?:ComfyWorkflowResponse,promptId?:string,fileOutputs?:ComfyHostedFileOutput[],textOutputs?:ComfyTextOutput[]}} [init] */
@@ -1019,22 +1073,6 @@ export class HelloResponse {
     /** @type {string} */
     result;
 }
-export class AdminDataResponse {
-    /** @param {{pageStats?:PageStats[]}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {PageStats[]} */
-    pageStats;
-}
-export class StringsResponse {
-    /** @param {{results?:string[],meta?:{ [index: string]: string; },responseStatus?:ResponseStatus}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {string[]} */
-    results;
-    /** @type {{ [index: string]: string; }} */
-    meta;
-    /** @type {ResponseStatus} */
-    responseStatus;
-}
 export class GetWorkerStatsResponse {
     /** @param {{results?:WorkerStats[],responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -1141,16 +1179,6 @@ export class StringResponse {
     /** @type {ResponseStatus} */
     responseStatus;
 }
-export class GetSummaryStatsResponse {
-    /** @param {{providerStats?:SummaryStats[],modelStats?:SummaryStats[],monthStats?:SummaryStats[]}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {SummaryStats[]} */
-    providerStats;
-    /** @type {SummaryStats[]} */
-    modelStats;
-    /** @type {SummaryStats[]} */
-    monthStats;
-}
 export class IdResponse {
     /** @param {{id?:string,responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -1188,6 +1216,29 @@ export class AuthenticateResponse {
     responseStatus;
     /** @type {{ [index: string]: string; }} */
     meta;
+}
+export class AdminData {
+    constructor(init) { Object.assign(this, init) }
+    getTypeName() { return 'AdminData' }
+    getMethod() { return 'GET' }
+    createResponse() { return new AdminDataResponse() }
+}
+export class GetSummaryStats {
+    /** @param {{from?:string,to?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?string} */
+    from;
+    /** @type {?string} */
+    to;
+    getTypeName() { return 'GetSummaryStats' }
+    getMethod() { return 'GET' }
+    createResponse() { return new GetSummaryStatsResponse() }
+}
+export class PopulateChatSummary {
+    constructor(init) { Object.assign(this, init) }
+    getTypeName() { return 'PopulateChatSummary' }
+    getMethod() { return 'GET' }
+    createResponse() { return new StringsResponse() }
 }
 export class QueueComfyWorkflow {
     /** @param {{model?:string,steps?:number,batchSize?:number,seed?:number,positivePrompt?:string,negativePrompt?:string,imageInput?:string,speechInput?:string,maskInput?:string,sampler?:ComfySampler,scheduler?:string,cfgScale?:number,denoise?:number,upscaleModel?:string,width?:number,height?:number,clip?:string,sampleLength?:number,taskType?:ComfyTaskType,refId?:string,provider?:string,replyTo?:string,tag?:string}} [init] */
@@ -1551,12 +1602,6 @@ export class Hello {
     getMethod() { return 'GET' }
     createResponse() { return new HelloResponse() }
 }
-export class AdminData {
-    constructor(init) { Object.assign(this, init) }
-    getTypeName() { return 'AdminData' }
-    getMethod() { return 'GET' }
-    createResponse() { return new AdminDataResponse() }
-}
 export class ActiveApiModels {
     constructor(init) { Object.assign(this, init) }
     getTypeName() { return 'ActiveApiModels' }
@@ -1735,17 +1780,6 @@ export class FirePeriodicTask {
     getTypeName() { return 'FirePeriodicTask' }
     getMethod() { return 'POST' }
     createResponse() { return new EmptyResponse() }
-}
-export class GetSummaryStats {
-    /** @param {{from?:string,to?:string}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {?string} */
-    from;
-    /** @type {?string} */
-    to;
-    getTypeName() { return 'GetSummaryStats' }
-    getMethod() { return 'GET' }
-    createResponse() { return new GetSummaryStatsResponse() }
 }
 export class StopComfyWorkers {
     constructor(init) { Object.assign(this, init) }
@@ -1969,10 +2003,14 @@ export class QueryBackgroundJobs extends QueryDb {
     getMethod() { return 'GET' }
     createResponse() { return new QueryResponse() }
 }
-export class QueryTaskSummary extends QueryDb {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+export class QueryJobSummary extends QueryDb {
+    /** @param {{id?:number,refId?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
-    getTypeName() { return 'QueryTaskSummary' }
+    /** @type {?number} */
+    id;
+    /** @type {?string} */
+    refId;
+    getTypeName() { return 'QueryJobSummary' }
     getMethod() { return 'GET' }
     createResponse() { return new QueryResponse() }
 }

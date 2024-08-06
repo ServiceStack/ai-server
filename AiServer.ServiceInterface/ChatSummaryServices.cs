@@ -27,7 +27,7 @@ public class ChatSummaryServices(ILogger<ChatSummaryServices> log, IBackgroundJo
         {
             var sql = $"""
                        SELECT {group} AS Name,
-                              COUNT(*) AS TotalTasks,
+                              COUNT(*) AS Total,
                               SUM(PromptTokens) AS TotalPromptTokens,
                               SUM(CompletionTokens) AS TotalCompletionTokens,
                               PRINTF("%.2f", SUM(DurationMs) / 1000 / 60.0) AS TotalMinutes,

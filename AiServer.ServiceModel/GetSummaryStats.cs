@@ -20,7 +20,7 @@ public class GetSummaryStatsResponse
 public class SummaryStats
 {
     public string Name { get; set; }
-    public int TotalTasks { get; set; }
+    public int Total { get; set; }
     public int TotalPromptTokens { get; set; }
     public int TotalCompletionTokens { get; set; }
     public double TotalMinutes { get; set; }

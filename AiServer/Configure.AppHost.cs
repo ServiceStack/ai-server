@@ -80,12 +80,6 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
 
     public override void Configure()
     {
-        // Configure ServiceStack, Run custom logic after ASP.NET Core Startup
-        var authSecret = Environment.GetEnvironmentVariable("AUTH_SECRET") ?? AppConfig.Instance.AuthSecret;
-        SetConfig(new HostConfig {
-            AdminAuthSecret = authSecret,
-        });
-
         // Increase timeout on all HttpClient requests
         var existingClientFactory = HttpUtils.CreateClient; 
         HttpUtils.CreateClient = () =>
@@ -99,8 +93,8 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
         // Avoid having to re-renter AuthSecret and API Keys during Development
         PreRequestFilters.Add((req, res) =>
         {
-            req.Items[Keywords.AuthSecret] = authSecret;
-            req.Items[Keywords.Authorization] = "Bearer " + authSecret;
+            req.Items[Keywords.AuthSecret] = Config.AdminAuthSecret;
+            req.Items[Keywords.Authorization] = "Bearer " + Config.AdminAuthSecret;
         });
         #endif
     }

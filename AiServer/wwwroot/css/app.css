@@ -1032,6 +1032,10 @@ select{
   margin-top: -2.5rem;
 }
 
+.-mt-4 {
+  margin-top: -1rem;
+}
+
 .-mt-8 {
   margin-top: -2rem;
 }
@@ -1138,6 +1142,14 @@ select{
 
 .mt-auto {
   margin-top: auto;
+}
+
+.-mt-6 {
+  margin-top: -1.5rem;
+}
+
+.-ml-2 {
+  margin-left: -0.5rem;
 }
 
 .block {

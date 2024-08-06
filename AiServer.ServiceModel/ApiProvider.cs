@@ -1,3 +1,4 @@
+using ServiceStack;
 using ServiceStack.DataAnnotations;
 
 namespace AiServer.ServiceModel;
@@ -5,6 +6,7 @@ namespace AiServer.ServiceModel;
 /// <summary>
 ///  An API Provider that can process tasks
 /// </summary>
+[Icon(Svg = Icons.Work)]
 public class ApiProvider
 {
     [AutoIncrement]
