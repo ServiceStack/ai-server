@@ -13,8 +13,8 @@ public class ComfyFileServices(AppData appData,
     IHttpClientFactory httpClientFactory,
     ComfyProviderFactory comfyProviderFactory,
     IDbConnectionFactory dbFactory,
+    IBackgroundJobs jobs,
     AppConfig appConfig,
-    BackgroundsJobFeature feature,
     ILogger<ComfyFileServices> log) : Service
 {
     private static TimeSpan waitforTimeout = TimeSpan.FromSeconds(120);
@@ -24,7 +24,7 @@ public class ComfyFileServices(AppData appData,
         if (request.Id == null && request.RefId == null)
             throw new ArgumentNullException(nameof(request.Id));
 
-        var summary = await feature.GetJobSummaryAsync(request.Id, request.RefId);
+        var summary = await jobs.GetJobSummaryAsync(request.Id, request.RefId);
         if (summary == null)
             throw HttpError.NotFound("Job not found");
         
@@ -32,7 +32,7 @@ public class ComfyFileServices(AppData appData,
         var start = DateTime.UtcNow;
         while (DateTime.UtcNow - start < waitforTimeout)
         {
-            var backgroundJob = await feature.GetBackgroundJob(summary);
+            var backgroundJob = await jobs.GetBackgroundJob(summary);
             if (backgroundJob?.CompletedDate != null)
             {
                 var (req, res) = backgroundJob.ExtractRequestResponse<CreateComfyGeneration, ComfyWorkflowStatus>();
@@ -83,11 +83,11 @@ public class ComfyFileServices(AppData appData,
         
         log.LogInformation($"fullFileName: {fullFileName}, promptId: {promptId}, comfyFile: {comfyFile}");
         
-        var summary = await feature.GetJobSummaryAsync(null, promptId);
+        var summary = await jobs.GetJobSummaryAsync(null, promptId);
         if (summary == null)
             throw HttpError.NotFound("Job not found");
         
-        var job = await feature.GetBackgroundJob(summary);
+        var job = await jobs.GetBackgroundJob(summary);
         if (job == null)
             throw HttpError.NotFound("Job not found");
         
@@ -174,7 +174,7 @@ public static class BackgroundJobsFeatureExtensions
         );
     }
     public static async Task<BackgroundJob?> GetBackgroundJob(
-        this BackgroundsJobFeature feature, 
+        this IBackgroundJobs feature, 
         JobSummary summary)
     {
         using var db = feature.OpenJobsDb();
@@ -198,7 +198,7 @@ public static class BackgroundJobsFeatureExtensions
     }
     
     public static async Task<JobSummary?> GetJobSummaryAsync(
-        this BackgroundsJobFeature feature,int? id, string? refId)
+        this IBackgroundJobs feature,int? id, string? refId)
     {
         using var db = feature.OpenJobsDb();
         var q = db.From<JobSummary>();
