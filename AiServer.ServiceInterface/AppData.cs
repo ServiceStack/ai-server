@@ -179,11 +179,11 @@ public class AppData(ILogger<AppData> log,
         }
     }
 
-    private void DisposeWorkers<T>(T[] workers) where T : IDisposable
+    private void DisposeWorkers<T>(T?[] workers) where T : IDisposable
     {
         foreach (var worker in workers)
         {
-            worker.Dispose();
+            worker?.Dispose();
         }
     }
     
