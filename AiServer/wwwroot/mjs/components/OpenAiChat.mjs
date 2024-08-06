@@ -307,7 +307,6 @@ export default {
         }
 
         function selectModel() {
-            console.log('selectModel', prefs.value.model)
             savePrefs()
         }
         function selectPrompt(promptName) {

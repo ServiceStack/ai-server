@@ -105,6 +105,7 @@ public class ApiProviderModel
 /// <summary>
 /// The behavior of the API Provider
 /// </summary>
+[Icon(Svg = Icons.Type)]
 public class ApiType
 {
     [AutoIncrement]
