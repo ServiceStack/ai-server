@@ -63,11 +63,33 @@
     <main :class="user ? 'lg:pl-72' : ''">
         <div v-if="init" class="pl-4 sm:pl-6 lg:pl-8">
             <div v-if="!user">
-                <div class="absolute flex -ml-2 mt-4">
-                    <img class="mr-1 w-8 h-8 w-auto text-indigo-600" src="/img/logo.svg" alt="Logo">
-                    <span class="hidden sm:block text-2xl font-semibold">Admin</span>
+                <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+                    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+                        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                            <div class="flex justify-center mb-4">
+                                <img class="mr-1 w-8 h-8 w-auto text-indigo-600" src="/img/logo.svg" alt="Logo">
+                                <span class="hidden sm:block text-2xl font-semibold">Admin</span>
+                            </div>
+                            <error-summary v-if="authError" class="mb-3" :status="authError"></error-summary>
+                            <form @submit.prevent="doSignIn">
+                                <div class="flex flex-1 flex-col justify-between">
+                                    <div class="">
+                                        <div class="space-y-6">
+                                            <fieldset class="grid grid-cols-12 gap-6">
+                                                <div class="w-full col-span-12">
+                                                    <text-input type="password" v-model="authSecret" placeholder="Auth Secret"></text-input>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-8">
+                                    <primary-button class="w-full">Sign In</primary-button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <sign-in></sign-in>
             </div>
             <div v-else>
                 <h1 v-if="activeSection.title" class="hidden lg:block pt-4 mb-2 text-3xl font-bold leading-tight tracking-tight text-gray-900">{{ activeSection.title }}</h1>
@@ -78,8 +100,8 @@
 </div>
 
 <script type="module">
-import { createApp, ref, onMounted, shallowRef } from "vue"
-import { JsonApiClient, leftPart, rightPart, appendQueryString, humanize, setQueryString } from "@servicestack/client"
+import { createApp, ref, inject, onMounted, shallowRef } from "vue"
+import { JsonServiceClient, leftPart, rightPart, appendQueryString, humanize, setQueryString } from "@servicestack/client"
 import ServiceStackVue, { useClient, useAuth, useMetadata } from "@servicestack/vue"
 import { Authenticate, AdminData, GetWorkerStats, GetSummaryStats } from "dtos.mjs"
 import OpenAiChat from "/mjs/components/OpenAiChat.mjs"
@@ -262,24 +284,40 @@ const App = {
             if (pushState) history.pushState({ section, ...args }, null, appendQueryString(`#${section}`, args))
             sidebar.value.toggle(false)
         }
+        
+        const authSecret = ref('')
+        const authError = ref('')
+        const serviceClient = inject('client')
+        async function doSignIn() {
+            authError.value = ''
+            if (!authSecret.value) return
+            serviceClient.headers.set("authsecret", authSecret.value)
+            const api = await serviceClient.api(new Authenticate())
+            if (api.succeeded) {
+                signIn(api.response)
+            } else {
+                authError.value = api.error
+                authError.value.message = authError.value.message || 'Invalid Auth Secret'
+            }
+        }
 
         onMounted(async () => {
             window.addEventListener('popstate', event => {
                 navTo(event.state?.section || getSection(), {}, false)
             })
 
-            const api = await client.api(new Authenticate())
-            if (api.succeeded) {
-                signIn(api.response)
-            }
             init.value = true
+            await doSignIn()
         })
 
-        return { init, sidebar, user, sections, activeSection, navTo, refreshKey, showUserMenu }
+        return { 
+            init, sidebar, user, sections, activeSection, navTo, refreshKey, showUserMenu, 
+            authSecret, authError, doSignIn, 
+        }
     }
 }
 
-const client = JsonApiClient.create()
+const client = new JsonServiceClient()
 const app = createApp(App)
 app.use(ServiceStackVue)
 app.component('RouterLink', ServiceStackVue.component('RouterLink'))

@@ -17,6 +17,9 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
         .ConfigureServices((context,services) => {
             // Configure ASP.NET Core IOC Dependencies
             context.Configuration.GetSection(nameof(AppConfig)).Bind(AppConfig.Instance);
+            var authSecret = Environment.GetEnvironmentVariable("AUTH_SECRET");
+            if (authSecret != null)
+                AppConfig.Instance.AuthSecret = authSecret;
             services.AddSingleton(AppConfig.Instance);
             services.AddSingleton<AppData>();
             
@@ -93,8 +96,8 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
         // Avoid having to re-renter AuthSecret and API Keys during Development
         PreRequestFilters.Add((req, res) =>
         {
-            req.Items[Keywords.AuthSecret] = Config.AdminAuthSecret;
-            req.Items[Keywords.Authorization] = "Bearer " + Config.AdminAuthSecret;
+            // req.Items[Keywords.AuthSecret] = Config.AdminAuthSecret;
+            // req.Items[Keywords.Authorization] = "Bearer " + Config.AdminAuthSecret;
         });
         #endif
     }

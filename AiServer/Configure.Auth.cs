@@ -1,4 +1,5 @@
-﻿using ServiceStack.Auth;
+﻿using AiServer.ServiceInterface;
+using ServiceStack.Auth;
 
 [assembly: HostingStartup(typeof(ConfigureAuth))]
 
@@ -9,8 +10,7 @@ public class ConfigureAuth : IHostingStartup
     public void Configure(IWebHostBuilder builder) => builder
         .ConfigureServices(services =>
         {
-            var authSecret = Environment.GetEnvironmentVariable("AUTH_SECRET");
-            services.AddPlugin(new AuthFeature(new AuthSecretAuthProvider(authSecret ?? "p@55wOrd")));
+            services.AddPlugin(new AuthFeature(new AuthSecretAuthProvider(AppConfig.Instance.AuthSecret)));
             services.AddPlugin(new ApiKeysFeature());
         })
         .ConfigureAppHost(appHost =>
