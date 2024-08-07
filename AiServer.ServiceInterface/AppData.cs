@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using AiServer.ServiceInterface.Comfy;
+using AiServer.ServiceInterface.Replicate;
 using Microsoft.Extensions.Logging;
 using ServiceStack;
 using ServiceStack.Messaging;
@@ -24,6 +25,8 @@ public class AppData(ILogger<AppData> log,
     private long nextComfyTaskId = -1;
     private static readonly object comfyLock = new();
     public ComfyApiProvider[] ComfyApiProviders { get; set; } = [];
+    
+    public DiffusionApiProvider[] DiffusionApiProviders { get; set; } = [];
 
     // Shared properties
     private CancellationTokenSource? cts;
@@ -36,10 +39,15 @@ public class AppData(ILogger<AppData> log,
     
     public ComfyApiProvider AssertComfyProvider(string name) => ComfyApiProviders.FirstOrDefault(x => x.Name == name)
         ?? throw new NotSupportedException($"Comfy Provider {name} not found");
+    
+    public DiffusionApiProvider AssertDiffusionProvider(string name) => DiffusionApiProviders.FirstOrDefault(x => x.Name == name)
+        ?? throw new NotSupportedException($"Diffusion Provider {name} not found");
 
     // Comfy-specific methods
     public void SetInitialComfyTaskId(long initialValue) => Interlocked.Exchange(ref nextComfyTaskId, initialValue);
     public long LastComfyTaskId => Interlocked.Read(ref nextComfyTaskId);
+    
+
     public long GetNextComfyTaskId() => Interlocked.Increment(ref nextComfyTaskId);
     
     public void ResetInitialTaskIds(IDbConnection db)

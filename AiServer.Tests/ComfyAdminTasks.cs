@@ -61,7 +61,7 @@ public class ComfyAdminTasks
             {
                 Height = 1024,
                 Width = 1024,
-                Sampler = ComfySampler.dpmpp_2m_sde,
+                Sampler = ComfySampler.euler_ancestral,
                 Scheduler = "karras",
                 CfgScale = 6.0,
                 Steps = 18
@@ -153,7 +153,7 @@ public class ComfyAdminTasks
                 
                 modelStatus.ThrowIfError();
                 var dlStatus = modelStatus.Response.DownloadStatus;
-                if(dlStatus.Progress == -1 || dlStatus.Progress < 100)
+                if(dlStatus.Progress == -1 || (dlStatus.Progress > 0 && dlStatus.Progress < 100))
                 {
                     Console.WriteLine($"Model {model.Id} is not fully downloaded, clearing");
                     var response = await client.ApiAsync(new DeleteComfyApiProviderModel()
