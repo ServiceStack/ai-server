@@ -43,6 +43,8 @@ public class ComfyGenerationServices(
         // Find model
         var comfyApiModel = await Db.SingleAsync<ComfyApiModel>(x => x.Name == model || 
                                                                      x.Filename == model);
+        
+        log.LogInformation($"Using model : {comfyApiModel.ToJson()}");
         if (comfyApiModel == null)
             throw HttpError.NotFound($"Model {model} not found");
         
@@ -78,6 +80,7 @@ public class ComfyGenerationServices(
         
         var modelSettings = await Db.SingleAsync<ComfyApiModelSettings>(x => x.Id == comfyApiModel.Id);
         request.Request = request.Request.ApplyModelDefaults(AppConfig.Instance, modelSettings);
+        log.LogInformation($"Model settings: {request.Request.ToJson()}");
 
         var jobRef = jobs.EnqueueCommand<CreateComfyGenerationCommand>(request, new()
         {
