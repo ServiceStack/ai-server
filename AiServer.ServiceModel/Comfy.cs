@@ -95,6 +95,8 @@ public class CreateComfyGeneration : ICreateDb<ComfyGenerationTask>, IReturn<Cre
     public string? ReplyTo { get; set; }
     public string? Tag { get; set; }
     public ComfyWorkflowRequest Request { get; set; }
+    
+    public object Context { get; set; }
 }
 
 public class CreateComfyGenerationResponse
@@ -108,7 +110,7 @@ public class CreateComfyGenerationResponse
 [ValidateApiKey]
 public class GetComfyGeneration : IReturn<GetComfyGenerationResponse>
 {
-    public long? Id { get; set; }
+    public int? Id { get; set; }
     public string? RefId { get; set; }
 }
 

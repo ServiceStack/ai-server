@@ -18,6 +18,38 @@ public class ComfyFileServices(AppData appData,
     ILogger<ComfyFileServices> log) : Service
 {
     private static TimeSpan waitforTimeout = TimeSpan.FromSeconds(120);
+
+    public async Task<object> Any(GetComfyGeneration request)
+    {
+        if (request.Id == null && request.RefId == null)
+            throw new ArgumentNullException(nameof(request.Id));
+
+        var summary = await jobs.GetJobSummaryAsync(request.Id, request.RefId);
+        if (summary == null)
+            throw HttpError.NotFound("Job not found");
+        
+        var backgroundJob = await jobs.GetBackgroundJob(summary);
+        if (backgroundJob?.CompletedDate != null)
+        {
+            var (req, res) = backgroundJob.ExtractRequestResponse<CreateComfyGeneration, ComfyWorkflowStatus>();
+            if (req != null && res != null)
+            {
+                var outputs = res.Outputs.ToHostedComfyFiles(
+                    appConfig, backgroundJob.RefId, 
+                    summary.CreatedDate.Year.ToString(), 
+                    summary.CreatedDate.Month.ToString("00"), 
+                    summary.CreatedDate.Day.ToString("00"));
+                return new GetComfyGenerationResponse
+                {
+                    Request = req,
+                    Result = res,
+                    Outputs = outputs,
+                };
+            }
+        };
+        
+        return HttpError.NotFound("Job not found");
+    }
     
     public async Task<object> Any(WaitForComfyGeneration request)
     {

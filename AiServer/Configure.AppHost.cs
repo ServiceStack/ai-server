@@ -30,6 +30,16 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             services.AddSingleton<ComfyProvider>();
             services.AddSingleton<ComfyProviderFactory>();
             
+            // If development, ignore SSL
+            if (context.HostingEnvironment.IsDevelopment())
+            {
+                HttpClientHandler? clientHandler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
+                };
+                HttpUtils.CreateClient = () => new HttpClient(clientHandler);
+            }
+
             AppConfig.Instance.CivitAiApiKey ??= Environment.GetEnvironmentVariable("CIVIT_AI_API_KEY");
             
             services.AddSingleton(x => new CivitAiClient(x.GetService<IHttpClientFactory>(), 

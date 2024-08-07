@@ -31,7 +31,12 @@ public class CreateComfyGenerationCommand(AppData appData, IBackgroundJobs jobs,
 
             if (job.ReplyTo != null)
             {
-                jobs.EnqueueCommand<NotifyComfyGenerationResponseCommand>(response, new() {
+                jobs.EnqueueCommand<NotifyComfyGenerationResponseCommand>(new ComfyWorkflowCallback
+                {
+                    Status = status,
+                    Context = request.Context,
+                    RefId = job.RefId,
+                }, new() {
                     ParentId = job.Id,
                     ReplyTo = job.ReplyTo,
                 });

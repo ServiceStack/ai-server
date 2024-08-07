@@ -32,8 +32,8 @@ public static class ComfyExtensions
                     Seed = request.Seed is null or 0 ? Random.Shared.Next() : request.Seed,
                     PositivePrompt = request.PositivePrompt,
                     NegativePrompt = request.NegativePrompt is null or "" ? 
-                        (modelSettings?.NegativePrompt ?? "low quality, blurry, noisy, compression artifacts") : 
-                        request.NegativePrompt + (modelSettings?.NegativePrompt ?? "low quality, blurry, noisy, compression artifacts"),
+                        (modelSettings?.NegativePrompt ?? ",low quality, blurry, noisy, compression artifacts") : 
+                        request.NegativePrompt + (modelSettings?.NegativePrompt ?? ",low quality, blurry, noisy, compression artifacts"),
                     Scheduler = request.Scheduler is null or "" ? modelSettings?.Scheduler ?? "normal" : request.Scheduler,
                     Steps = request.Steps is null or 0 ? modelSettings?.Steps ?? 25 : request.Steps,
                     CfgScale = request.CfgScale is null or 0 ? modelSettings?.CfgScale ?? 7 : request.CfgScale,
