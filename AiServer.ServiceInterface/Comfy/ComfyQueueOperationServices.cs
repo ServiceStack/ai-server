@@ -59,22 +59,6 @@ public class ComfyQueueOperationServices(AppData appData, IDbConnectionFactory d
                 : $"{apiProvider.Name} was taken offline"
         };
     }
-
-    public async Task<object> Any(UpdateComfyApiProvider request)
-    {
-        var result = await autoQuery.PartialUpdateAsync<ComfyApiProvider>(request, base.Request);
-        var worker = appData.ComfyProviderWorkers.FirstOrDefault(x => x.Id == request.Id);
-        worker?.Update(request);
-
-        if (request.Enabled == true || request.Concurrency > 0)
-        {
-            MessageProducer.Publish(new QueueTasks {
-                DelegateComfyTasks = new()
-            });
-        }
-        
-        return result;
-    }
     
     public async Task<object> Any(AddComfyProviderModel request)
     {

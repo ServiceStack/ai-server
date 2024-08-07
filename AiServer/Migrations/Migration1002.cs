@@ -195,8 +195,10 @@ public class Migration1002 : MigrationBase
         alpha
     }
 
+    
     public class ComfySummary
     {
+        [AutoIncrement]
         public long Id { get; set; }
     
         /// <summary>
@@ -219,6 +221,8 @@ public class Migration1002 : MigrationBase
         /// </summary>
         [Index(Unique = true)]
         public string? RefId { get; set; }
+    
+        public string? PromptId { get; set; }
 
         /// <summary>
         /// Optional Tag to group related Tasks
@@ -234,6 +238,8 @@ public class Migration1002 : MigrationBase
         /// The Month DB the Task was created in
         /// </summary>
         public DateTime CreatedDate { get; set; }
+    
+        public long JobId { get; set; }
     }
 
     [EnumAsInt]
@@ -357,36 +363,6 @@ public class Migration1002 : MigrationBase
         public ComfyApiModel ComfyApiModel { get; set; }
     }
 
-    public class ComfyApiType
-    {
-        [AutoIncrement] public int Id { get; set; }
-
-        /// <summary>
-        /// Name for this API Provider Type
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// The website for this provider
-        /// </summary>
-        public string Website { get; set; }
-
-        /// <summary>
-        /// The API Base Url
-        /// </summary>
-        public string ApiBaseUrl { get; set; }
-
-        /// <summary>
-        /// The URL to check if the API is online
-        /// </summary>
-        public string? HeartbeatUrl { get; set; }
-
-        /// <summary>
-        /// API Paths for different AI Tasks
-        /// </summary>
-        public Dictionary<ComfyTaskType, string> TaskPaths { get; set; }
-    }
-
     public class ComfyApiModel
     {
         [AutoIncrement] 
@@ -437,71 +413,10 @@ public class Migration1002 : MigrationBase
         Db.CreateTable<ComfyApiModel>();
         Db.CreateTable<ComfyApiProvider>();
         Db.CreateTable<ComfyApiProviderModel>();
-        Db.CreateTable<ComfyApiType>();
         Db.CreateTable<ComfyApiModelSettings>();
         
         Db.CreateTable<ComfyGenerationTask>();
         Db.CreateTable<ComfySummary>();
-        
-        // Initialize providers, models, model settings into database
-        
-        // Each type is prefixed with 'ComfyApi'
-        // A `Provider` is a server that can provide the functionality of the workflow processing
-        // A `Model` is the model details about where it came from, name etc.
-        // A `ModelSettings` is the default settings for a specific model, since models can be sensitive to 
-        // Inference settings due to how they are trained or fine tuned.
-        // A `ProviderModel` is the relationship between agents and what models they have available.
-
-        // var provider = new ComfyApiProvider
-        // {
-        //     Name = "comfy-dell.pvq.app",
-        //     ApiBaseUrl = "https://comfy-dell.pvq.app/api",
-        //     Concurrency = 1,
-        //     HeartbeatUrl = "/",
-        //     Enabled = true,
-        //     CreatedDate = DateTime.UtcNow,
-        //     Priority = 1,
-        //     ApiKey = "testtest1234",
-        // };
-        //
-        // var providerId = (int)Db.Insert(provider, selectIdentity: true);
-        // provider.Id = providerId;
-        //
-        // var model = new ComfyApiModel
-        // {
-        //     Name = "SDXL Lightning 4-Step",
-        //     Filename = "sdxl_lightning_4step.safetensors",
-        //     DownloadUrl =
-        //         "https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step.safetensors?download=true",
-        //     CreatedDate = DateTime.UtcNow,
-        //     Url = "https://huggingface.co/ByteDance/SDXL-Lightning"
-        // };
-        //
-        // var modelId = (int)Db.Insert(model, selectIdentity: true);
-        // model.Id = modelId;
-        //
-        // var modelSetting = new ComfyApiModelSettings
-        // {
-        //     Width = 1024,
-        //     Height = 1024,
-        //     Sampler = ComfySampler.euler,
-        //     Scheduler = "sgm_uniform",
-        //     Steps = 4,
-        //     CfgScale = 1.0,
-        //     ComfyApiModelId = modelId
-        // };
-        //
-        // var modelSettingId = (int)Db.Insert(modelSetting, selectIdentity: true);
-        // modelSetting.Id = modelSettingId;
-        //
-        // var providerModel = new ComfyApiProviderModel
-        // {
-        //     ComfyApiModelId = modelId,
-        //     ComfyApiProviderId = providerId
-        // };
-        //
-        // Db.Insert(providerModel);
-
     }
 
     public override void Down()
@@ -509,7 +424,6 @@ public class Migration1002 : MigrationBase
         Db.DropTable<ComfyGenerationTask>();
         Db.DropTable<ComfySummary>();
         Db.DropTable<ComfyApiModelSettings>();
-        Db.DropTable<ComfyApiType>();
         Db.DropTable<ComfyApiProviderModel>();
         Db.DropTable<ComfyApiModel>();
         Db.DropTable<ComfyApiProvider>();

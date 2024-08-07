@@ -1,12 +1,11 @@
-using AiServer.ServiceInterface.AppDb;
-using AiServer.ServiceInterface.AppDb.Comfy;
+using AiServer.ServiceInterface.Comfy;
+using AiServer.ServiceInterface.Jobs;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using ServiceStack;
 using ServiceStack.Data;
-using ServiceStack.Messaging;
+using ServiceStack.Jobs;
 using ServiceStack.OrmLite;
 
 namespace AiServer.ServiceInterface;
@@ -14,39 +13,10 @@ namespace AiServer.ServiceInterface;
 public class ComfyGenerationServices(
     ILogger<ComfyGenerationServices> log,
     IDbConnectionFactory dbFactory, 
-    IMessageProducer mq,
+    IBackgroundJobs jobs,
     IAutoQueryDb autoQuery,
     AppData appData) : Service
 {
-    public async Task<object> Any(GetComfyGeneration request)
-    {
-        var q = Db.From<ComfySummary>();
-        if (request.Id != null)
-            q.Where(x => x.Id == request.Id);
-        else if (request.RefId != null)
-            q.Where(x => x.RefId == request.RefId);
-        else
-            throw new ArgumentNullException(nameof(request.Id));
-        
-        var summary = await Db.SingleAsync(q);
-        if (summary != null)
-        {
-            var activeTask = await Db.SingleByIdAsync<ComfyGenerationTask>(summary.Id);
-            if (activeTask != null)
-                return new GetComfyGenerationResponse { Result = activeTask };
-
-            using var monthDb = dbFactory.GetMonthDbConnection(summary.CreatedDate);
-            var completedTask = await monthDb.SingleByIdAsync<ComfyGenerationCompleted>(summary.Id);
-            if (completedTask != null)
-                return new GetComfyGenerationResponse { Result = completedTask.ConvertTo<ComfyGenerationTask>() };
-
-            var failedTask = await monthDb.SingleByIdAsync<ComfyGenerationFailed>(summary.Id);
-            if (failedTask != null)
-                return new GetComfyGenerationResponse { Result = failedTask.ConvertTo<ComfyGenerationTask>() };
-        }
-        throw HttpError.NotFound("Task not found");
-    }
-    
     public async Task<object> Any(QueryCompletedComfyTasks query)
     {
         using var dbMonth = HostContext.AppHost.GetDbConnection(query.Db ?? dbFactory.GetNamedMonthDb(DateTime.UtcNow));
@@ -73,96 +43,56 @@ public class ComfyGenerationServices(
         // Find model
         var comfyApiModel = await Db.SingleAsync<ComfyApiModel>(x => x.Name == model || 
                                                                      x.Filename == model);
-        
-        if(comfyApiModel == null)
+        if (comfyApiModel == null)
             throw HttpError.NotFound($"Model {model} not found");
-        var comfyApiModeId = comfyApiModel.Id;
-        var modelWithSettings = await Db.LoadSingleByIdAsync<ComfyApiModel>(comfyApiModeId);
         
-        request.RefId ??= Guid.NewGuid().ToString("N");
-        var task = request.ConvertTo<ComfyGenerationTask>();
-        task.Id = appData.GetNextComfyTaskId();
-        // Apply model defaults where missing properties
-        task.Request.PopulateWithNonDefaultValues(modelWithSettings.ModelSettings);
-        // Filename is used as the internal unique id since that is what a comfy instance needs.
-        task.Request.Model = task.Model = comfyApiModel.Filename;
-        task.TaskType = request.Request.TaskType;
-        
-        task.CreatedBy = Request.GetApiKeyUser() ?? "System";
-        
-        mq.Publish(new AppDbWrites {
-            CreateComfyGenerationTask = task,
-        });
-
-        return new CreateOpenAiChatResponse
+        var queueCounts = jobs.GetWorkerQueueCounts();
+        var providerQueueCount = int.MaxValue;
+        ComfyApiProvider? useProvider = null;
+        var candidates = appData.ComfyApiProviders
+            .Where(x => x is { Enabled: true, Models: not null } && 
+                        x.Models.Any(m => 
+                            m.ComfyApiModel.Filename == comfyApiModel.Filename))
+            .ToList();
+        foreach (var candidate in candidates)
         {
-            Id = task.Id,
-            RefId = request.RefId,
-        };
-    }
-    
-    public async Task<object> Any(FetchComfyGenerationRequests request)
-    {
-        var aspReq = (HttpRequest)Request!.OriginalRequest;
-        var requestId = aspReq.HttpContext.TraceIdentifier;
-        var provider = request.Provider;
-        var take = request.Take ?? 1;
-        var models = request.Models;
-
-        using var db = dbFactory.OpenDbConnection();
-
-        var q = db.From<ComfyGenerationTask>()
-            .Where(x => x.StartedDate == null && (x.Provider == null || x.Provider == request.Provider));
-        var startedAt = DateTime.UtcNow;
-
-        var hasTasks = await db.ExistsAsync(q);
-        if (!hasTasks)
-            return new FetchComfyGenerationRequestsResponse() { Results = Array.Empty<ComfyGenerationRequest>() };
-
-        var lastCounter = ReserveComfyGenerationTaskCommand.Counter;
-        mq.Publish(new AppDbWrites {
-            ReserveComfyGenerationTask = new ReserveComfyGenerationTask {
-                RequestId = requestId,
-                Models = models,
-                Provider = provider,
-                Take = take,
-            },
-        });
-
-        while (true)
-        {
-            if (DateTime.UtcNow - startedAt > TimeSpan.FromSeconds(180))
-                throw HttpError.Conflict("Unable to fetch next tasks");
-            
-            // Wait for writer thread to reserve requested tasks for our request
-            var attempts = 0;
-            while (attempts++ <= 20)
+            if (candidate.OfflineDate != null)
+                continue;
+            var pendingJobs = queueCounts.GetValueOrDefault(candidate.Name, 0);
+            if (useProvider == null)
             {
-                if (ReserveComfyGenerationTaskCommand.Counter == lastCounter)
-                    await Task.Delay(attempts);
-
-                var currentCounter = ReserveComfyGenerationTaskCommand.Counter;
-                if (currentCounter != lastCounter)
-                {
-                    lastCounter = currentCounter;
-                    var results = db.Select(Db.From<ComfyGenerationTask>().Where(x => x.RequestId == requestId));
-                    if (results.Count > 0)
-                    {
-                        return new FetchComfyGenerationRequestsResponse() {
-                            Results = results.Select(x => new ComfyGenerationRequest() {
-                                Id = x.Id,
-                                Model = x.Model,
-                                Provider = x.Provider,
-                                Request = x.Request
-                            }).ToArray()
-                        };
-                    }
-                }
+                useProvider = candidate;
+                providerQueueCount = pendingJobs;
+                continue;
             }
-            
-            hasTasks = await db.ExistsAsync(q);
-            if (!hasTasks)
-                return new FetchComfyGenerationRequestsResponse { Results = Array.Empty<ComfyGenerationRequest>() };
+            if (pendingJobs < providerQueueCount || (pendingJobs == providerQueueCount && candidate.Priority > useProvider.Priority))
+            {
+                useProvider = candidate;
+                providerQueueCount = pendingJobs;
+            }
         }
+
+        useProvider ??= candidates.FirstOrDefault(x => x.Name == model); // Allow selecting offline models
+        if (useProvider == null)
+            throw new NotSupportedException("No active ComfyAPI Providers support this model");
+        
+        var modelSettings = await Db.SingleAsync<ComfyApiModelSettings>(x => x.Id == comfyApiModel.Id);
+        request.Request = request.Request.ApplyModelDefaults(AppConfig.Instance, modelSettings);
+
+        var jobRef = jobs.EnqueueCommand<CreateComfyGenerationCommand>(request, new()
+        {
+            ReplyTo = request.ReplyTo,
+            Tag = request.Tag,
+            Args = request.Provider == null ? null : new() {
+                [nameof(request.Provider)] = request.Provider
+            },
+            Worker = useProvider.Name,
+        });
+        
+        return new CreateComfyGenerationResponse()
+        {
+            Id = jobRef.Id,
+            RefId = jobRef.RefId,
+        };
     }
 }

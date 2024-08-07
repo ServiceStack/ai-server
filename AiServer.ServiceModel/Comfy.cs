@@ -1,6 +1,5 @@
 using AiServer.ServiceModel.Types;
 using ServiceStack;
-using ServiceStack.DataAnnotations;
 
 namespace AiServer.ServiceModel;
 
@@ -71,23 +70,6 @@ public class QueueComfyWorkflowResponse
     public List<ComfyTextOutput> TextOutputs { get; set; }
 }
 
-
-[Tag(Tag.Comfy)]
-[ValidateApiKey]
-public class FetchComfyGenerationRequests
-{
-    public string[] Models { get; set; }
-    public string? Provider { get; set; }
-    
-    public int? Take { get; set; }
-}
-
-public class FetchComfyGenerationRequestsResponse
-{
-    public required ComfyGenerationRequest[] Results { get; set; }
-    public ResponseStatus? ResponseStatus { get; set; }
-}
-
 [Tag(Tag.Comfy)]
 [ValidateApiKey]
 public class QueryCompletedComfyTasks : QueryDb<ComfyGenerationCompleted>
@@ -132,8 +114,9 @@ public class GetComfyGeneration : IReturn<GetComfyGenerationResponse>
 
 public class GetComfyGenerationResponse
 {
+    public CreateComfyGeneration? Request { get; set; }
     public List<AiServerHostedComfyFile>? Outputs { get; set; }
-    public ComfyGenerationTask? Result { get; set; }
+    public ComfyWorkflowStatus? Result { get; set; }
     public ResponseStatus? ResponseStatus { get; set; }
 }
 

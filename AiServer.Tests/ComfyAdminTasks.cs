@@ -32,25 +32,25 @@ public class ComfyAdminTasks
             Priority = 1,
             ApiKey = "testtest1234"
         },
-        new CreateComfyApiProvider
-        {
-            Name = "comfy-supermicro.pvq.app",
-            ApiBaseUrl = "https://comfy-supermicro.pvq.app/api",
-            Concurrency = 1,
-            HeartbeatUrl = "/",
-            TaskWorkflows = new Dictionary<ComfyTaskType, string>
-            {
-                { ComfyTaskType.TextToImage, "text_to_image.json" },
-                { ComfyTaskType.ImageToImage, "image_to_image.json" },
-                { ComfyTaskType.ImageToImageUpscale, "image_to_image_upscale.json" },
-                { ComfyTaskType.ImageToImageWithMask, "image_to_image_with_mask.json" },
-                { ComfyTaskType.TextToAudio, "text_to_audio.json" },
-                { ComfyTaskType.TextToSpeech, "text_to_speech.json" },
-                { ComfyTaskType.SpeechToText, "speech_to_text.json" }
-            },
-            Enabled = true,
-            Priority = 1
-        }
+        // new CreateComfyApiProvider
+        // {
+        //     Name = "comfy-supermicro.pvq.app",
+        //     ApiBaseUrl = "https://comfy-supermicro.pvq.app/api",
+        //     Concurrency = 1,
+        //     HeartbeatUrl = "/",
+        //     TaskWorkflows = new Dictionary<ComfyTaskType, string>
+        //     {
+        //         { ComfyTaskType.TextToImage, "text_to_image.json" },
+        //         { ComfyTaskType.ImageToImage, "image_to_image.json" },
+        //         { ComfyTaskType.ImageToImageUpscale, "image_to_image_upscale.json" },
+        //         { ComfyTaskType.ImageToImageWithMask, "image_to_image_with_mask.json" },
+        //         { ComfyTaskType.TextToAudio, "text_to_audio.json" },
+        //         { ComfyTaskType.TextToSpeech, "text_to_speech.json" },
+        //         { ComfyTaskType.SpeechToText, "speech_to_text.json" }
+        //     },
+        //     Enabled = true,
+        //     Priority = 1
+        // }
     };
 
     public static Dictionary<string, ComfyApiModelSettings> ImportCivitAiModelSettings = new()
@@ -92,15 +92,15 @@ public class ComfyAdminTasks
             }
         },
         {
-            "https://civitai.com/models/283312/psyfi-xl-lcm",
+            "https://civitai.com/models/157665/lah-hongchen-or-sdxl-and-sd15",
             new ComfyApiModelSettings
             {
                 Height = 1024,
                 Width = 1024,
-                Sampler = ComfySampler.lcm,
+                Sampler = ComfySampler.euler,
                 Scheduler = "normal",
                 CfgScale = 1.0,
-                Steps = 7
+                Steps = 8
             }
         }
     };
@@ -116,12 +116,62 @@ public class ComfyAdminTasks
         client = new JsonApiClient(httpClient);
         return client;
     }
+
+    [Test]
+    public async Task ClearBadDownloadsFromProviders()
+    {
+        var client = TestUtils.CreateAdminClient();
+        client = IgnoreSslValidation(client);
+        //ConfigureSecrets.SetSecrets();
+        
+        foreach (var provider in ComfyApiProviders)
+        {
+            var query = new QueryComfyApiProviders
+            {
+                Name = provider.Name
+            };
+            var existing = await client.ApiAsync(query);
+            if (existing.Response.Results.Count == 0)
+            {
+                Console.WriteLine($"Provider {provider.Name} does not exist");
+                continue;
+            }
+
+            var apiProvider = existing.Response.Results[0];
+            var providerModels = await client.ApiAsync(new QueryComfyApiProviderModels()
+            {
+                ComfyApiProviderId = apiProvider.Id
+            });
+            
+            foreach(var model in providerModels.Response.Results)
+            {
+                // Check model status
+                var modelStatus = await client.ApiAsync(new DownloadComfyProviderModel
+                {
+                    ComfyApiProviderModelId = model.Id
+                });
+                
+                modelStatus.ThrowIfError();
+                var dlStatus = modelStatus.Response.DownloadStatus;
+                if(dlStatus.Progress == -1 || dlStatus.Progress < 100)
+                {
+                    Console.WriteLine($"Model {model.Id} is not fully downloaded, clearing");
+                    var response = await client.ApiAsync(new DeleteComfyApiProviderModel()
+                    {
+                        Id = model.ComfyApiModelId
+                    });
+                    response.ThrowIfError();
+                }
+            }
+        }
+    }
     
     [Test]
     public async Task ConfigureComfyProviders()
     {
         var client = TestUtils.CreateAdminClient();
         client = IgnoreSslValidation(client);
+        //ConfigureSecrets.SetSecrets();
         // var client = TestUtils.CreatePublicAdminClient();
         // Create providers
         foreach (var provider in ComfyApiProviders)
@@ -157,6 +207,12 @@ public class ComfyAdminTasks
                 response.ThrowIfError();
             }
         }
+        
+        // Restart workers
+        var stopWorkers = await client.ApiAsync(new StopWorkers());
+        stopWorkers.ThrowIfError();
+        var startWorkers = await client.ApiAsync(new StartWorkers());
+        startWorkers.ThrowIfError();
         
     }
 }
