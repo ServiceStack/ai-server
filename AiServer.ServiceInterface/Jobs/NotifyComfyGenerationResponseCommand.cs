@@ -1,7 +1,9 @@
+using System.Data;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using ServiceStack;
 using ServiceStack.Jobs;
+using ServiceStack.OrmLite;
 using ServiceStack.Web;
 
 namespace AiServer.ServiceInterface.Jobs;
@@ -14,7 +16,7 @@ public class ComfyWorkflowCallback
     public string? RefId { get; set; }
 }
 
-public class NotifyComfyGenerationResponseCommand: IAsyncCommand<ComfyWorkflowCallback>, IRequiresRequest
+public class NotifyComfyGenerationResponseCommand(IBackgroundJobs jobs): IAsyncCommand<ComfyWorkflowCallback>, IRequiresRequest
 {
     public IRequest Request { get; set; }
 
