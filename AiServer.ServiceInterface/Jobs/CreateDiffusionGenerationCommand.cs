@@ -30,11 +30,12 @@ public class CreateDiffusionGenerationCommand(AppData appData, IBackgroundJobs j
                 jobs.EnqueueCommand<NotifyDiffusionGenerationResponseCommand>(new DiffusionGenerationCallback
                 {
                     Response = response,
-                    Context = request.Context,
+                    Context = request,
                     RefId = job.RefId,
                 }, new() {
                     ParentId = job.Id,
                     ReplyTo = job.ReplyTo,
+                    Worker = job.Worker
                 });
             }
         }

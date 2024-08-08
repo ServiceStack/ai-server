@@ -11,6 +11,7 @@ public class AiServerHostedDiffusionFile
 public class DiffusionApiProviderOutput
 {
     public string FileName { get; set; }
+    public string Url { get; set; }
 }
 
 [Route("/diffusion/generate", "POST")]

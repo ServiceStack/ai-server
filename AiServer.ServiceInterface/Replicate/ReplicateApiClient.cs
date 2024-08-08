@@ -1,3 +1,4 @@
+using AiServer.ServiceModel;
 using ServiceStack;
 
 namespace AiServer.ServiceInterface.Replicate;
@@ -5,12 +6,12 @@ namespace AiServer.ServiceInterface.Replicate;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-public interface IReplicateClient
+public interface IDiffusionClient
 {
-    Task<string> GenerateFluxImageAsync(string prompt, int outputQuality);
+    Task<DiffusionGenerationResponse> GenerateImage(DiffusionImageGeneration request);
 }
 
-public class ReplicateClient : IReplicateClient
+public class ReplicateClient : IDiffusionClient
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;
@@ -23,40 +24,52 @@ public class ReplicateClient : IReplicateClient
         _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
     }
 
-    public async Task<string> GenerateFluxImageAsync(string prompt, int outputQuality)
+    public async Task<DiffusionGenerationResponse> GenerateImage(DiffusionImageGeneration request)
     {
-        var request = new
+        var req = new
         {
             input = new
             {
-                prompt = prompt,
-                output_quality = outputQuality
+                prompt = request.Prompt,
+                output_quality = 80
             }
         };
 
-        var response = await _httpClient.PostAsJsonAsync(BaseUrl.CombineWith("v1/models/black-forest-labs/flux-schnell/predictions"), request);
+        // TODO: Map request.Model to prediction endpoints for Schnell and Dev.
+        var response = await _httpClient.PostAsJsonAsync(BaseUrl.CombineWith("v1/models/black-forest-labs/flux-schnell/predictions"), req);
+        
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync();
-        var prediction = JsonSerializer.Deserialize<PredictionResponse>(content);
+        var prediction = content.FromJson<PredictionResponse>();
 
         if (prediction?.Urls?.Get == null)
         {
             throw new InvalidOperationException("Failed to start prediction");
         }
 
-        return await PollForResultAsync(prediction.Urls.Get);
+        var res = await PollForResultAsync(prediction.Urls.Get);
+        var outputs = res.FromJson<List<string>>();
+        return new DiffusionGenerationResponse
+        {
+            Outputs = outputs.Select(x => new DiffusionApiProviderOutput
+            {
+                FileName = x,
+                Url = x
+            }).ToList()
+        };
     }
 
     private async Task<string> PollForResultAsync(string predictionUrl)
     {
-        while (true)
+        var timeout = DateTime.UtcNow.AddSeconds(30);
+        while (DateTime.UtcNow < timeout)
         {
             var response = await _httpClient.GetAsync(predictionUrl);
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            var prediction = JsonSerializer.Deserialize<PredictionResponse>(content);
+            var prediction = content.FromJson<PredictionResponse>();
 
             if (prediction?.Status == "succeeded")
             {
@@ -70,6 +83,8 @@ public class ReplicateClient : IReplicateClient
 
             await Task.Delay(2000);
         }
+
+        throw new TimeoutException($"Replicate Prediction timed out - {predictionUrl}");
     }
 }
 

@@ -31,7 +31,8 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             services.AddSingleton<ComfyProvider>();
             services.AddSingleton<ComfyProviderFactory>();
 
-            services.AddSingleton<DiffusionProvider>();
+            services.AddSingleton<ComfyDiffusionProvider>();
+            services.AddSingleton<ReplicateDiffusionProvider>();
             services.AddSingleton<DiffusionApiProviderFactory>();
             
             // If development, ignore SSL
@@ -58,7 +59,7 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
                 new ComfyClient("https://comfy-dell.pvq.app/api",
                 "testtest1234",c.GetService<ILoggerFactory>()));
             
-            services.AddHttpClient<IReplicateClient, ReplicateClient>(client =>
+            services.AddHttpClient<ReplicateClient>(client =>
             {
                 client.BaseAddress = new Uri("https://api.replicate.com/");
             });

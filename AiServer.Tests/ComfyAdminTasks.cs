@@ -1,6 +1,7 @@
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using ServiceStack;
 
 namespace AiServer.Tests;
@@ -214,5 +215,86 @@ public class ComfyAdminTasks
         var startWorkers = await client.ApiAsync(new StartWorkers());
         startWorkers.ThrowIfError();
         
+    }
+
+    private static List<CreateDiffusionApiProvider> DiffusionApiProviders = new List<CreateDiffusionApiProvider>
+    {
+        new()
+        {
+            Name = "Replicate",
+            Concurrency = 3,
+            Enabled = true,
+            Priority = 1,
+            HeartbeatUrl = "https://api.replicate.com/",
+            ApiBaseUrl = "https://api.replicate.com/",
+            ApiKey = "",
+            Models = new List<string> { "flux1-dev","flux1-schnell" },
+            Type = "replicate"
+        },
+        new()
+        {
+            Name = "diffusion-dell.pvq.app",
+            Concurrency = 1,
+            Enabled = true,
+            Priority = 1,
+            HeartbeatUrl = "/",
+            Models = new List<string>
+            {
+                "jibMixRealisticXL_v130RisenFromAshes.safetensors",
+                "animexlXuebimix_v60LCM.safetensors",
+                "LahHongchenSDXLSD15_xlLightning.safetensors"
+            },
+            Type = "comfy"
+        }
+    };
+
+    [Test]
+    public async Task CanConfigureDiffusionProviders()
+    {
+        ConfigureSecrets.SetSecrets();
+        var client = TestUtils.CreateAuthSecretClient();
+        client = IgnoreSslValidation(client);
+        
+        foreach (var provider in DiffusionApiProviders)
+        {
+            var query = new QueryDiffusionApiProviders
+            {
+                Name = provider.Name
+            };
+            var existing = await client.ApiAsync(query);
+            if (existing.Response.Results.Count > 0)
+            {
+                Console.WriteLine($"Provider {provider.Name} already exists");
+                continue;
+            }
+            var response = await client.ApiAsync(provider);
+            response.ThrowIfError();
+        }
+    }
+
+    [Test]
+    public async Task CanGenerateFluxImageUsingDiffusionProvider()
+    {
+        ConfigureSecrets.SetSecrets();
+        var client = TestUtils.CreateAuthSecretClient();
+        client = IgnoreSslValidation(client);
+
+        var diffGen = new CreateDiffusionGeneration
+        {
+            Provider = "Replicate",
+            Request = new DiffusionImageGeneration
+            {
+                Height = 1024,
+                Width = 1024,
+                Steps = 4,
+                Model = "flux1-schnell",
+                Images = 4,
+                Prompt = "Ocean sunset",
+                Seed = 1234
+            }
+        };
+        
+        var response = await client.ApiAsync(diffGen);
+        response.ThrowIfError();
     }
 }

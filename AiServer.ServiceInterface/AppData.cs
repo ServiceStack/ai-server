@@ -72,7 +72,8 @@ public class AppData(ILogger<AppData> log,
         {
             PopulateWorkerModels(provider, db);
         }
-        StartWorkers(apiProviders, comfyProviders);
+        var diffusionProviders = db.LoadSelect<DiffusionApiProvider>().OrderByDescending(x => x.Priority).ThenBy(x => x.Id).ToArray();
+        StartWorkers(apiProviders, comfyProviders,diffusionProviders);
     }
 
     private void PopulateWorkerModels(ComfyApiProvider provider, IDbConnection db)
@@ -80,12 +81,14 @@ public class AppData(ILogger<AppData> log,
         provider.Models = db.LoadSelect<ComfyApiProviderModel>(x => x.ComfyApiProviderId == provider.Id);
     }
 
-    public void StartWorkers(ApiProvider[] apiProviders, ComfyApiProvider[] comfyProviders)
+    public void StartWorkers(ApiProvider[] apiProviders, ComfyApiProvider[] comfyProviders, DiffusionApiProvider[] diffusionProviders)
     {
         cts = new();
         StartApiWorkers(apiProviders);
         if(comfyProviders.Length > 0)
             StartComfyWorkers(comfyProviders);
+        if(diffusionProviders.Length > 0)
+            StartDiffusionWorkers(diffusionProviders);
     }
 
     private void StartApiWorkers(ApiProvider[] apiProviders)
@@ -107,6 +110,14 @@ public class AppData(ILogger<AppData> log,
                 .ToDictionary(x => x.Name, GetComfyClient);
         }
         LogWorkerInfo(comfyProviders, "Comfy");
+    }
+    
+    private void StartDiffusionWorkers(DiffusionApiProvider[] diffusionProviders)
+    {
+        log.LogInformation("Starting {Count} Diffusion Workers...", diffusionProviders.Length);
+        StoppedAt = null;
+        DiffusionApiProviders = diffusionProviders;
+        //LogWorkerInfo(diffusionProviders, "Diffusion");
     }
     
     private Dictionary<string, IComfyClient?> comfyClients = new();
