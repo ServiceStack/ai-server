@@ -38,8 +38,7 @@ public class CreateComfyGenerationCommand(AppData appData, IBackgroundJobs jobs,
                     RefId = job.RefId,
                 }, new() {
                     ParentId = job.Id,
-                    ReplyTo = job.ReplyTo,
-                    Worker = job.Worker
+                    ReplyTo = job.ReplyTo
                 });
             }
         }
