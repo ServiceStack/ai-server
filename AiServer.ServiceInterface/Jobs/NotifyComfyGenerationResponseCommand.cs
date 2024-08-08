@@ -22,14 +22,6 @@ public class NotifyComfyGenerationResponseCommand(IBackgroundJobs jobs): IAsyncC
 
     public async Task ExecuteAsync(ComfyWorkflowCallback request)
     {
-        var job = Request.AssertBackgroundJob();
-        while (true)
-        {
-            using var db = jobs.OpenJobsDb();
-            await db.SingleAsync<JobSummary>(x => x.Id == job.ParentId);
-            if (job.State == BackgroundJobState.Completed || job.State == BackgroundJobState.Failed)
-                break;
-        }
         await HttpUtils.CreateClient().SendJsonCallbackAsync(Request.AssertBackgroundJob().ReplyTo!, request);
     }
 }
