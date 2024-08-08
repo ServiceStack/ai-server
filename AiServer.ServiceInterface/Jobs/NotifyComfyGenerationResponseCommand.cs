@@ -16,7 +16,7 @@ public class ComfyWorkflowCallback
     public string? RefId { get; set; }
 }
 
-public class NotifyComfyGenerationResponseCommand(IDbConnection db): IAsyncCommand<ComfyWorkflowCallback>, IRequiresRequest
+public class NotifyComfyGenerationResponseCommand(IBackgroundJobs jobs): IAsyncCommand<ComfyWorkflowCallback>, IRequiresRequest
 {
     public IRequest Request { get; set; }
 
@@ -25,6 +25,7 @@ public class NotifyComfyGenerationResponseCommand(IDbConnection db): IAsyncComma
         var job = Request.AssertBackgroundJob();
         while (true)
         {
+            using var db = jobs.OpenJobsDb();
             await db.SingleAsync<JobSummary>(x => x.Id == job.ParentId);
             if (job.State == BackgroundJobState.Completed || job.State == BackgroundJobState.Failed)
                 break;
