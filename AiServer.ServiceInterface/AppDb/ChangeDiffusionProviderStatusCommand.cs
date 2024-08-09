@@ -1,5 +1,5 @@
 using System.Data;
-using AiServer.ServiceInterface.Replicate;
+using AiServer.ServiceInterface.Diffusion;
 using AiServer.ServiceModel.Types;
 
 namespace AiServer.ServiceInterface.AppDb;

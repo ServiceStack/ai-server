@@ -1,5 +1,5 @@
 using AiServer.ServiceInterface.Jobs;
-using AiServer.ServiceInterface.Replicate;
+using AiServer.ServiceInterface.Diffusion;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.Logging;

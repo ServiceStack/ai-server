@@ -31,10 +31,6 @@ public class ComfyProvider : IComfyProvider
         // Check if the client is healthy
         try
         {
-            Action<HttpRequestMessage>? requestFilter = provider.ApiKey != null
-                ? req => req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", provider.ApiKey)
-                : null;
-
             var client = GetComfyClient(provider);
             var heartbeatResult = await client.GetClientHealthAsync();
             

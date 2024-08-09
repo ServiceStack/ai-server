@@ -1,17 +1,13 @@
 using AiServer.ServiceModel;
 using ServiceStack;
 
-namespace AiServer.ServiceInterface.Replicate;
+namespace AiServer.ServiceInterface.Diffusion;
 
 using System.Net.Http.Json;
 using System.Text.Json;
 
-public interface IDiffusionClient
-{
-    Task<DiffusionGenerationResponse> GenerateImage(DiffusionImageGeneration request);
-}
 
-public class ReplicateClient : IDiffusionClient
+public class ReplicateClient
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;
@@ -54,7 +50,7 @@ public class ReplicateClient : IDiffusionClient
         {
             Outputs = outputs.Select(x => new DiffusionApiProviderOutput
             {
-                FileName = x,
+                FileName = x.SplitOnLast("/").Last(),
                 Url = x
             }).ToList()
         };

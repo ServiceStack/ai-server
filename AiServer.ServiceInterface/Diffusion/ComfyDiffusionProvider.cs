@@ -7,7 +7,7 @@ using AiServer.ServiceModel.Types;
 using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite;
 
-namespace AiServer.ServiceInterface.Replicate;
+namespace AiServer.ServiceInterface.Diffusion;
 
 public interface IDiffusionProvider
 {
@@ -25,10 +25,6 @@ public class ComfyDiffusionProvider(IDbConnection db) : IDiffusionProvider
         // Check if the client is healthy
         try
         {
-            Action<HttpRequestMessage>? requestFilter = provider.ApiKey != null
-                ? req => req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", provider.ApiKey)
-                : null;
-
             var client = GetClient(provider);
             var heartbeatResult = await client.GetClientHealthAsync();
             

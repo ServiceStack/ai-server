@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using AiServer.ServiceInterface.Comfy;
-using AiServer.ServiceInterface.Replicate;
+using AiServer.ServiceInterface.Diffusion;
 using Microsoft.Extensions.Logging;
 using ServiceStack;
 using ServiceStack.Messaging;

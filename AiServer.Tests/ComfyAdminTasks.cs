@@ -10,7 +10,7 @@ namespace AiServer.Tests;
 [Explicit]
 public class ComfyAdminTasks
 {
-    private static bool useLocal = false;
+    private static bool useLocal = true;
     private ConfigureSecrets ConfigureSecrets = new();
     
     private static List<CreateComfyApiProvider> ComfyApiProviders = new()
@@ -111,7 +111,7 @@ public class ComfyAdminTasks
     [Test]
     public async Task ClearBadDownloadsFromProviders()
     {
-        ConfigureSecrets.ApplySecrets();
+        ConfigureSecrets.ApplySecrets(useLocal);
         var client = TestUtils.CreateAuthSecretClient();
         
         foreach (var provider in ComfyApiProviders)
@@ -159,9 +159,9 @@ public class ComfyAdminTasks
     [Test]
     public async Task ConfigureComfyProviders()
     {
-        ConfigureSecrets.ApplySecrets();
+        ConfigureSecrets.ApplySecrets(useLocal);
         var client = TestUtils.CreateAuthSecretClient();
-        // var client = TestUtils.CreatePublicAdminClient();
+        // var client = TestUtils.CreatePublicAuthSecretClient();
         // Create providers
         foreach (var provider in ComfyApiProviders)
         {
@@ -216,13 +216,14 @@ public class ComfyAdminTasks
             Priority = 1,
             HeartbeatUrl = "https://api.replicate.com/",
             ApiBaseUrl = "https://api.replicate.com/",
-            ApiKey = "",
             Models = new List<string> { "flux1-dev","flux1-schnell" },
             Type = "replicate"
         },
         new()
         {
             Name = "diffusion-dell.pvq.app",
+            ApiBaseUrl = "https://comfy-dell.pvq.app/api",
+            ApiKey = "testtest1234",
             Concurrency = 1,
             Enabled = true,
             Priority = 1,
@@ -240,7 +241,7 @@ public class ComfyAdminTasks
     [Test]
     public async Task CanConfigureDiffusionProviders()
     {
-        ConfigureSecrets.ApplySecrets();
+        ConfigureSecrets.ApplySecrets(useLocal);
         var client = TestUtils.CreateAuthSecretClient();
         
         foreach (var provider in DiffusionApiProviders)

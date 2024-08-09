@@ -12,45 +12,12 @@ namespace AiServer.Tests;
 [Explicit("https://comfy-dell.pvq.app/api is not available")]
 public class ComfyFriendlyApiTests
 {
-    const string BaseUri = "http://localhost:2000/";
-    private readonly ServiceStackHost appHost;
-
-    class AppHost : AppSelfHostBase
+    public IServiceClient CreateClient()
     {
-        public AppHost() : base(nameof(IntegrationTest), typeof(ComfyFriendlyServices).Assembly)
-        {
-        }
-
-        public override void Configure(Container container)
-        {
-            container.AddSingleton<IComfyClient>(c =>
-                new ComfyClient("https://comfy-dell.pvq.app/api",
-                    "testtest1234"));
-            container.AddSingleton<IMessageService>(c => new BackgroundMqService
-            {
-                DisablePublishingToOutq = true,
-                DisablePublishingResponses = true,
-            });
-            container.AddSingleton<IMessageProducer>(new InMemoryMessageQueueClient(new MessageQueueClientFactory()));
-
-            container.AddSingleton(new AppConfig
-            {
-
-            });
-        }
+        ConfigureSecrets.ApplySecrets();
+        return TestUtils.CreateAuthSecretClient();
     }
-
-    public ComfyFriendlyApiTests()
-    {
-        appHost = new AppHost()
-            .Init()
-            .Start(BaseUri);
-    }
-
-    [OneTimeTearDown]
-    public void OneTimeTearDown() => appHost.Dispose();
-
-    public IServiceClient CreateClient() => new JsonServiceClient(BaseUri);
+    private ConfigureSecrets ConfigureSecrets = new();
 
     [Test]
     public async Task Can_call_text_to_speech_api()
@@ -58,19 +25,55 @@ public class ComfyFriendlyApiTests
         var client = CreateClient();
 
         //Assert does not throw
-        ComfyTextToSpeechResponse? response = null;
+        CreateComfyGenerationResponse? response = null;
         try
         {
-            response = await client.PostAsync(new ComfyTextToSpeech { PositivePrompt = "Hello World!" });
+            response = await client.PostAsync(new CreateComfyGeneration
+            {
+                Request = new ComfyWorkflowRequest
+                {
+                    PositivePrompt = "Hello World!",
+                    TaskType = ComfyTaskType.TextToSpeech
+                },
+            });
         }
         catch (Exception e)
         {
             Assert.Fail(e.Message);
         }
-
+        
         Assert.That(response, Is.Not.Null);
-        Assert.That(response?.Speech, Is.Not.Null);
-        Assert.That(response?.Speech, Is.Not.Empty);
+        Assert.That(response.RefId, Is.Not.Null);
+        Assert.That(response.RefId, Is.Not.Empty);
+        
+        // Poll for result
+        var timeout = DateTime.UtcNow.AddSeconds(30);
+        GetComfyGenerationResponse? result = null;
+        while (timeout > DateTime.UtcNow && result?.Result?.Completed != true)
+        {
+            try
+            {
+                result = await client.PostAsync(new GetComfyGeneration
+                {
+                    RefId = response.RefId
+                });
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Ignore
+                }
+                else
+                {
+                    Assert.Fail(e.Message);
+                }
+            }
+        }
+        
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result?.Outputs, Is.Not.Null);
+        Assert.That(result?.Outputs, Is.Not.Empty);
     }
 
     [Test]
@@ -79,26 +82,52 @@ public class ComfyFriendlyApiTests
         var client = CreateClient();
 
         //Assert does not throw
-        ComfyTextToImageResponse? response = null;
+        CreateComfyGenerationResponse? response = null;
         try
         {
-            response = await client.PostAsync(new ComfyTextToImage()
+            response = await client.PostAsync(new CreateComfyGeneration()
             {
-                PositivePrompt = "Beautiful sunset over the ocean"
+                Request = new ComfyWorkflowRequest
+                {
+                    PositivePrompt = "Beautiful sunset over the ocean",
+                    TaskType = ComfyTaskType.TextToImage
+                }
             });
         }
         catch (Exception e)
         {
             Assert.Fail(e.Message);
         }
-
+        
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.Images, Is.Not.Null);
-        Assert.That(response.Images.Count, Is.GreaterThan(0));
-        Assert.That(response.Images[0].Url, Is.Not.Null);
-        Assert.That(response.Images[0].Url, Is.Not.Empty);
-        Assert.That(response.Images[0].FileName, Is.Not.Null);
-        Assert.That(response.Images[0].FileName, Is.Not.Empty);
+        Assert.That(response.RefId, Is.Not.Null);
+        Assert.That(response.RefId, Is.Not.Empty);
+        
+        // Poll for result
+        var timeout = DateTime.UtcNow.AddSeconds(30);
+        GetComfyGenerationResponse? result = null;
+        while (timeout > DateTime.UtcNow && result?.Result?.Completed != true)
+        {
+            try
+            {
+                result = await client.GetAsync(new GetComfyGeneration
+                {
+                    RefId = response.RefId
+                });
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(e.Message);
+            }
+        }
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Outputs, Is.Not.Null);
+        Assert.That(result.Outputs.Count, Is.GreaterThan(0));
+        Assert.That(result.Outputs[0].Url, Is.Not.Null);
+        Assert.That(result.Outputs[0].Url, Is.Not.Empty);
+        Assert.That(result.Outputs[0].FileName, Is.Not.Null);
+        Assert.That(result.Outputs[0].FileName, Is.Not.Empty);
     }
 
     [Test]
@@ -107,18 +136,23 @@ public class ComfyFriendlyApiTests
         var client = CreateClient();
 
         //Assert does not throw
-        ComfyImageToImageResponse? response = null;
+        CreateComfyGenerationResponse? response = null;
         var filePath = $"files/comfyui_upload_test.png";
         var imageFile = new FileInfo(filePath);
         // Assert file exists
         Assert.That(imageFile.Exists, Is.True);
-        var req = new ComfyImageToImage()
+        var req = new CreateComfyGeneration()
         {
-            PositivePrompt = "stormy, dark clouds over the ocean"
+            Request = new ComfyWorkflowRequest
+            {
+                PositivePrompt = "stormy, dark clouds over the ocean",
+                ImageInput = File.OpenRead("files/comfyui_upload_test.png"),
+                TaskType = ComfyTaskType.ImageToImage
+            }
         };
         try
         {
-            response = client.PostFilesWithRequest<ComfyImageToImageResponse>(req.ToPostUrl(),
+            response = client.PostFilesWithRequest<CreateComfyGenerationResponse>(req.ToPostUrl(),
                 req, 
                 new[]
                 {
@@ -133,8 +167,35 @@ public class ComfyFriendlyApiTests
         }
         
         Assert.That(response, Is.Not.Null);
-        Assert.That(response?.Images, Is.Not.Null);
-        Assert.That(response?.Images, Is.Not.Empty);
+        
+        // Poll for result
+        var timeout = DateTime.UtcNow.AddSeconds(30);
+        GetComfyGenerationResponse? result = null;
+        while (timeout > DateTime.UtcNow && result?.Result?.Completed != true)
+        {
+            try
+            {
+                result = await client.GetAsync(new GetComfyGeneration
+                {
+                    RefId = response.RefId
+                });
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Ignore
+                }
+                else
+                {
+                    Assert.Fail(e.Message);
+                }
+            }
+        }
+        
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result?.Outputs, Is.Not.Null);
+        Assert.That(result?.Outputs, Is.Not.Empty);
     }
     
     [Test]
@@ -143,18 +204,21 @@ public class ComfyFriendlyApiTests
         var client = CreateClient();
 
         //Assert does not throw
-        ComfyImageToImageResponse? response = null;
+        CreateComfyGenerationResponse? response = null;
         var filePath = $"files/comfyui_upload_test.png";
         var imageFile = new FileInfo(filePath);
         // Assert file exists
         Assert.That(imageFile.Exists, Is.True);
-        var req = new ComfyImageToImageUpscale()
+        var req = new CreateComfyGeneration()
         {
-            
+            Request = new ComfyWorkflowRequest
+            {
+                TaskType = ComfyTaskType.ImageToImageUpscale
+            }
         };
         try
         {
-            response = client.PostFilesWithRequest<ComfyImageToImageResponse>(req.ToPostUrl(),
+            response = client.PostFilesWithRequest<CreateComfyGenerationResponse>(req.ToPostUrl(),
                 req, 
                 new[]
                 {
@@ -165,8 +229,39 @@ public class ComfyFriendlyApiTests
         }
         catch (Exception e)
         {
-            Assert.Fail(e.Message);
+            if (e.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
+            {
+                // Ignore
+            }
+            else
+            {
+                Assert.Fail(e.Message);
+            }
         }
+        
+        Assert.That(response, Is.Not.Null);
+        
+        // Poll for result
+        var timeout = DateTime.UtcNow.AddSeconds(30);
+        GetComfyGenerationResponse? result = null;
+        while (timeout > DateTime.UtcNow && result?.Result?.Completed != true)
+        {
+            try
+            {
+                result = await client.GetAsync(new GetComfyGeneration
+                {
+                    RefId = response.RefId
+                });
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(e.Message);
+            }
+        }
+        
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Outputs, Is.Not.Null);
+        Assert.That(result.Outputs, Is.Not.Empty);
     }
     
     [Test]
@@ -175,18 +270,24 @@ public class ComfyFriendlyApiTests
         var client = CreateClient();
 
         //Assert does not throw
-        ComfyImageToImageWithMaskResponse? response = null;
+        CreateComfyGenerationResponse? response = null;
         var filePath = $"files/comfyui_upload_test.png";
         var imageFile = new FileInfo(filePath);
         // Assert file exists
         Assert.That(imageFile.Exists, Is.True);
-        var req = new ComfyImageToImageWithMask()
+        var req = new CreateComfyGeneration()
         {
-            PositivePrompt = "stormy, dark clouds over the ocean"
+            Request = new ComfyWorkflowRequest
+            {
+                PositivePrompt = "stormy, dark clouds over the ocean",
+                TaskType = ComfyTaskType.ImageToImageWithMask,
+                MaskInput = File.OpenRead("files/comfyui_upload_test_mask.png"),
+                ImageInput = File.OpenRead("files/comfyui_upload_test.png")
+            }
         };
         try
         {
-            response = client.PostFilesWithRequest<ComfyImageToImageWithMaskResponse>(req.ToPostUrl(),
+            response = client.PostFilesWithRequest<CreateComfyGenerationResponse>(req.ToPostUrl(),
                 req, 
                 new[]
                 {
@@ -204,8 +305,35 @@ public class ComfyFriendlyApiTests
         }
         
         Assert.That(response, Is.Not.Null);
-        Assert.That(response?.Images, Is.Not.Null);
-        Assert.That(response?.Images, Is.Not.Empty);
+        
+        // Poll for result
+        var timeout = DateTime.UtcNow.AddSeconds(30);
+        GetComfyGenerationResponse? result = null;
+        while (timeout > DateTime.UtcNow && result?.Result?.Completed != true)
+        {
+            try
+            {
+                result = await client.GetAsync(new GetComfyGeneration
+                {
+                    RefId = response.RefId
+                });
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Ignore
+                }
+                else
+                {
+                    Assert.Fail(e.Message);
+                }
+            }
+        }
+        
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result?.Outputs, Is.Not.Null);
+        Assert.That(result?.Outputs, Is.Not.Empty);
     }
     
     [Test]
@@ -214,15 +342,22 @@ public class ComfyFriendlyApiTests
         var client = CreateClient();
 
         //Assert does not throw
-        ComfySpeechToTextResponse? response = null;
+        CreateComfyGenerationResponse? response = null;
         var filePath = $"files/speech_to_text_test.wav";
         var speechFile = new FileInfo(filePath);
         // Assert file exists
         Assert.That(speechFile.Exists, Is.True);
-        var req = new ComfySpeechToText();
+        var req = new CreateComfyGeneration()
+        {
+            Request = new ComfyWorkflowRequest
+            {
+                TaskType = ComfyTaskType.SpeechToText,
+                SpeechInput = File.OpenRead("files/speech_to_text_test.wav")
+            }
+        };
         try
         {
-            response = client.PostFilesWithRequest<ComfySpeechToTextResponse>(req.ToPostUrl(),
+            response = client.PostFilesWithRequest<CreateComfyGenerationResponse>(req.ToPostUrl(),
                 req, 
                 new[]
                 {
@@ -237,10 +372,39 @@ public class ComfyFriendlyApiTests
         }
         
         Assert.That(response, Is.Not.Null);
-        Assert.That(response?.TextOutput, Is.Not.Null);
-        Assert.That(response?.TextOutput?.Text, Is.Not.Empty);
-        Assert.That(response?.TextOutput?.Text?.Contains("Greetings", StringComparison.OrdinalIgnoreCase), Is.True);
-        Assert.That(response?.TextOutput?.Text?.Contains("how are you", StringComparison.OrdinalIgnoreCase), Is.True);
+        
+        // Poll for result
+        var timeout = DateTime.UtcNow.AddSeconds(30);
+        GetComfyGenerationResponse? result = null;
+        while (timeout > DateTime.UtcNow && result?.Result?.Completed != true)
+        {
+            try
+            {
+                result = await client.GetAsync(new GetComfyGeneration
+                {
+                    RefId = response.RefId
+                });
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Ignore
+                }
+                else
+                {
+                    Assert.Fail(e.Message);
+                }
+            }
+        }
+        
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result?.Result, Is.Not.Null);
+        Assert.That(result?.Result?.Outputs, Is.Not.Null);
+        Assert.That(result?.Result?.Outputs, Is.Not.Empty);
+        Assert.That(result?.Result?.Outputs.Any(x => x.Texts.Count > 0), Is.True);
+        Assert.That(result?.Result?.Outputs[0].Texts[0].Text.Contains("Greetings", StringComparison.OrdinalIgnoreCase), Is.True);
+        Assert.That(result?.Result?.Outputs[0].Texts[0].Text.Contains("how are you", StringComparison.OrdinalIgnoreCase), Is.True);
     }
 
     [Test]
@@ -249,11 +413,15 @@ public class ComfyFriendlyApiTests
         var client = CreateClient();
         
         //Assert does not throw
-        ComfyTextToAudioResponse? response = null;
-        var req = new ComfyTextToAudio()
+        CreateComfyGenerationResponse? response = null;
+        var req = new CreateComfyGeneration()
         {
-            PositivePrompt = "ambient music, relaxing sounds, cyberpunk",
-            NegativePrompt = "loud noises, heavy metal, rock music"
+            Request = new ComfyWorkflowRequest
+            {
+                PositivePrompt = "ambient music, relaxing sounds, cyberpunk",
+                NegativePrompt = "loud noises, heavy metal, rock music",
+                TaskType = ComfyTaskType.TextToAudio
+            }
         };
         
         try
@@ -265,10 +433,35 @@ public class ComfyFriendlyApiTests
             Assert.Fail(e.Message);
         }
         
-        Assert.That(response, Is.Not.Null);
-        Assert.That(response?.Sounds, Is.Not.Null);
-        Assert.That(response?.Sounds, Is.Not.Empty);
-        Assert.That(response?.Sounds?[0].FileName, Does.Contain(".flac"));
+        // Poll for result
+        var timeout = DateTime.UtcNow.AddSeconds(30);
+        GetComfyGenerationResponse? result = null;
+        while (timeout > DateTime.UtcNow && result?.Result?.Completed != true)
+        {
+            try
+            {
+                result = await client.GetAsync(new GetComfyGeneration
+                {
+                    RefId = response.RefId
+                });
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Ignore
+                }
+                else
+                {
+                    Assert.Fail(e.Message);
+                }
+            }
+        }
+        
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result?.Outputs, Is.Not.Null);
+        Assert.That(result?.Outputs, Is.Not.Empty);
+        Assert.That(result?.Outputs?[0].FileName, Does.Contain(".flac"));
     }
     
     [Test]
@@ -277,15 +470,22 @@ public class ComfyFriendlyApiTests
         var client = CreateClient();
 
         //Assert does not throw
-        ComfyImageToTextResponse? response = null;
+        CreateComfyGenerationResponse? response = null;
         var filePath = $"files/comfyui_upload_test.png";
         var imageFile = new FileInfo(filePath);
         // Assert file exists
         Assert.That(imageFile.Exists, Is.True);
-        var req = new ComfyImageToText();
+        var req = new CreateComfyGeneration()
+        {
+            Request = new ComfyWorkflowRequest
+            {
+                TaskType = ComfyTaskType.ImageToText,
+                ImageInput = File.OpenRead("files/comfyui_upload_test.png"),
+            }
+        };
         try
         {
-            response = client.PostFilesWithRequest<ComfyImageToTextResponse>(req.ToPostUrl(),
+            response = client.PostFilesWithRequest<CreateComfyGenerationResponse>(req.ToPostUrl(),
                 req, 
                 new[]
                 {
@@ -299,10 +499,39 @@ public class ComfyFriendlyApiTests
             Assert.Fail(e.Message);
         }
         
-        Assert.That(response, Is.Not.Null);
-        Assert.That(response?.TextOutput, Is.Not.Null);
-        Assert.That(response?.TextOutput?.Text, Is.Not.Empty);
-        Assert.That(response?.TextOutput?.Text,Contains.Substring("ocean"));
+        // Poll for result
+        var timeout = DateTime.UtcNow.AddSeconds(30);
+        GetComfyGenerationResponse? result = null;
+        while (timeout > DateTime.UtcNow && result?.Result?.Completed != true)
+        {
+            try
+            {
+                result = await client.GetAsync(new GetComfyGeneration
+                {
+                    RefId = response.RefId
+                });
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Ignore
+                }
+                else
+                {
+                    Assert.Fail(e.Message);
+                }
+            }
+        }
+        
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result?.Result, Is.Not.Null);
+        Assert.That(result?.Result?.Outputs, Is.Not.Null);
+        Assert.That(result?.Result?.Outputs, Is.Not.Empty);
+        Assert.That(result?.Result?.Outputs[0].Texts, Is.Not.Null);
+        Assert.That(result?.Result?.Outputs[0].Texts, Is.Not.Empty);
+        Assert.That(result?.Result?.Outputs[0].Texts[0].Text, Is.Not.Empty);
+        Assert.That(result?.Result?.Outputs[0].Texts[0].Text,Contains.Substring("ocean"));
     }
     
     // Used by BlazorDiffusion so that consuming applications can repeat the same request
@@ -316,12 +545,16 @@ public class ComfyFriendlyApiTests
         var client = CreateClient();
 
         //Assert does not throw
-        ComfyTextToImageResponse? response = null;
+        CreateComfyGenerationResponse? response = null;
         // Use TextToImage as example.
-        var req = new ComfyTextToImage()
+        var req = new CreateComfyGeneration()
         {
-            PositivePrompt = "Beautiful sunset over the ocean",
-            Seed = 123456
+            Request = new ()
+            {
+                PositivePrompt = "Beautiful sunset over the ocean",
+                Seed = 123456,
+                TaskType = ComfyTaskType.TextToImage
+            }
         };
         try
         {
@@ -332,13 +565,43 @@ public class ComfyFriendlyApiTests
             Assert.Fail(e.Message);
         }
         
-        Assert.That(response, Is.Not.Null);
-        Assert.That(response?.Images, Is.Not.Null);
-        Assert.That(response?.Images?.Count, Is.GreaterThan(0));
-        Assert.That(response?.Images?[0].Url, Is.Not.Null);
-        Assert.That(response?.Images?[0].Url, Is.Not.Empty);
-        Assert.That(response?.Images?[0].FileName, Is.Not.Null);
-        Assert.That(response?.Images?[0].FileName, Is.Not.Empty);
-        Assert.That(response?.Request?.Seed, Is.EqualTo(123456));
+        // Poll for result
+        var timeout = DateTime.UtcNow.AddSeconds(30);
+        GetComfyGenerationResponse? result = null;
+        while (timeout > DateTime.UtcNow && result?.Result?.Completed != true)
+        {
+            try
+            {
+                result = await client.GetAsync(new GetComfyGeneration
+                {
+                    RefId = response.RefId
+                });
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Ignore
+                }
+                else
+                {
+                    Assert.Fail(e.Message);
+                }
+            }
+
+            Assert.That(result, Is.Not.Null);
+        }
+        
+        Assert.That(result, Is.Not.Null);
+        
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result?.Outputs, Is.Not.Null);
+        Assert.That(result?.Outputs?.Count, Is.GreaterThan(0));
+        Assert.That(result?.Outputs?[0].Url, Is.Not.Null);
+        Assert.That(result?.Outputs?[0].Url, Is.Not.Empty);
+        Assert.That(result?.Outputs?[0].FileName, Is.Not.Null);
+        Assert.That(result?.Outputs?[0].FileName, Is.Not.Empty);
+        Assert.That(result?.Request?.Request, Is.Not.Null);
+        Assert.That(result?.Request?.Request?.Seed, Is.EqualTo(123456));
     }
 }
