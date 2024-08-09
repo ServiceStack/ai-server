@@ -1,10 +1,11 @@
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
+using Microsoft.Extensions.Logging;
 using ServiceStack;
 
 namespace AiServer.ServiceInterface.Diffusion;
 
-public class ReplicateDiffusionProvider(IHttpClientFactory httpClientFactory) : IDiffusionProvider
+public class ReplicateDiffusionProvider(IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory) : IDiffusionProvider
 {
     private readonly Dictionary<string, ReplicateClient> _clients = new();
     private readonly object _lockObj = new();
@@ -36,7 +37,9 @@ public class ReplicateDiffusionProvider(IHttpClientFactory httpClientFactory) : 
             if (!_clients.ContainsKey(provider.Name))
             {
                 var httpClient = httpClientFactory.CreateClient($"ReplicateClient");
-                var replicateClient = new ReplicateClient(httpClient, (string.IsNullOrEmpty(provider.ApiKey) ? AppConfig.Instance.ReplicateApiKey : provider.ApiKey));
+                var replicateClient = new ReplicateClient(
+                    httpClient, (string.IsNullOrEmpty(provider.ApiKey) ? AppConfig.Instance.ReplicateApiKey : provider.ApiKey),
+                    loggerFactory.CreateLogger<ReplicateClient>());
                 _clients.Add(provider.Name, replicateClient);
             }
             return _clients[provider.Name];

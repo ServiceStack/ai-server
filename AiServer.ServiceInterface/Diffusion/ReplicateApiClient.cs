@@ -1,5 +1,6 @@
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
+using Microsoft.Extensions.Logging;
 using ServiceStack;
 
 namespace AiServer.ServiceInterface.Diffusion;
@@ -10,15 +11,17 @@ using System.Text.Json;
 
 public class ReplicateClient
 {
-    private readonly HttpClient _httpClient;
-    private readonly string _apiKey;
+    private readonly HttpClient httpClient;
+    private readonly string apiKey;
+    private readonly ILogger<ReplicateClient>? logger;
     private const string BaseUrl = "https://api.replicate.com/";
 
-    public ReplicateClient(HttpClient httpClient, string? apiKey)
+    public ReplicateClient(HttpClient httpClient, string? apiKey, ILogger<ReplicateClient>? logger = null)
     {
-        _httpClient = httpClient;
-        _apiKey = apiKey;
-        _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
+        this.httpClient = httpClient;
+        this.apiKey = apiKey;
+        this.logger = logger;
+        this.httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {this.apiKey}");
     }
 
     public async Task<DiffusionGenerationResponse> GenerateImage(DiffusionImageGeneration request)
@@ -38,7 +41,7 @@ public class ReplicateClient
         var allTasks = new List<Task<HttpResponseMessage>>();
         for (var i = 0; i < request.Images; i++)
         {
-            allTasks.Add(_httpClient.PostAsJsonAsync(BaseUrl.CombineWith("v1/models/black-forest-labs/flux-schnell/predictions"), req));
+            allTasks.Add(httpClient.PostAsJsonAsync(BaseUrl.CombineWith("v1/models/black-forest-labs/flux-schnell/predictions"), req));
         }
         
         await Task.WhenAll(allTasks);
@@ -61,7 +64,8 @@ public class ReplicateClient
         }
         
         var allResults = await Task.WhenAll(allPredictions.Select(x => PollForResultAsync(x.Urls.Get)));
-        var allOutputs = allResults.Select(x => x).ToList();
+        // Failures for single requests ignored, at least some can be returned.
+        var allOutputs = allResults.Select(x => x).Where(x => x.Status == "succeeded").ToList();
         
         return new DiffusionGenerationResponse
         {
@@ -76,7 +80,7 @@ public class ReplicateClient
     public async Task<Stream> DownloadOutputAsync(DiffusionApiProvider provider, DiffusionApiProviderOutput output,
         CancellationToken token = default)
     {
-        var response = await _httpClient.GetAsync(output.Url, token);
+        var response = await httpClient.GetAsync(output.Url, token);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsStreamAsync(token);
     }
@@ -86,7 +90,7 @@ public class ReplicateClient
         var timeout = DateTime.UtcNow.AddSeconds(30);
         while (DateTime.UtcNow < timeout)
         {
-            var response = await _httpClient.GetAsync(predictionUrl);
+            var response = await httpClient.GetAsync(predictionUrl);
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
@@ -99,7 +103,8 @@ public class ReplicateClient
 
             if (prediction?.Status == "failed")
             {
-                throw new Exception("Prediction failed");
+                logger?.LogError($"Prediction failed: {prediction.ToJson()}");
+                return prediction;
             }
 
             await Task.Delay(2000);

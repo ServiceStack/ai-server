@@ -253,8 +253,9 @@ public class ComfyAdminTasks
     [Test]
     public async Task CanConfigureDiffusionProviders()
     {
-        ConfigureSecrets.ApplySecrets(useLocal);
+        ConfigureSecrets.ApplySecrets(false);
         var client = TestUtils.CreateAuthSecretClient();
+        // var client = TestUtils.CreatePublicAuthSecretClient();
         
         foreach (var provider in DiffusionApiProviders)
         {
