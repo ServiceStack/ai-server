@@ -10,84 +10,10 @@ using ServiceStack.OrmLite;
 namespace AiServer.ServiceInterface;
 
 public class ComfyFileServices(AppData appData, 
-    IHttpClientFactory httpClientFactory,
     ComfyProviderFactory comfyProviderFactory,
-    IDbConnectionFactory dbFactory,
     IBackgroundJobs jobs,
-    AppConfig appConfig,
     ILogger<ComfyFileServices> log) : Service
 {
-    private static TimeSpan waitforTimeout = TimeSpan.FromSeconds(120);
-
-    public async Task<object> Any(GetComfyGeneration request)
-    {
-        if (request.Id == null && request.RefId == null)
-            throw new ArgumentNullException(nameof(request.Id));
-
-        var summary = await jobs.GetJobSummaryAsync(request.Id, request.RefId);
-        if (summary == null)
-            throw HttpError.NotFound("Job not found");
-        
-        var backgroundJob = await jobs.GetBackgroundJob(summary);
-        if (backgroundJob?.CompletedDate != null)
-        {
-            var (req, res) = backgroundJob.ExtractRequestResponse<CreateComfyGeneration, ComfyWorkflowStatus>();
-            if (req != null && res != null)
-            {
-                var outputs = res.Outputs.ToHostedComfyFiles(
-                    appConfig, backgroundJob.RefId, 
-                    summary.CreatedDate.Year.ToString(), 
-                    summary.CreatedDate.Month.ToString("00"), 
-                    summary.CreatedDate.Day.ToString("00"));
-                return new GetComfyGenerationResponse
-                {
-                    Request = req,
-                    Result = res,
-                    Outputs = outputs,
-                };
-            }
-        };
-        
-        return HttpError.NotFound("Job not found");
-    }
-    
-    public async Task<object> Any(WaitForComfyGeneration request)
-    {
-        if (request.Id == null && request.RefId == null)
-            throw new ArgumentNullException(nameof(request.Id));
-
-        var summary = await jobs.GetJobSummaryAsync(request.Id, request.RefId);
-        if (summary == null)
-            throw HttpError.NotFound("Job not found");
-        
-        // Loop waiting for completed task
-        var start = DateTime.UtcNow;
-        while (DateTime.UtcNow - start < waitforTimeout)
-        {
-            var backgroundJob = await jobs.GetBackgroundJob(summary);
-            if (backgroundJob?.CompletedDate != null)
-            {
-                var (req, res) = backgroundJob.ExtractRequestResponse<CreateComfyGeneration, ComfyWorkflowStatus>();
-                if (req != null && res != null)
-                {
-                    var outputs = res.Outputs.ToHostedComfyFiles(
-                        appConfig, backgroundJob.RefId, 
-                        summary.CreatedDate.Year.ToString(), 
-                        summary.CreatedDate.Month.ToString("00"), 
-                        summary.CreatedDate.Day.ToString("00"));
-                    return new GetComfyGenerationResponse
-                    {
-                        Request = req,
-                        Result = res,
-                        Outputs = outputs,
-                    };
-                }
-            };
-            await Task.Delay(1000);
-        }
-        
-        return HttpError.NotFound("Job not found");
-    }
     public async Task<object> Get(DownloadComfyFile request)
     {
         if (request.FileName == null)
@@ -156,21 +82,6 @@ public class ComfyFileServices(AppData appData,
         });
 
         return new HttpResult(contentStream, MimeTypes.GetMimeType(fileExt));
-    }
-
-    private void ConfigureHttpClient(HttpClient httpClient, ComfyApiProvider provider)
-    {
-        if (!string.IsNullOrEmpty(provider.ApiKey))
-        {
-            if (!string.IsNullOrEmpty(provider.ApiKeyHeader))
-            {
-                httpClient.DefaultRequestHeaders.Add(provider.ApiKeyHeader, provider.ApiKey);
-            }
-            else
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", provider.ApiKey);
-            }
-        }
     }
 }
 
@@ -245,20 +156,8 @@ public static class BackgroundJobsFeatureExtensions
         return summary;
     }
 }
-
-public class WaitForComfyGeneration : IReturn<GetComfyGenerationResponse>
-{
-    public int? Id { get; set; }
-    public string? RefId { get; set; }
-}
-
 public static class ComfyFileServicesExtensions
 {
-    public static string GetComfyFileUrl(this ComfyFileOutput fileOutput, string comfyProviderBaseUrl)
-    {
-        return $"{comfyProviderBaseUrl}/view?filename={fileOutput.Filename}&type={fileOutput.Type}&subfolder={fileOutput.Subfolder}";
-    }
-    
     public static List<AiServerHostedComfyFile> ToHostedComfyFiles(this List<ComfyOutput> outputs, AppConfig appConfig, string refId, string year, string month, string day)
     {
         return outputs.SelectMany(x => x.Files.Select(y => new AiServerHostedComfyFile

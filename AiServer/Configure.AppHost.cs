@@ -1,6 +1,7 @@
 using System.Data;
 using AiServer.ServiceInterface;
 using AiServer.ServiceInterface.Comfy;
+using AiServer.ServiceInterface.Replicate;
 using AiServer.ServiceModel.Types;
 using ServiceStack.Configuration;
 using ServiceStack.Data;
@@ -29,6 +30,10 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             
             services.AddSingleton<ComfyProvider>();
             services.AddSingleton<ComfyProviderFactory>();
+
+            services.AddSingleton<ComfyDiffusionProvider>();
+            services.AddSingleton<ReplicateDiffusionProvider>();
+            services.AddSingleton<DiffusionApiProviderFactory>();
             
             // If development, ignore SSL
             if (context.HostingEnvironment.IsDevelopment())
@@ -41,6 +46,7 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             }
 
             AppConfig.Instance.CivitAiApiKey ??= Environment.GetEnvironmentVariable("CIVIT_AI_API_KEY");
+            AppConfig.Instance.ReplicateApiKey ??= Environment.GetEnvironmentVariable("REPLICATE_API_KEY");
             
             services.AddSingleton(x => new CivitAiClient(x.GetService<IHttpClientFactory>(), 
                 AppConfig.Instance.CivitAiApiKey));
@@ -52,6 +58,16 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             services.AddSingleton<IComfyClient>(c => 
                 new ComfyClient("https://comfy-dell.pvq.app/api",
                 "testtest1234",c.GetService<ILoggerFactory>()));
+            
+            services.AddHttpClient<ReplicateClient>(client =>
+            {
+                client.BaseAddress = new Uri("https://api.replicate.com/");
+            });
+
+            services.AddSingleton(sp => new ReplicateClient(
+                sp.GetRequiredService<HttpClient>(),
+                AppConfig.Instance.ReplicateApiKey
+            ));
             
             var appFs = new FileSystemVirtualFiles(context.HostingEnvironment.ContentRootPath.CombineWith("App_Data").AssertDir());
             var uploadLocations = new[]

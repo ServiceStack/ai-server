@@ -1,6 +1,8 @@
+using System.Reflection;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using ServiceStack;
 
 namespace AiServer.Tests;
@@ -9,6 +11,7 @@ namespace AiServer.Tests;
 public class ComfyAdminTasks
 {
     private static bool useLocal = false;
+    private ConfigureSecrets ConfigureSecrets = new();
     
     private static List<CreateComfyApiProvider> ComfyApiProviders = new()
     {
@@ -61,7 +64,7 @@ public class ComfyAdminTasks
             {
                 Height = 1024,
                 Width = 1024,
-                Sampler = ComfySampler.dpmpp_2m_sde,
+                Sampler = ComfySampler.euler_ancestral,
                 Scheduler = "karras",
                 CfgScale = 6.0,
                 Steps = 18
@@ -104,25 +107,12 @@ public class ComfyAdminTasks
             }
         }
     };
-    
-    private JsonApiClient IgnoreSslValidation(JsonApiClient client)
-    {
-        // Ignore local SSL Errors
-        var handler = HttpUtils.HttpClientHandlerFactory();
-        handler.ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true;
-        var httpClient = new HttpClient(handler, disposeHandler:client.HttpMessageHandler == null) {
-            BaseAddress = new Uri(client.BaseUri),
-        };
-        client = new JsonApiClient(httpClient);
-        return client;
-    }
 
     [Test]
     public async Task ClearBadDownloadsFromProviders()
     {
-        var client = TestUtils.CreateAdminClient();
-        client = IgnoreSslValidation(client);
-        //ConfigureSecrets.SetSecrets();
+        ConfigureSecrets.ApplySecrets();
+        var client = TestUtils.CreateAuthSecretClient();
         
         foreach (var provider in ComfyApiProviders)
         {
@@ -153,7 +143,7 @@ public class ComfyAdminTasks
                 
                 modelStatus.ThrowIfError();
                 var dlStatus = modelStatus.Response.DownloadStatus;
-                if(dlStatus.Progress == -1 || dlStatus.Progress < 100)
+                if(dlStatus.Progress == -1 || (dlStatus.Progress > 0 && dlStatus.Progress < 100))
                 {
                     Console.WriteLine($"Model {model.Id} is not fully downloaded, clearing");
                     var response = await client.ApiAsync(new DeleteComfyApiProviderModel()
@@ -169,9 +159,8 @@ public class ComfyAdminTasks
     [Test]
     public async Task ConfigureComfyProviders()
     {
-        var client = TestUtils.CreateAdminClient();
-        client = IgnoreSslValidation(client);
-        //ConfigureSecrets.SetSecrets();
+        ConfigureSecrets.ApplySecrets();
+        var client = TestUtils.CreateAuthSecretClient();
         // var client = TestUtils.CreatePublicAdminClient();
         // Create providers
         foreach (var provider in ComfyApiProviders)
@@ -181,6 +170,7 @@ public class ComfyAdminTasks
                 Name = provider.Name
             };
             var existing = await client.ApiAsync(query);
+            existing.ThrowIfError();
             if (existing.Response.Results.Count > 0)
             {
                 Console.WriteLine($"Provider {provider.Name} already exists");
@@ -214,5 +204,97 @@ public class ComfyAdminTasks
         var startWorkers = await client.ApiAsync(new StartWorkers());
         startWorkers.ThrowIfError();
         
+    }
+
+    private static List<CreateDiffusionApiProvider> DiffusionApiProviders = new List<CreateDiffusionApiProvider>
+    {
+        new()
+        {
+            Name = "Replicate",
+            Concurrency = 3,
+            Enabled = true,
+            Priority = 1,
+            HeartbeatUrl = "https://api.replicate.com/",
+            ApiBaseUrl = "https://api.replicate.com/",
+            ApiKey = "",
+            Models = new List<string> { "flux1-dev","flux1-schnell" },
+            Type = "replicate"
+        },
+        new()
+        {
+            Name = "diffusion-dell.pvq.app",
+            Concurrency = 1,
+            Enabled = true,
+            Priority = 1,
+            HeartbeatUrl = "/",
+            Models = new List<string>
+            {
+                "jibMixRealisticXL_v130RisenFromAshes.safetensors",
+                "animexlXuebimix_v60LCM.safetensors",
+                "LahHongchenSDXLSD15_xlLightning.safetensors"
+            },
+            Type = "comfy"
+        }
+    };
+
+    [Test]
+    public async Task CanConfigureDiffusionProviders()
+    {
+        ConfigureSecrets.ApplySecrets();
+        var client = TestUtils.CreateAuthSecretClient();
+        
+        foreach (var provider in DiffusionApiProviders)
+        {
+            var query = new QueryDiffusionApiProviders
+            {
+                Name = provider.Name
+            };
+            var existing = await client.ApiAsync(query);
+            if (existing.Response.Results.Count > 0)
+            {
+                Console.WriteLine($"Provider {provider.Name} already exists");
+                continue;
+            }
+            var response = await client.ApiAsync(provider);
+            response.ThrowIfError();
+        }
+    }
+
+    [Test]
+    public async Task CanGenerateFluxImageUsingDiffusionProvider()
+    {
+        ConfigureSecrets.ApplySecrets();
+        var client = TestUtils.CreateAuthSecretClient();
+
+        var diffGen = new CreateDiffusionGeneration
+        {
+            Provider = "Replicate",
+            Request = new DiffusionImageGeneration
+            {
+                Height = 1024,
+                Width = 1024,
+                Steps = 4,
+                Model = "flux1-schnell",
+                Images = 4,
+                Prompt = "Ocean sunset",
+                Seed = 1234
+            }
+        };
+        
+        var response = await client.ApiAsync(diffGen);
+        response.ThrowIfError();
+    }
+}
+
+public partial class ConfigureSecrets
+{
+    public void ApplySecrets(bool? useLocal = null)
+    {
+        // use reflection to invoke `SetSecrets` if exists
+        var method = GetType().GetMethod("SetSecrets", BindingFlags.Instance | BindingFlags.Public);
+        if (method != null)
+        {
+            method.Invoke(this, [useLocal]);
+        }
     }
 }

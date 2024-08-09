@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using AiServer.ServiceInterface.Comfy;
+using AiServer.ServiceInterface.Replicate;
 using Microsoft.Extensions.Logging;
 using ServiceStack;
 using ServiceStack.Messaging;
@@ -24,6 +25,8 @@ public class AppData(ILogger<AppData> log,
     private long nextComfyTaskId = -1;
     private static readonly object comfyLock = new();
     public ComfyApiProvider[] ComfyApiProviders { get; set; } = [];
+    
+    public DiffusionApiProvider[] DiffusionApiProviders { get; set; } = [];
 
     // Shared properties
     private CancellationTokenSource? cts;
@@ -36,10 +39,15 @@ public class AppData(ILogger<AppData> log,
     
     public ComfyApiProvider AssertComfyProvider(string name) => ComfyApiProviders.FirstOrDefault(x => x.Name == name)
         ?? throw new NotSupportedException($"Comfy Provider {name} not found");
+    
+    public DiffusionApiProvider AssertDiffusionProvider(string name) => DiffusionApiProviders.FirstOrDefault(x => x.Name == name)
+        ?? throw new NotSupportedException($"Diffusion Provider {name} not found");
 
     // Comfy-specific methods
     public void SetInitialComfyTaskId(long initialValue) => Interlocked.Exchange(ref nextComfyTaskId, initialValue);
     public long LastComfyTaskId => Interlocked.Read(ref nextComfyTaskId);
+    
+
     public long GetNextComfyTaskId() => Interlocked.Increment(ref nextComfyTaskId);
     
     public void ResetInitialTaskIds(IDbConnection db)
@@ -64,7 +72,8 @@ public class AppData(ILogger<AppData> log,
         {
             PopulateWorkerModels(provider, db);
         }
-        StartWorkers(apiProviders, comfyProviders);
+        var diffusionProviders = db.LoadSelect<DiffusionApiProvider>().OrderByDescending(x => x.Priority).ThenBy(x => x.Id).ToArray();
+        StartWorkers(apiProviders, comfyProviders,diffusionProviders);
     }
 
     private void PopulateWorkerModels(ComfyApiProvider provider, IDbConnection db)
@@ -72,12 +81,14 @@ public class AppData(ILogger<AppData> log,
         provider.Models = db.LoadSelect<ComfyApiProviderModel>(x => x.ComfyApiProviderId == provider.Id);
     }
 
-    public void StartWorkers(ApiProvider[] apiProviders, ComfyApiProvider[] comfyProviders)
+    public void StartWorkers(ApiProvider[] apiProviders, ComfyApiProvider[] comfyProviders, DiffusionApiProvider[] diffusionProviders)
     {
         cts = new();
         StartApiWorkers(apiProviders);
         if(comfyProviders.Length > 0)
             StartComfyWorkers(comfyProviders);
+        if(diffusionProviders.Length > 0)
+            StartDiffusionWorkers(diffusionProviders);
     }
 
     private void StartApiWorkers(ApiProvider[] apiProviders)
@@ -99,6 +110,14 @@ public class AppData(ILogger<AppData> log,
                 .ToDictionary(x => x.Name, GetComfyClient);
         }
         LogWorkerInfo(comfyProviders, "Comfy");
+    }
+    
+    private void StartDiffusionWorkers(DiffusionApiProvider[] diffusionProviders)
+    {
+        log.LogInformation("Starting {Count} Diffusion Workers...", diffusionProviders.Length);
+        StoppedAt = null;
+        DiffusionApiProviders = diffusionProviders;
+        //LogWorkerInfo(diffusionProviders, "Diffusion");
     }
     
     private Dictionary<string, IComfyClient?> comfyClients = new();

@@ -230,6 +230,8 @@ public class ComfyApiModelSettings
     [References(typeof(ComfyApiModel))]
     [ForeignKey(typeof(ComfyApiModel), OnDelete = "CASCADE")]
     public int ComfyApiModelId { get; set; }
+    
+    [Reference] public ComfyApiModel ComfyApiModel { get; set; }
 
     public double? CfgScale { get; set; }
 

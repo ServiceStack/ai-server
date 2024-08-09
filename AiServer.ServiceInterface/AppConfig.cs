@@ -12,6 +12,7 @@ public class AppConfig
     public ComfyApiModelSettings? DefaultModelSettings { get; set; }
         
     public string? CivitAiApiKey { get; set; }
+    public string? ReplicateApiKey { get; set; }
         
     public string ApplicationBaseUrl { get; set; }
     public string AssetsBaseUrl { get; set; }
