@@ -13,7 +13,7 @@ public class ReplicateClient
     private readonly string _apiKey;
     private const string BaseUrl = "https://api.replicate.com/";
 
-    public ReplicateClient(HttpClient httpClient, string apiKey)
+    public ReplicateClient(HttpClient httpClient, string? apiKey)
     {
         _httpClient = httpClient;
         _apiKey = apiKey;

@@ -21,6 +21,18 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             var authSecret = Environment.GetEnvironmentVariable("AUTH_SECRET");
             if (authSecret != null)
                 AppConfig.Instance.AuthSecret = authSecret;
+            
+            AppConfig.Instance.ReplicateApiKey ??= Environment.GetEnvironmentVariable("REPLICATE_API_KEY");
+            
+            services.AddHttpClient("ReplicateClient", client =>
+            {
+                // Configure the HttpClient as needed
+                client.BaseAddress = new Uri("https://api.replicate.com");
+                // Add any default headers, timeout settings, etc.
+            });
+            
+            services.AddScoped<IDiffusionProvider, ReplicateDiffusionProvider>();
+            
             services.AddSingleton(AppConfig.Instance);
             services.AddSingleton<AppData>();
             
@@ -46,18 +58,6 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             }
 
             AppConfig.Instance.CivitAiApiKey ??= Environment.GetEnvironmentVariable("CIVIT_AI_API_KEY");
-            AppConfig.Instance.ReplicateApiKey ??= Environment.GetEnvironmentVariable("REPLICATE_API_KEY");
-            
-            services.AddHttpClient("ReplicateClient", client =>
-            {
-                // Configure the HttpClient as needed
-                client.BaseAddress = new Uri("https://api.replicate.com");
-                // Add any default headers, timeout settings, etc.
-            });
-
-            // Repeat for each provider you have
-
-            services.AddScoped<IDiffusionProvider, ReplicateDiffusionProvider>();
             
             services.AddSingleton(x => new CivitAiClient(x.GetService<IHttpClientFactory>(), 
                 AppConfig.Instance.CivitAiApiKey));

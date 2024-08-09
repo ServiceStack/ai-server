@@ -16,7 +16,7 @@ public class CreateDiffusionGenerationCommand(AppData appData, IBackgroundJobs j
     {
         var job = Request.AssertBackgroundJob();
         var apiProvider = appData.AssertDiffusionProvider(job.Worker!);
-        var diffusionProvider = providerFactory.GetProvider(apiProvider.Name);
+        var diffusionProvider = providerFactory.GetProvider(apiProvider.Type);
         if (request.Request == null)
             throw new ArgumentNullException(nameof(request.Request));
 

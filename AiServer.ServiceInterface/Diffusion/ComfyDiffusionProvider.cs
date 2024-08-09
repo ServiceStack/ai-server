@@ -82,9 +82,10 @@ public class ComfyDiffusionProvider(IDbConnection db) : IDiffusionProvider
             PositivePrompt = request.Prompt,
             NegativePrompt = modelSettings.NegativePrompt ?? "(nsfw),(nude),(explicit),(gore),(violence),(blood)",
             Denoise = 1,
+            CfgScale = modelSettings.CfgScale ?? 1,
             Steps = request.Steps is 0 ? modelSettings.Steps ?? 12 : 12,
             Sampler = modelSettings.Sampler ?? ComfySampler.euler_ancestral,
-            BatchSize = request.Images,
+            BatchSize = request.Images is 0 ? 1 : request.Images,
             Scheduler = modelSettings.Scheduler ?? "normal"
         };
         var response = await comfyClient.PromptGeneration(req,waitResult:true);

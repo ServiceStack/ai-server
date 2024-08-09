@@ -20,20 +20,16 @@ public class DiffusionGenerationServices(ILogger<DiffusionGenerationServices> lo
         if (request.Request == null)
             throw new ArgumentNullException(nameof(request.Request));
 
-        var provider = providerFactory.GetProvider(request.Provider);
-        if (provider == null)
-            throw new NotSupportedException($"Provider {request.Provider} not found");
         
-        if (string.IsNullOrEmpty(request.Request.Model))
-            throw new ArgumentException("Model must be specified", nameof(request.Request.Model));
+        var useProviderDefaultModel = request.Provider == null && string.IsNullOrEmpty(request.Request.Model);
         
         var queueCounts = jobs.GetWorkerQueueCounts();
         var providerQueueCount = int.MaxValue;
         DiffusionApiProvider? useProvider = null;
         var candidates = appData.DiffusionApiProviders
             .Where(x => x is { Enabled: true, Models: not null } && 
-                        x.Models.Any(m => 
-                            m == request.Request.Model))
+                        (useProviderDefaultModel || x.Models.Any(m => 
+                            m == request.Request.Model)))
             .ToList();
         foreach (var candidate in candidates)
         {
@@ -52,10 +48,20 @@ public class DiffusionGenerationServices(ILogger<DiffusionGenerationServices> lo
                 providerQueueCount = pendingJobs;
             }
         }
+        
+        var model = request.Request.Model;
 
-        useProvider ??= candidates.FirstOrDefault(x => x.Models != null && x.Models.Contains(request.Request.Model)); // Allow selecting offline models
+        if (useProviderDefaultModel && useProvider is { Models.Count: > 0 })
+        {
+            model = useProvider.Models.First();
+        }
+
+        useProvider ??= candidates.FirstOrDefault(x => x.Name == model); // Allow selecting offline models
         if (useProvider == null)
-            throw new NotSupportedException("No active Providers support this model");
+            throw new NotSupportedException("No active ComfyAPI Providers support this model");
+        
+        if (model == null)
+            throw HttpError.NotFound($"Model {model} not found");
         
         var jobRef = jobs.EnqueueCommand<CreateDiffusionGenerationCommand>(request, new()
         {
@@ -64,7 +70,7 @@ public class DiffusionGenerationServices(ILogger<DiffusionGenerationServices> lo
             Args = request.Provider == null ? null : new() {
                 [nameof(request.Provider)] = request.Provider
             },
-            Worker = request.Provider
+            Worker = useProvider.Name
         });
 
         return new CreateDiffusionGenerationResponse

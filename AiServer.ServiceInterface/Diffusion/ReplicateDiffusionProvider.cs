@@ -29,7 +29,7 @@ public class ReplicateDiffusionProvider(IHttpClientFactory httpClientFactory) : 
             if (!_clients.ContainsKey(provider.Name))
             {
                 var httpClient = httpClientFactory.CreateClient($"ReplicateClient");
-                var replicateClient = new ReplicateClient(httpClient, provider.ApiKey);
+                var replicateClient = new ReplicateClient(httpClient, (string.IsNullOrEmpty(provider.ApiKey) ? AppConfig.Instance.ReplicateApiKey : provider.ApiKey));
                 _clients.Add(provider.Name, replicateClient);
             }
             return _clients[provider.Name];
