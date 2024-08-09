@@ -123,6 +123,7 @@ jobs:
           echo "IMAGE_REPO=${{ env.image_repository_name }}" >> .deploy/.env
           echo "RELEASE_VERSION=${{ env.TAG_NAME }}" >> .deploy/.env
           echo "CIVIT_AI_API_KEY=${{ secrets.CIVIT_AI_API_KEY }}" >> .deploy/.env
+          echo "REPLICATE_API_KEY=${{ secrets.REPLICATE_API_KEY }}" >> .deploy/.env
       
       # Copy only the docker-compose.yml to remote server home folder
       - name: copy files to target server via scp

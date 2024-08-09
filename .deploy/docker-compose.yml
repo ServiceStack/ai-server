@@ -11,6 +11,7 @@ services:
             LETSENCRYPT_HOST: ${HOST_DOMAIN},ai-server-cdn.diffusion.works
             LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
             CIVIT_AI_API_KEY: ${CIVIT_AI_API_KEY}
+            REPLICATE_API_KEY: ${REPLICATE_API_KEY}
             HTTPS_METHOD: noredirect # Disable HTTPS redirect since Cloudflare infinite loop redirects when default
         volumes:
             - ./App_Data:/app/App_Data  
