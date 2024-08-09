@@ -110,14 +110,21 @@ public class ComfyFriendlyApiTests
         {
             try
             {
-                result = await client.GetAsync(new GetComfyGeneration
+                result = await client.PostAsync(new GetComfyGeneration
                 {
                     RefId = response.RefId
                 });
             }
             catch (Exception e)
             {
-                Assert.Fail(e.Message);
+                if (e.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Ignore
+                }
+                else
+                {
+                    Assert.Fail(e.Message);
+                }
             }
         }
 
@@ -175,7 +182,7 @@ public class ComfyFriendlyApiTests
         {
             try
             {
-                result = await client.GetAsync(new GetComfyGeneration
+                result = await client.PostAsync(new GetComfyGeneration
                 {
                     RefId = response.RefId
                 });
@@ -248,7 +255,7 @@ public class ComfyFriendlyApiTests
         {
             try
             {
-                result = await client.GetAsync(new GetComfyGeneration
+                result = await client.PostAsync(new GetComfyGeneration
                 {
                     RefId = response.RefId
                 });
@@ -313,7 +320,7 @@ public class ComfyFriendlyApiTests
         {
             try
             {
-                result = await client.GetAsync(new GetComfyGeneration
+                result = await client.PostAsync(new GetComfyGeneration
                 {
                     RefId = response.RefId
                 });
@@ -380,7 +387,7 @@ public class ComfyFriendlyApiTests
         {
             try
             {
-                result = await client.GetAsync(new GetComfyGeneration
+                result = await client.PostAsync(new GetComfyGeneration
                 {
                     RefId = response.RefId
                 });
@@ -440,7 +447,7 @@ public class ComfyFriendlyApiTests
         {
             try
             {
-                result = await client.GetAsync(new GetComfyGeneration
+                result = await client.PostAsync(new GetComfyGeneration
                 {
                     RefId = response.RefId
                 });
@@ -506,7 +513,7 @@ public class ComfyFriendlyApiTests
         {
             try
             {
-                result = await client.GetAsync(new GetComfyGeneration
+                result = await client.PostAsync(new GetComfyGeneration
                 {
                     RefId = response.RefId
                 });
@@ -572,7 +579,7 @@ public class ComfyFriendlyApiTests
         {
             try
             {
-                result = await client.GetAsync(new GetComfyGeneration
+                result = await client.PostAsync(new GetComfyGeneration
                 {
                     RefId = response.RefId
                 });

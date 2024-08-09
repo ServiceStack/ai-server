@@ -38,18 +38,16 @@ public class ComfyGenerationServices(
             throw new ArgumentNullException(nameof(request.Request));
 
         var needsModel = request.Request.TaskType is ComfyTaskType.TextToImage or ComfyTaskType.ImageToImage or ComfyTaskType.ImageToImageWithMask;
+        // If no provider is specified and no model is specified, pick one to use that the provider has
+        var useProviderDefaultModel = request.Provider == null && string.IsNullOrEmpty(request.Request.Model) && needsModel;
 
-        var model = request.Request.Model ?? appConfig.DefaultModel?.Filename;
-        if (needsModel && !await Db.ExistsAsync<ComfyApiModel>(x => x.Name == model || x.Filename == model))
+        var model = request.Request.Model;
+        if (!useProviderDefaultModel && needsModel && !await Db.ExistsAsync<ComfyApiModel>(x => x.Name == model || x.Filename == model))
             throw HttpError.NotFound($"Model {model} not found");
         
         // Find model
         var comfyApiModel = await Db.SingleAsync<ComfyApiModel>(x => x.Name == model || 
                                                                      x.Filename == model);
-        
-        log.LogInformation($"Using model : {comfyApiModel.ToJson()}");
-        if (needsModel && comfyApiModel == null)
-            throw HttpError.NotFound($"Model {model} not found");
         
         var queueCounts = jobs.GetWorkerQueueCounts();
         var providerQueueCount = int.MaxValue;
@@ -62,7 +60,7 @@ public class ComfyGenerationServices(
             case ComfyTaskType.ImageToImage:
             case ComfyTaskType.ImageToImageWithMask:
                 providerPredicate = x => x is { Enabled: true, Models: not null} && 
-                    x.Models.All(m => m.ComfyApiModel.Filename != comfyApiModel.Filename);
+                    x.Models.All(m => useProviderDefaultModel || m.ComfyApiModel.Filename != comfyApiModel.Filename);
                 break;
             case ComfyTaskType.ImageToImageUpscale:
             case ComfyTaskType.ImageToText:
@@ -95,10 +93,20 @@ public class ComfyGenerationServices(
             }
         }
 
+        if (useProviderDefaultModel && useProvider is { Models.Count: > 0 })
+        {
+            comfyApiModel = useProvider.Models.First().ComfyApiModel;
+            model = comfyApiModel.Filename;
+        }
+
         useProvider ??= candidates.FirstOrDefault(x => x.Name == model); // Allow selecting offline models
         if (useProvider == null)
             throw new NotSupportedException("No active ComfyAPI Providers support this model");
 
+        log.LogInformation($"Using model : {comfyApiModel.ToJson()}");
+        if (needsModel && comfyApiModel == null)
+            throw HttpError.NotFound($"Model {model} not found");
+        
         if (needsModel)
         {
             var modelSettings = await Db.SingleAsync<ComfyApiModelSettings>(x => x.Id == comfyApiModel.Id);

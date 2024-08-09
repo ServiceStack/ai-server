@@ -105,6 +105,18 @@ public class ComfyAdminTasks
                 CfgScale = 1.0,
                 Steps = 8
             }
+        },
+        {
+            "https://civitai.com/models/350352?modelVersionId=391971",
+            new ComfyApiModelSettings
+            {
+                Height = 1024,
+                Width = 1024,
+                Sampler = ComfySampler.euler,
+                Scheduler = "normal",
+                CfgScale = 1.0,
+                Steps = 8
+            }
         }
     };
 
