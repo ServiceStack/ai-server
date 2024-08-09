@@ -86,11 +86,19 @@ public class DiffusionGenerationServices(ILogger<DiffusionGenerationServices> lo
             throw new ArgumentNullException(nameof(request.Id));
 
         var summary = await jobs.GetJobSummaryAsync(request.Id, request.RefId);
+        // Add small wait
+        if (summary == null)
+            await Task.Delay(1000);
         if (summary == null)
             throw HttpError.NotFound("Job not found");
 
         var backgroundJob = await jobs.GetBackgroundJob(summary);
-        var apiProvider = appData.AssertDiffusionProvider(backgroundJob?.Worker!);
+        if (backgroundJob == null)
+            throw HttpError.NotFound("Job not found");
+        var worker = backgroundJob.Worker!;
+        // Worker might not be present in appData, check database.
+        // var apiProvider = appData.AssertDiffusionProvider(backgroundJob?.Worker!);
+        var apiProvider = await Db.SingleAsync<DiffusionApiProvider>(x => x.Name == worker);
         if (backgroundJob?.CompletedDate != null)
         {
             var (req, res) = backgroundJob.ExtractRequestResponse<CreateDiffusionGeneration, DiffusionGenerationResponse>();
