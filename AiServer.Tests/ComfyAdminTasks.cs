@@ -1,3 +1,4 @@
+using System.Reflection;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using NUnit.Framework;
@@ -10,6 +11,7 @@ namespace AiServer.Tests;
 public class ComfyAdminTasks
 {
     private static bool useLocal = false;
+    private ConfigureSecrets ConfigureSecrets = new();
     
     private static List<CreateComfyApiProvider> ComfyApiProviders = new()
     {
@@ -105,25 +107,12 @@ public class ComfyAdminTasks
             }
         }
     };
-    
-    private JsonApiClient IgnoreSslValidation(JsonApiClient client)
-    {
-        // Ignore local SSL Errors
-        var handler = HttpUtils.HttpClientHandlerFactory();
-        handler.ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true;
-        var httpClient = new HttpClient(handler, disposeHandler:client.HttpMessageHandler == null) {
-            BaseAddress = new Uri(client.BaseUri),
-        };
-        client = new JsonApiClient(httpClient);
-        return client;
-    }
 
     [Test]
     public async Task ClearBadDownloadsFromProviders()
     {
-        var client = TestUtils.CreateAdminClient();
-        client = IgnoreSslValidation(client);
-        //ConfigureSecrets.SetSecrets();
+        ConfigureSecrets.ApplySecrets();
+        var client = TestUtils.CreateAuthSecretClient();
         
         foreach (var provider in ComfyApiProviders)
         {
@@ -170,9 +159,8 @@ public class ComfyAdminTasks
     [Test]
     public async Task ConfigureComfyProviders()
     {
-        var client = TestUtils.CreateAdminClient();
-        client = IgnoreSslValidation(client);
-        //ConfigureSecrets.SetSecrets();
+        ConfigureSecrets.ApplySecrets();
+        var client = TestUtils.CreateAuthSecretClient();
         // var client = TestUtils.CreatePublicAdminClient();
         // Create providers
         foreach (var provider in ComfyApiProviders)
@@ -182,6 +170,7 @@ public class ComfyAdminTasks
                 Name = provider.Name
             };
             var existing = await client.ApiAsync(query);
+            existing.ThrowIfError();
             if (existing.Response.Results.Count > 0)
             {
                 Console.WriteLine($"Provider {provider.Name} already exists");
@@ -251,9 +240,8 @@ public class ComfyAdminTasks
     [Test]
     public async Task CanConfigureDiffusionProviders()
     {
-        ConfigureSecrets.SetSecrets();
+        ConfigureSecrets.ApplySecrets();
         var client = TestUtils.CreateAuthSecretClient();
-        client = IgnoreSslValidation(client);
         
         foreach (var provider in DiffusionApiProviders)
         {
@@ -277,7 +265,6 @@ public class ComfyAdminTasks
     {
         ConfigureSecrets.SetSecrets();
         var client = TestUtils.CreateAuthSecretClient();
-        client = IgnoreSslValidation(client);
 
         var diffGen = new CreateDiffusionGeneration
         {
@@ -296,5 +283,18 @@ public class ComfyAdminTasks
         
         var response = await client.ApiAsync(diffGen);
         response.ThrowIfError();
+    }
+}
+
+public partial class ConfigureSecrets
+{
+    public void ApplySecrets(bool? useLocal = null)
+    {
+        // use reflection to invoke `SetSecrets` if exists
+        var method = GetType().GetMethod("SetSecrets", BindingFlags.Instance | BindingFlags.Public);
+        if (method != null)
+        {
+            method.Invoke(this, [useLocal]);
+        }
     }
 }

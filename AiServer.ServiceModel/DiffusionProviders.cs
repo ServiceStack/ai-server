@@ -19,7 +19,6 @@ public class CreateDiffusionGeneration : IReturn<CreateDiffusionGenerationRespon
 {
     public string? Provider { get; set; }
     public DiffusionImageGeneration Request { get; set; }
-    public Dictionary<string, string> Context { get; set; }
 }
 
 public class CreateDiffusionGenerationResponse
