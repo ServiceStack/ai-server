@@ -263,7 +263,7 @@ public class ComfyAdminTasks
     [Test]
     public async Task CanGenerateFluxImageUsingDiffusionProvider()
     {
-        ConfigureSecrets.SetSecrets();
+        ConfigureSecrets.ApplySecrets();
         var client = TestUtils.CreateAuthSecretClient();
 
         var diffGen = new CreateDiffusionGeneration
