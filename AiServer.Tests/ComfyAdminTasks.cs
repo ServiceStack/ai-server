@@ -289,7 +289,7 @@ public class ComfyAdminTasks
                 Steps = 4,
                 Model = "flux1-schnell",
                 Images = 4,
-                Prompt = "Ocean sunset",
+                PositivePrompt = "Ocean sunset",
                 Seed = 1234
             }
         };

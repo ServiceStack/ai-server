@@ -65,7 +65,7 @@ public class DiffusionGenerationServices(ILogger<DiffusionGenerationServices> lo
         
         var jobRef = jobs.EnqueueCommand<CreateDiffusionGenerationCommand>(request, new()
         {
-            ReplyTo = Request.GetHeader("ReplyTo"),
+            ReplyTo = request.ReplyTo ?? Request.GetHeader("ReplyTo"),
             Tag = Request.GetHeader("Tag"),
             Args = request.Provider == null ? null : new() {
                 [nameof(request.Provider)] = request.Provider
@@ -90,6 +90,7 @@ public class DiffusionGenerationServices(ILogger<DiffusionGenerationServices> lo
             throw HttpError.NotFound("Job not found");
 
         var backgroundJob = await jobs.GetBackgroundJob(summary);
+        var apiProvider = appData.AssertDiffusionProvider(backgroundJob?.Worker!);
         if (backgroundJob?.CompletedDate != null)
         {
             var (req, res) = backgroundJob.ExtractRequestResponse<CreateDiffusionGeneration, DiffusionGenerationResponse>();
@@ -97,7 +98,7 @@ public class DiffusionGenerationServices(ILogger<DiffusionGenerationServices> lo
             {
                 var outputs = res.Outputs.ToHostedDiffusionFiles(
                     appConfig,
-                    req.Provider ?? "default",
+                    apiProvider.Name,
                     backgroundJob.RefId,
                     summary.CreatedDate.Year.ToString(),
                     summary.CreatedDate.Month.ToString("00"),
@@ -114,6 +115,86 @@ public class DiffusionGenerationServices(ILogger<DiffusionGenerationServices> lo
 
         return HttpError.NotFound("Job not found");
     }
+    
+    public async Task<object> Get(DownloadDiffusionFile request)
+    {
+        if (request.FileName == null)
+            throw HttpError.NotFound("File not found");
+        
+        // Must use format /comfy/{YYYY}/{MM}/{DD}/{FileName}
+        // Request DTO as int so must pad, ensures only date/number paths can be checked
+        var day = request.Day.Value.ToString("00");
+        var month = request.Month.Value.ToString("00");
+        var year = request.Year.Value.ToString("0000");
+        var filePath = $"/{request.Provider}/{year}/{month}/{day}/{request.FileName}";
+        var fileExt = Path.GetExtension(request.FileName).TrimStart('.');
+        
+        log.LogInformation($"filePath: {filePath}, fileExt: {fileExt}");
+        
+        if (VirtualFiles.GetFile(filePath) is { } virtualFile)
+        {
+            var fileStream = virtualFile.OpenRead();
+            return new HttpResult(fileStream, MimeTypes.GetMimeType(fileExt));
+        }
+
+        var fullFileName = Path.GetFileNameWithoutExtension(request.FileName);
+        var refIdName = fullFileName.SplitOnFirst("-");
+        var refId = refIdName[0];
+        var diffusionFile = refIdName[1];
+        
+        log.LogInformation($"fullFileName: {fullFileName}, refId: {refId}, diffusionFile: {diffusionFile}");
+        
+        var summary = await jobs.GetJobSummaryAsync(null, refId);
+        if (summary == null)
+            throw HttpError.NotFound("Job not found");
+        
+        var job = await jobs.GetBackgroundJob(summary);
+        if (job == null)
+            throw HttpError.NotFound("Job not found");
+        
+        var (jobReq, jobRes) = job.ExtractRequestResponse<CreateDiffusionGeneration, DiffusionGenerationResponse>();
+        if (jobReq == null || jobRes == null)
+            throw HttpError.NotFound("Job not found");
+        
+        if (jobRes != null && jobRes.Error != null)
+            throw HttpError.NotFound("File not found - Error in task");
+        
+        if (job == null || job.CompletedDate == null)
+            throw HttpError.NotFound("File not found");
+        
+        log.LogDebug($"task: {job.ToJson()}");
+        
+        var output = jobRes?.Outputs.FirstOrDefault(x => x.FileName == diffusionFile + "." + fileExt);
+        if (output == null)
+            throw HttpError.NotFound("File not found");
+
+        var file = output;
+        
+        var apiProvider = appData.AssertDiffusionProvider(job.Worker!);
+        var comfyProvider = providerFactory.GetProvider(apiProvider.Name);
+        var contentStream = await comfyProvider.DownloadOutputAsync(apiProvider,file, token: default);
+
+        // Store the file in VirtualFiles asynchronously
+        _ = Task.Run(async () =>
+        {
+            using var memoryStream = new MemoryStream();
+            await contentStream.CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
+            VirtualFiles.WriteFile(filePath, memoryStream);
+        });
+
+        return new HttpResult(contentStream, MimeTypes.GetMimeType(fileExt));
+    }
+}
+
+[Route("/download/{Provider}/{Year}/{Month}/{Day}/{Filename}")]
+public class DownloadDiffusionFile : IReturn<Stream>
+{
+    public string Provider { get; set; }
+    public int? Year { get; set; }
+    public int? Month { get; set; }
+    public int? Day { get; set; }
+    public string? FileName { get; set; }
 }
 
 public static class DiffusionFileServicesExtensions
@@ -123,7 +204,7 @@ public static class DiffusionFileServicesExtensions
         return outputs.Select(file => new AiServerHostedDiffusionFile
         {
             FileName = $"{refId}-{file.FileName}",
-            Url = $"{appConfig.AssetsBaseUrl}/{providerName}/{year}/{month}/{day}/{refId}-{file.FileName}",
+            Url = $"{appConfig.AssetsBaseUrl}/download/{providerName}/{year}/{month}/{day}/{refId}-{file.FileName}",
         }).ToList();
     }
 }

@@ -24,7 +24,7 @@ public class DiffusionProviderTests
             {
                 Model = "flux1-schnell",
                 Seed = 1,
-                Prompt = "A beautiful sunset over the ocean."
+                PositivePrompt = "A beautiful sunset over the ocean."
             }
         };
         var response = await client.PostAsync(request);
@@ -69,7 +69,7 @@ public class DiffusionProviderTests
             {
                 Model = "LahHongchenSDXLSD15_xlLightning.safetensors",
                 Seed = 1,
-                Prompt = "A beautiful sunset over the ocean."
+                PositivePrompt = "A beautiful sunset over the ocean."
             }
         };
         var response = await client.PostAsync(request);

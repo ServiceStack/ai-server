@@ -21,7 +21,14 @@ public class ReplicateDiffusionProvider(IHttpClientFactory httpClientFactory) : 
         var result = await client.GenerateImage(request);
         return (result, DateTime.UtcNow - start);
     }
-    
+
+    public async Task<Stream> DownloadOutputAsync(DiffusionApiProvider provider, DiffusionApiProviderOutput output,
+        CancellationToken token = default)
+    {
+        var client = GetClient(provider);
+        return await client.DownloadOutputAsync(provider, output, token);
+    }
+
     private ReplicateClient GetClient(DiffusionApiProvider provider)
     {
         lock (_lockObj)

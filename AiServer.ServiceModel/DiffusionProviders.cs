@@ -21,6 +21,9 @@ public class CreateDiffusionGeneration : IReturn<CreateDiffusionGenerationRespon
     public DiffusionImageGeneration Request { get; set; }
     
     public object Context { get; set; }
+    
+    public string? ReplyTo { get; set; }
+    public string? RefId { get; set; }
 }
 
 public class CreateDiffusionGenerationResponse
@@ -51,7 +54,8 @@ public class DiffusionImageGeneration
     public int Height { get; set; }
     public int Images { get; set; }
     public long? Seed { get; set; }
-    public string Prompt { get; set; }
+    public string PositivePrompt { get; set; }
+    public string? NegativePrompt { get; set; }
     public int Steps { get; set; }
 }
 
@@ -59,4 +63,6 @@ public class DiffusionGenerationResponse
 {
     // TODO: Common properties for all providers returning details of queued generation
     public List<DiffusionApiProviderOutput> Outputs { get; set; }
+    
+    public string? Error { get; set; }
 }
