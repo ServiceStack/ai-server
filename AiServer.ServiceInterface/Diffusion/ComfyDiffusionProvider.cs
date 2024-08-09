@@ -7,13 +7,16 @@ using AiServer.ServiceModel.Types;
 using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite;
 
-namespace AiServer.ServiceInterface.Replicate;
+namespace AiServer.ServiceInterface.Diffusion;
 
 public interface IDiffusionProvider
 {
     Task<bool> IsOnlineAsync(DiffusionApiProvider provider, CancellationToken token = default);
 
     Task<(DiffusionGenerationResponse,TimeSpan)> QueueAsync(DiffusionApiProvider provider, DiffusionImageGeneration request, CancellationToken token = default);
+
+    Task<Stream> DownloadOutputAsync(DiffusionApiProvider provider, DiffusionApiProviderOutput output,
+        CancellationToken token = default);
 }
 
 public class ComfyDiffusionProvider(IDbConnection db) : IDiffusionProvider
@@ -25,10 +28,6 @@ public class ComfyDiffusionProvider(IDbConnection db) : IDiffusionProvider
         // Check if the client is healthy
         try
         {
-            Action<HttpRequestMessage>? requestFilter = provider.ApiKey != null
-                ? req => req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", provider.ApiKey)
-                : null;
-
             var client = GetClient(provider);
             var heartbeatResult = await client.GetClientHealthAsync();
             
@@ -83,12 +82,13 @@ public class ComfyDiffusionProvider(IDbConnection db) : IDiffusionProvider
             Model = request.Model,
             Height = request.Height is 0 ? modelSettings.Height ?? 1024 : 1024,
             Width = request.Width is 0 ? modelSettings.Width ?? 1024 : 1024,
-            PositivePrompt = request.Prompt,
-            NegativePrompt = modelSettings.NegativePrompt ?? "(nsfw),(nude),(explicit),(gore),(violence),(blood)",
+            PositivePrompt = request.PositivePrompt,
+            NegativePrompt = request.NegativePrompt ?? (modelSettings.NegativePrompt ?? "(nsfw),(nude),(explicit),(gore),(violence),(blood)"),
             Denoise = 1,
+            CfgScale = modelSettings.CfgScale ?? 1,
             Steps = request.Steps is 0 ? modelSettings.Steps ?? 12 : 12,
             Sampler = modelSettings.Sampler ?? ComfySampler.euler_ancestral,
-            BatchSize = request.Images,
+            BatchSize = request.Images is 0 ? 1 : request.Images,
             Scheduler = modelSettings.Scheduler ?? "normal"
         };
         var response = await comfyClient.PromptGeneration(req,waitResult:true);
@@ -106,6 +106,12 @@ public class ComfyDiffusionProvider(IDbConnection db) : IDiffusionProvider
                 ).ToList()
         };
         return (diffResponse,duration);
+    }
+    
+    public async Task<Stream> DownloadOutputAsync(DiffusionApiProvider provider, DiffusionApiProviderOutput output, CancellationToken token = default)
+    {
+        var client = GetClient(provider);
+        return await client.DownloadComfyOutputRawAsync(output.Url);
     }
 }
 

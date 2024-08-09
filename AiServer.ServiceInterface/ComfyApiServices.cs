@@ -15,104 +15,9 @@ using ServiceStack.OrmLite;
 
 namespace AiServer.ServiceInterface;
 
-public class ComfyApiServices(IComfyClient comfyClient,
-    CivitAiClient civitAiClient,
-    ILogger<ComfyApiServices> log,
-    IBackgroundJobs jobs,
-    AppConfig appConfig,
-    AppData appData) : Service
+public class ComfyApiServices(CivitAiClient civitAiClient,
+    IBackgroundJobs jobs) : Service
 {
-    public async Task<object> Post(QueueComfyWorkflow request)
-    {
-        // Look up provider if present
-        var provider = request.Provider.IsNullOrEmpty() ? 
-            await Db.SingleAsync<ComfyApiProvider>(x => x.Name == request.Provider) : null;
-        
-        // Try Look up specified model
-        var requestedModel = await Db.SingleAsync<ComfyApiModel>(x => x.Filename == request.Model || 
-                                                             x.Name == request.Model);
-        ComfyApiModel? apiModel = requestedModel ?? appConfig.DefaultModel;
-        // Check if model string is provided
-        if (apiModel == null)
-            throw new Exception("Model not found");
-        
-        ComfyApiModelSettings? modelSettings = appConfig.DefaultModelSettings;
-        
-        // Convert the request DTO to a ComfyWorkflowRequest
-        var comfyReq = request.ApplyModelDefaults(appConfig,modelSettings);
-
-        // Apply files to the request
-         ApplyFiles(comfyReq);
-
-        var tcs = new TaskCompletionSource<ComfyOutput>();
-        try
-        {
-            // TODO: Change to async once app queuing is setup
-            var response = await comfyClient.PromptGeneration(comfyReq, waitResult:true);
-            var promptId = response.PromptId;
-
-            var status = await comfyClient.GetWorkflowStatusAsync(response.PromptId);
-            if (status == null)
-                throw new Exception("Failed to get workflow status");
-            
-            var fileOutputs = await UpdateComfyHostedFileOutputs(status, promptId);
-
-            // Clear streams from comfyReq
-            request.ImageInput = null;
-            request.MaskInput = null;
-            request.SpeechInput = null;
-            
-            var task = request.ConvertTo<ComfyGenerationTask>();
-            task.Request = comfyReq;
-            task.Response = response;
-            task.TaskType = request.TaskType;
-            task.WorkflowTemplate = comfyClient.GetTemplateContentsByType(request.TaskType) ?? "";
-
-            tcs.TrySetResult(status.Outputs[0]);
-            
-            jobs.EnqueueCommand<CreateComfyGenerationCommand>(task, new()
-            {
-                Worker = appData.ComfyApiProviders.First(x => x.Name == provider.Name).Name
-            });
-
-            return new QueueComfyWorkflowResponse
-            {
-                Request = comfyReq,
-                Status = status,
-                PromptId = promptId,
-                WorkflowResponse = response,
-                FileOutputs = fileOutputs,
-                TextOutputs = status.Outputs[0].Texts
-            };
-        }
-        catch (Exception ex)
-        {
-            return ex;
-        }
-    }
-
-    private async Task<List<ComfyHostedFileOutput>> UpdateComfyHostedFileOutputs(ComfyWorkflowStatus status, string promptId)
-    {
-        var fileOutputs = new List<ComfyHostedFileOutput>();
-
-        // For each file in Outputs[0], download and write to virtual files with promptId prefix
-        await Parallel.ForEachAsync(status.Outputs[0].Files, async (file, token) =>
-        {
-            var downloadStream = await comfyClient.DownloadComfyOutputAsync(file);
-            var fileNameSuffix = file.Filename.SplitOnLast(".")[1];
-            var fileName = file.Filename.SplitOnLast(".")[0];
-            var filePath = GetNewFilePath($"{promptId}-{fileName}.{fileNameSuffix}");
-            VirtualFiles.WriteFile(filePath, downloadStream);
-            fileOutputs.Add(new ComfyHostedFileOutput
-            {
-                Url = filePath,
-                FileName = file.Filename
-            });
-        });
-
-        return fileOutputs;
-    }
-
     public async Task<object> Delete(DeleteComfyApiProviderModel request)
     {
         var providerModel = await Db.SingleByIdAsync<ComfyApiProviderModel>(request.Id);
@@ -298,22 +203,6 @@ public class ComfyApiServices(IComfyClient comfyClient,
         {
             DownloadStatus = downloadStatus
         };
-    }
-
-    private void ApplyFiles(ComfyWorkflowRequest request)
-    {
-        // Pull HTTP file uploads from the original Request to DTOs
-        request.ImageInput ??= Request?.Files.FirstOrDefault(x => x.Name == "imageInput")?.InputStream;
-        request.MaskInput ??= Request?.Files.FirstOrDefault(x => x.Name == "maskInput")?.InputStream;
-        request.SpeechInput ??= Request?.Files.FirstOrDefault(x => x.Name == "speechInput")?.InputStream;
-    }
-
-    private string GetNewFilePath(string fileName)
-    {
-        var now = DateTime.UtcNow;
-        var path = $"/comfy/{now:yyyy}/{now:MM}/{now:dd}/";
-        var fullPath = Path.Combine(path, fileName);
-        return fullPath;
     }
 }
 

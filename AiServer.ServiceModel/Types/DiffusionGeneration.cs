@@ -59,4 +59,6 @@ public class DiffusionApiProvider
     public DateTime CreatedDate { get; set; }
 
     public List<string>? Models { get; set; }
+    
+    public string Type { get; set; }
 }

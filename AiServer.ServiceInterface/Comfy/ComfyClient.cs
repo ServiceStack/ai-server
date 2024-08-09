@@ -23,6 +23,8 @@ public interface IComfyClient : IDisposable
     Task<ComfyAgentDownloadStatus> GetDownloadStatusAsync(string name);
     Task<List<ComfyModel>> GetModelsListAsync();
     Task<Stream> DownloadComfyOutputAsync(ComfyFileOutput output);
+
+    Task<Stream> DownloadComfyOutputRawAsync(string url);
     Task<ComfyWorkflowStatus> GetWorkflowStatusAsync(string promptId);
     
     string? GetTemplateContentsByType(ComfyTaskType taskType);
@@ -318,6 +320,13 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     public async Task<Stream> DownloadComfyOutputAsync(ComfyFileOutput output)
     {
         var response = await httpClient.GetAsync($"/view?filename={output.Filename}&type={output.Type}&subfolder={output.Subfolder}");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStreamAsync();
+    }
+
+    public async Task<Stream> DownloadComfyOutputRawAsync(string url)
+    {
+        var response = await httpClient.GetAsync(url);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsStreamAsync();
     }

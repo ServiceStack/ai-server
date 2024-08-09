@@ -36,26 +36,44 @@ public class ComfyGenerationServices(
     {
         if (request.Request == null)
             throw new ArgumentNullException(nameof(request.Request));
-        
+
+        var needsModel = request.Request.TaskType is ComfyTaskType.TextToImage or ComfyTaskType.ImageToImage or ComfyTaskType.ImageToImageWithMask;
+        // If no provider is specified and no model is specified, pick one to use that the provider has
+        var useProviderDefaultModel = request.Provider == null && string.IsNullOrEmpty(request.Request.Model) && needsModel;
+
         var model = request.Request.Model;
-        if (!await Db.ExistsAsync<ComfyApiModel>(x => x.Name == model || x.Filename == model))
+        if (!useProviderDefaultModel && needsModel && !await Db.ExistsAsync<ComfyApiModel>(x => x.Name == model || x.Filename == model))
             throw HttpError.NotFound($"Model {model} not found");
         
         // Find model
         var comfyApiModel = await Db.SingleAsync<ComfyApiModel>(x => x.Name == model || 
                                                                      x.Filename == model);
         
-        log.LogInformation($"Using model : {comfyApiModel.ToJson()}");
-        if (comfyApiModel == null)
-            throw HttpError.NotFound($"Model {model} not found");
-        
         var queueCounts = jobs.GetWorkerQueueCounts();
         var providerQueueCount = int.MaxValue;
         ComfyApiProvider? useProvider = null;
+        // Predicate to filter out providers depends on TaskType
+        Func<ComfyApiProvider, bool> providerPredicate = null;
+        switch (request.Request.TaskType)
+        {
+            case ComfyTaskType.TextToImage:
+            case ComfyTaskType.ImageToImage:
+            case ComfyTaskType.ImageToImageWithMask:
+                providerPredicate = x => x is { Enabled: true, Models: not null} && 
+                    x.Models.All(m => useProviderDefaultModel || m.ComfyApiModel.Filename != comfyApiModel.Filename);
+                break;
+            case ComfyTaskType.ImageToImageUpscale:
+            case ComfyTaskType.ImageToText:
+            case ComfyTaskType.TextToAudio:
+            case ComfyTaskType.TextToSpeech:
+            case ComfyTaskType.SpeechToText:
+                providerPredicate = x => x is { Enabled: true, Models: not null};
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
         var candidates = appData.ComfyApiProviders
-            .Where(x => x is { Enabled: true, Models: not null } && 
-                        x.Models.Any(m => 
-                            m.ComfyApiModel.Filename == comfyApiModel.Filename))
+            .Where(providerPredicate)
             .ToList();
         foreach (var candidate in candidates)
         {
@@ -75,14 +93,31 @@ public class ComfyGenerationServices(
             }
         }
 
+        if (useProviderDefaultModel && useProvider is { Models.Count: > 0 })
+        {
+            comfyApiModel = useProvider.Models.First().ComfyApiModel;
+            model = comfyApiModel.Filename;
+        }
+
         useProvider ??= candidates.FirstOrDefault(x => x.Name == model); // Allow selecting offline models
         if (useProvider == null)
             throw new NotSupportedException("No active ComfyAPI Providers support this model");
-        
-        var modelSettings = await Db.SingleAsync<ComfyApiModelSettings>(x => x.Id == comfyApiModel.Id);
-        request.Request = request.Request.ApplyModelDefaults(AppConfig.Instance, modelSettings);
-        log.LogInformation($"Model settings: {request.Request.ToJson()}");
 
+        log.LogInformation($"Using model : {comfyApiModel.ToJson()}");
+        if (needsModel && comfyApiModel == null)
+            throw HttpError.NotFound($"Model {model} not found");
+        
+        if (needsModel)
+        {
+            var modelSettings = await Db.SingleAsync<ComfyApiModelSettings>(x => x.Id == comfyApiModel.Id);
+            request.Request = request.Request.ApplyModelDefaults(appConfig, modelSettings);
+            log.LogInformation($"Model settings: {request.Request.ToJson()}");
+        }
+        else
+        {
+            request.Request = request.Request.ApplyModelDefaults(appConfig, null);
+        }
+        
         var jobRef = jobs.EnqueueCommand<CreateComfyGenerationCommand>(request, new()
         {
             ReplyTo = request.ReplyTo,
@@ -130,5 +165,78 @@ public class ComfyGenerationServices(
         };
         
         return HttpError.NotFound("Job not found");
+    }
+}
+
+
+public static class BackgroundJobsFeatureExtensions
+{
+    public static Tuple<TReq?,TRes?> ExtractRequestResponse<TReq, TRes>(this BackgroundJob job)
+    where TReq : class
+    where TRes : class
+    {
+        var reqTypeName = job.Request;
+        var resTypeName = job.Response;
+        if (reqTypeName == typeof(TReq).Name && resTypeName == typeof(TRes).Name)
+        {
+            return new Tuple<TReq?, TRes?>(
+                job.RequestBody.FromJson<TReq>(),
+                job.ResponseBody.FromJson<TRes>()
+            );
+        }
+        if(reqTypeName != typeof(TReq).Name && resTypeName != typeof(TRes).Name)
+        {
+            return new Tuple<TReq?, TRes?>(null, null);
+        }
+        if(reqTypeName != typeof(TReq).Name)
+        {
+            return new Tuple<TReq?, TRes?>(
+                null,
+                job.ResponseBody.FromJson<TRes>()
+            );
+        }
+        return new Tuple<TReq?, TRes?>(
+            job.RequestBody.FromJson<TReq>(),
+            null
+        );
+    }
+    public static async Task<BackgroundJob?> GetBackgroundJob(
+        this IBackgroundJobs feature, 
+        JobSummary summary)
+    {
+        using var db = feature.OpenJobsDb();
+        
+        var activeTask = await db.SingleByIdAsync<BackgroundJob>(summary.Id);
+        if (activeTask != null)
+        {
+            // Task still active, so we don't have a result yet
+            return activeTask;
+        }
+
+        using var monthDb = feature.OpenJobsMonthDb(summary.CreatedDate);
+        var completedTask = await monthDb.SingleByIdAsync<CompletedJob>(summary.Id);
+        if (completedTask != null)
+        {
+            return completedTask;
+        }
+
+        var failedTask = await monthDb.SingleByIdAsync<FailedJob>(summary.Id);
+        return failedTask;
+    }
+    
+    public static async Task<JobSummary?> GetJobSummaryAsync(
+        this IBackgroundJobs feature,int? id, string? refId)
+    {
+        using var db = feature.OpenJobsDb();
+        var q = db.From<JobSummary>();
+        if (refId != null)
+            q.Where(x => x.RefId == refId);
+        else if (id != null)
+            q.Where(x => x.Id == id);
+        else
+            throw new ArgumentNullException(nameof(JobSummary.Id));
+        
+        var summary = await db.SingleAsync(q);
+        return summary;
     }
 }

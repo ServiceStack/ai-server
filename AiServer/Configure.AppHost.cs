@@ -1,7 +1,7 @@
 using System.Data;
 using AiServer.ServiceInterface;
 using AiServer.ServiceInterface.Comfy;
-using AiServer.ServiceInterface.Replicate;
+using AiServer.ServiceInterface.Diffusion;
 using AiServer.ServiceModel.Types;
 using ServiceStack.Configuration;
 using ServiceStack.Data;
@@ -21,6 +21,18 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             var authSecret = Environment.GetEnvironmentVariable("AUTH_SECRET");
             if (authSecret != null)
                 AppConfig.Instance.AuthSecret = authSecret;
+            
+            AppConfig.Instance.ReplicateApiKey ??= Environment.GetEnvironmentVariable("REPLICATE_API_KEY");
+            
+            services.AddHttpClient("ReplicateClient", client =>
+            {
+                // Configure the HttpClient as needed
+                client.BaseAddress = new Uri("https://api.replicate.com");
+                // Add any default headers, timeout settings, etc.
+            });
+            
+            services.AddScoped<IDiffusionProvider, ReplicateDiffusionProvider>();
+            
             services.AddSingleton(AppConfig.Instance);
             services.AddSingleton<AppData>();
             
@@ -46,7 +58,6 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
             }
 
             AppConfig.Instance.CivitAiApiKey ??= Environment.GetEnvironmentVariable("CIVIT_AI_API_KEY");
-            AppConfig.Instance.ReplicateApiKey ??= Environment.GetEnvironmentVariable("REPLICATE_API_KEY");
             
             services.AddSingleton(x => new CivitAiClient(x.GetService<IHttpClientFactory>(), 
                 AppConfig.Instance.CivitAiApiKey));
@@ -55,27 +66,8 @@ public class AppHost() : AppHostBase("AiServer"), IHostingStartup
                 client.Timeout = TimeSpan.FromSeconds(300); // Set a reasonable timeout
             });
             
-            services.AddSingleton<IComfyClient>(c => 
-                new ComfyClient("https://comfy-dell.pvq.app/api",
-                "testtest1234",c.GetService<ILoggerFactory>()));
-            
-            services.AddHttpClient<ReplicateClient>(client =>
-            {
-                client.BaseAddress = new Uri("https://api.replicate.com/");
-            });
-
-            services.AddSingleton(sp => new ReplicateClient(
-                sp.GetRequiredService<HttpClient>(),
-                AppConfig.Instance.ReplicateApiKey
-            ));
-            
             var appFs = new FileSystemVirtualFiles(context.HostingEnvironment.ContentRootPath.CombineWith("App_Data").AssertDir());
-            var uploadLocations = new[]
-            {
-                new UploadLocation("comfy", appFs, readAccessRole: RoleNames.AllowAnon),
-            };
             services.AddSingleton<IVirtualFiles>(appFs);
-            services.AddPlugin(new FilesUploadFeature(uploadLocations));
         });
 
     public override IDbConnection GetDbConnection(string? namedConnection)

@@ -1,5 +1,5 @@
 using AiServer.ServiceInterface.AppDb;
-using AiServer.ServiceInterface.Replicate;
+using AiServer.ServiceInterface.Diffusion;
 using AiServer.ServiceModel;
 using ServiceStack;
 using ServiceStack.Jobs;
@@ -16,7 +16,7 @@ public class CreateDiffusionGenerationCommand(AppData appData, IBackgroundJobs j
     {
         var job = Request.AssertBackgroundJob();
         var apiProvider = appData.AssertDiffusionProvider(job.Worker!);
-        var diffusionProvider = providerFactory.GetProvider(apiProvider.Name);
+        var diffusionProvider = providerFactory.GetProvider(apiProvider.Type);
         if (request.Request == null)
             throw new ArgumentNullException(nameof(request.Request));
 
@@ -30,7 +30,7 @@ public class CreateDiffusionGenerationCommand(AppData appData, IBackgroundJobs j
                 jobs.EnqueueCommand<NotifyDiffusionGenerationResponseCommand>(new DiffusionGenerationCallback
                 {
                     Response = response,
-                    Context = request,
+                    Context = request.Context,
                     RefId = job.RefId,
                 }, new() {
                     ParentId = job.Id,

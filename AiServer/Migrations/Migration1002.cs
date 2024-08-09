@@ -465,6 +465,8 @@ public class Migration1002 : MigrationBase
         public DateTime CreatedDate { get; set; }
 
         public List<string>? Models { get; set; }
+        
+        public string Type { get; set; }
     }
 
     public override void Up()

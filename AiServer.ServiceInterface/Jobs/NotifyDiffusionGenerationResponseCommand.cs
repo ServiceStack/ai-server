@@ -1,4 +1,4 @@
-using AiServer.ServiceInterface.Replicate;
+using AiServer.ServiceInterface.Diffusion;
 using AiServer.ServiceModel;
 using ServiceStack.Jobs;
 using ServiceStack.Web;
