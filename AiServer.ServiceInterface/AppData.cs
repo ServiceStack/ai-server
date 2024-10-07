@@ -154,9 +154,10 @@ public class AppData(ILogger<AppData> log,
         throw HttpError.NotFound($"{apiModel} is not a supported model for {provider.Name} ({provider.MediaType?.Id})");
     }
 
-    public string? GetQualifiedMediaModel(MediaProvider provider, string apiModel)
+    public string? GetQualifiedMediaModel(ModelType modelType, string apiModel)
     {
-        foreach (var mediaModel in MediaModels)
+        foreach (var mediaModel in MediaModels
+            .Where(x => x.ModelType == modelType))
         {
             foreach (var entry in mediaModel.ApiModels)
             {

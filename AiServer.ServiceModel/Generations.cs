@@ -12,6 +12,7 @@ public class ActiveMediaModels : IGet, IReturn<StringsResponse> {}
 [Tag("AI")]
 [Api("Convert speech to text")]
 [Description("Transcribe audio content to text")]
+[SystemJson(UseSystemJson.Response)]
 public class SpeechToText : IGeneration, IReturn<GenerationResponse>
 {
     [ApiMember(Description = "The audio stream containing the speech to be transcribed")]
@@ -33,6 +34,7 @@ public class SpeechToText : IGeneration, IReturn<GenerationResponse>
 [Tag("AI")]
 [Api("Convert text to speech")]
 [Description("Generate speech audio from text input")]
+[SystemJson(UseSystemJson.Response)]
 public class TextToSpeech : IGeneration, IReturn<GenerationResponse>
 {
     [ApiMember(Description = "The text to be converted to speech")]
@@ -58,6 +60,7 @@ public class TextToSpeech : IGeneration, IReturn<GenerationResponse>
 [Tag("AI")]
 [Api("Generate image from text description")]
 [Description("Create an image based on a text prompt")]
+[SystemJson(UseSystemJson.Response)]
 public class TextToImage : IGeneration, IReturn<GenerationResponse>
 {
     [ApiMember(Description = "The main prompt describing the desired image")]
@@ -108,6 +111,7 @@ public class TextToImage : IGeneration, IReturn<GenerationResponse>
 [Tag("AI")]
 [Api("Generate image from another image")]
 [Description("Create a new image based on an existing image and a text prompt")]
+[SystemJson(UseSystemJson.Response)]
 public class ImageToImage : IGeneration, IReturn<GenerationResponse>
 {
     [ApiMember(Description = "The image to use as input")]
@@ -155,6 +159,7 @@ public class ImageToImage : IGeneration, IReturn<GenerationResponse>
 [Tag("AI")]
 [Api("Upscale an image")]
 [Description("Increase the resolution and quality of an input image")]
+[SystemJson(UseSystemJson.Response)]
 public class ImageUpscale : IGeneration, IReturn<GenerationResponse>
 {
     [ApiMember(Description = "The image to upscale")]
@@ -181,6 +186,7 @@ public class ImageUpscale : IGeneration, IReturn<GenerationResponse>
 [Tag("AI")]
 [Api("Generate image with masked area")]
 [Description("Create a new image by applying a mask to an existing image and generating content for the masked area")]
+[SystemJson(UseSystemJson.Response)]
 public class ImageWithMask : IGeneration, IReturn<GenerationResponse>
 {
     [ApiMember(Description = "Prompt describing the desired output in the masked area")]
@@ -229,6 +235,7 @@ public class ImageWithMask : IGeneration, IReturn<GenerationResponse>
 [Tag("AI")]
 [Api("Convert image to text")]
 [Description("Extract text content from an image")]
+[SystemJson(UseSystemJson.Response)]
 public class ImageToText : IGeneration, IReturn<GenerationResponse>
 {
     [ApiMember(Description = "The image to convert to text")]

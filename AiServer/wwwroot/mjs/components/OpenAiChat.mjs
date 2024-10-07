@@ -104,7 +104,7 @@ export default {
         </div>
     </div>
     
-    <div class="w-60 md:w-72 h-screen border-l h-full md:py-2 md:px-2 bg-white">
+    <div class="w-60 sm:w-72 md:w-96 h-screen border-l h-full md:py-2 md:px-2 bg-white">
         <h3 class="p-2 sm:block text-xl md:text-2xl font-semibold">History</h3>
         
         <div v-href="{id:undefined}" :class="['pl-4 hover:text-indigo-600 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6', !routes.id ? 'bg-gray-50 text-indigo-600 font-semibold' : 'cursor-pointer text-gray-700']">
@@ -185,8 +185,8 @@ export default {
             localStorage.setItem('chat.history', JSON.stringify(history.value))
         }
         
-        function groupChats(chats) {
-            const sorted = chats.sort((a,b) => b.id - a.id)
+        function groupChats(threads) {
+            const sorted = threads.sort((a,b) => b.id - a.id)
             
             let Today = []
             let LastWeek = []
