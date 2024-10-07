@@ -11,31 +11,31 @@ namespace AiServer.ServiceModel;
 [Description("Scale a video to specified dimensions")]
 public class QueueScaleVideo : IQueueMediaTransform, IReturn<QueueMediaTransformResponse>
 {
-    [ApiMember(Description = "The video file to be scaled", ParameterType = "body")]
+    [ApiMember(Description = "The video file to be scaled")]
     [Description("The video file to be scaled")]
     [Required]
     [Input(Type = "file")]
     public Stream? Video { get; set; }
 
-    [ApiMember(Description = "Desired width of the scaled video", ParameterType = "query")]
+    [ApiMember(Description = "Desired width of the scaled video")]
     [Description("Desired width of the scaled video")]
     [Range(1, 7680)]  // Assuming 8K as max resolution
     public int? Width { get; set; }
 
-    [ApiMember(Description = "Desired height of the scaled video", ParameterType = "query")]
+    [ApiMember(Description = "Desired height of the scaled video")]
     [Description("Desired height of the scaled video")]
     [Range(1, 4320)]  // Assuming 8K as max resolution
     public int? Height { get; set; }
     
-    [ApiMember(Description = "Optional client-provided identifier for the request", ParameterType = "query")]
+    [ApiMember(Description = "Optional client-provided identifier for the request")]
     [Description("Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
 
-    [ApiMember(Description = "Optional queue or topic to reply to", ParameterType = "query")]
+    [ApiMember(Description = "Optional queue or topic to reply to")]
     [Description("Optional queue or topic to reply to")]
     public string? ReplyTo { get; set; }
     
-    [ApiMember(Description = "Tag to identify the request", ParameterType = "query")]
+    [ApiMember(Description = "Tag to identify the request")]
     [Description("Tag to identify the request")]
     public string? Tag { get; set; }
 }
@@ -46,31 +46,31 @@ public class QueueScaleVideo : IQueueMediaTransform, IReturn<QueueMediaTransform
 [Description("Add a watermark to a video")]
 public class QueueWatermarkVideo : IQueueMediaTransform, IReturn<QueueMediaTransformResponse>
 {
-    [ApiMember(Description = "The video file to be watermarked", ParameterType = "body")]
+    [ApiMember(Description = "The video file to be watermarked")]
     [Description("The video file to be watermarked")]
     [Required]
     [Input(Type = "file")]
     public Stream? Video { get; set; }
  
-    [ApiMember(Description = "The image file to use as a watermark", ParameterType = "body")]
+    [ApiMember(Description = "The image file to use as a watermark")]
     [Description("The image file to use as a watermark")]
     [Required]
     [Input(Type = "file")]
     public Stream? Watermark { get; set; }
     
-    [ApiMember(Description = "Position of the watermark", ParameterType = "query")]
+    [ApiMember(Description = "Position of the watermark")]
     [Description("Position of the watermark")]
     public WatermarkPosition? Position { get; set; }
     
-    [ApiMember(Description = "Optional client-provided identifier for the request", ParameterType = "query")]
+    [ApiMember(Description = "Optional client-provided identifier for the request")]
     [Description("Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
 
-    [ApiMember(Description = "Optional queue or topic to reply to", ParameterType = "query")]
+    [ApiMember(Description = "Optional queue or topic to reply to")]
     [Description("Optional queue or topic to reply to")]
     public string? ReplyTo { get; set; }
     
-    [ApiMember(Description = "Tag to identify the request", ParameterType = "query")]
+    [ApiMember(Description = "Tag to identify the request")]
     [Description("Tag to identify the request")]
     public string? Tag { get; set; }
 }
@@ -111,27 +111,27 @@ public class QueueMediaTransformResponse
 [ValidateApiKey]
 public class QueueConvertImage : IQueueMediaTransform, IPost, IReturn<QueueMediaTransformResponse>
 {
-    [ApiMember(Description = "The image file to be converted", ParameterType = "body")]
+    [ApiMember(Description = "The image file to be converted")]
     [Description("The image file to be converted")]
     [Required]
     [Input(Type = "file")]
     public Stream Image { get; set; }
 
-    [ApiMember(Description = "The desired output format for the converted image", ParameterType = "query")]
+    [ApiMember(Description = "The desired output format for the converted image")]
     [Description("The desired output format for the converted image")]
     [Required]
     public ImageOutputFormat? OutputFormat { get; set; }
     
         
-    [ApiMember(Description = "Optional client-provided identifier for the request", ParameterType = "query")]
+    [ApiMember(Description = "Optional client-provided identifier for the request")]
     [Description("Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
 
-    [ApiMember(Description = "Optional queue or topic to reply to", ParameterType = "query")]
+    [ApiMember(Description = "Optional queue or topic to reply to")]
     [Description("Optional queue or topic to reply to")]
     public string? ReplyTo { get; set; }
     
-    [ApiMember(Description = "Tag to identify the request", ParameterType = "query")]
+    [ApiMember(Description = "Tag to identify the request")]
     [Description("Tag to identify the request")]
     public string? Tag { get; set; }
 }
@@ -141,38 +141,38 @@ public class QueueConvertImage : IQueueMediaTransform, IPost, IReturn<QueueMedia
 [ValidateApiKey]
 public class QueueCropImage : IQueueMediaTransform, IPost, IReturn<QueueMediaTransformResponse>
 {
-    [ApiMember(Description = "The X-coordinate of the top-left corner of the crop area", ParameterType = "query")]
+    [ApiMember(Description = "The X-coordinate of the top-left corner of the crop area")]
     [Description("The X-coordinate of the top-left corner of the crop area")]
     public int X { get; set; }
 
-    [ApiMember(Description = "The Y-coordinate of the top-left corner of the crop area", ParameterType = "query")]
+    [ApiMember(Description = "The Y-coordinate of the top-left corner of the crop area")]
     [Description("The Y-coordinate of the top-left corner of the crop area")]
     public int Y { get; set; }
 
-    [ApiMember(Description = "The width of the crop area", ParameterType = "query")]
+    [ApiMember(Description = "The width of the crop area")]
     [Description("The width of the crop area")]
     public int Width { get; set; }
 
-    [ApiMember(Description = "The height of the crop area", ParameterType = "query")]
+    [ApiMember(Description = "The height of the crop area")]
     [Description("The height of the crop area")]
     public int Height { get; set; }
     
-    [ApiMember(Description = "The image file to be cropped", ParameterType = "body")]
+    [ApiMember(Description = "The image file to be cropped")]
     [Description("The image file to be cropped")]
     [Required]
     [Input(Type = "file")]
     public Stream Image { get; set; }
     
         
-    [ApiMember(Description = "Optional client-provided identifier for the request", ParameterType = "query")]
+    [ApiMember(Description = "Optional client-provided identifier for the request")]
     [Description("Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
 
-    [ApiMember(Description = "Optional queue or topic to reply to", ParameterType = "query")]
+    [ApiMember(Description = "Optional queue or topic to reply to")]
     [Description("Optional queue or topic to reply to")]
     public string? ReplyTo { get; set; }
     
-    [ApiMember(Description = "Tag to identify the request", ParameterType = "query")]
+    [ApiMember(Description = "Tag to identify the request")]
     [Description("Tag to identify the request")]
     public string? Tag { get; set; }
 }
@@ -182,33 +182,33 @@ public class QueueCropImage : IQueueMediaTransform, IPost, IReturn<QueueMediaTra
 [ValidateApiKey]
 public class QueueWatermarkImage : IQueueMediaTransform, IPost, IReturn<QueueMediaTransformResponse>
 {
-    [ApiMember(Description = "The image file to be watermarked", ParameterType = "body")]
+    [ApiMember(Description = "The image file to be watermarked")]
     [Description("The image file to be watermarked")]
     [Required]
     [Input(Type = "file")]
     public Stream Image { get; set; }
 
-    [ApiMember(Description = "The position of the watermark on the image", ParameterType = "query")]
+    [ApiMember(Description = "The position of the watermark on the image")]
     [Description("The position of the watermark on the image")]
     public WatermarkPosition Position { get; set; }
 
-    [ApiMember(Description = "The opacity of the watermark (0.0 to 1.0)", ParameterType = "query")]
+    [ApiMember(Description = "The opacity of the watermark (0.0 to 1.0)")]
     [Description("The opacity of the watermark (0.0 to 1.0)")]
     public float Opacity { get; set; } = 0.5f;
     
-    [ApiMember(Description = "Scale of the watermark relative", ParameterType = "query")]
+    [ApiMember(Description = "Scale of the watermark relative")]
     [Description("Scale of the watermark relative")]
     public float WatermarkScale { get; set; } = 1.0f;
     
-    [ApiMember(Description = "Optional client-provided identifier for the request", ParameterType = "query")]
+    [ApiMember(Description = "Optional client-provided identifier for the request")]
     [Description("Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
 
-    [ApiMember(Description = "Optional queue or topic to reply to", ParameterType = "query")]
+    [ApiMember(Description = "Optional queue or topic to reply to")]
     [Description("Optional queue or topic to reply to")]
     public string? ReplyTo { get; set; }
     
-    [ApiMember(Description = "Tag to identify the request", ParameterType = "query")]
+    [ApiMember(Description = "Tag to identify the request")]
     [Description("Tag to identify the request")]
     public string? Tag { get; set; }
 }
@@ -218,17 +218,17 @@ public class QueueWatermarkImage : IQueueMediaTransform, IPost, IReturn<QueueMed
 [ValidateApiKey]
 public class QueueScaleImage : IPost, IReturn<MediaTransformResponse>
 {
-    [ApiMember(Description = "The image file to be scaled", ParameterType = "body")]
+    [ApiMember(Description = "The image file to be scaled")]
     [Description("The image file to be scaled")]
     [Required]
     [Input(Type = "file")]
     public Stream Image { get; set; }
     
-    [ApiMember(Description = "Desired width of the scaled image", ParameterType = "query")]
+    [ApiMember(Description = "Desired width of the scaled image")]
     [Description("Desired width of the scaled image")]
     public int? Width { get; set; }
     
-    [ApiMember(Description = "Desired height of the scaled image", ParameterType = "query")]
+    [ApiMember(Description = "Desired height of the scaled image")]
     [Description("Desired height of the scaled image")]
     public int? Height { get; set; }
 }
@@ -238,7 +238,7 @@ public class QueueScaleImage : IPost, IReturn<MediaTransformResponse>
 [ValidateApiKey]
 public class QueueConvertVideo : IQueueMediaTransform, IReturn<QueueMediaTransformResponse>
 {
-    [ApiMember(Description = "The desired output format for the converted video", ParameterType = "query")]
+    [ApiMember(Description = "The desired output format for the converted video")]
     [Description("The desired output format for the converted video")]
     [Required]
     public ConvertVideoOutputFormat OutputFormat { get; set; }
@@ -247,15 +247,15 @@ public class QueueConvertVideo : IQueueMediaTransform, IReturn<QueueMediaTransfo
     [Input(Type = "file")]
     public Stream Video { get; set; }
 
-    [ApiMember(Description = "Optional client-provided identifier for the request", ParameterType = "query")]
+    [ApiMember(Description = "Optional client-provided identifier for the request")]
     [Description("Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
 
-    [ApiMember(Description = "Optional queue or topic to reply to", ParameterType = "query")]
+    [ApiMember(Description = "Optional queue or topic to reply to")]
     [Description("Optional queue or topic to reply to")]
     public string? ReplyTo { get; set; }
     
-    [ApiMember(Description = "Tag to identify the request", ParameterType = "query")]
+    [ApiMember(Description = "Tag to identify the request")]
     [Description("Tag to identify the request")]
     public string? Tag { get; set; }
 }
@@ -265,25 +265,25 @@ public class QueueConvertVideo : IQueueMediaTransform, IReturn<QueueMediaTransfo
 [ValidateApiKey]
 public class QueueCropVideo : IQueueMediaTransform, IReturn<QueueMediaTransformResponse>
 {
-    [ApiMember(Description = "The X-coordinate of the top-left corner of the crop area", ParameterType = "query")]
+    [ApiMember(Description = "The X-coordinate of the top-left corner of the crop area")]
     [Description("The X-coordinate of the top-left corner of the crop area")]
     [ValidateGreaterThan(0)]
     [Required]
     public int X { get; set; }
 
-    [ApiMember(Description = "The Y-coordinate of the top-left corner of the crop area", ParameterType = "query")]
+    [ApiMember(Description = "The Y-coordinate of the top-left corner of the crop area")]
     [Description("The Y-coordinate of the top-left corner of the crop area")]
     [ValidateGreaterThan(0)]
     [Required]
     public int Y { get; set; }
 
-    [ApiMember(Description = "The width of the crop area", ParameterType = "query")]
+    [ApiMember(Description = "The width of the crop area")]
     [Description("The width of the crop area")]
     [ValidateGreaterThan(0)]
     [Required]
     public int Width { get; set; }
 
-    [ApiMember(Description = "The height of the crop area", ParameterType = "query")]
+    [ApiMember(Description = "The height of the crop area")]
     [Description("The height of the crop area")]
     [ValidateGreaterThan(0)]
     [Required]
@@ -293,15 +293,15 @@ public class QueueCropVideo : IQueueMediaTransform, IReturn<QueueMediaTransformR
     [Input(Type = "file")]
     public Stream Video { get; set; }
     
-    [ApiMember(Description = "Optional client-provided identifier for the request", ParameterType = "query")]
+    [ApiMember(Description = "Optional client-provided identifier for the request")]
     [Description("Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
 
-    [ApiMember(Description = "Optional queue or topic to reply to", ParameterType = "query")]
+    [ApiMember(Description = "Optional queue or topic to reply to")]
     [Description("Optional queue or topic to reply to")]
     public string? ReplyTo { get; set; }
     
-    [ApiMember(Description = "Tag to identify the request", ParameterType = "query")]
+    [ApiMember(Description = "Tag to identify the request")]
     [Description("Tag to identify the request")]
     public string? Tag { get; set; }
 }
@@ -311,12 +311,12 @@ public class QueueCropVideo : IQueueMediaTransform, IReturn<QueueMediaTransformR
 [ValidateApiKey]
 public class QueueTrimVideo : IQueueMediaTransform, IReturn<QueueMediaTransformResponse>
 {
-    [ApiMember(Description = "The start time of the trimmed video (format: HH:MM:SS)", ParameterType = "query")]
+    [ApiMember(Description = "The start time of the trimmed video (format: HH:MM:SS)")]
     [Description("The start time of the trimmed video (format: HH:MM:SS)")]
     [Required]
     public string StartTime { get; set; }
 
-    [ApiMember(Description = "The end time of the trimmed video (format: HH:MM:SS)", ParameterType = "query")]
+    [ApiMember(Description = "The end time of the trimmed video (format: HH:MM:SS)")]
     [Description("The end time of the trimmed video (format: HH:MM:SS)")]
     public string? EndTime { get; set; }
     
@@ -324,15 +324,15 @@ public class QueueTrimVideo : IQueueMediaTransform, IReturn<QueueMediaTransformR
     [Input(Type = "file")]
     public Stream Video { get; set; }
     
-    [ApiMember(Description = "Optional client-provided identifier for the request", ParameterType = "query")]
+    [ApiMember(Description = "Optional client-provided identifier for the request")]
     [Description("Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
 
-    [ApiMember(Description = "Optional queue or topic to reply to", ParameterType = "query")]
+    [ApiMember(Description = "Optional queue or topic to reply to")]
     [Description("Optional queue or topic to reply to")]
     public string? ReplyTo { get; set; }
     
-    [ApiMember(Description = "Tag to identify the request", ParameterType = "query")]
+    [ApiMember(Description = "Tag to identify the request")]
     [Description("Tag to identify the request")]
     public string? Tag { get; set; }
 }
@@ -342,7 +342,7 @@ public class QueueTrimVideo : IQueueMediaTransform, IReturn<QueueMediaTransformR
 [ValidateApiKey]
 public class QueueConvertAudio : IQueueMediaTransform, IReturn<QueueMediaTransformResponse>
 {
-    [ApiMember(Description = "The desired output format for the converted audio", ParameterType = "query")]
+    [ApiMember(Description = "The desired output format for the converted audio")]
     [Description("The desired output format for the converted audio")]
     [Required]
     public AudioFormat OutputFormat { get; set; }
@@ -351,15 +351,15 @@ public class QueueConvertAudio : IQueueMediaTransform, IReturn<QueueMediaTransfo
     [Input(Type = "file")]
     public Stream Audio { get; set; }
     
-    [ApiMember(Description = "Optional client-provided identifier for the request", ParameterType = "query")]
+    [ApiMember(Description = "Optional client-provided identifier for the request")]
     [Description("Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
 
-    [ApiMember(Description = "Optional queue or topic to reply to", ParameterType = "query")]
+    [ApiMember(Description = "Optional queue or topic to reply to")]
     [Description("Optional queue or topic to reply to")]
     public string? ReplyTo { get; set; }
     
-    [ApiMember(Description = "Tag to identify the request", ParameterType = "query")]
+    [ApiMember(Description = "Tag to identify the request")]
     [Description("Tag to identify the request")]
     public string? Tag { get; set; }
 }
