@@ -1,0 +1,216 @@
+[
+  {
+    "id": "sdxl-lightning",
+    "apiModels": {
+      "ComfyUI": "sdxl_lightning_4step.safetensors",
+      "Replicate": "bytedance/sdxl-lightning-4step"
+    },
+    "modelType": "TextToImage",
+    "filename": "sdxl_lightning_4step.safetensors",
+    "path": "/data/models/checkpoints",
+    "name": "SDXL Lightning 4 Step",
+    "dependsOn": ["sdxl_vae"],
+    "cfgScale": 1.0,
+    "steps": 4,
+    "scheduler": "sgm_uniform",
+    "sampler": "euler_ancestral",
+    "width": 1024,
+    "height": 1024,
+    "url": "https://huggingface.co/ByteDance/SDXL-Lightning",
+    "downloadUrl": "https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step.safetensors?download=true"
+  },
+  {
+    "id": "jib-mix-realistic",
+    "name": "Jib Mix Realistic v14",
+    "apiModels": {
+      "ComfyUI": "jibMixRealisticXL_v140CrystalClarity.safetensors"
+    },
+    "modelType": "TextToImage",
+    "filename": "jibMixRealisticXL_v140CrystalClarity.safetensors",
+    "path": "/data/models/checkpoints",
+    "dependsOn": ["sdxl_vae"],
+    "cfgScale": 2.7,
+    "steps": 20,
+    "scheduler": "karras",
+    "sampler": "dpmpp_2m_sde_gpu",
+    "width": 1024,
+    "height": 1024,
+    "downloadApiKeyVar": "CIVITAI_TOKEN",
+    "url": "https://huggingface.co/CompVis/jib-mix-realistic-xl-v140-crystal-clarity",
+    "downloadUrl": "https://huggingface.co/CompVis/jib-mix-realistic-xl-v140-crystal-clarity/resolve/main/jibMixRealisticXL_v140CrystalClarity.safetensors?download=true"
+  },
+  {
+    "id": "flux-schnell",
+    "name": "FLUX Schnell",
+    "apiModels": {
+      "ComfyUI": "flux1-schnell.safetensors",
+      "Replicate": "black-forest-labs/flux-schnell"
+    },
+    "modelType": "TextToImage",
+    "filename": "flux1-schnell.safetensors",
+    "path": "/data/models/unet",
+    "dependsOn": ["flux_vae","flux-text-encoder-clip-l","flux-text-encoder-t5xxl-fp8-e4m3fn"],
+    "cfgScale": 3.5,
+    "steps": 4,
+    "scheduler": "simple",
+    "sampler": "euler",
+    "width": 1024,
+    "height": 1024,
+    "type": "flux1",
+    "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell",
+    "downloadUrl": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors",
+    "vae": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors?download=true"
+  },
+  {
+    "id": "flux-dev",
+    "name": "FLUX Dev",
+    "apiModels": {
+      "Replicate": "black-forest-labs/flux-dev"      
+    },
+    "modelType": "TextToImage"
+  },
+  {
+    "id": "flux-pro",
+    "name": "FLUX Pro",
+    "apiModels": {
+      "Replicate": "black-forest-labs/flux-pro"
+    },
+    "modelType": "TextToImage"
+  },
+  {
+    "id": "dall-e-3",
+    "apiModels": {
+      "OpenAI": "dall-e-3"
+    },
+    "modelType": "TextToImage"
+  },
+  {
+    "id": "image-to-image",
+    "name": "Image to Image Default",
+    "modelType": "ImageToImage",
+    "apiModels": {
+      "ComfyUI": "jibMixRealisticXL_v140CrystalClarity.safetensors"
+    }
+  },
+  {
+    "id": "image-with-mask",
+    "name": "Image with Mask Default",
+    "modelType": "ImageWithMask",
+    "apiModels": {
+      "ComfyUI": "jibMixRealisticXL_v140CrystalClarity.safetensors"
+    }
+  },
+  {
+    "id": "text-to-speech",
+    "name": "Text to Speech",
+    "dependsOn": ["piper-tts-lessac-high","piper-tts-lessac-high-config"],
+    "modelType": "TextToSpeech",
+    "apiModels": {
+      "ComfyUI": "high:en_US-lessac",
+      "OpenAI": "tts-1:alloy"
+    }
+  },
+  {
+    "id": "speech-to-text",
+    "name": "Speech to Text",
+    "modelType": "SpeechToText",
+    "apiModels": {
+      "ComfyUI": "base",
+      "OpenAI": "whisper-1"
+    }
+  },
+  {
+    "id": "piper-tts-lessac-high",
+    "name": "Piper TTS Lessac High Quality",
+    "filename": "en_US-lessac-high.onnx",
+    "path": "/data/models/piper_tts",
+    "downloadUrl": "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/high/en_US-lessac-high.onnx?download=true",
+    "url": "https://github.com/rhasspy/piper/blob/master/VOICES.md"
+  },
+  {
+    "id": "piper-tts-lessac-high-config",
+    "name": "Piper TTS Lessac High Quality (Config)",
+    "filename": "en_US-lessac-high.onnx.json",
+    "path": "/data/models/piper_tts",
+    "downloadUrl": "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/high/en_US-lessac-high.onnx.json?download=true.json",
+    "url": "https://github.com/rhasspy/piper/blob/master/VOICES.md"
+  },
+  {
+    "id": "flux-text-encoder-clip-l",
+    "name": "FLUX Text Encoder (CLIP-L)",
+    "modelType": "TextEncoder",
+    "filename": "clip_l.safetensors",
+    "path": "/data/models/clip",
+    "downloadUrl": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors?download=true",
+    "url": "https://huggingface.co/comfyanonymous/flux_text_encoders"
+  },
+  {
+    "id": "flux-text-encoder-t5xxl-fp8-e4m3fn",
+    "name": "FLUX Text Encoder (T5-XXL-FP8)",
+    "modelType": "TextEncoder",
+    "filename": "t5xxl_fp8_e4m3fn.safetensors",
+    "path": "/data/models/clip",
+    "downloadUrl": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors?download=true",
+    "url": "https://huggingface.co/comfyanonymous/flux_text_encoders"
+  },
+  {
+    "id": "clip-t5-base",
+    "name": "T5 Base",
+    "modelType": "TextEncoder",
+    "filename": "t5_base.safetensors",
+    "path": "/data/models/clip",
+    "downloadUrl": "https://huggingface.co/t5-base/resolve/main/model.safetensors?download=true",
+    "downloadApiKeyVar": "HF_TOKEN",
+    "url": "https://huggingface.co/t5-base"
+  },
+  {
+    "id": "image-upscale-2x",
+    "filename": "RealESRGAN_x2.pth",
+    "name": "RealESRGAN 2x",
+    "modelType": "ImageUpscale",
+    "path": "/data/models/RealESRGAN",
+    "downloadUrl": "https://huggingface.co/sberbank-ai/Real-ESRGAN/resolve/main/RealESRGAN_x2.pth",
+    "downloadApiKeyVar": "HF_TOKEN",
+    "url": "https://huggingface.co/sberbank-ai/Real-ESRGAN",
+    "apiModels": {
+      "ComfyUI": "RealESRGAN_x2.pth"
+    }
+  },
+  {
+    "id": "sdxl_vae",
+    "name": "SDXL VAE",
+    "modelType": "VAE",
+    "filename": "sdxl_vae.safetensors",
+    "path": "/data/models/VAE",
+    "downloadUrl": "https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors?download=true",
+    "url": "https://huggingface.co/stabilityai/sdxl-vae"
+  },
+  {
+    "id": "flux_vae",
+    "name": "FLUX VAE",
+    "modelType": "VAE",
+    "filename": "ae.safetensors",
+    "path": "/data/models/VAE",
+    "downloadUrl": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors?download=true",
+    "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell"
+  },
+  {
+    "id": "stable-audio-open-1.0",
+    "name": "Stable Audio Open 1.0",
+    "modelType": "TextToAudio",
+    "filename": "stable_audio_open_1.0.safetensors",
+    "path": "/data/models/checkpoints",
+    "downloadUrl": "https://huggingface.co/stabilityai/stable-audio-open-1.0/resolve/main/model.safetensors?download=true",
+    "downloadApiKeyVar": "HF_TOKEN",
+    "url": "https://huggingface.co/stabilityai/stable-audio-open-1.0"
+  },
+  {
+    "id": "image-to-text",
+    "name": "Image to Text",
+    "modelType": "ImageToText",
+    "apiModels": {
+      "ComfyUI": "microsoft/Florence-2-base"
+    },
+    "url": "https://huggingface.co/microsoft/Florence-2-base"
+  }
+]

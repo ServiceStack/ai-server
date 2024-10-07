@@ -1,0 +1,258 @@
+[
+  {
+    "id": 1,
+    "name": "openrouter",
+    "apiTypeId": 2,
+    "apiKeyVar": "OPENROUTER_API_KEY",
+    "HeartbeatUrl": "https://openrouter.ai/api/v1/auth/key",
+    "concurrency": 1,
+    "priority": 0,
+    "enabled": true,
+    "models": [
+      {
+        "model": "command-r:35b"
+      },
+      {
+        "model": "command-r-plus:104b"
+      },
+      {
+        "model": "llama3.1:70b"
+      },
+      {
+        "model": "llama3.1:405b"
+      },
+      {
+        "model": "mixtral:8x7b"
+      },
+      {
+        "model": "mixtral:8x22b"
+      },
+      {
+        "model": "mistral-large:123b"
+      },
+      {
+        "model": "dbrx:132b"
+      },
+      {
+        "model": "deepseek-coder-v2:236b"
+      },
+      {
+        "model": "deepseek-v2:236b"
+      },
+      {
+        "model": "phi3:14b"
+      },
+      {
+        "model": "qwen:110b"
+      },
+      {
+        "model": "qwen2:72b"
+      },
+      {
+        "model": "wizardlm2:7b"
+      },
+      {
+        "model": "wizardlm2:8x22b"
+      },
+      {
+        "model": "yi-large"
+      },
+      {
+        "model": "yi-large-turbo"
+      },
+      {
+        "model": "claude-3-haiku"
+      },
+      {
+        "model": "claude-3-sonnet"
+      },
+      {
+        "model": "claude-3-5-sonnet"
+      },
+      {
+        "model": "claude-3-opus"
+      },
+      {
+        "model": "gemini-pro"
+      },
+      {
+        "model": "gemini-pro-1.5"
+      },
+      {
+        "model": "gemini-pro-vision"
+      },
+      {
+        "model": "gpt-3.5-turbo"
+      },
+      {
+        "model": "gpt-4"
+      },
+      {
+        "model": "gpt-4-turbo"
+      },
+      {
+        "model": "gpt-4-vision"
+      },
+      {
+        "model": "gpt-4o"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "openrouter-free",
+    "apiTypeId": 3,
+    "apiKeyVar": "OPENROUTER_API_KEY",
+    "concurrency": 1,
+    "priority": 1,
+    "enabled": true,
+    "models": [
+      {
+        "model": "llama3:8b"
+      },
+      {
+        "model": "llama3.1:8b"
+      },
+      {
+        "model": "mistral:7b"
+      },
+      {
+        "model": "gemma:7b"
+      },
+      {
+        "model": "gemma2:9b"
+      },
+      {
+        "model": "qwen2:7b"
+      },
+      {
+        "model": "phi3:3.8b"
+      },
+      {
+        "model": "phi3:14b"
+      },
+      {
+        "model": "zephyr:7b"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "openai",
+    "apiTypeId": 4,
+    "apiKeyVar": "OPENAI_API_KEY",
+    "concurrency": 1,
+    "priority": 0,
+    "enabled": true,
+    "models": [
+      {
+        "model": "gpt-3.5-turbo"
+      },
+      {
+        "model": "gpt-4"
+      },
+      {
+        "model": "gpt-4-turbo"
+      },
+      {
+        "model": "gpt-4-vision"
+      },
+      {
+        "model": "gpt-4o"
+      },
+      {
+        "model": "gpt-4o-mini"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "mistral",
+    "apiTypeId": 5,
+    "apiKeyVar": "MISTRAL_API_KEY",
+    "concurrency": 1,
+    "priority": 0,
+    "enabled": true,
+    "models": [
+      {
+        "model": "mistral:7b"
+      },
+      {
+        "model": "mixtral:8x7b"
+      },
+      {
+        "model": "mixtral:8x22b"
+      },
+      {
+        "model": "codestral:22b"
+      },
+      {
+        "model": "mistral-nemo:12b"
+      },
+      {
+        "model": "mistral-large:123b"
+      },
+      {
+        "model": "mistral-embed"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "google",
+    "apiTypeId": 6,
+    "apiKeyVar": "GOOGLE_API_KEY",
+    "concurrency": 1,
+    "priority": 0,
+    "enabled": true,
+    "models": [
+      {
+        "model": "gemini-pro"
+      },
+      {
+        "model": "gemini-pro-1.5"
+      },
+      {
+        "model": "gemini-pro-vision"
+      },
+      {
+        "model": "gemini-flash"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "groq",
+    "apiTypeId": 7,
+    "apiKeyVar": "GROQ_API_KEY",
+    "concurrency": 1,
+    "priority": 2,
+    "enabled": true,
+    "models": [
+      {
+        "model": "gemma:7b"
+      },
+      {
+        "model": "gemma2:9b"
+      },
+      {
+        "model": "llama3:8b"
+      },
+      {
+        "model": "llama3:70b"
+      },
+      {
+        "model": "llama3.1:8b"
+      },
+      {
+        "model": "llama3.1:70b"
+      },
+      {
+        "model": "llama3.1:405b"
+      },
+      {
+        "model": "mixtral:8x7b"
+      }
+    ]
+  }
+]

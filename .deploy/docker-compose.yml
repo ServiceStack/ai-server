@@ -1,0 +1,41 @@
+services:
+    app:
+        image: ghcr.io/${IMAGE_REPO}:${RELEASE_VERSION}
+        restart: always
+        ports:
+            - "8080"
+        container_name: ${APP_NAME}_app
+        env_file: ".env"
+        environment:
+            VIRTUAL_HOST: ${HOST_DOMAIN},ai-server-cdn.diffusion.works
+            VIRTUAL_PORT: 8080
+            LETSENCRYPT_HOST: ${HOST_DOMAIN},ai-server-cdn.diffusion.works
+            LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+            CIVIT_AI_API_KEY: ${CIVIT_AI_API_KEY}
+            REPLICATE_API_KEY: ${REPLICATE_API_KEY}
+            HTTPS_METHOD: noredirect # Disable HTTPS redirect since Cloudflare infinite loop redirects when default
+        volumes:
+            - ./App_Data:/app/App_Data
+
+    app-migration:
+        image: ghcr.io/${IMAGE_REPO}:${RELEASE_VERSION}
+        restart: "no"
+        container_name: ${APP_NAME}_app_migration
+        env_file: ".env"
+        # API Providers populated based on available Environment Variables
+        environment:
+            GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+            GROQ_API_KEY: ${GROQ_API_KEY}
+            MISTRAL_API_KEY: ${MISTRAL_API_KEY}
+            OPENAI_API_KEY: ${OPENAI_API_KEY}
+            OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+        profiles:
+            - migration
+        command: --AppTasks=migrate
+        volumes:
+            - ./App_Data:/app/App_Data
+
+networks:
+  default:
+    external: true
+    name: nginx

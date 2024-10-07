@@ -1,0 +1,49 @@
+name: Build
+
+on:
+  pull_request: {}
+  push:
+    branches:
+      - '**'        # matches every branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0'
+
+      - name: Extract SS license
+        run: |
+          SS_LICENSE=`echo '${{ secrets.APPSETTINGS_PATCH }}' | jq -r .[0].value.license`
+          echo "::add-mask::$SS_LICENSE"
+          echo "SERVICESTACK_LICENSE=${SS_LICENSE}" >> $GITHUB_ENV
+          # Add Comfy Agent API key
+          echo "COMFY_API_KEY=${{ secrets.COMFY_API_KEY }}" >> $GITHUB_ENV
+          # Add Open AI Provider Keys
+          echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> $GITHUB_ENV
+          echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" >> $GITHUB_ENV
+          echo "MISTRAL_API_KEY=${{ secrets.MISTRAL_API_KEY }}" >> $GITHUB_ENV
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> $GITHUB_ENV
+          echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" >> $GITHUB_ENV
+
+      - name: build
+        run: dotnet build
+        working-directory: .
+
+      - name: test
+        run: |
+          dotnet test
+          if [ $? -eq 0 ]; then
+            echo TESTS PASSED
+          else
+            echo TESTS FAILED
+            exit 1
+          fi
+        working-directory: ./AiServer.Tests
+

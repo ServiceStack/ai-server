@@ -1,0 +1,457 @@
+<html class="h-full bg-white">
+<head>
+<base href="/admin/">
+<title>Admin</title>
+<link rel="icon" type="image/svg" href="/img/logo.svg">
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/css/typography.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<style>
+::-webkit-scrollbar { width: 8px; height: 8px }
+::-webkit-scrollbar-thumb { background-color: #ccc }
+.table-object { margin-top:1em; margin-bottom:1em }
+</style>
+<script type="importmap">
+{
+    "imports": {
+        "vue": "/lib/mjs/vue.mjs",
+        "@servicestack/client": "/lib/mjs/servicestack-client.mjs",
+        "@servicestack/vue": "/lib/mjs/servicestack-vue.mjs",
+        "marked": "/lib/mjs/marked.mjs",
+        "highlight.js": "/lib/mjs/highlight.mjs",
+        "chart.js": "/lib/mjs/chart.js",
+        "color.js": "/lib/mjs/color.js",
+        "dtos": "/mjs/dtos.mjs",
+        "core": "/js/core.mjs"
+    }
+}
+</script>
+</head>
+<body class="h-full">
+<div id="app" v-cloak>
+    <sidebar-layout v-if="user" ref="sidebar">
+        <div class="flex h-16 shrink-0 items-center">
+            <a href="/" class="text-2xl whitespace-nowrap overflow-x-hidden flex items-center">
+                <img class="mr-1 h-8 w-auto text-indigo-600" src="/img/logo.svg" alt="Logo">
+                <span class="hidden sm:block text-2xl font-semibold">Admin</span>
+            </a>
+        </div>
+        <nav class="flex flex-1 flex-col">
+            <ul role="list" class="flex flex-1 flex-col gap-y-7">
+                <li v-for="group in new Set(Object.keys(sections).flatMap(k => sections[k].group))">
+                    <div v-if="group" class="text-sm font-semibold leading-6 text-gray-400">{{group}}</div>
+                    <ul role="list" class="-mx-2 space-y-1">
+                        <li v-for="section in Object.keys(sections).map(k => sections[k].group === group ? sections[k] : null).filter(x => !!x)">
+                            <span v-href="{admin:section.id,$clear:true}" :class="[activeSection.id === section.id ? 'bg-gray-50 text-indigo-600' : 'cursor-pointer text-gray-700 hover:text-indigo-600 hover:bg-gray-50', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold select-none']" @click="$forceUpdate()">
+                                <icon :svg="section.icon" class="h-6 w-6 shrink-0 text-indigo-600"></icon>
+                                {{section.label}}
+                            </span>
+                        </li>
+                    </ul>
+                </li>
+                <li class="-mx-6 mt-auto">
+                    <div v-if="showUserMenu" class="font-normal absolute z-10 -mt-10 left-6 w-60 origin-top-right rounded-md bg-white dark:bg-black py-1 shadow-lg ring-1 ring-black dark:ring-gray-600 ring-opacity-5 focus:outline-none right-2" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                        <a href="/admin/?clear=metadata" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800" role="menuitem" tabindex="-1">Reset Cache</a>
+                    </div>
+                    <span v-if="user" @click="showUserMenu=!showUserMenu" class="flex cursor-pointer bg-gray-50 items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-50">
+                        <img class="h-8 w-8 rounded-full bg-gray-50" :src="user.profileUrl" alt="">
+                        <span class="sr-only">Your profile</span>
+                        <span aria-hidden="true">{{user.displayName}}</span>
+                    </span>
+                </li>
+            </ul>
+        </nav>
+        <template #mobiletitlebar>
+            <div class="flex-1 text-sm font-semibold leading-6 text-gray-900">{{ activeSection.title }}</div>
+            <span v-if="user" class="cursor-pointer bg-gray-50">
+                <span class="sr-only">Your profile</span>
+                <img class="h-8 w-8 rounded-full bg-gray-50" :src="user.profileUrl" alt="">
+            </span>
+        </template>
+    </sidebar-layout>
+    <main :class="user ? 'lg:pl-72' : ''">
+        <div v-if="init" class="pl-4 sm:pl-6 lg:pl-8">
+            <div v-if="!user">
+                <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+                    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+                        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                            <div class="flex justify-center mb-4">
+                                <img class="mr-1 w-8 h-8 w-auto text-indigo-600" src="/img/logo.svg" alt="Logo">
+                                <span class="hidden sm:block text-2xl font-semibold">Admin</span>
+                            </div>
+                            <error-summary v-if="authError" class="mb-3" :status="authError"></error-summary>
+                            <form @submit.prevent="doSignIn">
+                                <div class="flex flex-1 flex-col justify-between">
+                                    <div class="">
+                                        <div class="space-y-6">
+                                            <fieldset class="grid grid-cols-12 gap-6">
+                                                <div class="w-full col-span-12">
+                                                    <text-input type="password" v-model="authSecret" placeholder="Auth Secret"></text-input>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-8">
+                                    <primary-button class="w-full">Sign In</primary-button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-else>
+                <h1 v-if="activeSection.title" class="hidden lg:block pt-4 mb-2 text-3xl font-bold leading-tight tracking-tight text-gray-900">{{ activeSection.title }}</h1>
+                <component :key="refreshKey" :is="activeSection.component" @nav="navTo" :type="activeSection.type"></component>
+            </div>            
+        </div>
+    </main>
+    <api-key-dialog v-if="routes.dialog === 'apikey'" class="z-40" :title="server?.plugins?.apiKey?.label" @done="updatedApiKey"></api-key-dialog>
+    <div v-if="apiKeyError" class="mt-4 flex justify-center">
+        <alert type="error" class="w-96">{{apiKeyError}}</alert>
+    </div>
+</div>
+
+<script type="module">
+import { ref, computed, inject, onMounted, shallowRef, watch, reactive } from "vue"
+import { JsonServiceClient, leftPart, humanize, humanify } from "@servicestack/client"
+import ServiceStackVue, { useClient, useAuth, useMetadata, useFormatters, useUtils, useConfig, useFiles } from "@servicestack/vue"
+import { Authenticate, AdminData, GetWorkerStats, GetSummaryStats } from "dtos"
+import OpenAiChat from "/mjs/components/OpenAiChat.mjs"
+import TextToImage from "/mjs/components/TextToImage.mjs"
+import AiProviders from "/mjs/components/AiProviders.mjs"
+import CopyIcon from "/js/components/CopyIcon.mjs"
+import SortableColumn from "/js/components/SortableColumn.mjs"
+import { BackgroundJobs } from "/modules/admin-ui/components/BackgroundJobs.mjs"
+import { ApiKeys } from "/modules/admin-ui/components/ApiKeys.mjs"
+import { CreateApiKeyForm, EditApiKeyForm } from "/modules/admin-ui/components/ManageUserApiKeys.mjs"
+import { ApiKeyDialog } from "/js/components/ApiKeyDialog.mjs"
+
+import { App, usePageRoutes, useBreakpoints, setBodyClass, sortOps } from "core"
+import metadata from "/modules/admin-ui/lib/metadata.mjs"
+import MediaProviders from "/mjs/components/MediaProviders.mjs"
+
+if (location.search.includes('clear=metadata')) {
+    localStorage.removeItem('/metadata/app.json')
+    location.href = leftPart(location.href, '?')
+}
+
+const { loadMetadata, metadataApi, typeOf } = useMetadata()
+const server = window.Server = await loadMetadata({
+    olderThan: window.Server ? null : 60 * 60 * 1000, //1hr
+})
+
+const { pushState } = useUtils()
+
+const app = new App()
+app.use(ServiceStackVue)
+app.component('RouterLink', ServiceStackVue.component('RouterLink'))
+app.components({ CreateApiKeyForm, EditApiKeyForm, ApiKeyDialog, CopyIcon, SortableColumn })
+
+let routes = usePageRoutes(app, {
+    page:'admin',
+    queryKeys: ('tab,provider,db,schema,table,q,page,sort,new,edit,op,skip,id,' +
+        'show,orderBy,pathInfo,tag,body,type,dialog,period').split(','),
+    handlers: {
+        init(state) { console.debug('init', state) }, /*debug*/
+        nav(state) { console.debug('nav', state) } /*debug*/
+    },
+    extend: {
+        dbTable() {
+            return this.table && `${this.db}.${this.schema}.${this.table}` || ''
+        }
+    },
+})
+
+let store = {}
+store = reactive(store)
+
+const sections = {
+    Dashboard: {
+        icon: `<svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>`,
+        component: {
+            template:`
+            <div class="pr-4">
+                <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                    <div v-for="stat in stats" @click="$emit('nav',stat.label)" class="cursor-pointer hover:bg-gray-50 overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                      <dt class="truncate text-sm font-medium text-gray-500">Total {{humanize(stat.label)}}</dt>
+                      <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{{formatNumber(stat.total)}}</dd>
+                    </div>
+                </dl>
+                <div class="pt-4">
+                    <h2 class="lg:block pt-4 mb-2 text-3xl font-bold leading-tight tracking-tight text-gray-900">Workers</h2>
+                    <div v-if="workerStats.length">
+                        <DataGrid :items="workerStats" 
+                            :header-titles="{ runningTime:'Task Started' }">
+                            <template #name="{name}">{{name}}</template>
+                            <template #queued="{queued}">{{queued}}</template>
+                            <template #received="{received}">{{received}}</template>
+                            <template #completed="{completed}">{{completed}}</template>
+                            <template #retries="{retries}">{{retries}}</template>
+                            <template #failed="{failed}">{{failed}}</template>
+                            <template #runningTime="{ runningTime }">
+                                {{runningTime ? relativeTime(runningTime) : ''}}
+                            </template>
+                        </DataGrid>
+                    </div>
+                    <div v-else class="text-gray-500">
+                        No requests have been processed yet                 
+                    </div>
+                </div>
+                <div v-if="providerStats.length || modelStats.length || monthStats.length" class="pt-4">
+                    <h2 class="lg:block pt-4 mb-2 text-3xl font-bold leading-tight tracking-tight text-gray-900">Stats</h2>
+                    <div v-if="providerStats.length">
+                        <h4 class="mt-4 font-semibold text-gray-500">By Providers</h4>                    
+                        <DataGrid :items="providerStats" />
+                    </div>
+                    <div v-if="modelStats.length">
+                        <h4 class="mt-4 font-semibold text-gray-500">By Models</h4>                    
+                        <DataGrid :items="modelStats" />
+                    </div>
+                    <div v-if="monthStats.length">
+                        <h4 class="mt-4 font-semibold text-gray-500">By Month</h4>                    
+                        <DataGrid :items="monthStats" />
+                    </div>
+                </div>
+            </div>`,
+            setup() {
+                const client = useClient()
+                const { relativeTime } = useFormatters()
+                const stats = ref([])
+                client.swr(new AdminData(), r => stats.value = r.response?.pageStats || [])
+                const workerStats = ref([])
+                client.swr(new GetWorkerStats(), r => workerStats.value = r.response?.results || [], { jsconfig:'tsh:df' })
+                const providerStats = ref([])
+                const modelStats = ref([])
+                const monthStats = ref([])
+                client.swr(new GetSummaryStats(), r => {
+                    if (!r.response) return
+                    providerStats.value = r.response.providerStats
+                    modelStats.value = r.response.modelStats
+                    monthStats.value = r.response.monthStats
+                })
+                const formatNumber = value => new Intl.NumberFormat().format(value)
+                
+                return { relativeTime, stats, workerStats, providerStats, modelStats, monthStats, humanize, formatNumber }
+            }
+        },
+    },
+    Chat: {
+        title: '',
+        component: OpenAiChat,
+        icon: '<svg class="w-5 h-5 inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><path fill="currentColor" d="M10 0C4.547 0 0 3.75 0 8.5c0 2.43 1.33 4.548 3.219 6.094a4.778 4.778 0 0 1-.969 2.25a14.4 14.4 0 0 1-.656.781a2.507 2.507 0 0 0-.313.406c-.057.093-.146.197-.187.407c-.042.209.015.553.187.812l.125.219l.25.125c.875.437 1.82.36 2.688.125c.867-.236 1.701-.64 2.5-1.063c.798-.422 1.557-.864 2.156-1.187c.084-.045.138-.056.219-.094C10.796 19.543 13.684 21 16.906 21c.031.004.06 0 .094 0c1.3 0 5.5 4.294 8 2.594c.1-.399-2.198-1.4-2.313-4.375c1.957-1.383 3.22-3.44 3.22-5.719c0-3.372-2.676-6.158-6.25-7.156C18.526 2.664 14.594 0 10 0m0 2c4.547 0 8 3.05 8 6.5S14.547 15 10 15c-.812 0-1.278.332-1.938.688c-.66.355-1.417.796-2.156 1.187c-.64.338-1.25.598-1.812.781c.547-.79 1.118-1.829 1.218-3.281l.032-.563l-.469-.343C3.093 12.22 2 10.423 2 8.5C2 5.05 5.453 2 10 2"></path></svg>',
+    },
+    TextToImage: {
+        title: '',
+        component: TextToImage,
+        icon: '<svg class="w-5 h-5 inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="currentColor" d="M33.126 44.979c-2.951-2.363-7.736-2.363-10.687 0c-2.948 2.364-2.948 6.195 0 8.559c2.95 2.364 7.735 2.364 10.687 0c2.949-2.364 2.949-6.195 0-8.559m-11.34-3.409c2.287-2.841 1.513-6.43-1.727-8.014s-7.72-.564-10.007 2.277c-2.284 2.841-1.512 6.43 1.727 8.014c3.242 1.585 7.722.565 10.007-2.277m-3.103-13.552c2.189-2.446 1.66-5.713-1.183-7.297c-2.842-1.585-6.919-.887-9.109 1.559s-1.66 5.712 1.182 7.296s6.921.887 9.11-1.558m2.017-8.71c2.718 1.582 6.669.98 8.823-1.341c2.155-2.322 1.7-5.485-1.017-7.066c-2.717-1.582-6.668-.981-8.822 1.34c-2.156 2.322-1.701 5.485 1.016 7.067m22.946-4.037c2.42-1.237 2.689-3.667.6-5.43c-2.087-1.763-5.746-2.19-8.167-.954c-2.422 1.236-2.69 3.667-.601 5.43s5.748 2.19 8.168.954"/><path fill="currentColor" d="M52.475 33.199c-2.164-.636-4.031-1.186-4.544-2.459c-.297-.738-.181-1.822.323-3.221c5.366-5.02 13.394-13.109 13.168-16.396c-.09-1.314-2.184-3.196-3.557-3.196l-.108.004c-1.486.102-3.757 2.068-6.183 4.73a10 10 0 0 0-.781-1.761C48.248 6.515 42.653 4 35.444 4c-5.605 0-11.846 1.545-18.045 4.468c-7.957 3.752-13.9 11.576-15.14 19.934c-.922 6.206.18 15.592 10.658 25.075C17.563 57.684 24.879 60 33.514 60h.003c6.932 0 13.955-1.543 19.271-4.23C58.729 52.765 62 48.609 62 44.066c0-8.066-5.506-9.685-9.525-10.867m5.39-23.772c.631 0 2.027 1.31 2.06 1.798c.191 2.783-9.723 12.647-16.35 18.529l-1.13-.983l-.739-.645c4.932-7.358 13.366-18.509 16.159-18.699M39.266 31.06l1.522-1.745l1.731 1.51L41 32.569zm12.62 22.924C46.84 56.536 40.146 58 33.517 58h-.002c-8.14 0-14.978-2.133-19.256-6.006C4.435 43.105 3.386 34.418 4.235 28.695c1.146-7.714 6.648-14.943 14.019-18.418C24.187 7.479 30.132 6 35.444 6c6.383 0 11.473 2.207 13.618 5.904c.462.795.772 1.645.952 2.535c-4.478 5.283-9.026 12.053-9.895 13.359l-2.777 3.184c-1.458-.015-2.918.622-3.368 2.161c-1.658 5.655-5.351 9.162-5.351 9.162s9.361-1.85 11.152-3.952c.97-1.138 1.44-2.498 1.429-3.738l2.908-3.334c.388-.341.965-.854 1.676-1.496c-.004.624.082 1.194.286 1.702c.875 2.172 3.284 2.88 5.835 3.63c3.977 1.17 8.09 2.379 8.09 8.949c.001 3.75-2.882 7.272-8.113 9.918"/><path fill="currentColor" d="M54.121 39.807c-2.95-2.363-7.736-2.363-10.686 0s-2.949 6.195 0 8.559s7.735 2.363 10.686 0s2.95-6.196 0-8.559m-1.453 7.394c-2.147 1.721-5.633 1.721-7.779 0s-2.147-4.51 0-6.23s5.632-1.721 7.779 0s2.147 4.509 0 6.23"/></svg>',
+    },
+    AiProvider: {
+        group: 'AI',
+        label: 'AI Providers',
+        type: 'AiProvider',
+        component: AiProviders,
+    },
+    AiModel: {
+        group: 'AI',
+        label: 'AI Models',
+        type: 'AiModel',
+        component: {
+            template:`
+                <AutoQueryGrid :type="type" selectedColumns="id,name,tags,description,icon" 
+                               :visibleFrom="{icon:'never'}">
+                    <template #id="{ id, icon }">
+                        <div class="flex">
+                            <Icon v-if="icon" class="w-5 h-5" :src="icon" />                        
+                            <svg v-else class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="none" stroke="currentColor" stroke-linejoin="round" d="M18.38 27.94v-14.4l11.19-6.46c6.2-3.58 17.3 5.25 12.64 13.33"/><path fill="none" stroke="currentColor" stroke-linejoin="round" d="m18.38 20.94l12.47-7.2l11.19 6.46c6.2 3.58 4.1 17.61-5.23 17.61"/><path fill="none" stroke="currentColor" stroke-linejoin="round" d="m24.44 17.44l12.47 7.2v12.93c0 7.16-13.2 12.36-17.86 4.28"/><path fill="none" stroke="currentColor" stroke-linejoin="round" d="M30.5 21.2v14.14L19.31 41.8c-6.2 3.58-17.3-5.25-12.64-13.33"/><path fill="none" stroke="currentColor" stroke-linejoin="round" d="m30.5 27.94l-12.47 7.2l-11.19-6.46c-6.21-3.59-4.11-17.61 5.22-17.61"/><path fill="none" stroke="currentColor" stroke-linejoin="round" d="m24.44 31.44l-12.47-7.2V11.31c0-7.16 13.2-12.36 17.86-4.28"/></svg>                        
+                            <span class="ml-2">{{id}}</span>
+                        </div>
+                    </template>
+                    <template #tags="{ tags }">
+                        <span>{{ tags.join(', ') }}</span>
+                    </template>
+                    <template #description="{ description }">
+                        <div class="max-w-sm text-ellipsis" :title="description">{{description}}</div>
+                    </template>
+                </AutoQueryGrid>
+            `,
+            setup(props) {
+                const edit = ref()
+                return { edit }
+            }
+        },
+    },
+    AiTypes: {
+        group: 'AI',
+        label: 'AI Types',
+        type: 'AiType',
+        component: {
+            template:`<AutoQueryGrid :type="type" />`,
+        },
+    },
+    MediaProvider: {
+        group: 'MEDIA',
+        label: 'Media Providers',
+        type: 'MediaProvider',
+        component: MediaProviders,
+    },
+    MediaModel: {
+        group: 'MEDIA',
+        label: 'Media Models',
+        type: 'MediaModel',
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 256 256"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"><path d="M 48.000002,16 H 208 c 17.728,0 32,14.272 32,32 v 160 c 0,17.728 -14.272,32 -32,32 H 48.000002 c -17.728,0 -32,-14.272 -32,-32 V 48 c 0,-17.728 14.272,-32 32,-32 z"/><path d="M 64.000006,64.000001 H 79.999993"/><path d="m 79.999996,-96.000015 a 16,16 0 0 1 -16,16 16,16 0 0 1 -16,-16 16,16 0 0 1 16,-16.000005 16,16 0 0 1 16,16.000005 z" transform="rotate(90)"/><path d="m 112.00001,64.000353 79.99997,-3.52e-4"/><path d="M 191.99998,128 H 176"/><path d="m 144,159.99997 a 16,16 0 0 1 -16,16 16,16 0 0 1 -16,-16 16,16 0 0 1 16,-16 16,16 0 0 1 16,16 z" transform="matrix(0 1 1 0 0 0)"/><path d="M 143.99998,128.00035 64.000006,128"/><path d="M 64.000006,192.00001 H 79.999993"/><path d="m 208,-96.000015 a 16,16 0 0 1 -16,16 16,16 0 0 1 -16,-16 16,16 0 0 1 16,-16.000005 16,16 0 0 1 16,16.000005 z" transform="rotate(90)"/><path d="m 112.00001,192.00036 79.99997,-3.5e-4"/></g></svg>',
+        component: {
+            template:`<AutoQueryGrid :type="type" />`,
+        },
+    },
+    MediaTypes: {
+        group: 'MEDIA',
+        label: 'Media Types',
+        type: 'MediaType',
+        component: {
+            template:`<AutoQueryGrid :type="type" />`,
+        },
+    },
+    BackgroundJobs: {
+        group: 'ADMIN',
+        type: 'BackgroundJob',
+        component: BackgroundJobs,
+        icon: '<svg class=" text-gray-500 mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32"><path fill="currentColor" d="M10.293 5.293L7 8.586L5.707 7.293L4.293 8.707L7 11.414l4.707-4.707zM14 7v2h14V7zm0 8v2h14v-2zm0 8v2h14v-2z"></path></svg>',
+    },
+    ApiKeys: {
+        group: 'ADMIN',
+        component: ApiKeys,
+        icon: '<svg class=" text-gray-400 group-hover:text-gray-500 mr-3 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path fill="currentColor" d="M10.32 2.013A4 4 0 0 0 6.162 7.13l-3.987 3.986a.6.6 0 0 0-.176.424v2.86a.6.6 0 0 0 .6.6h2.8a.6.6 0 0 0 .6-.6V13h1.9a.6.6 0 0 0 .6-.6v-1.693l.735-.735a5.5 5.5 0 0 1-.569-.846l-.99.991a.6.6 0 0 0-.176.424V12H5.6a.6.6 0 0 0-.6.6V14H3v-2.293l4.32-4.32l-.118-.303a3 3 0 0 1 1.96-3.965c.33-.423.72-.796 1.157-1.106M13.5 6.25a.75.75 0 1 0 0-1.5a.75.75 0 0 0 0 1.5M9 6.5a4.5 4.5 0 1 1 7 3.742v2.05l.783.784a.6.6 0 0 1 0 .848L15.707 15l1.068 1.067a.6.6 0 0 1-.05.893l-2.35 1.88a.6.6 0 0 1-.75 0l-2.4-1.92a.6.6 0 0 1-.225-.468v-6.21A4.5 4.5 0 0 1 9 6.5M13.5 3a3.5 3.5 0 0 0-1.75 6.532a.5.5 0 0 1 .25.433v6.295l2 1.6l1.751-1.401l-1.034-1.035a.6.6 0 0 1 0-.848l1.076-1.076l-.617-.617a.6.6 0 0 1-.176-.424V9.965a.5.5 0 0 1 .25-.433A3.5 3.5 0 0 0 13.5 3"></path></svg>',
+    },
+}
+function getIcon(id) {
+    const section = sections[id]
+    return section.icon  || typeOf(section.type)?.icon?.svg ||
+        `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2M3 8v6m0-6h6m12 0v6m0-6H9m12 6v4a2 2 0 0 1-2 2H9m12-6H9m-6 0v4a2 2 0 0 0 2 2h4m-6-6h6m0-6v6m0 0v6m6-12v12"></path></svg>`
+}
+Object.keys(sections).map(id => {
+    const section = sections[id]
+    section.id = id
+    section.label = section.label || humanize(id)
+    section.title = section.title ?? section.label
+    section.icon  = getIcon(id)
+    section.component.props = section.component.props || ['type']
+    section.component.emits = section.component.emits || ['nav']
+})
+
+const AppComponent = {
+    setup() {
+        const { user, signIn } = useAuth()
+        const client = useClient()
+        const sidebar = ref()
+        const refreshKey = ref(1)
+        const showUserMenu = ref(false)
+        const init = ref(false)
+        const apiKeyError = ref('')
+        console.log('AppComponent', routes.admin)
+        const activeSection = shallowRef(sections[routes.admin] || sections.Dashboard)
+
+        function navTo(section, args, pushState=true) {
+            if (!args) args = {}
+            if (section === 'JobSummary') {
+                section = 'BackgroundJobs'
+                args.tab = 'History'
+            }
+
+            refreshKey.value++
+            activeSection.value = sections[section] || sections.Dashboard
+            routes.to({ admin: section, ...args })
+            sidebar.value.toggle(false)
+        }
+        watch(() => routes.admin, () => activeSection.value = sections[routes.admin] || sections.Dashboard)
+        
+        const authSecret = ref('')
+        const authError = ref('')
+        const serviceClient = inject('client')
+        async function doSignIn() {
+            authError.value = ''
+            if (!authSecret.value) return
+            serviceClient.headers.set("authsecret", authSecret.value)
+            const api = await serviceClient.api(new Authenticate())
+            if (api.succeeded) {
+                signIn(api.response)
+            } else {
+                authError.value = api.error
+                authError.value.message = authError.value.message || 'Invalid Auth Secret'
+            }
+        }
+
+        onMounted(async () => {
+            init.value = true
+            const api = await serviceClient.api(new Authenticate())
+            if (api.succeeded) {
+                signIn(api.response)
+            }
+        })
+
+        async function updatedApiKey() {
+            routes.to({ dialog:'' })
+            const api = await client.api(new Authenticate())
+            store.auth = window.AUTH = api.response
+            apiKeyError.value = api.error
+                ? `Not a valid 'Admin' API Key`
+                : ''
+        }
+
+        return { 
+            routes, init, sidebar, user, sections, activeSection, navTo, refreshKey, showUserMenu, 
+            authSecret, authError, doSignIn, apiKeyError, updatedApiKey,
+        }
+    }
+}
+
+const client = window.client = new JsonServiceClient()
+const events = app.events
+app.provides({ client, routes, server, store, events, })
+
+app.build(AppComponent).mount('#app')
+app.start()
+
+function configureMetadata(api) {
+    function typeOf(name, namespace) {
+        if (!api || !name) return null
+        let type = api.types.find(x => x.name.toLowerCase() === name.toLowerCase() && (!namespace || x.namespace == namespace))
+        if (type) return type
+        let requestOp = apiOf(name)
+        if (requestOp) return requestOp.request
+        let responseOp = api.operations.find(x => x.response && (x.response.name.toLowerCase() === name.toLowerCase() && (!namespace || x.response.namespace == namespace)))
+        if (responseOp) return responseOp.response
+        return null
+    }
+    function apiOf(name) {
+        if (!api) return null
+        let requestOp = api.operations.find(x => x.request.name.toLowerCase() === name.toLowerCase())
+        return requestOp
+    }
+
+    const {setConfig} = useConfig()
+    const {Apis} = useMetadata()
+    setConfig({
+        apisResolver: (type, metaTypes) => {
+            const apis = new Apis();
+            metaTypes = api
+            metaTypes?.operations.forEach(op => {
+                if (op.dataModel?.name === type) {
+                    apis.add(op)
+                }
+            })
+            return apis
+        },
+        apiResolver: (name) => {
+            return apiOf(name)
+        },
+        typeResolver: (name, namespace) => {
+            return typeOf(name, namespace)
+        }
+    })
+}
+configureMetadata(metadata)
+</script>
+
+</body>
+</html>

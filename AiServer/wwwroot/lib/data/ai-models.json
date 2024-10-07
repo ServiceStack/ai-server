@@ -1,0 +1,1076 @@
+[
+  {
+    "id": "alfred",
+    "tags": [
+      "40b"
+    ],
+    "latest": "40b",
+    "website": "https://ollama.ai/library/alfred",
+    "description": "A robust conversational model designed to be used for both chat and instruct use cases."
+  },
+  {
+    "id": "aya",
+    "tags": [
+      "8b",
+      "35b"
+    ],
+    "latest": "8b",
+    "website": "https://ollama.ai/library/aya",
+    "description": "Aya 23, released by Cohere, is a new family of state-of-the-art, multilingual models that support 23 languages."
+  },
+  {
+    "id": "bakllava",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/bakllava",
+    "description": "BakLLaVA is a multimodal model consisting of the Mistral 7B base model augmented with the LLaVA architecture."
+  },
+  {
+    "id": "codebooga",
+    "tags": [
+      "34b"
+    ],
+    "latest": "34b",
+    "website": "https://ollama.ai/library/codebooga",
+    "description": "A high-performing code instruct model created by merging two existing code models."
+  },
+  {
+    "id": "codegeex4",
+    "tags": [
+      "9b"
+    ],
+    "latest": "9b",
+    "website": "https://ollama.ai/library/codegeex4",
+    "description": "A versatile model for AI software development scenarios, including code completion."
+  },
+  {
+    "id": "codegemma",
+    "tags": [
+      "2b",
+      "7b"
+    ],
+    "latest": "2b",
+    "website": "https://ollama.ai/library/codegemma",
+    "description": "CodeGemma is a collection of powerful, lightweight models that can perform a variety of coding tasks like fill-in-the-middle code completion, code generation, natural language understanding, mathematical reasoning, and instruction following."
+  },
+  {
+    "id": "codellama",
+    "tags": [
+      "7b",
+      "13b",
+      "34b",
+      "70b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/codellama",
+    "description": "A large language model that can use text prompts to generate and discuss code.",
+    "icon": "/img/models/codellama.svg"
+  },
+  {
+    "id": "codeqwen",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/codeqwen",
+    "description": "CodeQwen1.5 is a large language model pretrained on a large amount of code data.",
+    "icon": "/img/models/qwen.svg"
+  },
+  {
+    "id": "codestral",
+    "tags": [
+      "22b"
+    ],
+    "latest": "22b",
+    "website": "https://ollama.ai/library/codestral",
+    "description": "Codestral is Mistral AI’s first-ever code model designed for code generation tasks.",
+    "icon": "/img/models/codestral.svg"
+  },
+  {
+    "id": "codeup",
+    "tags": [
+      "13b"
+    ],
+    "latest": "13b",
+    "website": "https://ollama.ai/library/codeup",
+    "description": "Great code generation model based on Llama2.",
+    "icon": "/img/models/command-r.svg"
+  },
+  {
+    "id": "command-r",
+    "tags": [
+      "35b"
+    ],
+    "latest": "35b",
+    "website": "https://ollama.ai/library/command-r",
+    "description": "Command R is a Large Language Model optimized for conversational interaction and long context tasks.",
+    "icon": "/img/models/command-r.svg"
+  },
+  {
+    "id": "command-r-plus",
+    "tags": [
+      "104b"
+    ],
+    "latest": "104b",
+    "website": "https://ollama.ai/library/command-r-plus",
+    "description": "Command R+ is a powerful, scalable large language model purpose-built to excel at real-world enterprise use cases.",
+    "icon": "/img/models/command-r-plus.svg"
+  },
+  {
+    "id": "dbrx",
+    "tags": [
+      "132b"
+    ],
+    "latest": "132b",
+    "website": "https://ollama.ai/library/dbrx",
+    "description": "DBRX is an open, general-purpose LLM created by Databricks.",
+    "icon": "/img/models/dbrx.svg"
+  },
+  {
+    "id": "deepseek-coder",
+    "tags": [
+      "1.3b",
+      "6.7b",
+      "33b"
+    ],
+    "latest": "1.3b",
+    "website": "https://ollama.ai/library/deepseek-coder",
+    "description": "DeepSeek Coder is a capable coding model trained on two trillion code and natural language tokens.",
+    "icon": "/img/models/deepseek-coder.jpg"
+  },
+  {
+    "id": "deepseek-coder-v2",
+    "tags": [
+      "16b",
+      "236b"
+    ],
+    "latest": "16b",
+    "website": "https://ollama.ai/library/deepseek-coder-v2",
+    "description": "An open-source Mixture-of-Experts code language model that achieves performance comparable to GPT4-Turbo in code-specific tasks.",
+    "icon": "/img/models/deepseek-coder-v2.jpg"
+  },
+  {
+    "id": "deepseek-llm",
+    "tags": [
+      "7b",
+      "67b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/deepseek-llm",
+    "description": "An advanced language model crafted with 2 trillion bilingual tokens.",
+    "icon": "/img/models/deepseek-coder.jpg"
+  },
+  {
+    "id": "deepseek-v2",
+    "tags": [
+      "16b",
+      "236b"
+    ],
+    "latest": "16b",
+    "website": "https://ollama.ai/library/deepseek-v2",
+    "description": "A strong, economical, and efficient Mixture-of-Experts language model.",
+    "icon": "/img/models/deepseek-coder.jpg"
+  },
+  {
+    "id": "dolphin-llama3",
+    "tags": [
+      "8b",
+      "70b"
+    ],
+    "latest": "8b",
+    "website": "https://ollama.ai/library/dolphin-llama3",
+    "description": "Dolphin 2.9 is a new model with 8B and 70B sizes by Eric Hartford based on Llama 3 that has a variety of instruction, conversational, and coding skills.",
+    "icon": "/img/models/dolphin.png"
+  },
+  {
+    "id": "dolphin-mistral",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/dolphin-mistral",
+    "description": "The uncensored Dolphin model based on Mistral that excels at coding tasks. Updated to version 2.8.",
+    "icon": "/img/models/dolphin.png"
+  },
+  {
+    "id": "dolphin-mixtral",
+    "tags": [
+      "8x7b",
+      "8x22b"
+    ],
+    "latest": "8x7b",
+    "website": "https://ollama.ai/library/dolphin-mixtral",
+    "description": "Uncensored, 8x7b and 8x22b fine-tuned models based on the Mixtral mixture of experts models that excels at coding tasks. Created by Eric Hartford.",
+    "icon": "/img/models/dolphin.png"
+  },
+  {
+    "id": "dolphin-phi",
+    "tags": [
+      "2.7b"
+    ],
+    "latest": "2.7b",
+    "website": "https://ollama.ai/library/dolphin-phi",
+    "description": "2.7B uncensored Dolphin model by Eric Hartford, based on the Phi language model by Microsoft Research.",
+    "icon": "/img/models/dolphin.png"
+  },
+  {
+    "id": "dolphincoder",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/dolphincoder",
+    "description": "A 7B and 15B uncensored variant of the Dolphin model family that excels at coding, based on StarCoder2.",
+    "icon": "/img/models/dolphin.png"
+  },
+  {
+    "id": "duckdb-nsql",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/duckdb-nsql",
+    "description": "7B parameter text-to-SQL model made by MotherDuck and Numbers Station."
+  },
+  {
+    "id": "everythinglm",
+    "tags": [
+      "13b"
+    ],
+    "latest": "13b",
+    "website": "https://ollama.ai/library/everythinglm",
+    "description": "Uncensored Llama2 based model with support for a 16K context window."
+  },
+  {
+    "id": "falcon2",
+    "tags": [
+      "11b"
+    ],
+    "latest": "11b",
+    "website": "https://ollama.ai/library/falcon2",
+    "description": "Falcon2 is an 11B parameters causal decoder-only model built by TII and trained over 5T tokens."
+  },
+  {
+    "id": "firefunction-v2",
+    "tags": [
+      "70b"
+    ],
+    "latest": "70b",
+    "website": "https://ollama.ai/library/firefunction-v2",
+    "description": "An open weights function calling model based on Llama 3, competitive with GPT-4o function calling capabilities."
+  },
+  {
+    "id": "gemma",
+    "tags": [
+      "2b",
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/gemma",
+    "description": "Gemma is a family of lightweight, state-of-the-art open models built by Google DeepMind. Updated to version 1.1",
+    "icon": "/img/models/gemma.svg"
+  },
+  {
+    "id": "gemma2",
+    "tags": [
+      "2b",
+      "9b",
+      "27b"
+    ],
+    "latest": "9b",
+    "website": "https://ollama.ai/library/gemma2",
+    "description": "Google Gemma 2 is a high-performing and efficient model by now available in three sizes: 2B, 9B, and 27B.",
+    "icon": "/img/models/gemma.svg"
+  },
+  {
+    "id": "glm4",
+    "tags": [
+      "9b"
+    ],
+    "latest": "9b",
+    "website": "https://ollama.ai/library/glm4",
+    "description": "A strong multi-lingual general language model with competitive performance to Llama 3."
+  },
+  {
+    "id": "granite-code",
+    "tags": [
+      "3b",
+      "8b",
+      "20b",
+      "34b"
+    ],
+    "latest": "3b",
+    "website": "https://ollama.ai/library/granite-code",
+    "description": "A family of open foundation models by IBM for Code Intelligence"
+  },
+  {
+    "id": "internlm2",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/internlm2",
+    "description": "InternLM2.5 is a 7B parameter model tailored for practical scenarios with outstanding reasoning capability."
+  },
+  {
+    "id": "llama2",
+    "tags": [
+      "7b",
+      "13b",
+      "70b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/llama2",
+    "description": "Llama 2 is a collection of foundation language models ranging from 7B to 70B parameters.",
+    "icon": "/img/models/llama.svg"
+  },
+  {
+    "id": "llama2-chinese",
+    "tags": [
+      "7b",
+      "13b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/llama2-chinese",
+    "description": "Llama 2 based model fine tuned to improve Chinese dialogue ability.",
+    "icon": "/img/models/llama.svg"
+  },
+  {
+    "id": "llama2-uncensored",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/llama2-uncensored",
+    "description": "Uncensored Llama 2 model by George Sung and Jarrad Hope.",
+    "icon": "/img/models/llama.svg"
+  },
+  {
+    "id": "llama3",
+    "tags": [
+      "8b",
+      "70b"
+    ],
+    "latest": "8b",
+    "website": "https://ollama.ai/library/llama3",
+    "description": "Meta Llama 3: The most capable openly available LLM to date",
+    "icon": "/img/models/llama.svg"
+  },
+  {
+    "id": "llama3-chatqa",
+    "tags": [
+      "8b",
+      "70b"
+    ],
+    "latest": "8b",
+    "website": "https://ollama.ai/library/llama3-chatqa",
+    "description": "A model from NVIDIA based on Llama 3 that excels at conversational question answering (QA) and retrieval-augmented generation (RAG).",
+    "icon": "/img/models/llama.svg"
+  },
+  {
+    "id": "llama3-gradient",
+    "tags": [
+      "8b",
+      "70b"
+    ],
+    "latest": "8b",
+    "website": "https://ollama.ai/library/llama3-gradient",
+    "description": "This model extends LLama-3 8B's context length from 8k to over 1m tokens.",
+    "icon": "/img/models/llama.svg"
+  },
+  {
+    "id": "llama3-groq-tool-use",
+    "tags": [
+      "8b",
+      "70b"
+    ],
+    "latest": "8b",
+    "website": "https://ollama.ai/library/llama3-groq-tool-use",
+    "description": "A series of models from Groq that represent a significant advancement in open-source AI capabilities for tool use/function calling.",
+    "icon": "/img/models/llama.svg"
+  },
+  {
+    "id": "llama3.1",
+    "tags": [
+      "8b",
+      "70b",
+      "405b"
+    ],
+    "latest": "8b",
+    "website": "https://ollama.ai/library/llama3.1",
+    "description": "Llama 3.1 is a new state-of-the-art model from Meta available in 8B, 70B and 405B parameter sizes.",
+    "icon": "/img/models/llama.svg"
+  },
+  {
+    "id": "llava",
+    "tags": [
+      "7b",
+      "13b",
+      "34b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/llava",
+    "description": "🌋 LLaVA is a novel end-to-end trained large multimodal model that combines a vision encoder and Vicuna for general-purpose visual and language understanding. Updated to version 1.6."
+  },
+  {
+    "id": "llava-llama3",
+    "tags": [
+      "8b"
+    ],
+    "latest": "8b",
+    "website": "https://ollama.ai/library/llava-llama3",
+    "description": "A LLaVA model fine-tuned from Llama 3 Instruct with better scores in several benchmarks."
+  },
+  {
+    "id": "llava-phi3",
+    "tags": [
+      "3.8b"
+    ],
+    "latest": "3.8b",
+    "website": "https://ollama.ai/library/llava-phi3",
+    "description": "A new small LLaVA model fine-tuned from Phi 3 Mini."
+  },
+  {
+    "id": "magicoder",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/magicoder",
+    "description": "🎩 Magicoder is a family of 7B parameter models trained on 75K synthetic instruction data using OSS-Instruct, a novel approach to enlightening LLMs with open-source code snippets."
+  },
+  {
+    "id": "mathstral",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/mathstral",
+    "description": "MathΣtral: a 7B model designed for math reasoning and scientific discovery by Mistral AI.",
+    "icon": "/img/models/mathstral.svg"
+  },
+  {
+    "id": "meditron",
+    "tags": [
+      "7b",
+      "70b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/meditron",
+    "description": "Open-source medical large language model adapted from Llama 2 to the medical domain."
+  },
+  {
+    "id": "medllama2",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/medllama2",
+    "description": "Fine-tuned Llama 2 model to answer medical questions based on an open source medical dataset."
+  },
+  {
+    "id": "megadolphin",
+    "tags": [
+      "120b"
+    ],
+    "latest": "120b",
+    "website": "https://ollama.ai/library/megadolphin",
+    "description": "MegaDolphin-2.2-120b is a transformation of Dolphin-2.2-70b created by interleaving the model with itself."
+  },
+  {
+    "id": "mistral",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/mistral",
+    "description": "The 7B model released by Mistral AI, updated to version 0.3.",
+    "icon": "/img/models/mistral.svg"
+  },
+  {
+    "id": "mistral-large",
+    "tags": [
+      "123b"
+    ],
+    "latest": "123b",
+    "website": "https://ollama.ai/library/mistral-large",
+    "description": "Mistral Large 2 is Mistral's new flagship model that is significantly more capable in code generation, mathematics, and reasoning with 128k context window and support for dozens of languages.",
+    "icon": "/img/models/mistral.svg"
+  },
+  {
+    "id": "mistral-embed",
+    "tags": [],
+    "website": "https://docs.mistral.ai/capabilities/embeddings/",
+    "description": "A model that converts text into numerical vectors of embeddings in 1024 dimensions. Embedding models enable retrieval and retrieval-augmented generation applications. It achieves a retrieval score of 55.26 on MTEB",
+    "icon": "/img/models/mistral.svg"
+  },
+  {
+    "id": "mistral-nemo",
+    "tags": [
+      "12b"
+    ],
+    "latest": "12b",
+    "website": "https://ollama.ai/library/mistral-nemo",
+    "description": "A state-of-the-art 12B model with 128k context length, built by Mistral AI in collaboration with NVIDIA.",
+    "icon": "/img/models/mistral-nemo.svg"
+  },
+  {
+    "id": "mistral-openorca",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/mistral-openorca",
+    "description": "Mistral OpenOrca is a 7 billion parameter model, fine-tuned on top of the Mistral 7B model using the OpenOrca dataset."
+  },
+  {
+    "id": "mistrallite",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/mistrallite",
+    "description": "MistralLite is a fine-tuned model based on Mistral with enhanced capabilities of processing long contexts."
+  },
+  {
+    "id": "mixtral",
+    "tags": [
+      "8x7b",
+      "8x22b"
+    ],
+    "latest": "8x7b",
+    "website": "https://ollama.ai/library/mixtral",
+    "description": "A set of Mixture of Experts (MoE) model with open weights by Mistral AI in 8x7b and 8x22b parameter sizes.",
+    "icon": "/img/models/mixtral.jpg"
+  },
+  {
+    "id": "moondream",
+    "tags": [
+      "1.8b"
+    ],
+    "latest": "1.8b",
+    "website": "https://ollama.ai/library/moondream",
+    "description": "moondream2 is a small vision language model designed to run efficiently on edge devices."
+  },
+  {
+    "id": "neural-chat",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/neural-chat",
+    "description": "A fine-tuned model based on Mistral with good coverage of domain and language."
+  },
+  {
+    "id": "nexusraven",
+    "tags": [
+      "13b"
+    ],
+    "latest": "13b",
+    "website": "https://ollama.ai/library/nexusraven",
+    "description": "Nexus Raven is a 13B instruction tuned model for function calling tasks."
+  },
+  {
+    "id": "notus",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/notus",
+    "description": "A 7B chat model fine-tuned with high-quality data and based on Zephyr."
+  },
+  {
+    "id": "notux",
+    "tags": [
+      "8x7b"
+    ],
+    "latest": "8x7b",
+    "website": "https://ollama.ai/library/notux",
+    "description": "A top-performing mixture of experts model, fine-tuned with high-quality data."
+  },
+  {
+    "id": "nous-hermes2-mixtral",
+    "tags": [
+      "8x7b"
+    ],
+    "latest": "8b",
+    "website": "https://ollama.ai/library/nous-hermes2-mixtral",
+    "description": "The Nous Hermes 2 model from Nous Research, now trained over Mixtral."
+  },
+  {
+    "id": "nous-hermes2",
+    "tags": [
+      "10.7b",
+      "34b"
+    ],
+    "latest": "10.7b",
+    "website": "https://ollama.ai/library/nous-hermes2",
+    "description": "The powerful family of models by Nous Research that excels at scientific discussion and coding tasks."
+  },
+  {
+    "id": "nous-hermes",
+    "tags": [
+      "7b",
+      "13b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/nous-hermes",
+    "description": "General use models based on Llama and Llama 2 from Nous Research."
+  },
+  {
+    "id": "nuextract",
+    "tags": [
+      "3.8b"
+    ],
+    "latest": "3.8b",
+    "website": "https://ollama.ai/library/nuextract",
+    "description": "A 3.8B model fine-tuned on a private high-quality synthetic dataset for information extraction, based on Phi-3."
+  },
+  {
+    "id": "open-orca-platypus2",
+    "tags": [
+      "13b"
+    ],
+    "latest": "13b",
+    "website": "https://ollama.ai/library/open-orca-platypus2",
+    "description": "Merge of the Open Orca OpenChat model and the Garage-bAInd Platypus 2 model. Designed for chat and code generation."
+  },
+  {
+    "id": "openchat",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/openchat",
+    "description": "A family of open-source models trained on a wide variety of data, surpassing ChatGPT on various benchmarks. Updated to version 3.5-0106."
+  },
+  {
+    "id": "orca-mini",
+    "tags": [
+      "3b",
+      "7b",
+      "13b",
+      "70b"
+    ],
+    "latest": "3b",
+    "website": "https://ollama.ai/library/orca-mini",
+    "description": "A general-purpose model ranging from 3 billion parameters to 70 billion, suitable for entry-level hardware."
+  },
+  {
+    "id": "orca2",
+    "tags": [
+      "7b",
+      "13b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/orca2",
+    "description": "Orca 2 is built by Microsoft research, and are a fine-tuned version of Meta's Llama 2 models.  The model is designed to excel particularly in reasoning."
+  },
+  {
+    "id": "phi",
+    "tags": [
+      "2.7b"
+    ],
+    "latest": "2.7b",
+    "website": "https://ollama.ai/library/phi",
+    "description": "Phi-2: a 2.7B language model by Microsoft Research that demonstrates outstanding reasoning and language understanding capabilities.",
+    "icon": "/img/models/phi3.svg"
+  },
+  {
+    "id": "phi3",
+    "tags": [
+      "3.8b",
+      "14b"
+    ],
+    "latest": "3.8b",
+    "website": "https://ollama.ai/library/phi3",
+    "description": "A new small LLaVA model fine-tuned from Phi 3 Mini.",
+    "icon": "/img/models/phi3.svg"
+  },
+  {
+    "id": "phind-codellama",
+    "tags": [
+      "34b"
+    ],
+    "latest": "34b",
+    "website": "https://ollama.ai/library/phind-codellama",
+    "description": "Code generation model based on Code Llama."
+  },
+  {
+    "id": "qwen",
+    "tags": [
+      "0.5b",
+      "1.8b",
+      "4b",
+      "7b",
+      "14b",
+      "32b",
+      "72b",
+      "110b"
+    ],
+    "latest": "4b",
+    "website": "https://ollama.ai/library/qwen",
+    "description": "Qwen 1.5 is a series of large language models by Alibaba Cloud spanning from 0.5B to 110B parameters",
+    "icon": "/img/models/qwen.svg"
+  },
+  {
+    "id": "qwen2",
+    "tags": [
+      "0.5b",
+      "1.5b",
+      "7b",
+      "72b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/qwen2",
+    "description": "Qwen2 is a new series of large language models from Alibaba group",
+    "icon": "/img/models/qwen.svg"
+  },
+  {
+    "id": "samantha-mistral",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/samantha-mistral",
+    "description": "A companion assistant trained in philosophy, psychology, and personal relationships. Based on Mistral."
+  },
+  {
+    "id": "solar",
+    "tags": [
+      "10.7b"
+    ],
+    "latest": "10.7b",
+    "website": "https://ollama.ai/library/solar",
+    "description": "A compact, yet powerful 10.7B large language model designed for single-turn conversation."
+  },
+  {
+    "id": "sqlcoder",
+    "tags": [
+      "7b",
+      "15b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/sqlcoder",
+    "description": "SQLCoder is a code completion model fined-tuned on StarCoder for SQL generation tasks"
+  },
+  {
+    "id": "stable-beluga",
+    "tags": [
+      "7b",
+      "13b",
+      "70b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/stable-beluga",
+    "description": "Llama 2 based model fine tuned on an Orca-style dataset. Originally called Free Willy."
+  },
+  {
+    "id": "stable-code",
+    "tags": [
+      "3b"
+    ],
+    "latest": "3b",
+    "website": "https://ollama.ai/library/stable-code",
+    "description": "Stable Code 3B is a coding model with instruct and code completion variants on par with models such as Code Llama 7B that are 2.5x larger."
+  },
+  {
+    "id": "stablelm-zephyr",
+    "tags": [
+      "3b"
+    ],
+    "latest": "3b",
+    "website": "https://ollama.ai/library/stablelm-zephyr",
+    "description": "A lightweight chat model allowing accurate, and responsive output without requiring high-end hardware."
+  },
+  {
+    "id": "stablelm2",
+    "tags": [
+      "1.6b",
+      "12b"
+    ],
+    "latest": "1.6b",
+    "website": "https://ollama.ai/library/stablelm2",
+    "description": "Stable LM 2 is a state-of-the-art 1.6B and 12B parameter language model trained on multilingual data in English, Spanish, German, Italian, French, Portuguese, and Dutch."
+  },
+  {
+    "id": "starcoder",
+    "tags": [
+      "1b",
+      "3b",
+      "7b",
+      "15b"
+    ],
+    "latest": "3b",
+    "website": "https://ollama.ai/library/starcoder",
+    "description": "StarCoder is a code generation model trained on 80+ programming languages.",
+    "icon": "/img/models/starcoder.png"
+  },
+  {
+    "id": "starcoder2",
+    "tags": [
+      "3b",
+      "7b",
+      "15b"
+    ],
+    "latest": "3b",
+    "website": "https://ollama.ai/library/starcoder2",
+    "description": "StarCoder2 is the next generation of transparently trained open code LLMs that comes in three sizes: 3B, 7B and 15B parameters.",
+    "icon": "/img/models/starcoder.png"
+  },
+  {
+    "id": "starling-lm",
+    "tags": [
+      "7b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/starling-lm",
+    "description": "Starling is a large language model trained by reinforcement learning from AI feedback focused on improving chatbot helpfulness."
+  },
+  {
+    "id": "tinydolphin",
+    "tags": [
+      "1.1b"
+    ],
+    "latest": "1.1b",
+    "website": "https://ollama.ai/library/tinydolphin",
+    "description": "An experimental 1.1B parameter model trained on the new Dolphin 2.8 dataset by Eric Hartford and based on TinyLlama."
+  },
+  {
+    "id": "tinyllama",
+    "tags": [
+      "1.1b"
+    ],
+    "latest": "1.1b",
+    "website": "https://ollama.ai/library/tinyllama",
+    "description": "The TinyLlama project is an open endeavor to train a compact 1.1B Llama model on 3 trillion tokens."
+  },
+  {
+    "id": "vicuna",
+    "tags": [
+      "7b",
+      "13b",
+      "33b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/vicuna",
+    "description": "Wizard Vicuna is a 13B parameter model based on Llama 2 trained by MelodysDreamj."
+  },
+  {
+    "id": "wizard-math",
+    "tags": [
+      "7b",
+      "13b",
+      "70b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/wizard-math",
+    "description": "Model focused on math and logic problems"
+  },
+  {
+    "id": "wizard-vicuna-uncensored",
+    "tags": [
+      "7b",
+      "13b",
+      "33b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/wizard-vicuna-uncensored",
+    "description": "Wizard Vicuna Uncensored is a 7B, 13B, and 30B parameter model based on Llama 2 uncensored by Eric Hartford."
+  },
+  {
+    "id": "wizard-vicuna",
+    "tags": [
+      "13b"
+    ],
+    "latest": "13b",
+    "website": "https://ollama.ai/library/wizard-vicuna",
+    "description": "Wizard Vicuna is a 13B parameter model based on Llama 2 trained by MelodysDreamj."
+  },
+  {
+    "id": "wizardcoder",
+    "tags": [
+      "33b"
+    ],
+    "latest": "33b",
+    "website": "https://ollama.ai/library/wizardcoder",
+    "description": "State-of-the-art code generation model"
+  },
+  {
+    "id": "wizardlm-uncensored",
+    "tags": [
+      "13b"
+    ],
+    "latest": "13b",
+    "website": "https://ollama.ai/library/wizardlm-uncensored",
+    "description": "Uncensored version of Wizard LM model",
+    "icon": "/img/models/wizardlm.png"
+  },
+  {
+    "id": "wizardlm2",
+    "tags": [
+      "7b",
+      "8x22b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/wizardlm2",
+    "description": "State of the art large language model from Microsoft AI with improved performance on complex chat, multilingual, reasoning and agent use cases.",
+    "icon": "/img/models/wizardlm.png"
+  },
+  {
+    "id": "xwinlm",
+    "tags": [
+      "7b",
+      "13b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/xwinlm",
+    "description": "Conversational model based on Llama 2 that performs competitively on various benchmarks."
+  },
+  {
+    "id": "yarn-llama2",
+    "tags": [
+      "7b",
+      "13b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/yarn-llama2",
+    "description": "An extension of Llama 2 that supports a context of up to 128k tokens."
+  },
+  {
+    "id": "yi",
+    "tags": [
+      "6b",
+      "9b",
+      "34b"
+    ],
+    "latest": "6b",
+    "website": "https://ollama.ai/library/yi",
+    "description": "Yi 1.5 is a high-performing, bilingual language model.",
+    "icon": "/img/models/yi.svg"
+  },
+  {
+    "id": "zephyr",
+    "tags": [
+      "7b",
+      "141b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.ai/library/zephyr",
+    "description": "Zephyr is a series of fine-tuned versions of the Mistral and Mixtral models that are trained to act as helpful assistants."
+  },
+  {
+    "id": "gemini-pro",
+    "tags": [],
+    "website": "https://openrouter.ai/models/google/gemini-pro",
+    "description": "Google's flagship text generation model. Designed to handle natural language tasks, multiturn text and code chat, and code generation",
+    "icon": "/img/models/gemini-pro.svg"
+  },
+  {
+    "id": "gemini-pro-1.5",
+    "tags": [],
+    "website": "https://openrouter.ai/models/google/gemini-pro-vision",
+    "description": "Google's latest multimodal model, supporting image and video in text or chat prompts.",
+    "icon": "/img/models/gemini-pro.svg"
+  },
+  {
+    "id": "gemini-pro-vision",
+    "tags": [],
+    "website": "https://openrouter.ai/models/google/gemini-pro-vision",
+    "description": "Google's flagship multimodal model, supporting image and video in text or chat prompts for a text or code response.",
+    "icon": "/img/models/gemini-pro.svg"
+  },
+  {
+    "id": "gemini-flash",
+    "tags": [],
+    "website": "https://openrouter.ai/models/google/gemini-flash-1.5",
+    "description": "Gemini 1.5 Flash is a foundation model that performs well at a variety of multimodal tasks such as visual understanding, classification, summarization, and creating content from image, audio and video. It's adept at processing visual and text inputs such as photographs, documents, infographics, and screenshots.",
+    "icon": "/img/models/gemini-pro.svg"
+  },
+  {
+    "id": "gpt-3.5-turbo",
+    "tags": [],
+    "website": "https://openrouter.ai/models/openai/gpt-3.5-turbo",
+    "description": "GPT-3.5 Turbo is OpenAI's fastest model. It can understand and generate natural language or code, and is optimized for chat and traditional completion tasks.",
+    "icon": "/img/models/gpt-3.5.svg"
+  },
+  {
+    "id": "gpt-4",
+    "tags": [],
+    "website": "https://openrouter.ai/models/openai/gpt-4",
+    "description": "OpenAI's flagship model, GPT-4 is a large-scale multimodal language model capable of solving difficult problems with greater accuracy than previous models due to its broader general knowledge and advanced reasoning capabilities. Training data: up to Sep 2021.",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
+    "id": "gpt-4-turbo",
+    "tags": [],
+    "website": "https://openrouter.ai/models/openai/gpt-4-turbo",
+    "description": "The latest GPT-4 Turbo model with vision capabilities. Vision requests can now use JSON mode and function calling.",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
+    "id": "gpt-4-vision",
+    "tags": [],
+    "website": "https://openrouter.ai/models/openai/gpt-4-vision",
+    "description": "OpenAI's flagship model, GPT-4 is a large-scale multimodal language model capable of solving difficult problems with greater accuracy than previous models due to its broader general knowledge and advanced reasoning capabilities. Training data: up to Sep 2021.",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
+    "id": "gpt-4o",
+    "tags": [],
+    "website": "https://openrouter.ai/models/openai/gpt-4o",
+    "description": "GPT-4o (\"o\" for \"omni\") is OpenAI's latest AI model, supporting both text and image inputs with text outputs. It maintains the intelligence level of GPT-4 Turbo while being twice as fast",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
+    "id": "gpt-4o-mini",
+    "tags": [],
+    "website": "https://openrouter.ai/models/openai/gpt-4o-mini",
+    "description": "GPT-4o mini is OpenAI's newest model after GPT-4 Omni, supporting both text and image inputs with text outputs.",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
+    "id": "claude-3-haiku",
+    "tags": [],
+    "website": "https://openrouter.ai/models/anthropic/claude-3-haiku",
+    "description": "Claude 3 Haiku is Anthropic's fastest and most compact model for near-instant responsiveness. Quick and accurate targeted performance.",
+    "icon": "/img/models/claude-3-haiku.svg"
+  },
+  {
+    "id": "claude-3-sonnet",
+    "tags": [],
+    "website": "https://openrouter.ai/models/anthropic/claude-3-sonnet",
+    "description": "Claude 3 Sonnet is an ideal balance of intelligence and speed for enterprise workloads. Maximum utility at a lower price, dependable, balanced for scaled deployments.",
+    "icon": "/img/models/claude-3-sonnet.svg"
+  },
+  {
+    "id": "claude-3-opus",
+    "tags": [],
+    "website": "https://openrouter.ai/models/anthropic/claude-3-opus",
+    "description": "Claude 3 Opus is Anthropic's most powerful model for highly complex tasks. It boasts top-level performance, intelligence, fluency, and understanding.",
+    "icon": "/img/models/claude-3-opus.svg"
+  },
+  {
+    "id": "claude-3-5-sonnet",
+    "tags": [],
+    "website": "https://openrouter.ai/models/anthropic/claude-3.5-sonnet",
+    "description": "Claude 3.5 Sonnet delivers better-than-Opus capabilities, faster-than-Sonnet speeds, at the same Sonnet prices.",
+    "icon": "/img/models/claude-3-5-sonnet.svg"
+  },
+  {
+    "id": "yi-large",
+    "tags": [],
+    "website": "https://openrouter.ai/models/01-ai/yi-large",
+    "description": "The Yi Large model was designed by 01.AI with the following usecases in mind: knowledge search, data classification, human-like chat bots, and customer service.",
+    "icon": "/img/models/yi.svg"
+  },
+  {
+    "id": "yi-large-turbo",
+    "tags": [],
+    "website": "https://openrouter.ai/models/01-ai/yi-large-turbo",
+    "description": "The Yi Large Turbo model is a High Performance and Cost-Effectiveness model offering powerful capabilities at a competitive price.",
+    "icon": "/img/models/yi.svg"
+  }
+]

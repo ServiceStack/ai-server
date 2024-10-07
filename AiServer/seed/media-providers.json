@@ -1,0 +1,39 @@
+[
+  {
+    "id": "Replicate",
+    "mediaTypeId": "Replicate",
+    "apiKeyVar": "REPLICATE_API_KEY",
+    "HeartbeatUrl": "/",
+    "concurrency": 1,
+    "priority": 0,
+    "enabled": true,
+    "models": [
+      "black-forest-labs/flux-schnell",
+      "black-forest-labs/flux-dev",
+      "black-forest-labs/flux-pro",
+      "stability-ai/stable-diffusion-3"
+    ]
+  },
+  {
+    "id": "ComfyUI",
+    "mediaTypeId": "ComfyUI",
+    "apiKeyVar": "COMFY_API_KEY",
+    "apiUrlVar": "COMFY_API_URL",
+    "HeartbeatUrl": "/",
+    "concurrency": 1,
+    "priority": 0,
+    "enabled": true
+  },
+  {
+    "id": "OpenAI",
+    "mediaTypeId": "OpenAI",
+    "apiKeyVar": "OPENAI_API_KEY",
+    "HeartbeatUrl": "/",
+    "concurrency": 1,
+    "priority": 0,
+    "enabled": true,
+    "models": [
+      "dall-e-3"
+    ]
+  }
+]

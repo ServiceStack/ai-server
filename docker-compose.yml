@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    image: servicestack/ai-server
+    container_name: ai-server
+    restart: always
+    ports:
+      - "${PORT:-5005}:8080"
+    env_file: ".env"
+    volumes:
+      - ./App_Data:/app/App_Data
+    depends_on:
+      app-migration:
+        condition: service_completed_successfully
+  
+  app-migration:
+    image: servicestack/ai-server
+    container_name: ai-server-migration
+    env_file: ".env"
+    command: --AppTasks=migrate
+    depends_on:
+      - app-fix-permissions
+    volumes:
+      - ./App_Data:/app/App_Data
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /app/App_Data/migration_complete ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app-fix-permissions:
+    container_name: ai-server-fix-permissions
+    user: "root"
+    image: servicestack/ai-server
+    entrypoint: ["/bin/sh", "-c", "chown -R 1654:1654 ./App_Data"]
+    volumes:
+      - ./App_Data:/app/App_Data
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /app/App_Data/fixed_permissions ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

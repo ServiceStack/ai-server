@@ -1,0 +1,37 @@
+[
+  {
+    "id": "Replicate",
+    "provider": "Replicate",
+    "website": "https://replicate.com",
+    "apiBaseUrl": "https://api.replicate.com",
+    "heartbeatUrl": "/",
+    "icon": "/img/providers/replicate.svg",
+    "apiModels": {
+        "flux-schnell": "black-forest-labs/flux-schnell",
+        "flux-dev": "black-forest-labs/flux-dev",
+        "flux-pro": "black-forest-labs/flux-pro",
+        "stable-diffusion-3": "stability-ai/stable-diffusion-3"
+    }
+  },
+  {
+    "id": "ComfyUI",
+    "provider": "Comfy",
+    "website": "https://github.com/comfyanonymous/ComfyUI",
+    "apiBaseUrl": "http://localhost:7860",
+    "heartbeatUrl": "/",
+    "icon": "/img/providers/comfyui.png"
+  },
+  {
+    "id": "OpenAI",
+    "provider": "OpenAi",
+    "website": "https://openai.com",
+    "apiBaseUrl": "https://api.openai.com",
+    "heartbeatUrl": "/",
+    "icon": "/img/providers/openai.svg",
+    "apiModels": {
+        "dall-e-3": "dall-e-3",
+        "text-to-speech": "tts-1:alloy",
+        "speech-to-text": "whisper-1"
+    }
+  }
+]

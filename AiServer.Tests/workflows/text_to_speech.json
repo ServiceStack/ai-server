@@ -1,0 +1,64 @@
+{
+  "last_node_id": 22,
+  "last_link_id": 16,
+  "nodes": [
+    {
+      "id": 16,
+      "type": "PiperTTS",
+      "pos": [
+        370,
+        220
+      ],
+      "size": [
+        350,
+        250
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "audio_path",
+          "type": "STRING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PiperTTS"
+      },
+      "widgets_values": [
+        "{{PositivePrompt}}",
+        "{{Model.split(':')[1]}}",
+        "{{Model.split(':')[0]}}",
+        {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "previews": [
+              {
+                "filename": "temp123.wav",
+                "subfolder": "piper_tts",
+                "type": "output"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.9090909090909091,
+      "offset": {
+        "0": 233.45999145507812,
+        "1": 80.5
+      }
+    }
+  },
+  "version": 0.4
+}

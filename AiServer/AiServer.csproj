@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PublishProfile>DefaultContainer</PublishProfile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Include="AiServer" />
+    <Using Include="ServiceStack" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.5" />
+    <PackageReference Include="ServiceStack" Version="8.*" />
+    <PackageReference Include="ServiceStack.Server" Version="8.*" />
+    <PackageReference Include="ServiceStack.Extensions" Version="8.*" />
+    <PackageReference Include="ServiceStack.Jobs" Version="8.*" />
+    <PackageReference Include="ServiceStack.OrmLite.Sqlite.Data" Version="8.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AiServer.ServiceInterface\AiServer.ServiceInterface.csproj" />
+    <ProjectReference Include="..\AiServer.ServiceModel\AiServer.ServiceModel.csproj" />
+  </ItemGroup>
+  
+</Project>
