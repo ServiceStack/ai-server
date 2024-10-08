@@ -1,5 +1,5 @@
 /* Options:
-Date: 2024-10-07 02:10:35
+Date: 2024-10-07 20:47:09
 Version: 8.41
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5005
@@ -1588,7 +1588,7 @@ export class AdminData {
     createResponse() { return new AdminDataResponse() }
 }
 export class ConvertAudio {
-    /** @param {{outputFormat?:AudioFormat,audio?:string,refId?:string,replyTo?:string,tag?:string}} [init] */
+    /** @param {{outputFormat?:AudioFormat,audio?:string,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {AudioFormat}
@@ -1600,10 +1600,6 @@ export class ConvertAudio {
      * @type {?string}
      * @description Optional client-provided identifier for the request */
     refId;
-    /**
-     * @type {?string}
-     * @description Optional queue or topic to reply to */
-    replyTo;
     /**
      * @type {?string}
      * @description Tag to identify the request */
@@ -1693,7 +1689,7 @@ export class ActiveMediaModels {
     createResponse() { return new StringsResponse() }
 }
 export class TextToImage {
-    /** @param {{positivePrompt?:string,negativePrompt?:string,width?:number,height?:number,batchSize?:number,model?:string,seed?:number,refId?:string,replyTo?:string,tag?:string,state?:string}} [init] */
+    /** @param {{positivePrompt?:string,negativePrompt?:string,width?:number,height?:number,batchSize?:number,model?:string,seed?:number,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -1729,22 +1725,14 @@ export class TextToImage {
     refId;
     /**
      * @type {?string}
-     * @description Optional queue or topic to reply to */
-    replyTo;
-    /**
-     * @type {?string}
      * @description Tag to identify the request */
     tag;
-    /**
-     * @type {?string}
-     * @description Optional state to associate with the request */
-    state;
     getTypeName() { return 'TextToImage' }
     getMethod() { return 'POST' }
     createResponse() { return new GenerationResponse() }
 }
 export class ImageToImage {
-    /** @param {{image?:string,positivePrompt?:string,negativePrompt?:string,denoise?:number,batchSize?:number,seed?:number,refId?:string,replyTo?:string,tag?:string,state?:string}} [init] */
+    /** @param {{image?:string,positivePrompt?:string,negativePrompt?:string,denoise?:number,batchSize?:number,seed?:number,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -1776,22 +1764,14 @@ export class ImageToImage {
     refId;
     /**
      * @type {?string}
-     * @description Optional queue or topic to reply to */
-    replyTo;
-    /**
-     * @type {?string}
      * @description Tag to identify the request */
     tag;
-    /**
-     * @type {?string}
-     * @description Optional state to associate with the request */
-    state;
     getTypeName() { return 'ImageToImage' }
     getMethod() { return 'POST' }
     createResponse() { return new GenerationResponse() }
 }
 export class ImageUpscale {
-    /** @param {{image?:string,seed?:number,refId?:string,replyTo?:string,tag?:string,state?:string}} [init] */
+    /** @param {{image?:string,seed?:number,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -1807,22 +1787,14 @@ export class ImageUpscale {
     refId;
     /**
      * @type {?string}
-     * @description Optional queue or topic to reply to */
-    replyTo;
-    /**
-     * @type {?string}
      * @description Tag to identify the request */
     tag;
-    /**
-     * @type {?string}
-     * @description Optional state to associate with the request */
-    state;
     getTypeName() { return 'ImageUpscale' }
     getMethod() { return 'POST' }
     createResponse() { return new GenerationResponse() }
 }
 export class ImageWithMask {
-    /** @param {{positivePrompt?:string,negativePrompt?:string,image?:string,mask?:string,denoise?:number,seed?:number,refId?:string,replyTo?:string,tag?:string,state?:string}} [init] */
+    /** @param {{positivePrompt?:string,negativePrompt?:string,image?:string,mask?:string,denoise?:number,seed?:number,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -1854,22 +1826,14 @@ export class ImageWithMask {
     refId;
     /**
      * @type {?string}
-     * @description Optional queue or topic to reply to */
-    replyTo;
-    /**
-     * @type {?string}
      * @description Tag to identify the request */
     tag;
-    /**
-     * @type {?string}
-     * @description Optional state to associate with the request */
-    state;
     getTypeName() { return 'ImageWithMask' }
     getMethod() { return 'POST' }
     createResponse() { return new GenerationResponse() }
 }
 export class ImageToText {
-    /** @param {{image?:string,refId?:string,replyTo?:string,tag?:string,state?:string}} [init] */
+    /** @param {{image?:string,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -1881,16 +1845,8 @@ export class ImageToText {
     refId;
     /**
      * @type {?string}
-     * @description Optional queue or topic to reply to */
-    replyTo;
-    /**
-     * @type {?string}
      * @description Tag to identify the request */
     tag;
-    /**
-     * @type {?string}
-     * @description Optional state to associate with the request */
-    state;
     getTypeName() { return 'ImageToText' }
     getMethod() { return 'POST' }
     createResponse() { return new GenerationResponse() }
@@ -2099,7 +2055,7 @@ export class QueueImageToText {
     createResponse() { return new QueueGenerationResponse() }
 }
 export class ConvertImage {
-    /** @param {{image?:string,outputFormat?:ImageOutputFormat}} [init] */
+    /** @param {{image?:string,outputFormat?:ImageOutputFormat,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -2109,12 +2065,20 @@ export class ConvertImage {
      * @type {ImageOutputFormat}
      * @description The desired output format for the converted image */
     outputFormat;
+    /**
+     * @type {?string}
+     * @description Optional client-provided identifier for the request */
+    refId;
+    /**
+     * @type {?string}
+     * @description Tag to identify the request */
+    tag;
     getTypeName() { return 'ConvertImage' }
     getMethod() { return 'POST' }
     createResponse() { return new MediaTransformResponse() }
 }
 export class CropImage {
-    /** @param {{x?:number,y?:number,width?:number,height?:number,image?:string}} [init] */
+    /** @param {{x?:number,y?:number,width?:number,height?:number,image?:string,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {number}
@@ -2136,12 +2100,20 @@ export class CropImage {
      * @type {string}
      * @description The image file to be cropped */
     image;
+    /**
+     * @type {?string}
+     * @description Optional client-provided identifier for the request */
+    refId;
+    /**
+     * @type {?string}
+     * @description Tag to identify the request */
+    tag;
     getTypeName() { return 'CropImage' }
     getMethod() { return 'POST' }
     createResponse() { return new MediaTransformResponse() }
 }
 export class WatermarkImage {
-    /** @param {{image?:string,position?:WatermarkPosition,watermarkScale?:number,opacity?:number}} [init] */
+    /** @param {{image?:string,position?:WatermarkPosition,watermarkScale?:number,opacity?:number,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -2159,12 +2131,20 @@ export class WatermarkImage {
      * @type {number}
      * @description The opacity of the watermark (0.0 to 1.0) */
     opacity;
+    /**
+     * @type {?string}
+     * @description Optional client-provided identifier for the request */
+    refId;
+    /**
+     * @type {?string}
+     * @description Tag to identify the request */
+    tag;
     getTypeName() { return 'WatermarkImage' }
     getMethod() { return 'POST' }
     createResponse() { return new MediaTransformResponse() }
 }
 export class ScaleImage {
-    /** @param {{image?:string,width?:number,height?:number}} [init] */
+    /** @param {{image?:string,width?:number,height?:number,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -2178,6 +2158,14 @@ export class ScaleImage {
      * @type {?number}
      * @description Desired height of the scaled image */
     height;
+    /**
+     * @type {?string}
+     * @description Optional client-provided identifier for the request */
+    refId;
+    /**
+     * @type {?string}
+     * @description Tag to identify the request */
+    tag;
     getTypeName() { return 'ScaleImage' }
     getMethod() { return 'POST' }
     createResponse() { return new MediaTransformResponse() }
@@ -2860,7 +2848,7 @@ export class QueueSpeechToText {
     createResponse() { return new QueueGenerationResponse() }
 }
 export class TextToSpeech {
-    /** @param {{text?:string,seed?:number,refId?:string,replyTo?:string,tag?:string,state?:string}} [init] */
+    /** @param {{text?:string,seed?:number,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -2876,22 +2864,14 @@ export class TextToSpeech {
     refId;
     /**
      * @type {?string}
-     * @description Optional queue or topic to reply to */
-    replyTo;
-    /**
-     * @type {?string}
      * @description Tag to identify the request */
     tag;
-    /**
-     * @type {?string}
-     * @description Optional state to associate with the request */
-    state;
     getTypeName() { return 'TextToSpeech' }
     getMethod() { return 'POST' }
     createResponse() { return new GenerationResponse() }
 }
 export class SpeechToText {
-    /** @param {{speech?:string,refId?:string,replyTo?:string,tag?:string,state?:string}} [init] */
+    /** @param {{speech?:string,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -2903,22 +2883,14 @@ export class SpeechToText {
     refId;
     /**
      * @type {?string}
-     * @description Optional queue or topic to reply to */
-    replyTo;
-    /**
-     * @type {?string}
      * @description Tag to identify the request */
     tag;
-    /**
-     * @type {?string}
-     * @description Optional state to associate with the request */
-    state;
     getTypeName() { return 'SpeechToText' }
     getMethod() { return 'POST' }
     createResponse() { return new GenerationResponse() }
 }
 export class ScaleVideo {
-    /** @param {{video?:string,width?:number,height?:number,refId?:string,replyTo?:string,tag?:string}} [init] */
+    /** @param {{video?:string,width?:number,height?:number,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -2938,10 +2910,6 @@ export class ScaleVideo {
     refId;
     /**
      * @type {?string}
-     * @description Optional queue or topic to reply to */
-    replyTo;
-    /**
-     * @type {?string}
      * @description Tag to identify the request */
     tag;
     getTypeName() { return 'ScaleVideo' }
@@ -2949,7 +2917,7 @@ export class ScaleVideo {
     createResponse() { return new MediaTransformResponse() }
 }
 export class WatermarkVideo {
-    /** @param {{video?:string,watermark?:string,position?:WatermarkPosition,refId?:string,replyTo?:string,tag?:string}} [init] */
+    /** @param {{video?:string,watermark?:string,position?:WatermarkPosition,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -2969,10 +2937,6 @@ export class WatermarkVideo {
     refId;
     /**
      * @type {?string}
-     * @description Optional queue or topic to reply to */
-    replyTo;
-    /**
-     * @type {?string}
      * @description Tag to identify the request */
     tag;
     getTypeName() { return 'WatermarkVideo' }
@@ -2980,7 +2944,7 @@ export class WatermarkVideo {
     createResponse() { return new MediaTransformResponse() }
 }
 export class ConvertVideo {
-    /** @param {{outputFormat?:ConvertVideoOutputFormat,video?:string,refId?:string,replyTo?:string,tag?:string}} [init] */
+    /** @param {{outputFormat?:ConvertVideoOutputFormat,video?:string,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {ConvertVideoOutputFormat}
@@ -2994,10 +2958,6 @@ export class ConvertVideo {
     refId;
     /**
      * @type {?string}
-     * @description Optional queue or topic to reply to */
-    replyTo;
-    /**
-     * @type {?string}
      * @description Tag to identify the request */
     tag;
     getTypeName() { return 'ConvertVideo' }
@@ -3005,7 +2965,7 @@ export class ConvertVideo {
     createResponse() { return new MediaTransformResponse() }
 }
 export class CropVideo {
-    /** @param {{x?:number,y?:number,width?:number,height?:number,video?:string,refId?:string,replyTo?:string,tag?:string}} [init] */
+    /** @param {{x?:number,y?:number,width?:number,height?:number,video?:string,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {number}
@@ -3031,10 +2991,6 @@ export class CropVideo {
     refId;
     /**
      * @type {?string}
-     * @description Optional queue or topic to reply to */
-    replyTo;
-    /**
-     * @type {?string}
      * @description Tag to identify the request */
     tag;
     getTypeName() { return 'CropVideo' }
@@ -3042,7 +2998,7 @@ export class CropVideo {
     createResponse() { return new MediaTransformResponse() }
 }
 export class TrimVideo {
-    /** @param {{startTime?:string,endTime?:string,video?:string,refId?:string,replyTo?:string,tag?:string}} [init] */
+    /** @param {{startTime?:string,endTime?:string,video?:string,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -3058,10 +3014,6 @@ export class TrimVideo {
      * @type {?string}
      * @description Optional client-provided identifier for the request */
     refId;
-    /**
-     * @type {?string}
-     * @description Optional queue or topic to reply to */
-    replyTo;
     /**
      * @type {?string}
      * @description Tag to identify the request */

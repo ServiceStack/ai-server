@@ -55,17 +55,15 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
     
     public object Any(ActiveMediaModels request)
     {
-        var imageModels = appData.MediaModels
-            .Where(x => x.ModelType == ModelType.TextToImage)
-            .Select(x => x.Id);
-        
         var activeModels = appData.MediaProviders
+            .OrderByDescending(x => x.Priority)
+            .ThenBy(x => x.Id)
+            .ThenBy(x => x.Name)
             .SelectMany(x => 
-                x.Models.Select(m => appData.GetQualifiedMediaModel(x, m)))
+                x.Models.Select(m => appData.GetQualifiedMediaModel(ModelType.TextToImage, m)))
             .Where(x => x != null)
             .Select(x => x!)  // Non-null assertion after filtering out null values
-            .Distinct()
-            .OrderBy(x => x);
+            .Distinct();
         
         return new StringsResponse
         {
