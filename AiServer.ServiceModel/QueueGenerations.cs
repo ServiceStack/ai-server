@@ -325,7 +325,7 @@ public interface IQueueGeneration
 [Tag(Tag.Jobs)]
 [Api("Get job status")]
 [Description("Retrieve the status of a background job")]
-public class GetJobStatus : IReturn<GetJobStatusResponse>
+public class GetJobStatus : IGet, IReturn<GetJobStatusResponse>
 {
     [ApiMember(Description = "Unique identifier of the background job")]
     [Description("Unique identifier of the background job")]
