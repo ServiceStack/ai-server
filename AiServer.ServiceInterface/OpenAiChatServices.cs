@@ -164,11 +164,15 @@ public class OpenAiChatServices(
             },
             Worker = useProvider.Name,
         });
+        
+        var jobStatusUrl = AppConfig.Instance.ApplicationBaseUrl
+            .CombineWith($"/api/{nameof(GetOpenAiChatStatus)}?RefId=" + jobRef.RefId);
     
         var response = new QueueOpenAiChatResponse
         {
             Id = jobRef.Id,
             RefId = jobRef.RefId,
+            StatusUrl = jobStatusUrl
         };
 
         return response;

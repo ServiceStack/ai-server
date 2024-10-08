@@ -325,7 +325,7 @@ public interface IQueueGeneration
 [Tag(Tag.Jobs)]
 [Api("Get job status")]
 [Description("Retrieve the status of a background job")]
-public class GetJobStatus : IReturn<GetJobStatusResponse>
+public class GetJobStatus : IGet, IReturn<GetJobStatusResponse>
 {
     [ApiMember(Description = "Unique identifier of the background job")]
     [Description("Unique identifier of the background job")]
@@ -390,6 +390,10 @@ public class QueueGenerationResponse
     [ApiMember(Description = "Detailed response status information")]
     [Description("Detailed response status information")]
     public ResponseStatus? ResponseStatus { get; set; }
+    
+    [ApiMember(Description = "URL to check the status of the generation request")]
+    [Description("URL to check the status of the generation request")]
+    public string StatusUrl { get; set; }
 }
 
 [Description("Output object for generated artifacts")]

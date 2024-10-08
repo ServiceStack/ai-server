@@ -334,13 +334,18 @@ public static class TransformServiceExtensions
 
         // We know at this point, we definitely have a job
         var queuedJob = job;
+        
+        // Return the job status URL
+        var jobStatusUrl = AppConfig.Instance.ApplicationBaseUrl.CombineWith(
+            $"/api/{nameof(GetJobStatus)}?RefId=" + transformResponse.RefId);
 
         var queueTransformResponse = new QueueMediaTransformResponse
         {
             RefId = transformResponse.RefId,
             JobId = transformResponse.Id,
             Status = queuedJob.Job?.Status,
-            JobState = queuedJob.Job?.State ?? queuedJob.Summary.State
+            JobState = queuedJob.Job?.State ?? queuedJob.Summary.State,
+            StatusUrl = jobStatusUrl
         };
 
         // Handle failed jobs
