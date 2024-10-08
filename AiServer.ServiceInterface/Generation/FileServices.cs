@@ -14,7 +14,8 @@ public class FileServices(ILogger<FileServices> log, AppConfig appConfig) : Serv
         if (!File.Exists(filePath))
             throw HttpError.NotFound("Artifact not found");
 
-        return new HttpResult(new FileInfo(filePath));
+        return new HttpResult(new FileInfo(filePath),
+            asAttachment:request.Download == true);
     }
 
     private string? GetFilePath(string path)

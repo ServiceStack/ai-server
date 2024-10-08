@@ -115,6 +115,7 @@ public class GetArtifact : IGet, IReturn<byte[]>
 {
     [ValidateNotEmpty]
     public string Path { get; set; } = null!;
+    public bool? Download { get; set; }
 }
 
 [Route("/variants/{Variant}/{**Path}")]

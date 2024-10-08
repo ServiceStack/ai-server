@@ -89,8 +89,22 @@ export default {
                                 <div class="ml-1 invisible group-hover:visible">discard</div>
                                 <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z"></path><path fill="currentColor" d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z"></path></svg>
                             </div>
-                        </div>                                    
-                        <ArtifactGallery :results="toArtifacts(result)" />
+                        </div>                     
+
+                        <ArtifactGallery :results="toArtifacts(result)">
+                            <template #bottom="{ selected }">
+                                <div class="z-40 absolute bottom-0 gap-x-6 w-full flex justify-center p-4 bg-black/20">
+                                    <a :href="selected.url + '?download=1'" class="flex text-sm text-gray-300 hover:text-gray-100 hover:drop-shadow">
+                                        <svg class="w-5 h-5 mr-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 20h12M12 4v12m0 0l3.5-3.5M12 16l-3.5-3.5"></path></svg> 
+                                        download 
+                                    </a>
+                                    <div @click.stop.prevent="toggleIcon(selected)" class="flex cursor-pointer text-sm text-gray-300 hover:text-gray-100 hover:drop-shadow">
+                                        <svg :class="['w-5 h-5 mr-0.5',selected.url == threadRef.icon ? '-rotate-45' : '']" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14 18l-8 8M20.667 4L28 11.333l-6.38 6.076a2 2 0 0 0-.62 1.448v3.729c0 .89-1.077 1.337-1.707.707L8.707 12.707c-.63-.63-.184-1.707.707-1.707h3.729a2 2 0 0 0 1.448-.62z"/></svg>
+                                        {{selected.url == threadRef.icon ? 'unpin icon' : 'pin icon' }}
+                                    </div>
+                                </div>
+                            </template>
+                        </ArtifactGallery>
                     </div>
                 </div>
                 <div id="bottom" ref="refBottom"></div>
@@ -125,6 +139,7 @@ export default {
         const prefs = ref(storage.getPrefs())
         const history = ref(storage.getHistory())
         const thread = ref()
+        const threadRef = ref()
         
         const validPrompt = computed(() => (request.value.model && request.value.positivePrompt
             && request.value.negativePrompt && request.value.width && request.value.height 
@@ -236,6 +251,12 @@ export default {
             thread.value.results = thread.value.results.filter(x => x.id != result.id)
             storage.saveThread(thread.value)
         }
+        
+        function toggleIcon(item) {
+            console.log('toggleIcon', item)
+            threadRef.value.icon = item.url
+            saveHistory()
+        }
 
         function onRouteChange() {
             console.log('onRouteChange', routes.id)
@@ -244,6 +265,7 @@ export default {
             if (routes.id) {
                 const id = parseInt(routes.id)
                 thread.value = storage.getThread(storage.getThreadId(id))
+                threadRef.value = history.value.find(x => x.id === parseInt(routes.id))
                 if (thread.value) {
                     // prefs.value.model = chat.value.model
                     // selectPrompt(chat.value.prompt ?? '')
@@ -313,10 +335,12 @@ export default {
             refBottom,
             activeModels,
             thread,
+            threadRef,
             defaultIcon,
             send,
             saveHistory,
             toArtifacts,
+            toggleIcon,
             selectRequest,
             discardResult,
             getThreadResults,

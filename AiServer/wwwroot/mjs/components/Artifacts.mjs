@@ -122,9 +122,12 @@ export const ArtifactGallery = {
                 </div>
             </div>            
         </div>
-        <ModalDialog v-if="selected" size-class="" @done="selected=null"
+        <ModalDialog v-if="selected" size-class="" @done="selected=null" class="z-20"
             closeButtonClass="rounded-md text-gray-500 hover:text-gray-600 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-gray-600 ring-offset-gray-600">
             <img :src="selected.url">
+            <template #bottom>
+                <slot name="bottom" :selected="selected"></slot>
+            </template>
         </ModalDialog>
     </div>`,
     props: { 
