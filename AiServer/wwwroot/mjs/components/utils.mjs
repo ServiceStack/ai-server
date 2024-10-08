@@ -1,4 +1,49 @@
 import { ref, computed, inject, nextTick } from "vue"
+import { useFormatters, useClient } from "@servicestack/vue"
+const { truncate } = useFormatters()
+
+export class ThreadStorage {
+    prefix = ''
+    defaults = {}
+    constructor (prefix, defaults) {
+        this.prefix = prefix
+        this.defaults = defaults
+    }
+    get prefsKey() { return `${this.prefix}.prefs` }
+    get historyKey() { return `${this.prefix}.history` }
+    
+    getPrefs() {
+        return JSON.parse(localStorage.getItem(this.prefsKey) || JSON.stringify(this.defaults))
+    }
+    getHistory() {
+        return JSON.parse(localStorage.getItem(this.historyKey) || "[]")
+    }
+    savePrefs(prefs) {
+        localStorage.setItem(this.prefsKey, JSON.stringify(prefs))
+    }
+    saveHistory(history) {
+        localStorage.setItem(this.historyKey, JSON.stringify(history))
+    }
+    createId() { return new Date().valueOf() }
+    getThreadId(id) { return `${this.prefix}-${id}` }
+    getThread(threadId) {
+        const thread = localStorage.getItem(threadId)
+        return thread ? JSON.parse(thread) : null
+    }
+    createThreadId() { return this.getThreadId(this.createId()) }
+    createThread(thread) {
+        if (!thread.id) thread.id = this.createThreadId()
+        if (thread.title) thread.title = truncate(thread.title, 80)
+        if (!thread.results) thread.results = []
+        return thread
+    }
+    saveThread(thread) {
+        localStorage.setItem(thread.id, JSON.stringify(thread))
+    }
+    deleteThread(threadId) {
+        localStorage.removeItem(threadId)
+    }
+}
 
 export const HistoryGroups = {
     template: `
@@ -30,15 +75,16 @@ export const HistoryGroups = {
             </div>
         </div>    
     `,
-    emits:['save'],
+    emits:['save','remove'],
     props: {
-        threads: Array
+        history: Array,
+        storage: Object,
     },
     setup(props, { emit }) {
         const routes = inject('routes')
         const showThreadMenu = ref()
         const renameThreadId = ref()
-        const historyGroups = computed(() => groupThreads(props.threads))
+        const historyGroups = computed(() => groupThreads(props.history))
 
         function renameThread(item) {
             renameThreadId.value = item.id
@@ -49,24 +95,14 @@ export const HistoryGroups = {
                 txt?.focus()
             })
         }
-        function renameItem() {
-            emit('save')
+        function renameItem(item) {
             renameThreadId.value = null
+            emit('save', item)
         }
 
         function deleteThread(item) {
             if (confirm('Are you sure you want to delete this thread?')) {
-                const idx = history.value.findIndex(x => x.id === item.id)
-                if (idx >= 0) {
-                    history.value.splice(idx, 1)
-                    localStorage.setItem('chat.history', JSON.stringify(history.value))
-                    for (const key of item.chats) {
-                        localStorage.removeItem(key)
-                    }
-                    if (routes.id == item.id) {
-                        routes.to({ id:undefined })
-                    }
-                }
+                emit('remove', item)
             }
             showThreadMenu.value = null
         }
@@ -125,6 +161,5 @@ export function groupThreads(threads) {
     yearsDesc.forEach(year => {
         groups.push({ title: year, results: Years[year] })
     })
-    // console.log('groups',groups)
     return groups
 }

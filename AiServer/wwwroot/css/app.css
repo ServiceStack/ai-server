@@ -951,6 +951,10 @@ select{
   top: calc(100% - 13rem);
 }
 
+.right-60 {
+  right: 15rem;
+}
+
 .isolate {
   isolation: isolate;
 }
@@ -1215,6 +1219,10 @@ select{
 
 .mb-20 {
   margin-bottom: 5rem;
+}
+
+.mr-8 {
+  margin-right: 2rem;
 }
 
 .block {
@@ -2376,6 +2384,11 @@ select{
   padding-bottom: 2rem;
 }
 
+.py-40 {
+  padding-top: 10rem;
+  padding-bottom: 10rem;
+}
+
 .pb-0 {
   padding-bottom: 0px;
 }
@@ -2506,6 +2519,14 @@ select{
 
 .pt-6 {
   padding-top: 1.5rem;
+}
+
+.pt-96 {
+  padding-top: 24rem;
+}
+
+.pt-40 {
+  padding-top: 10rem;
 }
 
 .text-left {
@@ -3021,6 +3042,18 @@ select{
   --tw-ring-offset-color: #000;
 }
 
+.ring-offset-transparent {
+  --tw-ring-offset-color: transparent;
+}
+
+.ring-offset-indigo-500 {
+  --tw-ring-offset-color: #6366f1;
+}
+
+.ring-offset-gray-600 {
+  --tw-ring-offset-color: #4b5563;
+}
+
 .blur {
   --tw-blur: blur(8px);
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
@@ -3493,8 +3526,17 @@ select{
   --tw-ring-color: rgb(14 165 233 / var(--tw-ring-opacity));
 }
 
+.focus\:ring-gray-600:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(75 85 99 / var(--tw-ring-opacity));
+}
+
 .focus\:ring-offset-2:focus {
   --tw-ring-offset-width: 2px;
+}
+
+.focus\:ring-offset-1:focus {
+  --tw-ring-offset-width: 1px;
 }
 
 .focus\:ring-offset-green-50:focus {
@@ -4389,6 +4431,10 @@ select{
 
   .md\:max-w-xl {
     max-width: 36rem;
+  }
+
+  .md\:max-w-4xl {
+    max-width: 56rem;
   }
 
   .md\:grid-cols-3 {

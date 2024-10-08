@@ -73,65 +73,6 @@ const store = {
     },
 }
 
-export const SimpleModal = {
-    template:`
-    <div :id="id" :data-transition-for="id" @mousedown="close" class="relative z-10"
-        :aria-labelledby="id + '-title'" role="dialog" aria-modal="true">
-      <div :class="['fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity', transition1]">
-          <div class="fixed inset-0 z-10 overflow-y-auto">
-            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <div :class="[modalClass, sizeClass, transition2]" @mousedown.stop="">
-                    <slot></slot>
-                </div>
-            </div>
-        </div>
-      </div>
-    </div>
-    `,
-    props: {
-        id: {
-            type: String,
-            default: 'ModalDialog'
-        },
-        modalClass: {
-            type: String,
-            default: 'relative transform overflow-hidden rounded-lg bg-white dark:bg-black text-left shadow-xl transition-all sm:my-8'
-        },
-        sizeClass: {
-            type: String,
-            default: 'sm:max-w-prose lg:max-w-screen-md xl:max-w-screen-lg 2xl:max-w-screen-xl sm:w-full'
-        },
-    },
-    setup(props, { emit }) {
-        const show = ref(false)
-        const transition1 = ref('')
-        const rule1 = {
-            entering: { cls: 'ease-out duration-300', from: 'opacity-0', to: 'opacity-100' },
-            leaving: { cls: 'ease-in duration-200', from: 'opacity-100', to: 'opacity-0' }
-        }
-        const transition2 = ref('')
-        const rule2 = {
-            entering: { cls: 'ease-out duration-300', from: 'opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95', to: 'opacity-100 translate-y-0 sm:scale-100' },
-            leaving: { cls: 'ease-in duration-200', from: 'opacity-100 translate-y-0 sm:scale-100', to: 'opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95' }
-        }
-
-        watch(show, () => {
-            transition(rule1, transition1, show.value)
-            transition(rule2, transition2, show.value)
-            if (!show.value) setTimeout(() => emit('done'), 200)
-        })
-        show.value = true
-        const close = () => show.value = false
-
-        return {
-            show,
-            transition1,
-            transition2,
-            close,
-        }
-    }
-}
-
 export const ArtifactImage = {
     template:`<div v-if="artifact" class="overflow-hidden" :style="store.getBackgroundStyle(artifact) + ';' + imageStyle">
       <img :alt="artifact.prompt" :width="width" :height="height" :class="imageClass"
@@ -164,10 +105,9 @@ export const ArtifactImage = {
 export const ArtifactGallery = {
     components: { 
         ArtifactImage,
-        SimpleModal,
     },
     template:`<div>
-        <div class="grid grid-cols-3 sm:grid-cols-4 xl:grid-cols-5">
+        <div class="grid grid-cols-3 sm:grid-cols-4">
             <div v-for="artifact in results" :key="artifact.id" :class="[artifact.width > artifact.height ? 'col-span-2' : artifact.height > artifact.width ? 'row-span-2' : '']">
                 <div @click="selected=artifact" class="flex justify-center">
                     <div class="relative flex flex-col cursor-pointer items-center" :style="'max-width:' + artifact.width + 'px'">
@@ -182,9 +122,10 @@ export const ArtifactGallery = {
                 </div>
             </div>            
         </div>
-        <SimpleModal v-if="selected" size-class="" @done="selected=null">
+        <ModalDialog v-if="selected" size-class="" @done="selected=null"
+            closeButtonClass="rounded-md text-gray-500 hover:text-gray-600 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-gray-600 ring-offset-gray-600">
             <img :src="selected.url">
-        </SimpleModal>
+        </ModalDialog>
     </div>`,
     props: { 
         results:Array, 
