@@ -104,6 +104,10 @@ public class QueueMediaTransformResponse
     [ApiMember(Description = "Detailed response status information")]
     [Description("Detailed response status information")]
     public ResponseStatus? ResponseStatus { get; set; }
+    
+    [ApiMember(Description = "URL to check the status of the request")]
+    [Description("URL to check the status of the request")]
+    public string StatusUrl { get; set; }
 }
 
 [Description("Convert an image to a different format")]

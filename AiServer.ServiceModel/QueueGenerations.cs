@@ -390,6 +390,10 @@ public class QueueGenerationResponse
     [ApiMember(Description = "Detailed response status information")]
     [Description("Detailed response status information")]
     public ResponseStatus? ResponseStatus { get; set; }
+    
+    [ApiMember(Description = "URL to check the status of the generation request")]
+    [Description("URL to check the status of the generation request")]
+    public string StatusUrl { get; set; }
 }
 
 [Description("Output object for generated artifacts")]

@@ -82,6 +82,9 @@ public class QueueOpenAiChatResponse
 {
     public long Id { get; set; }
     public string RefId { get; set; }
+    
+    public string StatusUrl { get; set; }
+    
     public ResponseStatus? ResponseStatus { get; set; }
 }
 

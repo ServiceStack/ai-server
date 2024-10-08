@@ -199,14 +199,19 @@ public static class GenerationServiceExtensions
         }
         
         // We know at this point, we definitely have a job
-        JobResult queuedJob = job;
+        JobResult? queuedJob = job;
+
+        // Return the job status URL
+        var jobStatusUrl = AppConfig.Instance.ApplicationBaseUrl.CombineWith(
+            $"/api/{nameof(GetJobStatus)}?RefId=" + diffResponse.RefId);
         
         var queueResponse = new QueueGenerationResponse
         {
             RefId = diffResponse.RefId,
             JobId = diffResponse.Id,
             Status = queuedJob.Job?.Status,
-            JobState = queuedJob.Job?.State ?? queuedJob.Summary.State
+            JobState = queuedJob.Job?.State ?? queuedJob.Summary.State,
+            StatusUrl = jobStatusUrl
         };
 
         // Handle failed jobs
@@ -235,21 +240,32 @@ public static class GenerationServiceExtensions
             queuedJob = jobs.GetJob(diffResponse.Id);
         }
         
+        // Handle null job
+        if (queuedJob?.Job == null || queuedJob.Job.State == BackgroundJobState.Queued ||
+            queuedJob.Job.State == BackgroundJobState.Started)
+            throw new Exception("Failed to complete job within timeout");
+        
+        // Handle failed jobs
+        if (queuedJob.Failed != null)
+            throw new Exception($"Job failed: {queuedJob.Failed.Error}");
+        
+        // Handle cancelled jobs
+        if (queuedJob.Job?.State == BackgroundJobState.Cancelled)
+            throw new Exception("Job was cancelled");
+        
         // Process successful job results
         var jobReqRes = queuedJob.Job!.ExtractRequestResponse<CreateGeneration, GenerationResult>();
-        var jobReq = jobReqRes.Item1;
         var jobRes = jobReqRes.Item2;
-        if (jobRes != null)
-        {
-            var outputs = queuedJob.GetOutputs();
-            completedResponse.Outputs = outputs.Item1;
-            completedResponse.TextOutputs = outputs.Item2;
-        }
+        if (jobRes == null) 
+            return completedResponse;
+        var outputs = queuedJob.GetOutputs();
+        completedResponse.Outputs = outputs.Item1;
+        completedResponse.TextOutputs = outputs.Item2;
 
         return completedResponse;
     }
 
-    public static Tuple<List<ArtifactOutput>?,List<TextOutput>?> GetOutputs(this JobResult job)
+    public static Tuple<List<ArtifactOutput>?,List<TextOutput>?> GetOutputs(this JobResult? job)
     {
         var outputs = new List<ArtifactOutput>();
         var textOutputs = new List<TextOutput>();
