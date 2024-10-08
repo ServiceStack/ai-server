@@ -70,6 +70,7 @@ public class GetModelImage : IGet, IReturn<byte[]>
 
 [Tag(ServiceModel.Tag.OpenAi)]
 [ValidateApiKey]
+[SystemJson(UseSystemJson.Response)]
 public class QueueOpenAiChatCompletion : IReturn<QueueOpenAiChatResponse>
 {
     public string? RefId { get; set; }
@@ -91,6 +92,7 @@ public class QueueOpenAiChatResponse
 [Tag(ServiceModel.Tag.OpenAi)]
 [ValidateApiKey]
 [Route("/v1/chat/completions", "POST")]
+[SystemJson(UseSystemJson.Response)]
 public class OpenAiChatCompletion : OpenAiChat, IPost, IReturn<OpenAiChatResponse>
 {
     public string? RefId { get; set; }

@@ -264,7 +264,7 @@ export default {
             const api = await client.api(request)
             
             error.value = api.error
-            console.log(api.response, api.error)
+            console.debug('chat.sendMessage', api.response, api.error)
             const chatResponse = api.response
             if (chatResponse?.id) {
                 chatResponse.request = request
