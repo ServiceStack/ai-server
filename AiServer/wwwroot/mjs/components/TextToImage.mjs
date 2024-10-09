@@ -55,15 +55,15 @@ export default {
                                     </div>
 
                                     <div class="mt-4 flex w-full flex-col gap-1.5 rounded-lg p-1.5 transition-colors bg-[#f4f4f4]">
-                                        <div class="flex items-end gap-1.5 md:gap-2">
+                                        <div class="flex items-center gap-1.5 md:gap-2">
                                             <div class="pl-4 flex min-w-0 flex-1 flex-col">
-                                                <textarea ref="refMessage" id="txtMessage" v-model="request.positivePrompt" :disabled="waitingOnResponse" rows="1" 
+                                                <textarea ref="refMessage" id="txtMessage" v-model="request.positivePrompt" :disabled="waitingOnResponse" rows="2" 
                                                     placeholder="Generate Image Prompt..." @keydown.enter.prevent="send"
                                                     :class="[{'opacity-50' : waitingOnResponse},'m-0 resize-none border-0 bg-transparent px-0 text-token-text-primary focus:ring-0 focus-visible:ring-0 max-h-[25dvh] max-h-52']" 
-                                                    style="height: 40px; overflow-y: hidden;"></textarea>
+                                                    style="height:60px; overflow-y: hidden;"></textarea>
                                             </div>
                                             <button :disabled="!validPrompt || waitingOnResponse" title="Send (Enter)" 
-                                                class="mb-1 me-1 flex h-8 w-8 items-center justify-center rounded-full bg-black text-white transition-colors hover:opacity-70 focus-visible:outline-none focus-visible:outline-black disabled:bg-[#D7D7D7] disabled:text-[#f4f4f4] disabled:hover:opacity-100 dark:bg-white dark:text-black dark:focus-visible:outline-white disabled:dark:bg-token-text-quaternary dark:disabled:text-token-main-surface-secondary">
+                                                class="mb-1 me-2 flex h-8 w-8 items-center justify-center rounded-full bg-black text-white transition-colors hover:opacity-70 focus-visible:outline-none focus-visible:outline-black disabled:bg-[#D7D7D7] disabled:text-[#f4f4f4] disabled:hover:opacity-100 dark:bg-white dark:text-black dark:focus-visible:outline-white disabled:dark:bg-token-text-quaternary dark:disabled:text-token-main-surface-secondary">
                                                 <svg v-if="!waitingOnResponse" class="ml-1 w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="currentColor" d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267z"/></svg>
                                                 <svg v-else class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M8 16h8V8H8zm4 6q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"/></svg>
                                             </button>
@@ -74,7 +74,9 @@ export default {
                         </div>
                     </form>
                 </div>
-                <PromptGenerator promptId="midjourney-prompt-generator" @selected="selectPrompt($event)" />
+
+                <PromptGenerator :thread="thread" promptId="midjourney-prompt-generator" 
+                    @save="saveThread()" @selected="selectPrompt($event)" />
                 
                 <div class="pb-20">
                     
@@ -131,10 +133,13 @@ export default {
         const waitingOnResponse = ref(false)
         const storage = new ThreadStorage(`img2txt`, {
             model: 'jib-mix-realistic',
+            positivePrompt: "",
             negativePrompt: '(nsfw),(explicit),(gore),(violence),(blood)',
             width: 1024,
             height: 1024,
             batchSize: 1,
+            seed: '',
+            tag: '',
         })
         const error = ref()
         
@@ -161,6 +166,12 @@ export default {
         }
         function saveHistory() {
             storage.saveHistory(history.value)
+        }
+        function saveThread() {
+            console.log('saveThread', thread.value)
+            if (thread.value) {
+                storage.saveThread(thread.value)
+            }
         }
 
         async function send() {
@@ -189,7 +200,7 @@ export default {
                         response: r
                     }
                     thread.value.results.push(result)
-                    storage.saveThread(thread.value)
+                    saveThread()
                     
                     const id = parseInt(routes.id) || storage.createId()
                     if (!history.value.find(x => x.id === id)) {
@@ -230,7 +241,6 @@ export default {
         
         function getThreadResults() {
             const ret = Array.from(thread.value?.results ?? [])
-            console.log('getThreadResults',ret,thread.value)
             ret.reverse()
             return ret
         }
@@ -256,7 +266,7 @@ export default {
         
         function discardResult(result) {
             thread.value.results = thread.value.results.filter(x => x.id != result.id)
-            storage.saveThread(thread.value)
+            saveThread()
         }
         
         function toggleIcon(item) {
@@ -273,20 +283,24 @@ export default {
                 const id = parseInt(routes.id)
                 thread.value = storage.getThread(storage.getThreadId(id))
                 threadRef.value = history.value.find(x => x.id === parseInt(routes.id))
-                // console.log('thread', id, thread.value)
-                // console.log('threadRef', threadRef.value)
+                Object.keys(storage.defaults).forEach(field => 
+                    request.value[field] = thread.value[field] ?? storage.defaults[field])
             } else {
                 thread.value = null
             }
         }
 
         function updated() {
-            // console.debug('updated', routes.admin, routes.id)
             onRouteChange()
         }
         
         function saveHistoryItem(item) {
             storage.saveHistory(history.value)
+            console.log('saveHistoryItem',item)
+            if (thread.value && item.title) {
+                thread.value.title = item.title
+                saveThread()
+            }
         }
         
         function removeHistoryItem(item) {
@@ -302,6 +316,20 @@ export default {
         }
 
         watch(() => routes.id, updated)
+        watch(() => [
+            request.value.model,
+            request.value.positivePrompt,
+            request.value.negativePrompt,
+            request.value.width,
+            request.value.height,
+            request.value.batchSize,
+            request.value.seed,
+            request.value.tag,
+        ], () => {
+            Object.keys(storage.defaults).forEach(field =>
+                thread.value[field] = request.value[field] ?? storage.defaults[field])
+            saveThread()
+        })
         
         onMounted(async () => {
             const api = await client.api(new ActiveMediaModels())
@@ -330,6 +358,7 @@ export default {
             defaultIcon,
             send,
             saveHistory,
+            saveThread,
             toArtifacts,
             toggleIcon,
             selectRequest,
