@@ -1,7 +1,5 @@
-import { ref, computed, watch, inject, onMounted, onUnmounted, getCurrentInstance } from "vue"
-import { useClient, useAuth, useUtils, useFormatters, useMetadata, css } from "@servicestack/vue"
+import { ref, computed } from "vue"
 import { rightPart, combinePaths } from "@servicestack/client"
-const { transition } = useUtils()
 
 class Artifact {
     width = 0
@@ -9,9 +7,7 @@ class Artifact {
     filePath = ''
 }
 
-export const AssetsBasePath = globalThis.AssetsBasePath = location.hostname === "localhost"
-    ? "https://localhost:5005"
-    : "https://localhost:5005"
+export const AssetsBasePath = globalThis.AssetsBasePath = globalThis.Server?.app.baseUrl ?? location.origin
 
 const store = {
     AssetsBasePath,

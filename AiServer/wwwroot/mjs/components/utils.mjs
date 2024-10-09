@@ -1,6 +1,60 @@
-import { ref, computed, inject, nextTick } from "vue"
+import { ref, computed, inject, provide, nextTick, onMounted } from "vue"
 import { useFormatters, useClient } from "@servicestack/vue"
+import { EventBus } from "@servicestack/client"
 const { truncate } = useFormatters()
+
+export const bus = new EventBus()
+
+export function scrollIntoView(el) {
+    if (!el) return
+    if (el.scrollIntoViewIfNeeded) {
+        el.scrollIntoViewIfNeeded()
+    } else {
+        el.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    }
+}
+
+export function useUiLayout(refUi) {
+    
+    return {
+        bus,
+        scrollIntoView,
+        scrollTop() {
+            // console.log('scrollTop', Object.keys(refUi.value))
+            scrollIntoView(refUi.value?.refTop.value)
+        },
+        scrollBottom() {
+            // console.log('scrollBottom', Object.keys(refUi.value))
+            scrollIntoView(refUi.value?.refBottom.value)
+        },
+    }
+}
+
+export const UiLayout = {
+    template:`<div class="flex w-full">
+    <div class="flex flex-col flex-grow pr-4 overflow-y-auto h-screen pl-1" style="">
+        <div>            
+            <div id="top" ref="refTop"></div>
+            <div class="text-base px-3 m-auto lg:px-1 pt-3">
+                <slot name="main"></slot>
+                
+                <div id="bottom" ref="refBottom"></div>
+            </div>
+        </div>
+    </div>
+    <div class="w-60 sm:w-72 md:w-92 h-screen border-l h-full md:py-2 md:px-2 bg-white">
+        <slot name="sidebar"></slot>
+    </div>
+</div>`,
+    setup(props, { expose }) {
+        const refTop = ref()
+        const refBottom = ref()
+
+        expose({ refTop, refBottom })
+
+        return { refTop, refBottom }
+    }
+}
 
 export class ThreadStorage {
     prefix = ''
