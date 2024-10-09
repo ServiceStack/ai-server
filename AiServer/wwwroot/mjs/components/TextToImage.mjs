@@ -168,7 +168,6 @@ export default {
             storage.saveHistory(history.value)
         }
         function saveThread() {
-            console.log('saveThread', thread.value)
             if (thread.value) {
                 storage.saveThread(thread.value)
             }
@@ -176,7 +175,7 @@ export default {
 
         async function send() {
             savePrefs()
-            console.log('request', request.value)
+            console.debug(`${storage.prefix}.request`, request.value)
             
             error.value = null
             waitingOnResponse.value = true
@@ -185,7 +184,7 @@ export default {
             /** @type {GenerationResponse} */
             const r = api.response
             if (r) {
-                console.log('response', r)
+                console.debug(`${storage.prefix}.response`, r)
                 
                 if (!r.outputs?.length) {
                     error.value = createErrorStatus("no results were returned")
@@ -270,7 +269,6 @@ export default {
         }
         
         function toggleIcon(item) {
-            console.log('toggleIcon', item)
             threadRef.value.icon = item.url
             saveHistory()
         }
@@ -283,10 +281,11 @@ export default {
                 const id = parseInt(routes.id)
                 thread.value = storage.getThread(storage.getThreadId(id))
                 threadRef.value = history.value.find(x => x.id === parseInt(routes.id))
-                Object.keys(storage.defaults).forEach(field => 
-                    request.value[field] = thread.value[field] ?? storage.defaults[field])
+                Object.keys(storage.defaults).forEach(k => 
+                    request.value[k] = thread.value[k] ?? storage.defaults[k])
             } else {
                 thread.value = null
+                Object.keys(storage.defaults).forEach(k => request.value[k] = storage.defaults[k])
             }
         }
 
@@ -326,8 +325,9 @@ export default {
             request.value.seed,
             request.value.tag,
         ], () => {
-            Object.keys(storage.defaults).forEach(field =>
-                thread.value[field] = request.value[field] ?? storage.defaults[field])
+            if (!thread.value) return
+            Object.keys(storage.defaults).forEach(k =>
+                thread.value[k] = request.value[k] ?? storage.defaults[k])
             saveThread()
         })
         
