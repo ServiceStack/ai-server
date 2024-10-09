@@ -48,7 +48,7 @@ export default {
                                     </div>
                                 </div>
 
-                                <div class="mt-4 flex w-full flex-col gap-1.5 rounded-lg p-1.5 transition-colors bg-[#f4f4f4]">
+                                <div class="mt-4 flex w-full flex-col gap-1.5 rounded-md p-1.5 transition-colors bg-[#f4f4f4] shadow border border-gray-300">
                                     <div class="flex items-center gap-1.5 md:gap-2">
                                         <div class="pl-4 flex min-w-0 flex-1 flex-col">
                                             <textarea ref="refMessage" id="txtMessage" v-model="request.positivePrompt" :disabled="client.loading.value" rows="2" 

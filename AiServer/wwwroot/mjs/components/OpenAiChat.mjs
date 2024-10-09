@@ -83,7 +83,7 @@ export default {
                             </div>
                             <div class="flex w-full items-center">
                                 
-                                <div class="flex w-full flex-col gap-1.5 rounded-[26px] p-1.5 transition-colors bg-[#f4f4f4]">
+                                <div class="flex w-full flex-col gap-1.5 rounded-[26px] p-1.5 transition-colors bg-[#f4f4f4] shadow border border-gray-300">
                                     <div class="flex items-end gap-1.5 md:gap-2">
                                         <div class="pl-4 flex min-w-0 flex-1 flex-col">
                                             <textarea ref="refMessage" id="txtMessage" v-model="prefs.userContent" :disabled="client.loading.value" rows="1" 
