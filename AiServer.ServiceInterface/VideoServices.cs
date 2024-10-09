@@ -198,8 +198,8 @@ public class VideoServices(IBackgroundJobs jobs) : Service
             case MediaOutputFormat.MKV:
             case MediaOutputFormat.MOV:
             case MediaOutputFormat.WebM:
-                return true;
             case MediaOutputFormat.GIF:
+                return true;
             case MediaOutputFormat.MP3:
             case MediaOutputFormat.WAV:
             case MediaOutputFormat.FLAC:

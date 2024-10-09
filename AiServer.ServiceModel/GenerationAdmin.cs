@@ -57,7 +57,7 @@ public class CreateMediaProvider : ICreateDb<MediaProvider>, IReturn<IdResponse>
     public List<string>? Models { get; set; }
     
     [Input(Type = "hidden")]
-    public int? MediaTypeId { get; set; }
+    public string MediaTypeId { get; set; }
 }
 
 [Tag(Tag.Info)]

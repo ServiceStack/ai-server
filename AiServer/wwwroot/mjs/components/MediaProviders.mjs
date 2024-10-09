@@ -127,8 +127,11 @@ const SelectModels = {
                 }
                 return;
             } else {
-                supportedModels.value = Object.keys(props.providerType?.apiModels, [])
-                qualifiedModelMappings.value = props.providerType?.apiModels
+                if (props.providerType?.apiModels) {
+                    console.log(props.providerType?.apiModels)
+                    supportedModels.value = Object.keys(props.providerType?.apiModels, [])
+                    qualifiedModelMappings.value = props.providerType?.apiModels
+                }
             }
             comfyModels.value = []
             isConnectionTested.value = false
@@ -212,7 +215,7 @@ export default {
                   <span class="flex flex-1">
                     <Icon :src="type.icon" class="w-5 h-5 mr-2" />
                     <span class="flex flex-col">
-                      <span class="block text-sm font-medium text-gray-900">{{type.name}}</span>
+                      <span class="block text-sm font-medium text-gray-900">{{type.id}}</span>
                     </span>
                   </span>
                   <svg v-if="providerType == type.id" class="h-5 w-5 text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
