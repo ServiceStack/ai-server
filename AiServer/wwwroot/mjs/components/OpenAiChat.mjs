@@ -111,8 +111,8 @@ export default {
     <template #sidebar>
         <h3 class="p-2 sm:block text-xl md:text-2xl font-semibold">History</h3>
         <HistoryGroups :history="history" v-slot="{ item }" @save="saveHistoryItem($event)" @remove="removeHistoryItem($event)">
-            <Icon class="h-4 w-4 flex-shrink-0 mr-1" :src="'/icons/models/' + item.model" loading="lazy" :alt="item.model" />
-            <span :title="item.title">{{item.title}}</span>                            
+            <Icon class="h-4 w-4 flex-shrink-0 mr-1" :src="item.icon" loading="lazy" :alt="item.model" />
+            <span :title="item.title">{{item.title}}</span>                       
         </HistoryGroups>
     </template>
 </UiLayout>
@@ -297,7 +297,6 @@ export default {
                 }
             } else {
                 thread.value = null
-                Object.keys(storage.defaults).forEach(k => prefs.value[k] = storage.defaults[k])
             }
             
             nextTick(() => addCopyButtonToCodeBlocks('.prose pre>code'))
