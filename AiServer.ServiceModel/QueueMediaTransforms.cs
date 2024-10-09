@@ -375,14 +375,8 @@ public enum ConvertVideoOutputFormat
     MP4,
     [EnumMember(Value = "avi")]
     AVI,
-    [EnumMember(Value = "mkv")]
-    MKV,
     [EnumMember(Value = "mov")]
-    MOV,
-    [EnumMember(Value = "webm")]
-    WebM,
-    [EnumMember(Value = "gif")]
-    GIF
+    MOV
 }
 
 [DataContract]
