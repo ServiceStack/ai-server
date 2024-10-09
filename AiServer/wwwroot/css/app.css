@@ -975,6 +975,10 @@ select{
   z-index: 40;
 }
 
+.z-30 {
+  z-index: 30;
+}
+
 .col-span-12 {
   grid-column: span 12 / span 12;
 }
@@ -1215,6 +1219,18 @@ select{
 
 .mt-auto {
   margin-top: auto;
+}
+
+.me-5 {
+  margin-inline-end: 1.25rem;
+}
+
+.me-4 {
+  margin-inline-end: 1rem;
+}
+
+.me-2 {
+  margin-inline-end: 0.5rem;
 }
 
 .block {

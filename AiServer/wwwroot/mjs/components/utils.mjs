@@ -59,7 +59,7 @@ export const HistoryGroups = {
                     <div class="w-64 overflow-hidden whitespace-nowrap text-ellipsis" 
                         @contextmenu.prevent.stop="showThreadMenu=showThreadMenu==item.id ? null : item.id">
                         <input v-if="renameThreadId === item.id" id="txtItemTitle" type="text" v-model="item.title" class="text-sm py-1 px-2 font-normal text-gray-700" 
-                            @keypress.enter="renameItem" @keydown.esc="renameThreadId=null">                  
+                            @keypress.enter="renameItem(item)" @keydown.esc="renameThreadId=null">                  
                         <div v-else class="flex items-center">
                             <slot :item="item"></slot>
                         </div>
