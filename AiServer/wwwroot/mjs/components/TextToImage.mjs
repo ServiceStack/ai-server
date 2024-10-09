@@ -133,10 +133,13 @@ export default {
         const waitingOnResponse = ref(false)
         const storage = new ThreadStorage(`img2txt`, {
             model: 'jib-mix-realistic',
+            positivePrompt: "",
             negativePrompt: '(nsfw),(explicit),(gore),(violence),(blood)',
             width: 1024,
             height: 1024,
             batchSize: 1,
+            seed: '',
+            tag: '',
         })
         const error = ref()
         
@@ -165,6 +168,7 @@ export default {
             storage.saveHistory(history.value)
         }
         function saveThread() {
+            console.log('saveThread', thread.value)
             if (thread.value) {
                 storage.saveThread(thread.value)
             }
@@ -279,15 +283,14 @@ export default {
                 const id = parseInt(routes.id)
                 thread.value = storage.getThread(storage.getThreadId(id))
                 threadRef.value = history.value.find(x => x.id === parseInt(routes.id))
-                // console.log('thread', id, thread.value)
-                // console.log('threadRef', threadRef.value)
+                Object.keys(storage.defaults).forEach(field => 
+                    request.value[field] = thread.value[field] ?? storage.defaults[field])
             } else {
                 thread.value = null
             }
         }
 
         function updated() {
-            // console.debug('updated', routes.admin, routes.id)
             onRouteChange()
         }
         
@@ -313,6 +316,20 @@ export default {
         }
 
         watch(() => routes.id, updated)
+        watch(() => [
+            request.value.model,
+            request.value.positivePrompt,
+            request.value.negativePrompt,
+            request.value.width,
+            request.value.height,
+            request.value.batchSize,
+            request.value.seed,
+            request.value.tag,
+        ], () => {
+            Object.keys(storage.defaults).forEach(field =>
+                thread.value[field] = request.value[field] ?? storage.defaults[field])
+            saveThread()
+        })
         
         onMounted(async () => {
             const api = await client.api(new ActiveMediaModels())
