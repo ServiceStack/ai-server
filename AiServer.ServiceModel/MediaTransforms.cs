@@ -266,13 +266,13 @@ public class CropVideo : IMediaTransform, IReturn<MediaTransformResponse>
 [ValidateApiKey]
 public class TrimVideo : IMediaTransform, IReturn<MediaTransformResponse>
 {
-    [ApiMember(Description = "The start time of the trimmed video (format: HH:MM:SS)")]
-    [Description("The start time of the trimmed video (format: HH:MM:SS)")]
+    [ApiMember(Description = "The start time of the trimmed video (format: MM:SS)")]
+    [Description("The start time of the trimmed video (format: MM:SS)")]
     [Required]
     public string StartTime { get; set; }
 
-    [ApiMember(Description = "The end time of the trimmed video (format: HH:MM:SS)")]
-    [Description("The end time of the trimmed video (format: HH:MM:SS)")]
+    [ApiMember(Description = "The end time of the trimmed video (format: MM:SS)")]
+    [Description("The end time of the trimmed video (format: MM:SS)")]
     public string? EndTime { get; set; }
     
     [Required]

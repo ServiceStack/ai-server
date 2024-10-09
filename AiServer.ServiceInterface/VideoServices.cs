@@ -124,9 +124,9 @@ public class VideoServices(IBackgroundJobs jobs) : Service
 
     private void ValidateTimeFormat(string time, string fieldName)
     {
-        if (!Regex.IsMatch(time, @"^\d{2}:\d{2}$"))
+        if (!Regex.IsMatch(time, @"^(\d{1,3}):([0-5]\d)$"))
         {
-            throw new ArgumentException($"Invalid {fieldName} format. Expected format: mm:ss");
+            throw new ArgumentException($"Invalid {fieldName} format. Expected format: m:ss, mm:ss, or mmm:ss");
         }
     }
 
