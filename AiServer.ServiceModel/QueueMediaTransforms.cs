@@ -220,7 +220,7 @@ public class QueueWatermarkImage : IQueueMediaTransform, IPost, IReturn<QueueMed
 [Description("Scale an image to a specified size")]
 [Tag("Media")]
 [ValidateApiKey]
-public class QueueScaleImage : IPost, IReturn<MediaTransformResponse>
+public class QueueScaleImage : IQueueMediaTransform,IPost, IReturn<MediaTransformResponse>
 {
     [ApiMember(Description = "The image file to be scaled")]
     [Description("The image file to be scaled")]
@@ -235,6 +235,18 @@ public class QueueScaleImage : IPost, IReturn<MediaTransformResponse>
     [ApiMember(Description = "Desired height of the scaled image")]
     [Description("Desired height of the scaled image")]
     public int? Height { get; set; }
+    
+    [ApiMember(Description = "Optional client-provided identifier for the request")]
+    [Description("Optional client-provided identifier for the request")]
+    public string? RefId { get; set; }
+
+    [ApiMember(Description = "Optional queue or topic to reply to")]
+    [Description("Optional queue or topic to reply to")]
+    public string? ReplyTo { get; set; }
+    
+    [ApiMember(Description = "Tag to identify the request")]
+    [Description("Tag to identify the request")]
+    public string? Tag { get; set; }
 }
 
 [Description("Convert a video to a different format")]
@@ -375,14 +387,8 @@ public enum ConvertVideoOutputFormat
     MP4,
     [EnumMember(Value = "avi")]
     AVI,
-    [EnumMember(Value = "mkv")]
-    MKV,
     [EnumMember(Value = "mov")]
-    MOV,
-    [EnumMember(Value = "webm")]
-    WebM,
-    [EnumMember(Value = "gif")]
-    GIF
+    MOV
 }
 
 [DataContract]

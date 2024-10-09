@@ -12,70 +12,6 @@ public class ComfyAdminTasks
 {
     private static bool useLocal = true;
     private ConfigureSecrets ConfigureSecrets = new();
-
-    public static Dictionary<string, ComfyApiModelSettings> ImportCivitAiModelSettings = new()
-    {
-        {
-            "https://civitai.com/models/194768/jib-mix-realistic-xl?modelVersionId=610292",
-            new ComfyApiModelSettings
-            {
-                Height = 1024,
-                Width = 1024,
-                Sampler = ComfySampler.euler_ancestral,
-                Scheduler = "karras",
-                CfgScale = 6.0,
-                Steps = 18
-            }
-        },
-        {
-            "https://civitai.com/models/553410/crazycaricaturesxl?modelVersionId=615871",
-            new ComfyApiModelSettings
-            {
-                Height = 1024,
-                Width = 1024,
-                Sampler = ComfySampler.euler_ancestral,
-                Scheduler = "normal",
-                CfgScale = 8.0,
-                Steps = 18
-            }
-        },
-        {
-            "https://civitai.com/models/129403?modelVersionId=259194",
-            new ComfyApiModelSettings
-            {
-                Height = 1024,
-                Width = 1024,
-                Sampler = ComfySampler.euler_ancestral,
-                Scheduler = "normal",
-                CfgScale = 3.0,
-                Steps = 12
-            }
-        },
-        {
-            "https://civitai.com/models/157665/lah-hongchen-or-sdxl-and-sd15",
-            new ComfyApiModelSettings
-            {
-                Height = 1024,
-                Width = 1024,
-                Sampler = ComfySampler.euler,
-                Scheduler = "normal",
-                CfgScale = 1.0,
-                Steps = 8
-            }
-        },
-        {
-            "https://civitai.com/models/350352?modelVersionId=391971",
-            new ComfyApiModelSettings
-            {
-                Height = 1024,
-                Width = 1024,
-                Sampler = ComfySampler.euler,
-                Scheduler = "normal",
-                CfgScale = 1.0,
-                Steps = 8
-            }
-        }
-    };
     
     private static List<CreateMediaProvider> MediaProviders = new List<CreateMediaProvider>
     {
@@ -88,7 +24,7 @@ public class ComfyAdminTasks
             HeartbeatUrl = "https://api.replicate.com/",
             ApiBaseUrl = "https://api.replicate.com/",
             Models = new List<string> { "flux1-dev","flux1-schnell" },
-            MediaTypeId = 1
+            MediaTypeId = "ConfyUI"
         },
         new()
         {
@@ -105,7 +41,7 @@ public class ComfyAdminTasks
                 "animexlXuebimix_v60LCM.safetensors",
                 "LahHongchenSDXLSD15_xlLightning.safetensors"
             },
-            MediaTypeId = 2
+            MediaTypeId = "ComfyUI"
         }
     };
 

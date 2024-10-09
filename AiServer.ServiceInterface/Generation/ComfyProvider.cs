@@ -99,6 +99,19 @@ public class ComfyProvider(
         // Last check for null seed
         request.Seed ??= Random.Shared.Next();
         var comfyWorkflowReq = request.ConvertTo<ComfyWorkflowRequest>();
+        // Ensure task type is set
+        comfyWorkflowReq.TaskType = request.TaskType switch
+        {
+            AiTaskType.TextToImage => ComfyTaskType.TextToImage,
+            AiTaskType.ImageToImage => ComfyTaskType.ImageToImage,
+            AiTaskType.ImageUpscale => ComfyTaskType.ImageUpscale,
+            AiTaskType.ImageWithMask => ComfyTaskType.ImageWithMask,
+            AiTaskType.ImageToText => ComfyTaskType.ImageToText,
+            AiTaskType.TextToAudio => ComfyTaskType.TextToAudio,
+            AiTaskType.TextToSpeech => ComfyTaskType.TextToSpeech,
+            AiTaskType.SpeechToText => ComfyTaskType.SpeechToText,
+            _ => throw new ArgumentOutOfRangeException()
+        };
         comfyWorkflowReq =
             comfyWorkflowReq.ApplyModelDefaults(AppConfig.Instance, modelSettings.ConvertTo<ComfyApiModelSettings>());
         var response = await comfyClient.PromptGenerationAsync(comfyWorkflowReq, token, waitResult: true);

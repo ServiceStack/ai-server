@@ -354,7 +354,10 @@ public class CreateMediaTransformCommand(ILogger<CreateMediaTransformCommand> lo
                 "video/mp4" => "mp4",
                 "video/webm" => "webm",
                 "video/ogg" => "ogg",
-                _ => "webm"
+                "video/mov" => "mov",
+                "video/avi" => "avi",
+                "video/mkv" => "mkv",
+                _ => "mp4"
             };
 
             var imageBytes = await response.Content.ReadAsByteArrayAsync();
