@@ -50,8 +50,9 @@
                     </ul>
                 </li>
                 <li class="-mx-6 mt-auto">
-                    <div v-if="showUserMenu" class="font-normal absolute z-10 -mt-10 left-6 w-60 origin-top-right rounded-md bg-white dark:bg-black py-1 shadow-lg ring-1 ring-black dark:ring-gray-600 ring-opacity-5 focus:outline-none right-2" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                    <div v-if="showUserMenu" class="font-normal absolute z-10 -mt-16 left-6 w-60 origin-top-right rounded-md bg-white dark:bg-black py-1 shadow-lg ring-1 ring-black dark:ring-gray-600 ring-opacity-5 focus:outline-none right-2" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
                         <a href="/admin/?clear=metadata" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800" role="menuitem" tabindex="-1">Reset Cache</a>
+                        <a href="/auth/logout" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800" role="menuitem" tabindex="-1">Logout</a>
                     </div>
                     <span v-if="user" @click="showUserMenu=!showUserMenu" class="flex cursor-pointer bg-gray-50 items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-50">
                         <img class="h-8 w-8 rounded-full bg-gray-50" :src="user.profileUrl" alt="">
@@ -372,8 +373,12 @@ const AppComponent = {
         async function doSignIn() {
             authError.value = ''
             if (!authSecret.value) return
-            serviceClient.headers.set("authsecret", authSecret.value)
-            const api = await serviceClient.api(new Authenticate())
+            // serviceClient.headers.set("authsecret", authSecret.value)
+            const api = await serviceClient.api(new Authenticate({
+                provider: 'credentials',
+                userName: 'Admin',
+                password: authSecret.value,
+            }))
             if (api.succeeded) {
                 signIn(api.response)
             } else {

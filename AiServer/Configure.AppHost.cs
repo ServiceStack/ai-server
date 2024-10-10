@@ -149,11 +149,11 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
         ];
 
         // Avoid having to re-renter AuthSecret and API Keys during Development
-        PreRequestFilters.Add((req, res) =>
-        {
-            req.Items[Keywords.AuthSecret] = Config.AdminAuthSecret;
-            req.Items[Keywords.Authorization] = "Bearer " + Config.AdminAuthSecret;
-        });
+        // PreRequestFilters.Add((req, res) =>
+        // {
+        //     req.Items[Keywords.AuthSecret] = Config.AdminAuthSecret;
+        //     req.Items[Keywords.Authorization] = "Bearer " + Config.AdminAuthSecret;
+        // });
         #endif
     }
 }
