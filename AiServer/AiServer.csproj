@@ -24,5 +24,9 @@
     <ProjectReference Include="..\AiServer.ServiceInterface\AiServer.ServiceInterface.csproj" />
     <ProjectReference Include="..\AiServer.ServiceModel\AiServer.ServiceModel.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\mjs\pages\" />
+  </ItemGroup>
   
 </Project>

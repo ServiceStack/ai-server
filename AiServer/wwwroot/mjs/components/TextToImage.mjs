@@ -2,11 +2,9 @@ import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
 import { useClient } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
 import { TextToImage, ActiveMediaModels } from "dtos"
-import {UiLayout, ThreadStorage, HistoryGroups, useUiLayout} from "./utils.mjs"
+import { UiLayout, ThreadStorage, HistoryGroups, useUiLayout, icons } from "./utils.mjs"
 import { ArtifactGallery } from "./Artifacts.mjs"
 import PromptGenerator from "./PromptGenerator.mjs"
-
-const defaultIcon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 16 16'%3E%3Cpath fill='%23000' d='M8 3a5 5 0 0 0-3.858 8.18l2.806-2.76a1.5 1.5 0 0 1 2.105 0l2.805 2.761A5 5 0 0 0 8 3m0 10a4.98 4.98 0 0 0 3.149-1.116L8.35 9.131a.5.5 0 0 0-.701 0l-2.798 2.754A4.98 4.98 0 0 0 8 13M2 8a6 6 0 1 1 12 0A6 6 0 0 1 2 8m8-1a1 1 0 1 0 0-2a1 1 0 0 0 0 2'/%3E%3C/svg%3E"
 
 export default {
     components: {
@@ -111,7 +109,7 @@ export default {
         <template #sidebar>
             <h3 class="p-2 sm:block text-xl md:text-2xl font-semibold">History</h3>
             <HistoryGroups :history="history" v-slot="{ item }" @save="saveHistoryItem($event)" @remove="removeHistoryItem($event)">
-                <Icon class="h-5 w-5 rounded-full flex-shrink-0 mr-1" :src="item.icon ?? defaultIcon" loading="lazy" :alt="item.model" />
+                <Icon class="h-5 w-5 rounded-full flex-shrink-0 mr-1" :src="item.icon ?? icons.image" loading="lazy" :alt="item.model" />
                 <span :title="item.title">{{item.title}}</span>                            
             </HistoryGroups>
         </template>
@@ -326,7 +324,7 @@ export default {
             activeModels,
             thread,
             threadRef,
-            defaultIcon,
+            icons,
             send,
             saveHistory,
             saveThread,

@@ -25,4 +25,6 @@ app.UseServiceStack(new AppHost(), options => {
     options.MapEndpoints();
 });
 
+app.MapFallbackToFile("index.html");
+
 app.Run();

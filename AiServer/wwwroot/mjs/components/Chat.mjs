@@ -71,7 +71,7 @@ export default {
             </div>
         </div>
         
-        <div class="fixed bottom-0 md:pt-2 dark:border-white/20 md:border-transparent md:dark:border-transparent bg-white pr-8" style="width:calc(max(100% - 18rem - 18rem - 2.25rem, 20rem))">
+        <div class="fixed bottom-0 md:pt-2 dark:border-white/20 md:border-transparent md:dark:border-transparent bg-white pr-8" style="width:calc(max(100% - 18rem - 18rem - 2.25rem, 30rem))">
             <div class="text-base px-3 md:px-4 m-auto md:px-5 lg:px-1 xl:px-5">
                 <div class="flex flex-1 gap-4 text-base md:gap-5 lg:gap-6 md:max-w-3xl lg:max-w-[40rem] xl:max-w-[48rem]">
                     <form class="w-full" type="button" @submit.prevent="send">

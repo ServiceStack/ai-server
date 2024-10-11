@@ -3,6 +3,10 @@ import { useFormatters, useClient } from "@servicestack/vue"
 import { EventBus } from "@servicestack/client"
 const { truncate } = useFormatters()
 
+export const icons = {
+    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 16 16'%3E%3Cpath fill='%23000' d='M8 3a5 5 0 0 0-3.858 8.18l2.806-2.76a1.5 1.5 0 0 1 2.105 0l2.805 2.761A5 5 0 0 0 8 3m0 10a4.98 4.98 0 0 0 3.149-1.116L8.35 9.131a.5.5 0 0 0-.701 0l-2.798 2.754A4.98 4.98 0 0 0 8 13M2 8a6 6 0 1 1 12 0A6 6 0 0 1 2 8m8-1a1 1 0 1 0 0-2a1 1 0 0 0 0 2'/%3E%3C/svg%3E",
+}
+
 export const bus = new EventBus()
 
 export function scrollIntoView(el) {
@@ -31,8 +35,8 @@ export function useUiLayout(refUi) {
 }
 
 export const UiLayout = {
-    template:`<div class="flex w-full">
-    <div class="flex flex-col flex-grow pr-4 overflow-y-auto h-screen pl-1" style="">
+    template:`<div class="flex flex-wrap md:flex-nowrap w-full">
+    <div class="flex flex-col flex-grow pr-4 overflow-y-auto md:h-screen md:pl-1" style="">
         <div>            
             <div id="top" ref="refTop"></div>
             <div class="text-base px-3 m-auto lg:px-1 pt-3">
@@ -42,7 +46,7 @@ export const UiLayout = {
             </div>
         </div>
     </div>
-    <div class="w-60 sm:w-72 md:w-92 h-screen border-l h-full md:py-2 md:px-2 bg-white">
+    <div class="w-full sm:w-72 md:w-92 h-screen md:border-l h-full md:py-2 md:px-2 bg-white">
         <slot name="sidebar"></slot>
     </div>
 </div>`,
@@ -101,16 +105,17 @@ export class ThreadStorage {
 
 export const HistoryGroups = {
     template: `
-        <div v-href="{id:undefined}" :class="['pl-4 hover:text-indigo-600 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6', !routes.id ? 'bg-gray-50 text-indigo-600 font-semibold' : 'cursor-pointer text-gray-700']">
+        <div v-href="{id:undefined}" :class="['md:pl-4 hover:text-indigo-600 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6', !routes.id ? 'bg-gray-50 text-indigo-600 font-semibold' : 'cursor-pointer text-gray-700']">
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m18.988 2.012l3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287l-3-3L8 13z"/><path fill="currentColor" d="M19 19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2z"/></svg>
             New Thread
         </div>
         
         <div v-for="group in historyGroups">
-            <h4 class="pl-2 text-gray-500 uppercase pt-2 text-sm leading-6 font-semibold">{{group.title}}</h4>
+            <h4 class="w-full pl-2 text-gray-500 uppercase pt-2 text-sm leading-6 font-semibold">{{group.title}}</h4>
             <div v-for="item in group.results">
-                <div v-href="{id:item.id}" :class="['pl-4 hover:text-indigo-600 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6', item.id == routes.id ? 'bg-gray-50 text-indigo-600 font-semibold' : 'cursor-pointer text-gray-700']">
-                    <div class="w-64 overflow-hidden whitespace-nowrap text-ellipsis" 
+                <div v-href="{id:item.id}" :class="['pl-4 hover:text-indigo-600 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6 justify-between', 
+                    item.id == routes.id ? 'bg-gray-50 text-indigo-600 font-semibold' : 'cursor-pointer text-gray-700']">
+                    <div class="md:w-64 overflow-hidden whitespace-nowrap text-ellipsis" 
                         @contextmenu.prevent.stop="showThreadMenu=showThreadMenu==item.id ? null : item.id">
                         <input v-if="renameThreadId === item.id" id="txtItemTitle" type="text" v-model="item.title" class="text-sm py-1 px-2 font-normal text-gray-700" 
                             @keypress.enter="renameItem(item)" @keydown.esc="renameThreadId=null">                  
@@ -216,4 +221,37 @@ export function groupThreads(threads) {
         groups.push({ title: year, results: Years[year] })
     })
     return groups
+}
+
+
+export const Image  = {
+    dataUriEscapeChars: ['%','#','<','>','?','[','\\',']','^','`','{','|','}'],
+    darkColors: ('334155,374151,44403c,b91c1c,c2410c,b45309,4d7c0f,15803d,047857,0f766e,' +
+        '0e7490,0369a1,1d4ed8,4338ca,6d28d9,7e22ce,a21caf,be185d,be123c,//824d26,865081,0c7047,' +
+        '0064a7,8220d0,009645,ab00f0,9a3c69,227632,4b40bd,ad3721,6710f2,1a658a,078e57,2721e1,' +
+        '168407,019454,967312,6629d8,108546,9a2aa1,3d7813,257124,6f14ed,1f781d,a29906').split(',').map(x => '#' + x),
+    
+    createSvg(letter, bgColor=null, textColor=null) {
+        console.log(Image.darkColors)
+        if (!letter) return null
+        bgColor = bgColor || Image.darkColors[(Math.floor(Math.random() * Image.darkColors.length))]
+        textColor = textColor || "#fff";
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" style="isolation:isolate" viewBox="0 0 32 32">
+            <path d="M0 0h32v32H0V0z" fill="${bgColor}" />
+            <text font-family="Helvetica" font-size="20px" x="50%" y="50%" dy="0em" fill="${textColor}" alignment-baseline="central" text-anchor="middle">${letter}</text>
+        </svg>`
+        return svg;
+    },
+    
+    createSvgDataUri(letter, bgColor=null, textColor=null) {
+        if (!letter) return null
+        const svg = this.createSvg(letter, bgColor, textColor)
+        return this.svgToDataUri(svg)
+    },
+    
+    svgToDataUri(svg) {
+        Image.dataUriEscapeChars
+            .forEach(x => svg = svg.replaceAll(x,encodeURIComponent(x)))
+        return "data:image/svg+xml," + svg
+    },
 }
