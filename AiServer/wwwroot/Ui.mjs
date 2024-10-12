@@ -25,7 +25,7 @@ import ImageToImage from "/mjs/components/ImageToImage.mjs"
 import ImageUpscale from "/mjs/components/ImageUpscale.mjs"
 import SpeechToText from "/mjs/components/SpeechToText.mjs"
 import TextToSpeech from "/mjs/components/TextToSpeech.mjs"
-import MediaTransform from "/mjs/components/MediaTransform.mjs"
+import Transform from "/mjs/components/Transform.mjs"
 import UiHome from "/mjs/components/UiHome.mjs"
 
 const HomeSection = {
@@ -42,7 +42,7 @@ const components = {
     ImageUpscale,
     SpeechToText,
     TextToSpeech,
-    MediaTransform,
+    Transform,
 }
 
 export default {
@@ -184,7 +184,7 @@ export default {
                 label: 'Upscale',
                 abbr:'upscale'
             },
-            MediaTransform: {
+            Transform: {
                 abbr: 'ffmpeg'
             }
         }

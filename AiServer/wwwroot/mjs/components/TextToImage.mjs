@@ -2,7 +2,7 @@ import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
 import { useClient } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
 import { TextToImage, ActiveMediaModels } from "dtos"
-import { UiLayout, ThreadStorage, HistoryGroups, useUiLayout, icons } from "./utils.mjs"
+import { UiLayout, ThreadStorage, HistoryGroups, useUiLayout, icons } from "../utils.mjs"
 import { ArtifactGallery } from "./Artifacts.mjs"
 import PromptGenerator from "./PromptGenerator.mjs"
 

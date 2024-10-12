@@ -3,9 +3,39 @@ import { useFormatters, useClient } from "@servicestack/vue"
 import { EventBus } from "@servicestack/client"
 const { truncate } = useFormatters()
 
-export const icons = {
-    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 16 16'%3E%3Cpath fill='%23000' d='M8 3a5 5 0 0 0-3.858 8.18l2.806-2.76a1.5 1.5 0 0 1 2.105 0l2.805 2.761A5 5 0 0 0 8 3m0 10a4.98 4.98 0 0 0 3.149-1.116L8.35 9.131a.5.5 0 0 0-.701 0l-2.798 2.754A4.98 4.98 0 0 0 8 13M2 8a6 6 0 1 1 12 0A6 6 0 0 1 2 8m8-1a1 1 0 1 0 0-2a1 1 0 0 0 0 2'/%3E%3C/svg%3E",
+export function iconDataUri(svg) {
+    return styleDataUri(Image.svgToDataUri(svg).replaceAll('"', "'"))
 }
+function styleDataUri(dataUri) {
+    const fgColor = '%234f46e5'
+    return dataUri
+        .replaceAll("stroke='currentColor'",`stroke='${fgColor}'`)
+        .replaceAll("fill='currentColor'",`fill='${fgColor}'`)
+}
+
+export const icons = (() => {
+    const prefix = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' "
+    const svgs = {
+        home: "viewBox='0 0 24 24' fill='none' stroke-width='1.5' stroke='currentColor' aria-hidden='true'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25'%3E%3C/path%3E%3C/svg%3E",
+        table: "viewBox='0 0 24 24' fill='none' stroke='currentColor' aria-hidden='true'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 8V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2M3 8v6m0-6h6m12 0v6m0-6H9m12 6v4a2 2 0 0 1-2 2H9m12-6H9m-6 0v4a2 2 0 0 0 2 2h4m-6-6h6m0-6v6m0 0v6m6-12v12'%3E%3C/path%3E%3C/svg%3E",
+        image: "viewBox='0 0 16 16'%3E%3Cpath fill='currentColor' d='M8 3a5 5 0 0 0-3.858 8.18l2.806-2.76a1.5 1.5 0 0 1 2.105 0l2.805 2.761A5 5 0 0 0 8 3m0 10a4.98 4.98 0 0 0 3.149-1.116L8.35 9.131a.5.5 0 0 0-.701 0l-2.798 2.754A4.98 4.98 0 0 0 8 13M2 8a6 6 0 1 1 12 0A6 6 0 0 1 2 8m8-1a1 1 0 1 0 0-2a1 1 0 0 0 0 2'/%3E%3C/svg%3E",
+        
+        chat: "viewBox='0 0 26 26'%3E%3Cpath fill='currentColor' d='M10 0C4.547 0 0 3.75 0 8.5c0 2.43 1.33 4.548 3.219 6.094a4.778 4.778 0 0 1-.969 2.25a14.4 14.4 0 0 1-.656.781a2.507 2.507 0 0 0-.313.406c-.057.093-.146.197-.187.407c-.042.209.015.553.187.812l.125.219l.25.125c.875.437 1.82.36 2.688.125c.867-.236 1.701-.64 2.5-1.063c.798-.422 1.557-.864 2.156-1.187c.084-.045.138-.056.219-.094C10.796 19.543 13.684 21 16.906 21c.031.004.06 0 .094 0c1.3 0 5.5 4.294 8 2.594c.1-.399-2.198-1.4-2.313-4.375c1.957-1.383 3.22-3.44 3.22-5.719c0-3.372-2.676-6.158-6.25-7.156C18.526 2.664 14.594 0 10 0m0 2c4.547 0 8 3.05 8 6.5S14.547 15 10 15c-.812 0-1.278.332-1.938.688c-.66.355-1.417.796-2.156 1.187c-.64.338-1.25.598-1.812.781c.547-.79 1.118-1.829 1.218-3.281l.032-.563l-.469-.343C3.093 12.22 2 10.423 2 8.5C2 5.05 5.453 2 10 2'%3E%3C/path%3E%3C/svg%3E",
+        txt2img: "viewBox='0 0 14 14'%3E%3Cg fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.77 8.286A3.5 3.5 0 0 1 5.577 6.88c.818 0 1.57.28 2.166.75'/%3E%3Cpath d='M5.076 10.629h-3.5a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v3'/%3E%3Cpath d='M5.576 5.379a1.5 1.5 0 1 0 0-3a1.5 1.5 0 0 0 0 3m1.764 5.184c-.351-.061-.351-.565 0-.626a3.18 3.18 0 0 0 2.558-2.45l.021-.097c.076-.347.57-.349.649-.003l.026.113a3.19 3.19 0 0 0 2.565 2.435c.353.062.353.568 0 .63A3.19 3.19 0 0 0 10.594 13l-.026.113c-.079.346-.573.344-.649-.003l-.021-.097a3.18 3.18 0 0 0-2.558-2.45'/%3E%3C/g%3E%3C/svg%3E",
+        img2txt: "viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'%3E%3Cpath d='M15 8h.01M6 13l2.644-2.644a1.21 1.21 0 0 1 1.712 0L14 14'/%3E%3Cpath d='m13 13l1.644-1.644a1.21 1.21 0 0 1 1.712 0L18 13M4 8V6a2 2 0 0 1 2-2h2M4 16v2a2 2 0 0 0 2 2h2m8-16h2a2 2 0 0 1 2 2v2m-4 12h2a2 2 0 0 0 2-2v-2'/%3E%3C/g%3E%3C/svg%3E",
+        img2img: "viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M21.5 1.5a1 1 0 0 0-1 1a5 5 0 1 0 .3 7.75a1 1 0 0 0-1.32-1.51a3 3 0 1 1 .25-4.25H18.5a1 1 0 0 0 0 2h3a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-.99m-3 12a1 1 0 0 0-1 1v.39L16 13.41a2.77 2.77 0 0 0-3.93 0l-.7.7l-2.46-2.49a2.79 2.79 0 0 0-3.93 0L3.5 13.1V7.5a1 1 0 0 1 1-1h5a1 1 0 0 0 0-2h-5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5a1 1 0 0 0-1-1m-14 7a1 1 0 0 1-1-1v-3.57L6.4 13a.79.79 0 0 1 1.09 0l3.17 3.17L15 20.5Zm13-1a1 1 0 0 1-.18.53l-4.51-4.51l.7-.7a.78.78 0 0 1 1.1 0l2.89 2.9Z'/%3E%3C/svg%3E",
+        upscale: "viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='m15.056 1.994l6.91.04l.04 6.91l-2 .011l-.02-3.527l-5.027 5.028l-1.415-1.415l5.027-5.027l-3.526-.02zM2 2h10v2H4v6H2zm0 10h4v2H4v2H2zm6 0h4v4h-2v-2H8zm14 0v10h-8v-2h6v-8zM4 18v2h2v2H2v-4zm8 0v4H8v-2h2v-2z'/%3E%3C/svg%3E",
+        spch2txt: "viewBox='0 0 14 14'%3E%3Cpath fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' d='M3 5.18v4.14m4-4.14v4.14M5 6.07v2.36m6-3.25v4.14M9 6.07v2.36m4.5 2.07v2a1 1 0 0 1-1 1h-2m0-13h2a1 1 0 0 1 1 1v2m-13 0v-2a1 1 0 0 1 1-1h2m0 13h-2a1 1 0 0 1-1-1v-2'/%3E%3C/svg%3E",
+        txt2spch: "viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M6 11h1.5V9H6zm2.5 2H10V7H8.5zm2.75 2h1.5V5h-1.5zM14 13h1.5V7H14zm2.5-2H18V9h-1.5zM2 22V4q0-.825.588-1.412T4 2h16q.825 0 1.413.588T22 4v12q0 .825-.587 1.413T20 18H6zm3.15-6H20V4H4v13.125zM4 16V4z'/%3E%3C/svg%3E",
+        ffmpeg: "viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 6a3 3 0 1 0 6 0a3 3 0 0 0-6 0m18 5V8a2 2 0 0 0-2-2h-6l3 3m0-6l-3 3M3 13v3a2 2 0 0 0 2 2h6l-3-3m0 6l3-3m4 0a3 3 0 1 0 6 0a3 3 0 0 0-6 0'/%3E%3C/svg%3E",
+    }
+    const ret = {}
+    Object.keys(svgs).forEach(k => {
+        const svg = svgs[k]
+        ret[k] = styleDataUri(prefix + svg)
+    })
+    return ret
+})()
 
 export const bus = new EventBus()
 
@@ -250,6 +280,7 @@ export const Image  = {
     },
     
     svgToDataUri(svg) {
+        if (!svg) return null
         Image.dataUriEscapeChars
             .forEach(x => svg = svg.replaceAll(x,encodeURIComponent(x)))
         return "data:image/svg+xml," + svg
