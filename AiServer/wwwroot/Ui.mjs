@@ -27,6 +27,7 @@ import SpeechToText from "/mjs/components/SpeechToText.mjs"
 import TextToSpeech from "/mjs/components/TextToSpeech.mjs"
 import Transform from "/mjs/components/Transform.mjs"
 import UiHome from "/mjs/components/UiHome.mjs"
+import { prefixes, icons } from "/mjs/utils.mjs"
 
 const HomeSection = {
     id: '',
@@ -56,15 +57,17 @@ export default {
       <div class="flex h-16 justify-between">
         <div class="flex">
           <div class="flex flex-shrink-0 items-center">
-            <a href="/">
-                <img class="cursor-pointer block h-8 w-auto" src="/img/logo.svg" alt="Your Company">
+            <a href="/" title="Home">
+                <img class="cursor-pointer block h-8 w-auto" src="/img/logo.svg" alt="Home">
             </a>
           </div>
           <div class="hidden sm:-my-px sm:ml-2 lg:ml-4 sm:flex sm:space-x-4 xl:space-x-6">
             <a v-href="{admin:section.id}" v-for="section in sections" 
                 :class="['inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium', routes.admin==section.id ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700']" aria-current="page">
+                <span class="lg:hidden xl:inline mr-2" :title="section.label">
+                    <img :src="section.icon" class="w-6 h-6" :alt="section.label">
+                </span>
                 <span class="hidden lg:inline">{{section.label}}</span>
-                <span class="lg:hidden">{{section.abbr}}</span>
             </a>
           </div>
         </div>
@@ -121,8 +124,7 @@ export default {
             :class="['block border-l-4 py-2 pl-3 pr-4 text-base font-medium', routes.admin==section.id 
                 ? 'border-indigo-500 bg-indigo-50 text-indigo-700' 
                 : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800']" aria-current="page">
-            <span class="hidden lg:inline">{{section.label}}</span>
-            <span class="lg:hidden">{{section.abbr}}</span>
+            <span class="">{{section.label}}</span>
         </a>
         <a href="/auth/logout?redirect=/" class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800" tabindex="-1">Sign out</a>
       </div>
@@ -164,29 +166,18 @@ export default {
         function toLabel(id) {
             return humanify(id).replace('To','to')
         }
-        function toAbbr(id) {
-            return toLabel(id)
-                .replaceAll('Image','img')
-                .replaceAll('Text','txt')
-                .replaceAll('Speech','spch')
-                .replaceAll(' to ','2')
-                .toLowerCase()
-        }
         const sections = Object.keys(components).map(id => ({
             id,
             label: toLabel(id),
             component: components[id],
-            abbr: toAbbr(id),
+            icon: icons[prefixes[id]], 
+            prefix: prefixes[id],
         }))
 
         const overrides = {
             ImageUpscale: {
                 label: 'Upscale',
-                abbr:'upscale'
             },
-            Transform: {
-                abbr: 'ffmpeg'
-            }
         }
 
         Object.keys(overrides).forEach(id => {

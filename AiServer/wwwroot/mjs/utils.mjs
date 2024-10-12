@@ -3,6 +3,17 @@ import { useFormatters, useClient } from "@servicestack/vue"
 import { EventBus } from "@servicestack/client"
 const { truncate } = useFormatters()
 
+export const prefixes = {
+    Chat: 'chat',
+    TextToImage: 'txt2img',
+    ImageToText: 'img2txt',
+    ImageToImage: 'img2img',
+    ImageUpscale: 'upscale',
+    SpeechToText: 'spch2txt',
+    TextToSpeech: 'txt2spch',
+    Transform: 'ffmpeg',
+}
+
 export function iconDataUri(svg) {
     return styleDataUri(Image.svgToDataUri(svg).replaceAll('"', "'"))
 }
