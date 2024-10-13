@@ -93,7 +93,7 @@ export default {
         const renderKey = ref(0)
         const { filePathUri, getExt, extSrc, svgToDataUri } = useFiles()
 
-        const storage = new ThreadStorage(`img2img`, {
+        const storage = new ThreadStorage(`img2txt`, {
             tag: '',
         })
         const error = ref()
