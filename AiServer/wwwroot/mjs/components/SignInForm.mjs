@@ -1,7 +1,7 @@
 import { ref } from "vue"
 import { useClient, useAuth } from "@servicestack/vue"
 import { Authenticate } from "dtos"
-import { Image } from "/mjs/utils.mjs"
+import { Img } from "/mjs/utils.mjs"
 
 export default {
     template:`
@@ -40,7 +40,7 @@ export default {
             if (api.response) {
                 localStorage.setItem('displayName', request.value.userName)
                 if (!localStorage.getItem('profileUrl')) {
-                    localStorage.setItem('profileUrl', Image.createSvgDataUri(request.value.userName[0].toUpperCase()))
+                    localStorage.setItem('profileUrl', Img.createSvgDataUri(request.value.userName[0].toUpperCase()))
                 }
                 // api = await client.api(new Authenticate())
                 if (api.response) {

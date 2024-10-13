@@ -2,13 +2,14 @@ import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
 import { useClient } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
 import { TextToImage, ActiveMediaModels } from "dtos"
-import { UiLayout, ThreadStorage, HistoryGroups, useUiLayout, icons } from "../utils.mjs"
+import {UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons } from "../utils.mjs"
 import { ArtifactGallery } from "./Artifacts.mjs"
 import PromptGenerator from "./PromptGenerator.mjs"
 
 export default {
     components: {
         UiLayout,
+        HistoryTitle,
         HistoryGroups,
         ArtifactGallery,
         PromptGenerator,
@@ -17,7 +18,7 @@ export default {
     <UiLayout>
         <template #main>
             <div class="flex flex-1 gap-4 text-base md:gap-5 lg:gap-6">
-                <form :disabled="client.loading.value" class="w-full mb-0" type="button" @submit.prevent="send">
+                <form :disabled="client.loading.value" class="w-full mb-0" @submit.prevent="send">
                     <div class="relative flex h-full max-w-full flex-1 flex-col">
                         <div class="flex flex-col w-full items-center">
                             <fieldset class="w-full">
@@ -107,7 +108,7 @@ export default {
         </template>
         
         <template #sidebar>
-            <h3 class="p-2 sm:block text-xl md:text-2xl font-semibold">History</h3>
+            <HistoryTitle :prefix="storage.prefix" />
             <HistoryGroups :history="history" v-slot="{ item }" @save="saveHistoryItem($event)" @remove="removeHistoryItem($event)">
                 <Icon class="h-5 w-5 rounded-full flex-shrink-0 mr-1" :src="item.icon ?? icons.image" loading="lazy" :alt="item.model" />
                 <span :title="item.title">{{item.title}}</span>                            
@@ -121,7 +122,7 @@ export default {
         const refUi = ref()
         const ui = useUiLayout(refUi)
 
-        const storage = new ThreadStorage(`img2txt`, {
+        const storage = new ThreadStorage(`txt2img`, {
             model: '',
             positivePrompt: "",
             negativePrompt: '(nsfw),(explicit),(gore),(violence),(blood)',
@@ -177,7 +178,9 @@ export default {
                 if (!r.outputs?.length) {
                     error.value = createErrorStatus("no results were returned")
                 } else {
+                    const id = parseInt(routes.id) || storage.createId()
                     thread.value = thread.value ?? storage.createThread(Object.assign({
+                        id: storage.getThreadId(id),
                         title: request.value.positivePrompt
                     }, request.value))
                     
@@ -189,7 +192,6 @@ export default {
                     thread.value.results.push(result)
                     saveThread()
                     
-                    const id = parseInt(routes.id) || storage.createId()
                     if (!history.value.find(x => x.id === id)) {
                         history.value.push({
                             id,
@@ -314,6 +316,7 @@ export default {
         })
         
         return {
+            storage,
             routes,
             client,
             history,

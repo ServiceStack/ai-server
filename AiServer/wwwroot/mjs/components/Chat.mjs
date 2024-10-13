@@ -2,12 +2,13 @@ import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
 import { useFormatters, useClient } from "@servicestack/vue"
 import { marked } from "../markdown.mjs"
 import { addCopyButtonToCodeBlocks } from "../dom.mjs"
-import { useUiLayout, UiLayout, ThreadStorage, HistoryGroups } from "../utils.mjs"
+import {useUiLayout, UiLayout, ThreadStorage, HistoryTitle, HistoryGroups } from "../utils.mjs"
 import { QueryPrompts, ActiveAiModels, OpenAiChatCompletion } from "dtos"
 
 export default {
     components: {
         UiLayout,
+        HistoryTitle,
         HistoryGroups,
     },
     template: `
@@ -74,7 +75,7 @@ export default {
         <div class="fixed bottom-0 md:pt-2 dark:border-white/20 md:border-transparent md:dark:border-transparent bg-white pr-8" style="width:calc(max(100% - 18rem - 18rem - 2.25rem, 30rem))">
             <div class="text-base px-3 md:px-4 m-auto md:px-5 lg:px-1 xl:px-5">
                 <div class="flex flex-1 gap-4 text-base md:gap-5 lg:gap-6 md:max-w-3xl lg:max-w-[40rem] xl:max-w-[48rem]">
-                    <form class="w-full" type="button" @submit.prevent="send">
+                    <form class="w-full" @submit.prevent="send">
                         <div class="relative flex h-full max-w-full flex-1 flex-col">
                             <div class="absolute bottom-full left-0 right-0 z-20">
                                 <div class="relative h-full w-full">
@@ -109,7 +110,7 @@ export default {
     </template>
     
     <template #sidebar>
-        <h3 class="p-2 sm:block text-xl md:text-2xl font-semibold">History</h3>
+        <HistoryTitle :prefix="storage.prefix" />
         <HistoryGroups :history="history" v-slot="{ item }" @save="saveHistoryItem($event)" @remove="removeHistoryItem($event)">
             <Icon class="h-4 w-4 flex-shrink-0 mr-1" :src="item.icon" loading="lazy" :alt="item.model" />
             <span :title="item.title">{{item.title}}</span>                       
@@ -196,7 +197,9 @@ export default {
             if (r?.id) {
                 console.debug(`${storage.prefix}.response`, r)
 
+                const id = parseInt(routes.id) || storage.createId()
                 thread.value = thread.value ?? storage.createThread(Object.assign({
+                    id: storage.getThreadId(id),
                     title: prefs.value.userContent,
                     model: prefs.value.model,
                     prompt: prefs.value.prompt,
@@ -224,7 +227,6 @@ export default {
                 thread.value.messages = msgs
                 saveThread()
 
-                const id = parseInt(routes.id) || storage.createId()
                 if (!history.value.find(x => x.id === id)) {
                     history.value.push({
                         id,
@@ -362,7 +364,7 @@ export default {
         })
         
         return {
-            client, routes, refUi, showChatMenu, renameChatId, prefs, validPrompt, 
+            storage, client, routes, refUi, showChatMenu, renameChatId, prefs, validPrompt, 
             thread, history, models, prompts, error, systemPrompt, showSystemPrompt, 
             selectedPrompt, refMessage,
             marked, send, selectPrompt, saveHistoryItem, removeHistoryItem,

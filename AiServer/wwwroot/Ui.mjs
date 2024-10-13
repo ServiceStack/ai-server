@@ -62,7 +62,7 @@ export default {
             </a>
           </div>
           <div class="hidden sm:-my-px sm:ml-2 lg:ml-4 sm:flex sm:space-x-4 xl:space-x-6">
-            <a v-href="{admin:section.id}" v-for="section in sections" 
+            <a v-href="{admin:section.id,id:undefined}" v-for="section in sections" 
                 :class="['inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium', routes.admin==section.id ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700']" aria-current="page">
                 <span class="lg:hidden xl:inline mr-2" :title="section.label">
                     <img :src="section.icon" class="w-6 h-6" :alt="section.label">
@@ -120,7 +120,7 @@ export default {
     <div class="sm:hidden" id="mobile-menu">
       <div class="space-y-1 pb-3 pt-2">
         <!-- Current: "border-indigo-500 bg-indigo-50 text-indigo-700", Default: "border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800" -->
-        <a v-href="{admin:section.id}" v-for="section in sections" 
+        <a v-href="{admin:section.id,id:undefined}" v-for="section in sections" 
             :class="['block border-l-4 py-2 pl-3 pr-4 text-base font-medium', routes.admin==section.id 
                 ? 'border-indigo-500 bg-indigo-50 text-indigo-700' 
                 : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800']" aria-current="page">

@@ -1,6 +1,7 @@
 import { ref, computed, inject, provide, nextTick, onMounted } from "vue"
 import { useFormatters, useClient } from "@servicestack/vue"
 import { EventBus } from "@servicestack/client"
+import Ke from "../lib/mjs/highlight.mjs";
 const { truncate } = useFormatters()
 
 export const prefixes = {
@@ -15,7 +16,7 @@ export const prefixes = {
 }
 
 export function iconDataUri(svg) {
-    return styleDataUri(Image.svgToDataUri(svg).replaceAll('"', "'"))
+    return styleDataUri(Img.svgToDataUri(svg).replaceAll('"', "'"))
 }
 function styleDataUri(dataUri) {
     const fgColor = '%234f46e5'
@@ -142,16 +143,95 @@ export class ThreadStorage {
     deleteThread(threadId) {
         localStorage.removeItem(threadId)
     }
+    saveIcon(dataUri) {
+        const key = `icon:${hash(dataUri)}`
+        localStorage.setItem(key, dataUri)
+        return key
+    }
+    getIcon(key) {
+        return localStorage.getItem(key)
+    }
+}
+
+//https://github.com/bryc/code/blob/master/jshash/experimental/cyrb53.js
+export function hash(str, seed = 0) {
+    let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed
+    for(let i = 0, ch; i < str.length; i++) {
+        ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 0x85ebca77)
+        h2 = Math.imul(h2 ^ ch, 0xc2b2ae3d)
+    }
+    h1 ^= Math.imul(h1 ^ (h2 >>> 15), 0x735a2d97)
+    h2 ^= Math.imul(h2 ^ (h1 >>> 15), 0xcaf649a9)
+    h1 ^= h2 >>> 16; h2 ^= h1 >>> 16
+    return 2097152 * (h2 >>> 0) + (h1 >>> 11)
+}
+
+export const HistoryTitle = {
+    template:`
+        <div class="flex items-center justify-between">
+            <h3 class="p-2 sm:block text-xl md:text-2xl font-semibold">History</h3>
+            <button type="button" @click="clear()" title="Clear History" 
+                class="mr-2 bg-white dark:bg-black rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:ring-offset-black">
+                <span class="sr-only">Clear</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path fill="none" stroke="currentColor" stroke-width="2" d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10ZM5 5l14 14"/>
+                </svg>
+            </button>
+        </div>
+    `,
+    props: {
+        prefix:String,
+    },
+    setup(props) {
+        function clear() {
+            if (confirm('Are you sure you want to clear all your History?')) {
+                let keys = []
+                let icons = []
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith(props.prefix)) {
+                        keys.push(key)
+                        try {
+                            const obj = JSON.parse(localStorage.getItem(key))
+                            const results = Array.isArray(obj)
+                                ? obj
+                                : Array.isArray(obj.results)
+                                    ? obj.results
+                                    : null
+                            if (results && Array.isArray(results)) {
+                                results.forEach(item => {
+                                    if (typeof item == "object" && item.iconKey && !icons.includes(item.iconKey)) {
+                                        icons.push(item.iconKey)
+                                    }
+                                })
+                            }
+                        } catch (e) {
+                            console.warn(`Couldn't parse ${key}`)
+                        }
+                    }
+                })
+
+                console.log('Deleting keys:', keys)
+                keys.forEach(x => localStorage.removeItem(x))
+                console.log('Deleting icons:', icons)
+                icons.forEach(x => localStorage.removeItem(x))
+                
+                location.reload()
+            }
+        }
+        
+        return { clear }
+    }
 }
 
 export const HistoryGroups = {
     template: `
-        <div v-href="{id:undefined}" :class="['md:pl-4 hover:text-indigo-600 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6', !routes.id ? 'bg-gray-50 text-indigo-600 font-semibold' : 'cursor-pointer text-gray-700']">
+        <div v-href="{id:undefined}" :class="['md:pl-4 whitespace-nowrap hover:text-indigo-600 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6', !routes.id ? 'bg-gray-50 text-indigo-600 font-semibold' : 'cursor-pointer text-gray-700']">
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m18.988 2.012l3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287l-3-3L8 13z"/><path fill="currentColor" d="M19 19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2z"/></svg>
             New Thread
         </div>
         
-        <div v-for="group in historyGroups">
+        <div v-for="group in historyGroups" class="relative">
             <h4 class="w-full pl-2 text-gray-500 uppercase pt-2 text-sm leading-6 font-semibold">{{group.title}}</h4>
             <div v-for="item in group.results">
                 <div v-href="{id:item.id}" :class="['pl-4 hover:text-indigo-600 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6 justify-between', 
@@ -264,8 +344,7 @@ export function groupThreads(threads) {
     return groups
 }
 
-
-export const Image  = {
+export const Img  = {
     dataUriEscapeChars: ['%','#','<','>','?','[','\\',']','^','`','{','|','}'],
     darkColors: ('334155,374151,44403c,b91c1c,c2410c,b45309,4d7c0f,15803d,047857,0f766e,' +
         '0e7490,0369a1,1d4ed8,4338ca,6d28d9,7e22ce,a21caf,be185d,be123c,//824d26,865081,0c7047,' +
@@ -273,9 +352,9 @@ export const Image  = {
         '168407,019454,967312,6629d8,108546,9a2aa1,3d7813,257124,6f14ed,1f781d,a29906').split(',').map(x => '#' + x),
     
     createSvg(letter, bgColor=null, textColor=null) {
-        console.log(Image.darkColors)
+        console.log(Img.darkColors)
         if (!letter) return null
-        bgColor = bgColor || Image.darkColors[(Math.floor(Math.random() * Image.darkColors.length))]
+        bgColor = bgColor || Img.darkColors[(Math.floor(Math.random() * Img.darkColors.length))]
         textColor = textColor || "#fff";
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" style="isolation:isolate" viewBox="0 0 32 32">
             <path d="M0 0h32v32H0V0z" fill="${bgColor}" />
@@ -292,8 +371,34 @@ export const Image  = {
     
     svgToDataUri(svg) {
         if (!svg) return null
-        Image.dataUriEscapeChars
+        Img.dataUriEscapeChars
             .forEach(x => svg = svg.replaceAll(x,encodeURIComponent(x)))
         return "data:image/svg+xml," + svg
     },
+
+    generateThumbnail(file, boundBox, imageType="image/webp", quality=0.1) {
+        if (!boundBox || boundBox.length !== 2) {
+            throw new Error("boundBox required")
+        }
+        const canvas = document.createElement("canvas")
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+            throw new Error('Context not available')
+        }
+    
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onerror = reject
+            img.onload = function() {
+                const scaleRatio = Math.min(...boundBox) / Math.max(img.width, img.height)
+                const w = img.width * scaleRatio
+                const h = img.height * scaleRatio
+                canvas.width = w
+                canvas.height = h
+                ctx.drawImage(img, 0, 0, w, h)
+                return resolve(canvas.toDataURL(imageType, quality))
+            }
+            img.src = window.URL.createObjectURL(file)
+        })
+    }
 }
