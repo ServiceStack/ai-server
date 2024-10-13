@@ -245,7 +245,7 @@ public static class GenerationServiceExtensions
         
         // Handle failed jobs
         if (queuedJob.Failed != null)
-            throw new Exception($"Job failed: {queuedJob.Failed.Error}");
+            throw new Exception($"Job failed: {queuedJob.Failed.Error?.Message}");
         
         // Handle cancelled jobs
         if (queuedJob.Job?.State == BackgroundJobState.Cancelled)
