@@ -3077,6 +3077,12 @@ select{
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.\!shadow-none {
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-shadow-colored: 0 0 #0000 !important;
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+}
+
 .\!outline-none {
   outline: 2px solid transparent !important;
   outline-offset: 2px !important;
