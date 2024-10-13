@@ -58,7 +58,7 @@ export default {
         <div class="flex">
           <div class="flex flex-shrink-0 items-center">
             <a href="/" title="Home">
-                <img class="cursor-pointer block h-8 w-auto" src="/img/logo.svg" alt="Home">
+                <img class="cursor-pointer block h-6 w-auto" :src="icons.home" alt="Home">
             </a>
           </div>
           <div class="hidden sm:-my-px sm:ml-2 lg:ml-4 sm:flex sm:space-x-4 xl:space-x-6">
@@ -67,7 +67,7 @@ export default {
                 <span class="lg:hidden xl:inline mr-2" :title="section.label">
                     <img :src="section.icon" class="w-6 h-6" :alt="section.label">
                 </span>
-                <span class="hidden lg:inline">{{section.label}}</span>
+                <span class="hidden lg:inline whitespace-nowrap">{{section.label}}</span>
             </a>
           </div>
         </div>
@@ -219,8 +219,8 @@ export default {
                 activeSection.value = sections.find(x => x.id === routes.admin) || HomeSection)
         })
         
-        return { routes, user, sections, activeSection, profileUrl, refreshKey, showUserMenu, 
-            navTo, 
+        return { routes, user, sections, activeSection, profileUrl, refreshKey, showUserMenu,
+            icons, navTo, 
         }
     }
 }

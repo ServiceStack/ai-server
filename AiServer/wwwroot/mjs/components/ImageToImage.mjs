@@ -1,8 +1,8 @@
 import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
 import { useClient } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
-import { ImageToImage, ActiveMediaModels } from "dtos"
-import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons } from "../utils.mjs"
+import { ImageToImage } from "dtos"
+import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, acceptedImages } from "../utils.mjs"
 import { ArtifactGallery } from "./Artifacts.mjs"
 import PromptGenerator from "./PromptGenerator.mjs"
 import FileUpload from "./FileUpload.mjs"
@@ -28,7 +28,7 @@ export default {
                                 <div class="grid grid-cols-6 gap-4">
                                     <div class="col-span-6">
                                         <FileUpload ref="refImage" id="image" v-model="request.image" required
-                                            accept=".webp,.jpg,.jpeg,.png,.gif" @change="renderKey++">
+                                            accept=".webp,.jpg,.jpeg,.png,.gif" :acceptLabel="acceptedImages" @change="renderKey++">
                                             <template #title>
                                                 <span class="font-semibold text-green-600">Click to upload</span> or drag and drop
                                             </template>
@@ -126,7 +126,7 @@ export default {
         <template #sidebar>
             <HistoryTitle :prefix="storage.prefix" />
             <HistoryGroups :history="history" v-slot="{ item }" @save="saveHistoryItem($event)" @remove="removeHistoryItem($event)">
-                <Icon class="h-5 w-5 rounded-full flex-shrink-0 mr-1" :src="item.icon ?? icons.image" loading="lazy" :alt="item.model" />
+                <Icon class="h-5 w-5 rounded-full flex-shrink-0 mr-1" :src="item.icon ?? icons.image" loading="lazy" alt="icon" />
                 <span :title="item.title">{{item.title}}</span>                            
             </HistoryGroups>
         </template>
@@ -157,13 +157,12 @@ export default {
         const thread = ref()
         const threadRef = ref()
 
-        const validPrompt = computed(() => (request.value.model && request.value.positivePrompt
+        const validPrompt = computed(() => (request.value.denoise && request.value.positivePrompt
             && request.value.negativePrompt && request.value.width && request.value.height
             && request.value.batchSize))
         const refMessage = ref()
         const visibleFields = 'denoise,positivePrompt,negativePrompt,width,height,batchSize,seed,tag'.split(',')
         const request = ref(new ImageToImage(prefs.value))
-        const activeModels = ref([])
 
         function savePrefs() {
             storage.savePrefs(Object.assign({}, request.value, { positivePrompt:'' }))
@@ -283,9 +282,6 @@ export default {
                 thread.value = null
                 Object.keys(storage.defaults).forEach(k => request.value[k] = storage.defaults[k])
             }
-            if (!request.value.model && activeModels.value) {
-                request.value.model = activeModels.value[0]
-            }
         }
 
         function updated() {
@@ -314,7 +310,7 @@ export default {
 
         watch(() => routes.id, updated)
         watch(() => [
-            request.value.model,
+            request.value.denoise,
             request.value.positivePrompt,
             request.value.negativePrompt,
             request.value.width,
@@ -330,10 +326,6 @@ export default {
         })
 
         onMounted(async () => {
-            const api = await client.api(new ActiveMediaModels())
-            if (api.response) {
-                activeModels.value = api.response.results
-            }
             updated()
         })
 
@@ -348,7 +340,6 @@ export default {
             visibleFields,
             validPrompt,
             refMessage,
-            activeModels,
             thread,
             threadRef,
             icons,
@@ -363,6 +354,7 @@ export default {
             getThreadResults,
             saveHistoryItem,
             removeHistoryItem,
+            acceptedImages,
         }
     }
 }

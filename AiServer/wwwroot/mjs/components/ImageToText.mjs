@@ -2,7 +2,7 @@ import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
 import { useClient, useFiles } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
 import { ImageToText, ActiveMediaModels } from "dtos"
-import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, Img } from "../utils.mjs"
+import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, Img, acceptedImages } from "../utils.mjs"
 import FileUpload from "./FileUpload.mjs"
 
 export default {
@@ -24,7 +24,7 @@ export default {
                                 <div class="grid grid-cols-6 gap-4">
                                     <div class="col-span-6">
                                         <FileUpload ref="refImage" id="image" v-model="request.image" required
-                                            accept=".webp,.jpg,.jpeg,.png,.gif" @change="renderKey++">
+                                            accept=".webp,.jpg,.jpeg,.png,.gif" :acceptLabel="acceptedImages" @change="renderKey++">
                                             <template #title>
                                                 <span class="font-semibold text-green-600">Click to upload</span> or drag and drop
                                             </template>
@@ -107,7 +107,6 @@ export default {
         const refMessage = ref()
         const visibleFields = 'image'.split(',')
         const request = ref(new ImageToText())
-        const activeModels = ref([])
 
         function savePrefs() {
             storage.savePrefs(Object.assign({}, request.value, { tag:'' }))
@@ -249,27 +248,8 @@ export default {
         
         
         watch(() => routes.id, updated)
-        // watch(() => [
-        //     request.value.model,
-        //     request.value.positivePrompt,
-        //     request.value.negativePrompt,
-        //     request.value.width,
-        //     request.value.height,
-        //     request.value.batchSize,
-        //     request.value.seed,
-        //     request.value.tag,
-        // ], () => {
-        //     if (!thread.value) return
-        //     Object.keys(storage.defaults).forEach(k =>
-        //         thread.value[k] = request.value[k] ?? storage.defaults[k])
-        //     saveThread()
-        // })
 
         onMounted(async () => {
-            const api = await client.api(new ActiveMediaModels())
-            if (api.response) {
-                activeModels.value = api.response.results
-            }
             updated()
         })
 
@@ -284,7 +264,6 @@ export default {
             visibleFields,
             validPrompt,
             refMessage,
-            activeModels,
             thread,
             threadRef,
             icons,
@@ -297,6 +276,7 @@ export default {
             getThreadResults,
             saveHistoryItem,
             removeHistoryItem,
+            acceptedImages,
             renderKey,
         }
     }

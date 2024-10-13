@@ -344,6 +344,27 @@ export function groupThreads(threads) {
     return groups
 }
 
+export function toArtifacts(result) {
+    return result.response?.outputs?.map(x => ({
+        width: result.request.width,
+        height: result.request.height,
+        url: x.url,
+        filePath: x.url.substring(x.url.indexOf('/artifacts')),
+    })) ?? []
+}
+
+export function wordList(items) {
+    if (!items || !items.length) return ''
+    if (typeof items == 'string') {
+        items = items.split(',')
+    }
+    if (!Array.isArray(items)) return ''
+    if (items.length === 1) return items[0]
+    return items.slice(0, -1).join(', ') + ' or ' + items[items.length - 1]
+}
+
+export const acceptedImages = `${wordList('WEBP,JPG,PNG,GIF')} (max 5MB)`
+
 export const Img  = {
     dataUriEscapeChars: ['%','#','<','>','?','[','\\',']','^','`','{','|','}'],
     darkColors: ('334155,374151,44403c,b91c1c,c2410c,b45309,4d7c0f,15803d,047857,0f766e,' +

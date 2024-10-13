@@ -2,7 +2,7 @@ import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
 import { useClient } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
 import { TextToImage, ActiveMediaModels } from "dtos"
-import {UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons } from "../utils.mjs"
+import {UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, toArtifacts } from "../utils.mjs"
 import { ArtifactGallery } from "./Artifacts.mjs"
 import PromptGenerator from "./PromptGenerator.mjs"
 
@@ -216,15 +216,6 @@ export default {
             const ret = Array.from(thread.value?.results ?? [])
             ret.reverse()
             return ret
-        }
-        
-        function toArtifacts(result) {
-            return result.response?.outputs?.map(x => ({
-                width: result.request.width,
-                height: result.request.height,
-                url: x.url,
-                filePath: x.url.substring(x.url.indexOf('/artifacts')),
-            })) ?? []
         }
         
         function selectRequest(req) {

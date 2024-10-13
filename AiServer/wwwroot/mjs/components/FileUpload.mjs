@@ -1,6 +1,7 @@
 import { computed, inject, onUnmounted, ref, nextTick } from 'vue'
 import { errorResponse, humanize, lastLeftPart, lastRightPart, omit, toPascalCase } from '@servicestack/client'
 import { useConfig, useFiles } from '@servicestack/vue'
+import { wordList } from "../utils.mjs"
 
 export default {
     template:`
@@ -25,7 +26,9 @@ export default {
                 <span class="font-semibold">Click to upload</span> or drag and drop
             </template>
         </p>
-        <p class="text-sm text-gray-500">{{ acceptLabel ?? grammarList(accept?.split(',').map(x => x.replace('.','').toUpperCase())) }}</p>
+        <p class="text-sm text-gray-500">
+            {{ acceptLabel ?? wordList(accept?.split(',').map(x => x.replace('.','').toUpperCase())) }}
+        </p>
       </div>
       <input ref="input" type="file" :multiple="multiple"
             :name="id"
@@ -230,12 +233,6 @@ export default {
             fallbackSrc.value = fallbackPathResolver(src.value)
         }
         
-        function grammarList(items) {
-            if (!items || !items.length) return ''
-            if (items.length === 1) return items[0]
-            return items.slice(0, -1).join(', ') + ' or ' + items[items.length - 1]
-        }
-
         onUnmounted(flush)
         
         return {
@@ -256,7 +253,7 @@ export default {
             isDataUri,
             openFile,
             handleDrop,
-            grammarList,
+            wordList,
             imgCls, 
             addFiles, 
             onChange,
