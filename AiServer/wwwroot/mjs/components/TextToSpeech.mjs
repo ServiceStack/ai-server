@@ -1,5 +1,9 @@
-import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
-import { useClient, useFiles } from "@servicestack/vue"
+/*
+In the ancient land of Eldoria, where the skies were painted with shades of mystic hues and the forests whispered secrets of old, there existed a dragon named Zephyros. Unlike the fearsome tales of dragons that plagued human hearts with terror, Zephyros was a creature of wonder and wisdom, revered by all who knew of his existence.
+*/
+
+import { ref, onMounted, inject, watch } from "vue"
+import { useClient } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
 import { TextToSpeech } from "dtos"
 import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, toArtifacts, acceptedImages } from "../utils.mjs"

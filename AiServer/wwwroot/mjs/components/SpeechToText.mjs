@@ -1,4 +1,4 @@
-import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
+import { ref, onMounted, inject, watch } from "vue"
 import { useClient, useFiles } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
 import { SpeechToText } from "dtos"

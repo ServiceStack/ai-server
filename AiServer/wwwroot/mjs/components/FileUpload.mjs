@@ -1,5 +1,5 @@
-import { computed, inject, onUnmounted, ref, nextTick } from 'vue'
-import { errorResponse, humanize, lastLeftPart, lastRightPart, omit, toPascalCase } from '@servicestack/client'
+import { computed, inject, onUnmounted, ref } from 'vue'
+import { errorResponse, humanize, toPascalCase } from '@servicestack/client'
 import { useConfig, useFiles } from '@servicestack/vue'
 import { wordList } from "../utils.mjs"
 

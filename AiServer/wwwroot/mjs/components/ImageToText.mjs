@@ -1,7 +1,7 @@
-import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
+import { ref, onMounted, inject, watch } from "vue"
 import { useClient, useFiles } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
-import { ImageToText, ActiveMediaModels } from "dtos"
+import { ImageToText } from "dtos"
 import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, Img, acceptedImages } from "../utils.mjs"
 import FileUpload from "./FileUpload.mjs"
 
