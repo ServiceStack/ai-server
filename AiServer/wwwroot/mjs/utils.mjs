@@ -169,7 +169,7 @@ export function hash(str, seed = 0) {
 
 export const HistoryTitle = {
     template:`
-        <div class="flex items-center justify-between">
+        <div class="sm:w-72 md:w-92 flex items-center justify-between">
             <h3 class="p-2 sm:block text-xl md:text-2xl font-semibold">History</h3>
             <button type="button" @click="clear()" title="Clear History" 
                 class="mr-2 bg-white dark:bg-black rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:ring-offset-black">

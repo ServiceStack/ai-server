@@ -91,7 +91,7 @@ export default {
 
                     <ArtifactGallery :results="toArtifacts(result)">
                         <template #bottom="{ selected }">
-                            <div class="z-40 absolute bottom-0 gap-x-6 w-full flex justify-center p-4 bg-black/20">
+                            <div class="z-40 fixed bottom-0 gap-x-6 w-full flex justify-center p-4 bg-black/20">
                                 <a :href="selected.url + '?download=1'" class="flex text-sm text-gray-300 hover:text-gray-100 hover:drop-shadow">
                                     <svg class="w-5 h-5 mr-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 20h12M12 4v12m0 0l3.5-3.5M12 16l-3.5-3.5"></path></svg> 
                                     download 

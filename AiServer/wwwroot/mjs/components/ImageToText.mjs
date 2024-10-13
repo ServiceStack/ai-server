@@ -2,7 +2,7 @@ import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
 import { useClient, useFiles } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
 import { ImageToText, ActiveMediaModels } from "dtos"
-import {UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, Img } from "../utils.mjs"
+import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, Img } from "../utils.mjs"
 import FileUpload from "./FileUpload.mjs"
 
 export default {
@@ -93,7 +93,7 @@ export default {
         const renderKey = ref(0)
         const { filePathUri, getExt, extSrc, svgToDataUri } = useFiles()
 
-        const storage = new ThreadStorage(`img2txt`, {
+        const storage = new ThreadStorage(`img2img`, {
             tag: '',
         })
         const error = ref()
