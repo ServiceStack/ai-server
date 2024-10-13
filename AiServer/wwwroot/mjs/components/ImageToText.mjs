@@ -24,14 +24,21 @@ export default {
                                 <div class="grid grid-cols-6 gap-4">
                                     <div class="col-span-6">
                                         <FileUpload ref="refImage" id="image" v-model="request.image" required
-                                            accept=".webp,.jpg,.jpeg,.png,.gif" 
-                                            @change="renderKey++">
+                                            accept=".webp,.jpg,.jpeg,.png,.gif" @change="renderKey++">
+                                            <template #title>
+                                                <span class="font-semibold text-green-600">Click to upload</span> or drag and drop
+                                            </template>
+                                            <template #icon>
+                                                <svg class="mb-2 h-12 w-12 text-green-500 inline" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true" data-phx-id="m9-phx-F_34be7KYfTF66Xh">
+                                                  <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                </svg>
+                                            </template>
                                         </FileUpload>
                                     </div>
                                 </div>
                             </fieldset>
                         </div>
-                        <div class="mt-4 flex justify-center">
+                        <div class="mt-4 mb-8 flex justify-center">
                             <PrimaryButton :key="renderKey" type="submit" :disabled="!validPrompt()">
                                 <svg class="-ml-0.5 h-6 w-6 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M11 16V7.85l-2.6 2.6L7 9l5-5l5 5l-1.4 1.45l-2.6-2.6V16zm-5 4q-.825 0-1.412-.587T4 18v-3h2v3h12v-3h2v3q0 .825-.587 1.413T18 20z"/></svg>
                                 <span class="text-base font-semibold">Upload</span>

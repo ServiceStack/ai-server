@@ -15,16 +15,17 @@ export default {
     >
       <slot v-if="$slots.default"></slot>
       <div v-else class="flex flex-col items-center justify-center">
-        <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <slot v-if="$slots.icon" name="icon"></slot>
+        <svg v-else class="w-12 h-12 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
         </svg>
-        <p class="mb-2 text-sm text-gray-500">
-            <span v-if="instructions">{{instructions}}</span>
+        <p class="mb-2 text-gray-500">
+            <slot v-if="$slots.title" name="title"></slot>
             <template v-else>
                 <span class="font-semibold">Click to upload</span> or drag and drop
             </template>
         </p>
-        <p class="text-xs text-gray-500">{{ acceptLabel ?? grammarList(accept?.split(',').map(x => x.replace('.','').toUpperCase())) }}</p>
+        <p class="text-sm text-gray-500">{{ acceptLabel ?? grammarList(accept?.split(',').map(x => x.replace('.','').toUpperCase())) }}</p>
       </div>
       <input ref="input" type="file" :multiple="multiple"
             :name="id"
@@ -96,7 +97,6 @@ export default {
         values:Array, //string[]
         /** @type {UploadedFile[]} status */
         files:Array,  //UploadedFile[]
-        instructions: String,
         accept: String,
         acceptLabel: String,
     },
