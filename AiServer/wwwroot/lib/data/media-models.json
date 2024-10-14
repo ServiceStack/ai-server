@@ -101,6 +101,14 @@
     }
   },
   {
+    "id": "lessac",
+    "name": "Lassac",
+    "modelType": "TextToSpeech",
+    "apiModels": {
+      "ComfyUI": "high:en_US-lessac"
+    }
+  },
+  {
     "id": "text-to-speech",
     "name": "Text to Speech",
     "dependsOn": ["piper-tts-lessac-high","piper-tts-lessac-high-config"],
