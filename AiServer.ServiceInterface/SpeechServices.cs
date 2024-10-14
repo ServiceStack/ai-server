@@ -38,7 +38,7 @@ public class SpeechServices(IBackgroundJobs jobs,
         if(Request?.Files == null || Request.Files.Length == 0)
         {
             log.LogError("No files attached to request");
-            throw new ArgumentNullException(nameof(request.Speech));
+            throw new ArgumentNullException(nameof(request.Audio));
         }
         
         var diffRequest = new CreateGeneration
@@ -50,7 +50,7 @@ public class SpeechServices(IBackgroundJobs jobs,
             {
                 Model = "speech-to-text",
                 TaskType = AiTaskType.SpeechToText,
-                SpeechInput = request.Speech
+                SpeechInput = request.Audio
             }
         };
         
@@ -81,7 +81,7 @@ public class SpeechServices(IBackgroundJobs jobs,
         if(Request?.Files == null || Request.Files.Length == 0)
         {
             log.LogError("No files attached to request");
-            throw new ArgumentNullException(nameof(request.Speech));
+            throw new ArgumentNullException(nameof(request.Audio));
         }
         
         var diffRequest = new CreateGeneration
@@ -90,7 +90,7 @@ public class SpeechServices(IBackgroundJobs jobs,
             {
                 Model = "speech-to-text",
                 TaskType = AiTaskType.SpeechToText,
-                SpeechInput = request.Speech
+                SpeechInput = request.Audio
             }
         };
         

@@ -196,7 +196,7 @@ public class MediaProviderServices(ILogger<MediaProviderServices> log,
         };
     }
     
-    private static string[] supportedUploadNames = ["speech", "audio", "image", "mask"];
+    private static string[] supportedUploadNames = ["audio", "image", "mask"];
     
     public object Any(QueryMediaModels request)
     {

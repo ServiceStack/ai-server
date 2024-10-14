@@ -99,9 +99,6 @@ public class CreateGenerationCommand(ILogger<CreateGenerationCommand> logger,
                 case "mask":
                     argInstance.MaskInput = ms;
                     break;
-                case "speech":
-                    argInstance.SpeechInput = ms;
-                    break;
                 case "audio":
                     argInstance.AudioInput = ms;
                     break;
@@ -113,7 +110,6 @@ public class CreateGenerationCommand(ILogger<CreateGenerationCommand> logger,
     {
         "image",
         "mask",
-        "speech",
         "audio"
     };
 

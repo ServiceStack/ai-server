@@ -23,7 +23,7 @@ public class SpeechToTextIntegrationTests : IntegrationTestBase
             response = client.PostFilesWithRequest<GenerationResponse>(new SpeechToText
             {
 
-            }, new []{ new UploadFile("speech.wav", fileStream) { FieldName = "speech"} });
+            }, new []{ new UploadFile("speech.wav", fileStream) { FieldName = "audio"} });
         }
         catch (Exception e)
         {

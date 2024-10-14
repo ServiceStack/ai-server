@@ -19,7 +19,7 @@ public class SpeechToText : IGeneration, IReturn<GenerationResponse>
     [Description("The audio stream containing the speech to be transcribed")]
     [Required]
     [Input(Type = "file")]
-    public Stream Speech { get; set; }
+    public Stream Audio { get; set; }
     
     [ApiMember(Description = "Optional client-provided identifier for the request")]
     [Description("Optional client-provided identifier for the request")]
