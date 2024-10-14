@@ -109,11 +109,43 @@
     }
   },
   {
-    "id": "tts_echo",
+    "id": "tts-echo",
     "name": "TTS Echo",
     "modelType": "TextToSpeech",
     "apiModels": {
       "OpenAI": "tts-1:echo"
+    }
+  },
+  {
+    "id": "tts-fable",
+    "name": "TTS Fable",
+    "modelType": "TextToSpeech",
+    "apiModels": {
+      "OpenAI": "tts-1:fable"
+    }
+  },
+  {
+    "id": "tts-onyx",
+    "name": "TTS Onyx",
+    "modelType": "TextToSpeech",
+    "apiModels": {
+      "OpenAI": "tts-1:onyx"
+    }
+  },
+  {
+    "id": "tts-nova",
+    "name": "TTS Nova",
+    "modelType": "TextToSpeech",
+    "apiModels": {
+      "OpenAI": "tts-1:nova"
+    }
+  },
+  {
+    "id": "tts-shimmer",
+    "name": "TTS Shimmer",
+    "modelType": "TextToSpeech",
+    "apiModels": {
+      "OpenAI": "tts-1:shimmer"
     }
   },
   {
