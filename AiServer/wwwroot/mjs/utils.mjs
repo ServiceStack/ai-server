@@ -173,7 +173,7 @@ export const HistoryTitle = {
         <div class="sm:w-72 md:w-92 flex items-center justify-between">
             <h3 class="p-2 sm:block text-xl md:text-2xl font-semibold">History</h3>
             <button type="button" @click="clear()" title="Clear History" 
-                class="mr-2 bg-white dark:bg-black rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:ring-offset-black">
+                class="mr-4 bg-white dark:bg-black rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:ring-offset-black">
                 <span class="sr-only">Clear</span>
                 <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path fill="none" stroke="currentColor" stroke-width="2" d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10ZM5 5l14 14"/>
