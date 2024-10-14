@@ -31,6 +31,12 @@
     "apiModels": {
         "dall-e-3": "dall-e-3",
         "text-to-speech": "tts-1:alloy",
+        "tts-alloy": "tts-1:alloy",
+        "tts-echo": "tts-1:echo",
+        "tts-fable": "tts-1:fable",
+        "tts-onyx": "tts-1:onyx",
+        "tts-nova": "tts-1:nova",
+        "tts-shimmer": "tts-1:shimmer",
         "speech-to-text": "whisper-1"
     }
   }

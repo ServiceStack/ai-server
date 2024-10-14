@@ -1,0 +1,34 @@
+[
+  {
+    "id": "Default",
+    "model": "text-to-speech"
+  },
+  {
+    "id": "Lessac",
+    "model": "lessac"
+  },
+  {
+    "id": "Alloy",
+    "model": "tts-alloy"
+  },
+  {
+    "id": "Echo",
+    "model": "tts-echo"
+  },
+  {
+    "id": "Fable",
+    "model": "tts-fable"
+  },
+  {
+    "id": "Onyx",
+    "model": "tts-onyx"
+  },
+  {
+    "id": "Nova",
+    "model": "tts-nova"
+  },
+  {
+    "id": "Shimmer",
+    "model": "tts-shimmer"
+  }
+]
