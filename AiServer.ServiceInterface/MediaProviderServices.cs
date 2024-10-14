@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using ServiceStack;
 using ServiceStack.Jobs;
 using ServiceStack.OrmLite;
+using ServiceStack.Text;
 using ServiceStack.Web;
 using MediaType = AiServer.ServiceModel.Types.MediaType;
 
@@ -35,6 +36,24 @@ public class MediaProviderServices(ILogger<MediaProviderServices> log,
         r.Results.ForEach(x => x.MediaType = appData.MediaTypes.GetAll()
             .FirstOrDefault(t => t.Id == x.MediaTypeId));
         return r;
+    }
+    
+    class QueryTextToSpeechVoicesData : QueryData<TextToSpeechVoice> {}
+    public object Any(QueryTextToSpeechVoices request)
+    {
+        var query = request.ConvertTo<QueryTextToSpeechVoicesData>();
+        var db = appData.TextToSpeechVoices.ToDataSource(query, Request!);
+        var response = (QueryResponse<TextToSpeechVoice>) 
+            autoQueryData.Execute(query, autoQueryData.CreateQuery(query, Request, db), db);
+        
+        var activeModels = appData.MediaProviders
+            .SelectMany(x => 
+                x.Models.Select(m => appData.GetQualifiedMediaModel(ModelType.TextToSpeech, m)))
+            .Where(x => x != null)
+            .Select(x => x!)
+            .Distinct();
+        response.Results.RemoveAll(x => activeModels.Contains(x.Model));
+        return response;
     }
     
     public object Any(CreateGeneration request)

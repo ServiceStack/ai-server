@@ -1,5 +1,5 @@
 /* Options:
-Date: 2024-10-07 20:47:09
+Date: 2024-10-15 00:22:13
 Version: 8.41
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5005
@@ -124,6 +124,14 @@ export class MediaProvider {
     /** @type {string[]} */
     models;
 }
+export class TextToSpeechVoice {
+    /** @param {{id?:string,model?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    id;
+    /** @type {string} */
+    model;
+}
 /** @typedef {'euler'|'euler_cfg_pp'|'euler_ancestral'|'euler_ancestral_cfg_pp'|'huen'|'huenpp2'|'dpm_2'|'dpm_2_ancestral'|'lms'|'dpm_fast'|'dpm_adaptive'|'dpmpp_2s_ancestral'|'dpmpp_sde'|'dpmpp_sde_gpu'|'dpmpp_2m'|'dpmpp_2m_sde'|'dpmpp_2m_sde_gpu'|'dpmpp_3m_sde'|'dpmpp_3m_sde_gpu'|'ddpm'|'lcm'|'ddim'|'uni_pc'|'uni_pc_bh2'} */
 export var ComfySampler;
 (function (ComfySampler) {
@@ -173,7 +181,7 @@ export var ComfyMaskSource;
     ComfyMaskSource["alpha"] = "alpha"
 })(ComfyMaskSource || (ComfyMaskSource = {}));
 export class GenerationArgs {
-    /** @param {{model?:string,steps?:number,batchSize?:number,seed?:number,positivePrompt?:string,negativePrompt?:string,imageInput?:string,speechInput?:string,maskInput?:string,audioInput?:string,sampler?:ComfySampler,scheduler?:string,cfgScale?:number,denoise?:number,upscaleModel?:string,width?:number,height?:number,taskType?:AiTaskType,clip?:string,sampleLength?:number,maskChannel?:ComfyMaskSource,aspectRatio?:string,quality?:number,voice?:string,language?:string}} [init] */
+    /** @param {{model?:string,steps?:number,batchSize?:number,seed?:number,positivePrompt?:string,negativePrompt?:string,imageInput?:string,maskInput?:string,audioInput?:string,sampler?:ComfySampler,scheduler?:string,cfgScale?:number,denoise?:number,upscaleModel?:string,width?:number,height?:number,taskType?:AiTaskType,clip?:string,sampleLength?:number,maskChannel?:ComfyMaskSource,aspectRatio?:string,quality?:number,voice?:string,language?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {?string} */
     model;
@@ -189,8 +197,6 @@ export class GenerationArgs {
     negativePrompt;
     /** @type {?string} */
     imageInput;
-    /** @type {?string} */
-    speechInput;
     /** @type {?string} */
     maskInput;
     /** @type {?string} */
@@ -582,15 +588,12 @@ export class Prompt {
     /** @type {string} */
     value;
 }
-/** @typedef {'mp4'|'avi'|'mkv'|'mov'|'webm'|'gif'} */
+/** @typedef {'mp4'|'avi'|'mov'} */
 export var ConvertVideoOutputFormat;
 (function (ConvertVideoOutputFormat) {
     ConvertVideoOutputFormat["MP4"] = "mp4"
     ConvertVideoOutputFormat["AVI"] = "avi"
-    ConvertVideoOutputFormat["MKV"] = "mkv"
     ConvertVideoOutputFormat["MOV"] = "mov"
-    ConvertVideoOutputFormat["WebM"] = "webm"
-    ConvertVideoOutputFormat["GIF"] = "gif"
 })(ConvertVideoOutputFormat || (ConvertVideoOutputFormat = {}));
 /** @typedef {'Queued'|'Started'|'Executed'|'Completed'|'Failed'|'Cancelled'} */
 export var BackgroundJobState;
@@ -1107,7 +1110,7 @@ export class MediaTransformResponse {
     responseStatus;
 }
 export class QueueMediaTransformResponse {
-    /** @param {{jobId?:number,refId?:string,jobState?:BackgroundJobState,status?:string,responseStatus?:ResponseStatus}} [init] */
+    /** @param {{jobId?:number,refId?:string,jobState?:BackgroundJobState,status?:string,responseStatus?:ResponseStatus,statusUrl?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {number}
@@ -1129,6 +1132,10 @@ export class QueueMediaTransformResponse {
      * @type {?ResponseStatus}
      * @description Detailed response status information */
     responseStatus;
+    /**
+     * @type {string}
+     * @description URL to check the status of the request */
+    statusUrl;
 }
 export class GetSummaryStatsResponse {
     /** @param {{providerStats?:SummaryStats[],modelStats?:SummaryStats[],monthStats?:SummaryStats[]}} [init] */
@@ -1213,7 +1220,7 @@ export class GenerationResponse {
     responseStatus;
 }
 export class QueueGenerationResponse {
-    /** @param {{jobId?:number,refId?:string,jobState?:BackgroundJobState,status?:string,responseStatus?:ResponseStatus}} [init] */
+    /** @param {{jobId?:number,refId?:string,jobState?:BackgroundJobState,status?:string,responseStatus?:ResponseStatus,statusUrl?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {number}
@@ -1235,6 +1242,10 @@ export class QueueGenerationResponse {
      * @type {?ResponseStatus}
      * @description Detailed response status information */
     responseStatus;
+    /**
+     * @type {string}
+     * @description URL to check the status of the generation request */
+    statusUrl;
 }
 /** @typedef T {any} */
 export class QueryResponse {
@@ -1352,12 +1363,14 @@ export class OpenAiChatResponse {
     responseStatus;
 }
 export class QueueOpenAiChatResponse {
-    /** @param {{id?:number,refId?:string,responseStatus?:ResponseStatus}} [init] */
+    /** @param {{id?:number,refId?:string,statusUrl?:string,responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {number} */
     id;
     /** @type {string} */
     refId;
+    /** @type {string} */
+    statusUrl;
     /** @type {?ResponseStatus} */
     responseStatus;
 }
@@ -1460,7 +1473,7 @@ export class MigrateArtifactResponse {
     responseStatus;
 }
 export class AuthenticateResponse {
-    /** @param {{userId?:string,sessionId?:string,userName?:string,displayName?:string,referrerUrl?:string,bearerToken?:string,refreshToken?:string,refreshTokenExpiry?:string,profileUrl?:string,roles?:string[],permissions?:string[],responseStatus?:ResponseStatus,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{userId?:string,sessionId?:string,userName?:string,displayName?:string,referrerUrl?:string,bearerToken?:string,refreshToken?:string,refreshTokenExpiry?:string,profileUrl?:string,roles?:string[],permissions?:string[],authProvider?:string,responseStatus?:ResponseStatus,meta?:{ [index: string]: string; }}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string} */
     userId;
@@ -1484,6 +1497,8 @@ export class AuthenticateResponse {
     roles;
     /** @type {string[]} */
     permissions;
+    /** @type {string} */
+    authProvider;
     /** @type {ResponseStatus} */
     responseStatus;
     /** @type {{ [index: string]: string; }} */
@@ -1679,7 +1694,7 @@ export class GetJobStatus {
      * @description Client-provided identifier for the request */
     refId;
     getTypeName() { return 'GetJobStatus' }
-    getMethod() { return 'POST' }
+    getMethod() { return 'GET' }
     createResponse() { return new GetJobStatusResponse() }
 }
 export class ActiveMediaModels {
@@ -2210,7 +2225,7 @@ export class QueueCropImage {
     createResponse() { return new QueueMediaTransformResponse() }
 }
 export class QueueScaleImage {
-    /** @param {{image?:string,width?:number,height?:number}} [init] */
+    /** @param {{image?:string,width?:number,height?:number,refId?:string,replyTo?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -2224,6 +2239,18 @@ export class QueueScaleImage {
      * @type {?number}
      * @description Desired height of the scaled image */
     height;
+    /**
+     * @type {?string}
+     * @description Optional client-provided identifier for the request */
+    refId;
+    /**
+     * @type {?string}
+     * @description Optional queue or topic to reply to */
+    replyTo;
+    /**
+     * @type {?string}
+     * @description Tag to identify the request */
+    tag;
     getTypeName() { return 'QueueScaleImage' }
     getMethod() { return 'POST' }
     createResponse() { return new MediaTransformResponse() }
@@ -2308,6 +2335,13 @@ export class QueryMediaProviders extends QueryDb {
     getMethod() { return 'GET' }
     createResponse() { return new QueryResponse() }
 }
+export class QueryTextToSpeechVoices extends QueryDb {
+    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    getTypeName() { return 'QueryTextToSpeechVoices' }
+    getMethod() { return 'GET' }
+    createResponse() { return new QueryResponse() }
+}
 export class CreateGeneration {
     /** @param {{request?:GenerationArgs,provider?:string,state?:string,replyTo?:string,refId?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -2387,7 +2421,7 @@ export class UpdateMediaProvider {
     createResponse() { return new IdResponse() }
 }
 export class CreateMediaProvider {
-    /** @param {{name?:string,apiKey?:string,apiKeyHeader?:string,apiBaseUrl?:string,heartbeatUrl?:string,concurrency?:number,priority?:number,enabled?:boolean,offlineDate?:string,models?:string[],mediaTypeId?:number}} [init] */
+    /** @param {{name?:string,apiKey?:string,apiKeyHeader?:string,apiBaseUrl?:string,heartbeatUrl?:string,concurrency?:number,priority?:number,enabled?:boolean,offlineDate?:string,models?:string[],mediaTypeId?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -2429,7 +2463,7 @@ export class CreateMediaProvider {
      * @type {?string[]}
      * @description Models this API Provider should process */
     models;
-    /** @type {?number} */
+    /** @type {string} */
     mediaTypeId;
     getTypeName() { return 'CreateMediaProvider' }
     getMethod() { return 'POST' }
@@ -2821,12 +2855,12 @@ export class QueueTextToSpeech {
     createResponse() { return new QueueGenerationResponse() }
 }
 export class QueueSpeechToText {
-    /** @param {{speech?:string,refId?:string,replyTo?:string,tag?:string,state?:string}} [init] */
+    /** @param {{audio?:string,refId?:string,replyTo?:string,tag?:string,state?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
      * @description The audio stream containing the speech to be transcribed */
-    speech;
+    audio;
     /**
      * @type {?string}
      * @description Optional client-provided identifier for the request */
@@ -2848,12 +2882,16 @@ export class QueueSpeechToText {
     createResponse() { return new QueueGenerationResponse() }
 }
 export class TextToSpeech {
-    /** @param {{text?:string,seed?:number,refId?:string,tag?:string}} [init] */
+    /** @param {{input?:string,model?:string,seed?:number,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
      * @description The text to be converted to speech */
-    text;
+    input;
+    /**
+     * @type {?string}
+     * @description Optional specific model and voice to use for speech generation */
+    model;
     /**
      * @type {?number}
      * @description Optional seed for reproducible results in speech generation */
@@ -2871,12 +2909,12 @@ export class TextToSpeech {
     createResponse() { return new GenerationResponse() }
 }
 export class SpeechToText {
-    /** @param {{speech?:string,refId?:string,tag?:string}} [init] */
+    /** @param {{audio?:string,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
      * @description The audio stream containing the speech to be transcribed */
-    speech;
+    audio;
     /**
      * @type {?string}
      * @description Optional client-provided identifier for the request */
@@ -3002,11 +3040,11 @@ export class TrimVideo {
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
-     * @description The start time of the trimmed video (format: HH:MM:SS) */
+     * @description The start time of the trimmed video (format: MM:SS) */
     startTime;
     /**
      * @type {?string}
-     * @description The end time of the trimmed video (format: HH:MM:SS) */
+     * @description The end time of the trimmed video (format: MM:SS) */
     endTime;
     /** @type {string} */
     video;
@@ -3176,10 +3214,12 @@ export class QueueTrimVideo {
     createResponse() { return new QueueMediaTransformResponse() }
 }
 export class GetArtifact {
-    /** @param {{path?:string}} [init] */
+    /** @param {{path?:string,download?:boolean}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string} */
     path;
+    /** @type {?boolean} */
+    download;
     getTypeName() { return 'GetArtifact' }
     getMethod() { return 'GET' }
     createResponse() { return new Blob() }
@@ -3458,6 +3498,13 @@ export class QueryMediaTypesData extends QueryData {
     /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     getTypeName() { return 'QueryMediaTypesData' }
+    getMethod() { return 'GET' }
+    createResponse() { return new QueryResponse() }
+}
+export class QueryTextToSpeechVoicesData extends QueryData {
+    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    getTypeName() { return 'QueryTextToSpeechVoicesData' }
     getMethod() { return 'GET' }
     createResponse() { return new QueryResponse() }
 }

@@ -23,6 +23,7 @@ public class AppData(ILogger<AppData> log,
     public AiProvider[] AiProviders { get; set; } = [];
     public MediaProvider[] MediaProviders { get; set; } = [];
     public PocoDataSource<MediaType> MediaTypes { get; set; } = new([]);
+    public PocoDataSource<TextToSpeechVoice> TextToSpeechVoices { get; set; } = new([]);
     public MediaModel[] MediaModels { get; set; } = [];
     public Dictionary<string, MediaModel> MediaModelsMap { get; set; } = [];
     public PocoDataSource<Prompt> Prompts { get; set; } = new([]);
@@ -86,6 +87,7 @@ public class AppData(ILogger<AppData> log,
         AiModels = PocoDataSource.Create(LoadModels<AiModel>("ai-models.json"));
         AiTypes = PocoDataSource.Create(LoadModels<AiType>("ai-types.json"));
         MediaTypes = PocoDataSource.Create(LoadModels<MediaType>("media-types.json"));
+        TextToSpeechVoices = PocoDataSource.Create(LoadModels<TextToSpeechVoice>("tts-voices.json"));
 
         ResetAiProviders(db);
         ResetMediaProviders(db);

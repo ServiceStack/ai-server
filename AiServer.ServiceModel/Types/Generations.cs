@@ -158,3 +158,9 @@ public enum ModelType
     ImageWithMask,
     VAE
 }
+
+public class TextToSpeechVoice : IHasId<string>
+{
+    public string Id { get; set; }
+    public string Model { get; set; }
+}

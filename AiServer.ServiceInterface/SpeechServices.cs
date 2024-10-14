@@ -60,7 +60,8 @@ public class SpeechServices(IBackgroundJobs jobs,
 
     public async Task<object> Any(TextToSpeech request)
     {
-        var model = request.Model ?? "text-to-speech";
+        var model = !string.IsNullOrEmpty(request.Model) ? request.Model : "text-to-speech";
+        var prompt = request.Input.Trim();
         var diffRequest = new CreateGeneration
         {
             Request = new()
@@ -68,7 +69,7 @@ public class SpeechServices(IBackgroundJobs jobs,
                 Model = model,
                 Seed = request.Seed,
                 TaskType = AiTaskType.TextToSpeech,
-                PositivePrompt = request.Input
+                PositivePrompt = prompt
             }
         };
         

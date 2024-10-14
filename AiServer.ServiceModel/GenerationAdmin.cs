@@ -111,3 +111,8 @@ public class DeleteMediaProvider : IDeleteDb<MediaProvider>, IReturn<IdResponse>
     public string? Name { get; set; }
 }
 
+[Tag(Tag.Info)]
+[Description("Text to Speech Voice models")]
+public class QueryTextToSpeechVoices : QueryDb<TextToSpeechVoice>
+{
+}
