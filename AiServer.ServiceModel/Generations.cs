@@ -40,12 +40,16 @@ public class TextToSpeech : IGeneration, IReturn<GenerationResponse>
     [ApiMember(Description = "The text to be converted to speech")]
     [Description("The text to be converted to speech")]
     [Required]
-    public string Text { get; set; }
+    public string Input { get; set; }
 
     [ApiMember(Description = "Optional seed for reproducible results in speech generation")]
     [Description("Optional seed for reproducible results in speech generation")]
     [Range(0, int.MaxValue)]
     public int? Seed { get; set; }
+    
+    [ApiMember(Description = "Optional specific model and voice to use for speech generation")]
+    [Description("Optional specific model and voice to use for speech generation")]
+    public string? Model { get; set; }
     
     [ApiMember(Description = "Optional client-provided identifier for the request")]
     [Description("Optional client-provided identifier for the request")]

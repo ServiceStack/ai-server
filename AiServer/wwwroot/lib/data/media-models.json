@@ -109,6 +109,14 @@
     }
   },
   {
+    "id": "tts_echo",
+    "name": "TTS Echo",
+    "modelType": "TextToSpeech",
+    "apiModels": {
+      "OpenAI": "tts-1:echo"
+    }
+  },
+  {
     "id": "text-to-speech",
     "name": "Text to Speech",
     "dependsOn": ["piper-tts-lessac-high","piper-tts-lessac-high-config"],

@@ -60,14 +60,15 @@ public class SpeechServices(IBackgroundJobs jobs,
 
     public async Task<object> Any(TextToSpeech request)
     {
+        var model = request.Model ?? "text-to-speech";
         var diffRequest = new CreateGeneration
         {
             Request = new()
             {
-                Model = "text-to-speech",
+                Model = model,
                 Seed = request.Seed,
                 TaskType = AiTaskType.TextToSpeech,
-                PositivePrompt = request.Text
+                PositivePrompt = request.Input
             }
         };
         

@@ -47,7 +47,7 @@ public class SpeechToTextIntegrationTests : IntegrationTestBase
         {
             response = await client.ApiAsync(new TextToSpeech
             {
-                Text = "This is a test of synchronous text to speech generation."
+                Input = "This is a test of synchronous text to speech generation."
             });
             response.ThrowIfError();
         }
