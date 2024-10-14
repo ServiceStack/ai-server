@@ -30,11 +30,11 @@ public class ComfyWorkflowRequest
     public string? NegativePrompt { get; set; }
 
     public ComfyFileInput? Image { get; set; }
-    public ComfyFileInput? Speech { get; set; }
+    public ComfyFileInput? Audio { get; set; }
     public ComfyFileInput? Mask { get; set; }
 
     public Stream? ImageInput { get; set; }
-    public Stream? SpeechInput { get; set; }
+    public Stream? AudioInput { get; set; }
     public Stream? MaskInput { get; set; }
 
     public ComfySampler? Sampler { get; set; }

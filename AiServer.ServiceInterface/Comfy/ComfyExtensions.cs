@@ -125,7 +125,7 @@ public static class ComfyExtensions
                 resObject = new ComfyWorkflowRequest
                 {
                     Model = request.Model is null or "" ? "base" : request.Model,
-                    SpeechInput = request.SpeechInput,
+                    AudioInput = request.AudioInput,
                     TaskType = ComfyTaskType.SpeechToText
                 };
                 break;

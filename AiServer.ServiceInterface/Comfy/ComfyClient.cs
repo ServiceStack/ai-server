@@ -223,7 +223,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     {
         ComfyFileInput? imageInput = null;
         ComfyFileInput? maskInput = null;
-        ComfyFileInput? speechInput = null;
+        ComfyFileInput? audioInput = null;
         // Upload image assets if required
         // Using the `request.TaskType` enum, map tasks that require image assets
         if (request.TaskType is ComfyTaskType.ImageToImage or ComfyTaskType.ImageUpscale
@@ -245,23 +245,23 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
             }
         }
 
-        if (request.TaskType is ComfyTaskType.SpeechToText && request.Speech == null)
+        if (request.TaskType is ComfyTaskType.SpeechToText && request.Audio == null)
         {
-            if (request.SpeechInput == null)
-                throw new ArgumentException("SpeechInput is required for this task type");
+            if (request.AudioInput == null)
+                throw new ArgumentException("AudioInput is required for this task type");
             {
                 var tempFilename = $"speech_{promptId}.wav";
-                speechInput = await UploadAudioAssetAsync(request.SpeechInput, tempFilename, token);
+                audioInput = await UploadAudioAssetAsync(request.AudioInput, tempFilename, token);
             }
         }
         
         
         request.Image = imageInput;
         request.Mask = maskInput;
-        request.Speech = speechInput;
+        request.Audio = audioInput;
         request.ImageInput?.Close();
         request.MaskInput?.Close();
-        request.SpeechInput?.Close();
+        request.AudioInput?.Close();
     }
 
     public async Task<ComfyAgentDownloadStatus> GetDownloadStatusAsync(string name, CancellationToken token)

@@ -50,7 +50,7 @@ public class SpeechServices(IBackgroundJobs jobs,
             {
                 Model = "speech-to-text",
                 TaskType = AiTaskType.SpeechToText,
-                SpeechInput = request.Audio
+                AudioInput = request.Audio
             }
         };
         
@@ -90,7 +90,7 @@ public class SpeechServices(IBackgroundJobs jobs,
             {
                 Model = "speech-to-text",
                 TaskType = AiTaskType.SpeechToText,
-                SpeechInput = request.Audio
+                AudioInput = request.Audio
             }
         };
         

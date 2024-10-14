@@ -63,9 +63,7 @@ public class GenerationArgs
     public string? NegativePrompt { get; set; }
     
     public Stream? ImageInput { get; set; }
-    public Stream? SpeechInput { get; set; }
     public Stream? MaskInput { get; set; }
-    
     public Stream? AudioInput { get; set; }
 
     public ComfySampler? Sampler { get; set; }

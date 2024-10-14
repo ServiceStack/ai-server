@@ -203,7 +203,7 @@ public class CreateGenerationCommand(ILogger<CreateGenerationCommand> logger,
         {
             request.Request.ImageInput?.Dispose();
             request.Request.MaskInput?.Dispose();
-            request.Request.SpeechInput?.Dispose();
+            request.Request.AudioInput?.Dispose();
         }
     }
     

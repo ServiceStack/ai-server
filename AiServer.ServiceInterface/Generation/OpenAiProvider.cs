@@ -107,7 +107,7 @@ public class OpenAiMediaProvider(
         var multipartContent = new MultipartFormDataContent();
 
         // Add the audio file
-        var fileContent = new StreamContent(request.SpeechInput);
+        var fileContent = new StreamContent(request.AudioInput);
         fileContent.Headers.ContentType = new MediaTypeHeaderValue("audio/wav");
         multipartContent.Add(fileContent, "file", "audio.wav");
 

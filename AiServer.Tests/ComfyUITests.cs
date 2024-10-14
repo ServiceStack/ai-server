@@ -181,7 +181,7 @@ public class ComfyUITests
         var speechToTextDto = new ComfyWorkflowRequest
         {
             Model = "base",
-            SpeechInput = File.OpenRead(outputFilePath),
+            AudioInput = File.OpenRead(outputFilePath),
             TaskType = ComfyTaskType.SpeechToText
         };
         
@@ -221,7 +221,7 @@ public class ComfyUITests
         var testDto = new ComfyWorkflowRequest
         {
             Model = "base",
-            SpeechInput = File.OpenRead("files/speech_to_text_test.wav"),
+            AudioInput = File.OpenRead("files/speech_to_text_test.wav"),
             TaskType = ComfyTaskType.SpeechToText
         };
         

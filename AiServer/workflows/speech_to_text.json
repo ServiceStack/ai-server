@@ -31,7 +31,7 @@
         "Node name for S&R": "LoadAudio"
       },
       "widgets_values": [
-        "{{Speech.Name}}",
+        "{{Audio.Name}}",
         null,
         ""
       ]
