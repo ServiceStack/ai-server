@@ -41,7 +41,7 @@ export default {
                                     </div>
                                 
                                     <div class="col-span-6 sm:col-span-2">
-                                        <TextInput type="range" inputClass="!shadow-none" id="denoise" v-model="request.denoise" min="0" max="1" step="0.01" :label="'Creativity (denoise) &nbsp; ' + (Math.floor(request.denoise * 100)) + '%'" required />
+                                        <TextInput type="range" id="denoise" v-model="request.denoise" min="0" max="1" step="0.01" :label="'Creativity (denoise) &nbsp; ' + (Math.floor(request.denoise * 100)) + '%'" required />
                                     </div>
                                     <div class="col-span-6 sm:col-span-4">
                                         <TextInput id="negativePrompt" v-model="request.negativePrompt" required placeholder="Negative Prompt" />
