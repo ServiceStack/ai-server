@@ -52,7 +52,7 @@ public class MediaProviderServices(ILogger<MediaProviderServices> log,
             .Where(x => x != null)
             .Select(x => x!)
             .Distinct();
-        response.Results.RemoveAll(x => activeModels.Contains(x.Model));
+        response.Results.RemoveAll(x => !activeModels.Contains(x.Model));
         return response;
     }
     
