@@ -1,18 +1,3 @@
-/**
- Image to Text - Get description from image
- Image to Image - Sunset over ocean, make it stormy
- - w/ mask - confine to mask
- Speech to Text - Drop audio + get transcription
- Text to Speech - Get audio from transcription - Comfy UI / pipertts
- Image Upscale - 2x an image
- Media Transform - ffmpeg
- - Crop Image/Video
- - Scale Image/Video
- - Convert Image/Video
- - Trim Video
- - Watermark
- */
-
 import { ref, computed, inject, onMounted, shallowRef, watch, nextTick } from "vue"
 import { humanify } from "@servicestack/client"
 import { useClient, useAuth } from "@servicestack/vue"
@@ -43,7 +28,7 @@ const components = {
     ImageUpscale,
     SpeechToText,
     TextToSpeech,
-    Transform,
+    // Transform,
 }
 
 export default {
