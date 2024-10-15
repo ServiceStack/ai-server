@@ -2,6 +2,7 @@ using System.Data;
 using AiServer.ServiceInterface;
 using AiServer.ServiceInterface.Comfy;
 using AiServer.ServiceInterface.Generation;
+using AiServer.ServiceModel;
 using ServiceStack.Configuration;
 using ServiceStack.Data;
 using ServiceStack.IO;
@@ -128,6 +129,19 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
         };
 
         ConfigurePlugin<UiFeature>(feature => feature.Info.BrandIcon.Uri = "/img/logo.svg");
+        
+        var request = new OpenAiChatCompletion {
+            Model = "gpt-4-turbo",
+            Messages =
+            [
+                new ()
+                {
+                    Role = "user",
+                    Content = "What is the capital of France?"
+                }
+            ],
+            MaxTokens = 50
+        };
         
         #if DEBUG && !FALSE
         Metadata.ForceInclude = [

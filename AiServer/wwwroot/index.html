@@ -215,7 +215,7 @@ const events = app.events
 let routes = usePageRoutes(app, {
     page:'admin',
     queryKeys: ('tab,provider,db,schema,table,q,page,sort,new,edit,op,skip,id,' +
-        'show,orderBy,pathInfo,tag,body,type,dialog,period').split(','),
+        'show,orderBy,pathInfo,tag,body,type,dialog,period,lang').split(','),
     handlers: {
         init(state) { console.debug('init', state) }, /*debug*/
         nav(state) { console.debug('nav', state) } /*debug*/
