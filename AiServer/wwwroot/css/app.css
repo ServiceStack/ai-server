@@ -1426,6 +1426,10 @@ select{
   height: 100vh;
 }
 
+.h-\[500px\] {
+  height: 500px;
+}
+
 .max-h-52 {
   max-height: 13rem;
 }

@@ -12,9 +12,12 @@ export default {
         Unified APIs for LLM APIs, Ollama, ComfyUI &amp; FFmpeg 
       </p>
       <p class="mt-6 text-lg leading-8 text-gray-600">
-        Self-hosted private gateway to manage access to Open Router, OpenAI, Google, 
-        Mistral AI, Groq and Ollama LLM APIs, Comfy UI &amp; FFmpeg Agents 
+        Self-hosted private gateway to manage access to multiple LLM APIs, Ollama endpoints, 
+        Comfy UI and FFmpeg Agents 
       </p>
+    </div>
+    <div class="mt-8 flex justify-center">
+        <img class="h-[500px]" src="/img/overview.svg" alt="">
     </div>
     <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
       <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
