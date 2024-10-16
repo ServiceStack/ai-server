@@ -1,5 +1,6 @@
 import { ref, inject, watch, onMounted } from "vue"
 import { langs, openAi } from "../langs.mjs"
+import { icons } from "../utils.mjs"
 
 export default {
     template: `
@@ -98,39 +99,38 @@ export default {
           <h2 class="text-base font-semibold leading-7 text-indigo-600">Developer APIs</h2>
           <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Open AI Chat</p>
           <p class="mt-6 text-lg leading-8 text-gray-600">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.
+            Example of calling an Open AI compatible Chat API. AI Server APIs are executed using 
+            the same generic JSON Service Client and the native Typed DTOs generated in each language.
+            Each feature supports different call styles for different use-cases.
           </p>
           <dl class="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
             <div class="relative pl-9">
               <dt class="inline font-semibold text-gray-900">
-                <svg class="absolute left-1 top-1 h-5 w-5 text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                  <path fill-rule="evenodd" d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765 4.5 4.5 0 0 1 8.302-3.046 3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z" clip-rule="evenodd" />
-                </svg>
-                Synchronous API
+                <img class="absolute left-1 top-1 h-5 w-5 text-indigo-600" :src="icons.sync">
+                Synchronous API <span class="px-1" aria-hidden="true">·</span>
               </dt>
               <dd class="inline">
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.
+                Simplest API ideal for small workloads where the Response is returned
+                in the same Request
               </dd>
             </div>
             <div class="relative pl-9">
               <dt class="inline font-semibold text-gray-900">
-                <svg class="absolute left-1 top-1 h-5 w-5 text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                  <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clip-rule="evenodd" />
-                </svg>
-                Async Queueing API
+                <img class="absolute left-1 top-1 h-5 w-5 text-indigo-600" :src="icons.queue">
+                Queued API <span class="px-1" aria-hidden="true">·</span>
               </dt>
-              <dd class="inline">Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo.</dd>
+              <dd class="inline">
+                Returns a reference to the queued job executing the AI Request which can be used to
+                poll for the API Response
+              </dd>
             </div>
             <div class="relative pl-9">
               <dt class="inline font-semibold text-gray-900">
-                <svg class="absolute left-1 top-1 h-5 w-5 text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                  <path d="M4.632 3.533A2 2 0 0 1 6.577 2h6.846a2 2 0 0 1 1.945 1.533l1.976 8.234A3.489 3.489 0 0 0 16 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234Z" />
-                  <path fill-rule="evenodd" d="M4 13a2 2 0 1 0 0 4h12a2 2 0 1 0 0-4H4Zm11.24 2a.75.75 0 0 1 .75-.75H16a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-.75.75h-.01a.75.75 0 0 1-.75-.75V15Zm-2.25-.75a.75.75 0 0 0-.75.75v.01c0 .414.336.75.75.75H13a.75.75 0 0 0 .75-.75V15a.75.75 0 0 0-.75-.75h-.01Z" clip-rule="evenodd" />
-                </svg>
-                Reply to Web Callback
+                <img class="absolute left-1 top-1 h-5 w-5 text-indigo-600" :src="icons.reply">
+                Reply to Web Callback <span class="px-1" aria-hidden="true">·</span>
               </dt>
               <dd class="inline">
-                Ac tincidunt sapien vehicula erat auctor pellentesque rhoncus. Et magna sit morbi lobortis.
+                Ideal for reliable App integrations where responses are posted back to a custom URL Endpoint
               </dd>
             </div>
           </dl>
@@ -138,8 +138,40 @@ export default {
       </div>
       <div>
           <div class="flex items-center pt-20">
-                <div v-html="openAi.html[routes.lang || 'csharp']"></div>
+            <div v-html="openAi.html[routes.lang || 'csharp']"></div>
           </div>
+            
+            <nav class="flex" aria-label="Breadcrumb">
+              <ol role="list" class="flex items-center space-x-4">
+                <li>
+                  <div>
+                    <a :href="'/ui/OpenAiChatCompletion?tab=code&detailSrc=OpenAiChat&lang=' + (routes.lang || 'csharp')" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700" aria-current="page">
+                        Usage from {{langs[routes.lang || 'csharp']}}
+                    </a>
+                  </div>
+                </li>
+                <li>
+                  <div class="flex items-center">
+                    <svg class="h-5 w-5 flex-shrink-0 text-gray-300" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
+                    </svg>
+                    <a href="/ui/OpenAiChatCompletion?tab=details" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        API Explorer Docs
+                    </a>
+                  </div>
+                </li>
+                <li>
+                  <div class="flex items-center">
+                    <svg class="h-5 w-5 flex-shrink-0 text-gray-300" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
+                    </svg>
+                    <a href="https://docs.servicestack.net/ai-server/chat" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        About Open AI Chat API
+                    </a>
+                  </div>
+                </li>
+              </ol>
+            </nav>
       </div>
     </div>
     
@@ -286,7 +318,7 @@ export default {
         onMounted(() => {
         })
         
-        return { routes, langs, openAi }
+        return { routes, langs, openAi, icons }
     }
 }
 
