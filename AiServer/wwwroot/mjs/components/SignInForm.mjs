@@ -26,7 +26,8 @@ export default {
         </div>
     </div>
     `,
-    setup() {
+    emits:['done'],
+    setup(props, { emit }) {
         const client = useClient()
         const { user, signIn } = useAuth()
 
@@ -45,6 +46,7 @@ export default {
                 // api = await client.api(new Authenticate())
                 if (api.response) {
                     signIn(api.response)
+                    emit('done')
                 }
             }
         }

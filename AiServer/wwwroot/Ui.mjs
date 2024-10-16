@@ -1,8 +1,8 @@
 import { ref, computed, inject, onMounted, shallowRef, watch, nextTick } from "vue"
-import { humanify } from "@servicestack/client"
 import { useClient, useAuth } from "@servicestack/vue"
 import { Authenticate } from "dtos"
 
+import SignIn from "/mjs/components/SignIn.mjs"
 import Chat from "/mjs/components/Chat.mjs"
 import TextToImage from "/mjs/components/TextToImage.mjs"
 import ImageToText from "/mjs/components/ImageToText.mjs"
@@ -12,6 +12,7 @@ import SpeechToText from "/mjs/components/SpeechToText.mjs"
 import TextToSpeech from "/mjs/components/TextToSpeech.mjs"
 import Transform from "/mjs/components/Transform.mjs"
 import UiHome from "/mjs/components/UiHome.mjs"
+import SignInForm from "/mjs/components/SignInForm.mjs"
 import { prefixes, icons, uiLabel } from "/mjs/utils.mjs"
 
 const HomeSection = {
@@ -33,6 +34,8 @@ const components = {
 
 export default {
     components: {
+        SignIn,
+        SignInForm,
         ...components,
     },
     template: `
@@ -59,7 +62,7 @@ export default {
         <div class="hidden sm:ml-6 sm:flex sm:items-center">
 
           <!-- Profile dropdown -->
-          <div class="relative ml-3">
+          <div v-if="user" class="relative ml-3">
             <div>
               <button @click="showUserMenu=!showUserMenu" type="button" class="relative flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                 <span class="absolute -inset-1.5"></span>
@@ -67,20 +70,12 @@ export default {
                 <img class="h-8 w-8 rounded-full" :src="profileUrl" alt="">
               </button>
             </div>
-
-            <!--
-              Dropdown menu, show/hide based on menu state.
-
-              Entering: "transition ease-out duration-200"
-                From: "transform opacity-0 scale-95"
-                To: "transform opacity-100 scale-100"
-              Leaving: "transition ease-in duration-75"
-                From: "transform opacity-100 scale-100"
-                To: "transform opacity-0 scale-95"
-            -->
             <div v-if="showUserMenu" class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
               <a href="/auth/logout?redirect=/" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</a>
             </div>
+          </div>
+          <div v-else>
+            <SecondaryButton @click="routes.to({ admin:'SignIn' })">Sign In</SecondaryButton>
           </div>
         </div>
         <div class="-mr-2 flex items-center sm:hidden">
@@ -102,7 +97,7 @@ export default {
     </div>
 
     <!-- Mobile menu, show/hide based on menu state. -->
-    <div class="sm:hidden" id="mobile-menu">
+    <div v-if="user" class="sm:hidden" id="mobile-menu">
       <div class="space-y-1 pb-3 pt-2">
         <!-- Current: "border-indigo-500 bg-indigo-50 text-indigo-700", Default: "border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800" -->
         <a v-href="{admin:section.id,id:undefined}" v-for="section in sections" 
@@ -113,7 +108,7 @@ export default {
         </a>
         <a href="/auth/logout?redirect=/" class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800" tabindex="-1">Sign out</a>
       </div>
-      <div class="border-t border-gray-200 pb-3 pt-4">
+      <div v-if="user" class="border-t border-gray-200 pb-3 pt-4">
         <div class="flex items-center px-4">
           <div class="flex-shrink-0">
             <img class="h-10 w-10 rounded-full" :src="profileUrl" alt="">
@@ -133,7 +128,9 @@ export default {
   <div class="pb-10">
     <main>
       <div class="mx-auto max-w-7xl pb-8 lg:px-6 lg:px-8">
-        <component :key="refreshKey" :is="activeSection.component"></component>
+        <SignIn v-if="routes.admin=='SignIn'" />
+        <SignInForm v-else-if="routes.admin && !user" />
+        <component v-else :key="refreshKey" :is="activeSection.component"></component>
       </div>
     </main>
   </div>
@@ -192,7 +189,7 @@ export default {
                 signIn(api.response)
             } else if (api.error) {
                 signOut()
-                location.reload()
+                // location.reload()
             }
             
             console.log('routes.admin', routes.admin)

@@ -100,7 +100,7 @@ export default {
           <p class="mt-6 text-lg leading-8 text-gray-600">
             Example of calling an Open AI compatible Chat API. AI Server APIs are executed using 
             the same generic JSON Service Client and the native Typed DTOs generated in each language.
-            Each feature supports different call styles for different use-cases.
+            Each feature supports multiple call styles for different use-cases.
           </p>
           <dl class="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
             <div class="relative pl-9">
@@ -363,5 +363,3 @@ export default {
         return { routes, langs, openAi, icons, uis }
     }
 }
-
-//https://localhost:5005/ui/OpenAiChatCompletion?tab=details&lang=csharp&detailSrc=OpenAiChat

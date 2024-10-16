@@ -1,5 +1,5 @@
 /* Options:
-Date: 2024-10-15 00:22:13
+Date: 2024-10-16 19:05:12
 Version: 8.41
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5005
@@ -2560,11 +2560,17 @@ export class GetModelImage {
 export class OpenAiChatCompletion extends OpenAiChat {
     /** @param {{refId?:string,provider?:string,tag?:string,messages?:OpenAiMessage[],model?:string,frequency_penalty?:number,logit_bias?:{ [index: number]: number; },logprobs?:boolean,top_logprobs?:number,max_tokens?:number,n?:number,presence_penalty?:number,response_format?:OpenAiResponseFormat,seed?:number,stop?:string[],stream?:boolean,temperature?:number,top_p?:number,tools?:OpenAiTools[],user?:string}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
-    /** @type {?string} */
+    /**
+     * @type {?string}
+     * @description Provide a unique identifier to track requests */
     refId;
-    /** @type {?string} */
+    /**
+     * @type {?string}
+     * @description Specify which AI Provider to use */
     provider;
-    /** @type {?string} */
+    /**
+     * @type {?string}
+     * @description Categorize like requests under a common group */
     tag;
     getTypeName() { return 'OpenAiChatCompletion' }
     getMethod() { return 'POST' }
