@@ -198,7 +198,7 @@ Dim api = Await client.ApiAsync(New OpenAiChatCompletion()
         .Model = "mixtral:8x22b",
         .Messages = New List(Of OpenAiMessage) From {
             New OpenAiMessage With {
-                ,Role = "user",
+                .Role = "user",
                 .Content = "What's the capital of France?"
             }
         },
