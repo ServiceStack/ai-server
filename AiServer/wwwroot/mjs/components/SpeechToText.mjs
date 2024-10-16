@@ -23,7 +23,7 @@ export default {
                                 <ErrorSummary :except="visibleFields" class="mb-4" />
                                 <div class="grid grid-cols-6 gap-4">
                                     <div class="col-span-6">
-                                        <FileUpload ref="refImage" id="speech" v-model="request.speech" required
+                                        <FileUpload ref="refImage" id="audio" v-model="request.audio" required
                                             accept=".mp3,.m4a,.aac,.flac,.wav,.wma" :acceptLabel="acceptedAudios" @change="renderKey++">
                                             <template #title>
                                                 <span class="font-semibold text-green-600">Click to upload</span> or drag and drop
@@ -57,7 +57,7 @@ export default {
                 <div v-for="result in getThreadResults()" class="w-full ">
                     <div class="flex items-center justify-between">
                         <span class="my-4 flex justify-center items-center text-xl underline-offset-4">
-                            <span>{{ result.request.speech }}</span>
+                            <span>{{ result.request.audio }}</span>
                         </span>
                         <div class="group flex cursor-pointer" @click="discardResult(result)">
                             <div class="ml-1 invisible group-hover:visible">discard</div>
@@ -70,7 +70,7 @@ export default {
                         </div>
                     </div>                  
                 </div>
-            </div>        
+            </div>
         </template>
         
         <template #sidebar>
@@ -102,9 +102,9 @@ export default {
         const thread = ref()
         const threadRef = ref()
 
-        const validPrompt = () => refForm.value?.speech?.files?.length
+        const validPrompt = () => refForm.value?.audio?.files?.length
         const refMessage = ref()
-        const visibleFields = 'speech'.split(',')
+        const visibleFields = 'audio'.split(',')
         const request = ref(new SpeechToText())
 
         function savePrefs() {
@@ -131,7 +131,7 @@ export default {
 
             error.value = null
             let formData = new FormData(refForm.value)
-            const speech = formData.get('speech').name
+            const audio = formData.get('audio').name
 
             const api = await client.apiForm(request.value, formData, { jsconfig: 'eccn' })
             /** @type {GenerationResponse} */
@@ -145,12 +145,12 @@ export default {
                     const id = parseInt(routes.id) || storage.createId()
                     thread.value = thread.value ?? storage.createThread(Object.assign({
                         id: storage.getThreadId(id),
-                        title: speech,
+                        title: audio,
                     }, request.value))
 
                     const result = {
                         id: storage.createId(),
-                        request: Object.assign({}, request.value, { speech }),
+                        request: Object.assign({}, request.value, { audio }),
                         response: r,
                     }
                     thread.value.results.push(result)
@@ -160,7 +160,7 @@ export default {
                         history.value.push({
                             id,
                             title: thread.value.title,
-                            ext: getExt(speech),
+                            ext: getExt(audio),
                         })
                     }
                     saveHistory()
