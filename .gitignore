@@ -10,6 +10,7 @@ App_Data/
 AiServer/Configure.Secrets.cs
 /AiServer.Tests/Configure.Secrets.cs
 .env
+.DS_Store
 
 # User-specific files
 *.suo
