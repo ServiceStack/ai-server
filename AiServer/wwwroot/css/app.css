@@ -1067,6 +1067,10 @@ select{
   margin: auto;
 }
 
+.-m-2 {
+  margin: -0.5rem;
+}
+
 .-mx-1\.5 {
   margin-left: -0.375rem;
   margin-right: -0.375rem;
@@ -1318,6 +1322,10 @@ select{
   margin-top: auto;
 }
 
+.mt-32 {
+  margin-top: 8rem;
+}
+
 .block {
   display: block;
 }
@@ -1344,6 +1352,10 @@ select{
 
 .table-cell {
   display: table-cell;
+}
+
+.flow-root {
+  display: flow-root;
 }
 
 .grid {
@@ -1851,6 +1863,10 @@ select{
   gap: 1.5rem;
 }
 
+.gap-8 {
+  gap: 2rem;
+}
+
 .gap-x-1 {
   -moz-column-gap: 0.25rem;
        column-gap: 0.25rem;
@@ -2020,6 +2036,10 @@ select{
   white-space: pre;
 }
 
+.text-balance {
+  text-wrap: balance;
+}
+
 .rounded {
   border-radius: 0.25rem;
 }
@@ -2042,6 +2062,10 @@ select{
 
 .rounded-sm {
   border-radius: 0.125rem;
+}
+
+.rounded-xl {
+  border-radius: 0.75rem;
 }
 
 .rounded-l-md {
@@ -2405,6 +2429,10 @@ select{
   background-color: rgb(254 252 232 / var(--tw-bg-opacity));
 }
 
+.bg-gray-900\/5 {
+  background-color: rgb(17 24 39 / 0.05);
+}
+
 .bg-opacity-75 {
   --tw-bg-opacity: 0.75;
 }
@@ -2605,6 +2633,21 @@ select{
 .py-8 {
   padding-top: 2rem;
   padding-bottom: 2rem;
+}
+
+.px-12 {
+  padding-left: 3rem;
+  padding-right: 3rem;
+}
+
+.px-16 {
+  padding-left: 4rem;
+  padding-right: 4rem;
+}
+
+.px-3\.5 {
+  padding-left: 0.875rem;
+  padding-right: 0.875rem;
 }
 
 .pb-0 {
@@ -2828,6 +2871,11 @@ select{
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
 }
 
 .font-bold {
@@ -3216,6 +3264,12 @@ select{
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.shadow-2xl {
+  --tw-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .shadow-slate-200\/80 {
   --tw-shadow-color: rgb(226 232 240 / 0.8);
   --tw-shadow: var(--tw-shadow-colored);
@@ -3299,6 +3353,10 @@ select{
 .ring-white {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(255 255 255 / var(--tw-ring-opacity));
+}
+
+.ring-gray-900\/10 {
+  --tw-ring-color: rgb(17 24 39 / 0.1);
 }
 
 .ring-opacity-5 {
@@ -3628,6 +3686,11 @@ select{
   background-color: rgb(254 252 232 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-indigo-500:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(99 102 241 / var(--tw-bg-opacity));
+}
+
 .hover\:text-blue-800:hover {
   --tw-text-opacity: 1;
   color: rgb(30 64 175 / var(--tw-text-opacity));
@@ -3869,8 +3932,24 @@ select{
   outline-offset: 2px;
 }
 
+.focus-visible\:outline:focus-visible {
+  outline-style: solid;
+}
+
+.focus-visible\:outline-2:focus-visible {
+  outline-width: 2px;
+}
+
+.focus-visible\:outline-offset-2:focus-visible {
+  outline-offset: 2px;
+}
+
 .focus-visible\:outline-black:focus-visible {
   outline-color: #000;
+}
+
+.focus-visible\:outline-indigo-600:focus-visible {
+  outline-color: #4f46e5;
 }
 
 .focus-visible\:ring-0:focus-visible {
@@ -4621,6 +4700,10 @@ select{
     margin-top: 5rem;
   }
 
+  .sm\:mt-24 {
+    margin-top: 6rem;
+  }
+
   .sm\:block {
     display: block;
   }
@@ -4813,6 +4896,11 @@ select{
     line-height: 1.25rem;
   }
 
+  .sm\:text-6xl {
+    font-size: 3.75rem;
+    line-height: 1;
+  }
+
   .sm\:duration-700 {
     transition-duration: 700ms;
   }
@@ -4980,6 +5068,10 @@ select{
     z-index: 10;
   }
 
+  .lg\:-m-4 {
+    margin: -1rem;
+  }
+
   .lg\:-mx-8 {
     margin-left: -2rem;
     margin-right: -2rem;
@@ -5062,6 +5154,14 @@ select{
     gap: 1.5rem;
   }
 
+  .lg\:rounded-2xl {
+    border-radius: 1rem;
+  }
+
+  .lg\:p-4 {
+    padding: 1rem;
+  }
+
   .lg\:px-1 {
     padding-left: 0.25rem;
     padding-right: 0.25rem;
@@ -5091,6 +5191,10 @@ select{
 
   .lg\:pt-4 {
     padding-top: 1rem;
+  }
+
+  .lg\:pb-40 {
+    padding-bottom: 10rem;
   }
 
   .lg\:text-center {

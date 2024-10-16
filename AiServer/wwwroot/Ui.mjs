@@ -12,7 +12,7 @@ import SpeechToText from "/mjs/components/SpeechToText.mjs"
 import TextToSpeech from "/mjs/components/TextToSpeech.mjs"
 import Transform from "/mjs/components/Transform.mjs"
 import UiHome from "/mjs/components/UiHome.mjs"
-import { prefixes, icons } from "/mjs/utils.mjs"
+import { prefixes, icons, uiLabel } from "/mjs/utils.mjs"
 
 const HomeSection = {
     id: '',
@@ -148,12 +148,9 @@ export default {
         const refreshKey = ref(1)
         const showUserMenu = ref(false)
         
-        function toLabel(id) {
-            return humanify(id).replace('To','to')
-        }
         const sections = Object.keys(components).map(id => ({
             id,
-            label: toLabel(id),
+            label: uiLabel(id),
             component: components[id],
             icon: icons[prefixes[id]], 
             prefix: prefixes[id],

@@ -1,6 +1,6 @@
 import { ref, inject, watch, onMounted } from "vue"
 import { langs, openAi } from "../langs.mjs"
-import { icons } from "../utils.mjs"
+import { prefixes, icons, uiLabel } from "../utils.mjs"
 
 export default {
     template: `
@@ -17,15 +17,15 @@ export default {
       </p>
     </div>
     <div class="mt-8 flex justify-center">
-        <img class="h-[500px]" src="/img/overview.svg" alt="">
+        <a href="https://docs.servicestack.net/ai-server/">
+            <img class="h-[500px]" src="/img/overview.svg" alt="">
+        </a>
     </div>
     <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
       <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
         <div class="flex flex-col">
           <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
-            <svg class="h-5 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-              <path fill-rule="evenodd" d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765 4.5 4.5 0 0 1 8.302-3.046 3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z" clip-rule="evenodd" />
-            </svg>
+            <img :src="icons.one" class="h-5 w-5 flex-none text-indigo-600">
             Simple Unified API
           </dt>
           <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
@@ -37,9 +37,7 @@ export default {
         </div>
         <div class="flex flex-col">
           <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
-            <svg class="h-5 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-              <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clip-rule="evenodd" />
-            </svg>
+            <img :src="icons.typed" class="h-5 w-5 flex-none text-indigo-600">
             Native Typed Integrations
           </dt>
           <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
@@ -51,9 +49,7 @@ export default {
         </div>
         <div class="flex flex-col">
           <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
-            <svg class="h-5 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-              <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z" clip-rule="evenodd" />
-            </svg>
+            <img :src="icons.monitoring" class="h-5 w-5 flex-none text-indigo-600">
             Live Monitoring and Analytics
           </dt>
           <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
@@ -180,10 +176,46 @@ export default {
     
   </div>
 </div>
-    
+
+    <div class="py-12 lg:pb-40">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      
+      
+        <div class="mx-auto max-w-2xl text-center">
+          <h1 class="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Built-in UIs</h1>
+          <p class="mt-6 text-lg leading-8 text-gray-600">
+            Users also have access to custom UIs to access AI features protected by API Keys
+          </p>
+        </div>
+        
+        <div class="mt-12 border-b border-gray-200">
+          <nav class="-mb-px flex" aria-label="Tabs">
+            <div v-for="ui in uis" @click="routes.to({ op:ui.id })" 
+                :class="['cursor-pointer w-1/4 border-b-2 px-1 py-2 text-center text-sm font-medium text-gray-500', ui.id == (routes.op || 'Chat') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700']">
+                <div class="flex flex-col justify-center items-center">
+                    <img :src="ui.icon" class="w-8 h-8">
+                    <span class="hidden md:inline mt-3">{{ui.label}}</span>
+                </div>
+            </div>
+          </nav>
+        </div>
+                
+        <div class="mt-8 flow-root">
+          <div class="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
+            <img src="https://tailwindui.com/plus/img/component-images/project-app-screenshot.png" alt="App screenshot" width="2432" height="1442" class="rounded-md shadow-2xl ring-1 ring-gray-900/10">
+          </div>
+        </div>
+      </div>
+    </div>    
     
     <div class="mx-auto max-w-md px-4 text-center sm:max-w-3xl sm:px-6 lg:max-w-7xl lg:px-8">
-        <h3 class="mt-24 mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-50 sm:text-4xl">
+
+        <div class="py-8 flex justify-center gap-8">
+            <a href="https://docs.servicestack.net/ai-server/" class="rounded-full bg-indigo-600 px-16 py-6 text-2xl text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Read the docs</a>
+            <a href="https://github.com/ServiceStack/ai-server" class="rounded-full bg-white px-16 py-6 text-2xl text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">View the source</a>
+        </div>
+    
+        <h3 class="mt-32 mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-50 sm:text-4xl">
             Explore
         </h3>
         <p class="mx-auto mb-5 max-w-prose text-xl text-gray-500">
@@ -245,7 +277,7 @@ export default {
             </div>
         </div>
 
-        <h3 class="mt-24 mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-50 sm:text-4xl">
+        <h3 class="mt-32 mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-50 sm:text-4xl">
             Admin
         </h3>
         <p class="mx-auto mb-5 max-w-prose text-xl text-gray-500">
@@ -321,7 +353,14 @@ export default {
         onMounted(() => {
         })
         
-        return { routes, langs, openAi, icons }
+        const uis = Object.keys(prefixes).map(id => ({
+            id,
+            label: uiLabel(id),
+            icon: icons[prefixes[id]],
+            prefix: prefixes[id],
+        }))
+        
+        return { routes, langs, openAi, icons, uis }
     }
 }
 
