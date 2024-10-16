@@ -13,7 +13,7 @@ export default {
       </p>
       <p class="mt-6 text-lg leading-8 text-gray-600">
         Self-hosted private gateway to manage access to multiple LLM APIs, Ollama endpoints, 
-        Comfy UI and FFmpeg Agents 
+        Media APIs, Comfy UI and FFmpeg Agents 
       </p>
     </div>
     <div class="mt-8 flex justify-center">
@@ -191,7 +191,7 @@ export default {
         <div class="mt-12 border-b border-gray-200">
           <nav class="-mb-px flex" aria-label="Tabs">
             <div v-for="ui in uis" @click="routes.to({ op:ui.id })" 
-                :class="['cursor-pointer w-1/4 border-b-2 px-1 py-2 text-center text-sm font-medium text-gray-500', ui.id == (routes.op || 'Chat') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700']">
+                :class="['cursor-pointer w-1/4 border-b-2 px-1 py-2 text-center text-sm font-medium text-gray-500', ui.id == (routes.op || 'TextToImage') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700']">
                 <div class="flex flex-col justify-center items-center">
                     <img :src="ui.icon" class="w-8 h-8">
                     <span class="hidden md:inline mt-3">{{ui.label}}</span>
@@ -202,7 +202,7 @@ export default {
                 
         <div class="mt-8 flow-root">
           <div class="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
-            <img :src="'/img/uis/'+(routes.op || 'Chat')+'.webp'" alt="App screenshot" width="2432" height="1442" class="rounded-md shadow-2xl ring-1 ring-gray-900/10">
+            <img :src="'/img/uis/'+(routes.op || 'TextToImage')+'.webp'" alt="App screenshot" width="2432" height="1442" class="rounded-md shadow-2xl ring-1 ring-gray-900/10">
           </div>
         </div>
       </div>
