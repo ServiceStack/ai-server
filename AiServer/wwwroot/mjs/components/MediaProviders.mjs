@@ -113,6 +113,10 @@ const SelectModels = {
                 if (apiComfy.succeeded) {
                     comfyModelsUrl.value = props.apiBaseUrl
                     comfyModels.value = apiComfy.response.results
+                    connectionStatus.value = null
+                }
+                else {
+                    connectionStatus.value = 'failure'
                 }
                 const apiModelMaps = await client.api(new GetComfyModelMappings());
                 // console.log("apiModelMaps", apiModelMaps)
