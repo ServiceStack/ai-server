@@ -180,11 +180,10 @@ export default {
     <div class="py-12 lg:pb-40">
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
       
-      
         <div class="mx-auto max-w-2xl text-center">
           <h1 class="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Built-in UIs</h1>
           <p class="mt-6 text-lg leading-8 text-gray-600">
-            Users also have access to custom UIs to access AI features protected by API Keys
+            Built-in UIs allow users with API Keys access to custom UIs for different AI features
           </p>
         </div>
         
@@ -209,12 +208,67 @@ export default {
     </div>    
     
     <div class="mx-auto max-w-md px-4 text-center sm:max-w-3xl sm:px-6 lg:max-w-7xl lg:px-8">
-
         <div class="py-8 flex justify-center gap-8">
             <a href="https://docs.servicestack.net/ai-server/" class="rounded-full bg-indigo-600 px-16 py-6 text-2xl text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Read the docs</a>
             <a href="https://github.com/ServiceStack/ai-server" class="rounded-full bg-white px-16 py-6 text-2xl text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">View the source</a>
         </div>
+    </div>
     
+    <div class="py-32 lg:pb-40">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      
+        <div class="mx-auto max-w-2xl text-center">
+          <h1 class="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Admin UIs</h1>
+          <p class="mt-4 text-lg leading-8 text-gray-600">
+            {{ adminUis[routes.page] || 
+            "Use Admin UIs to manage AI and Media Providers and API Key Access" }}
+          </p>
+        </div>
+        
+        <nav class="py-4 flex items-center justify-between px-4 sm:px-0">
+          <div class="-mt-px flex w-0 flex-1">
+            <a v-href="{ page:adminUiKeys[adminUiKeys.findIndex(x => x == routes.page) - 1] ?? adminUiKeys[adminUiKeys.length-1] }" class="inline-flex items-center pr-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+              <svg class="mr-3 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                <path fill-rule="evenodd" d="M18 10a.75.75 0 0 1-.75.75H4.66l2.1 1.95a.75.75 0 1 1-1.02 1.1l-3.5-3.25a.75.75 0 0 1 0-1.1l3.5-3.25a.75.75 0 1 1 1.02 1.1l-2.1 1.95h12.59A.75.75 0 0 1 18 10Z" clip-rule="evenodd" />
+              </svg>
+              Previous
+            </a>
+          </div>
+          <div class="hidden md:-mt-px md:flex">
+            <!-- Current: "border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" -->
+            <div>
+                <nav class="flex items-center justify-center" aria-label="Progress">
+                  <ol role="list" class="ml-8 flex items-center space-x-5">
+                    <li v-for="(label,id,index) in adminUis">
+                      <a v-href="{ page:id }" class="block h-2.5 w-2.5 rounded-full bg-gray-200 hover:bg-gray-400">
+                        <span class="sr-only">Step 1</span>
+                        <span v-if="(routes.page) == id" class="relative block h-2.5 w-2.5 rounded-full bg-indigo-600" aria-hidden="true"></span>
+                      </a>
+                    </li>
+                  </ol>
+                </nav>
+            </div>
+          </div>
+          <div class="-mt-px flex w-0 flex-1 justify-end">
+            <a v-href="{ page:adminUiKeys[adminUiKeys.findIndex(x => x == routes.page) + 1] }" class="inline-flex items-center pl-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+              Next
+              <svg class="ml-3 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                <path fill-rule="evenodd" d="M2 10a.75.75 0 0 1 .75-.75h12.59l-2.1-1.95a.75.75 0 1 1 1.02-1.1l3.5 3.25a.75.75 0 0 1 0 1.1l-3.5 3.25a.75.75 0 1 1-1.02-1.1l2.1-1.95H2.75A.75.75 0 0 1 2 10Z" clip-rule="evenodd" />
+              </svg>
+            </a>
+          </div>
+        </nav>
+                
+        <div class="mt-8 flow-root">
+          <div class="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
+            <img :src="'/img/uis/admin/'+(routes.page || 'dashboard')+'.webp'" alt="App screenshot" width="2432" height="1442" class="rounded-md shadow-2xl ring-1 ring-gray-900/10">
+          </div>
+        </div>
+      </div>
+        
+    </div>
+    
+    <div class="mx-auto max-w-md px-4 text-center sm:max-w-3xl sm:px-6 lg:max-w-7xl lg:px-8">
         <h3 class="mt-32 mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-50 sm:text-4xl">
             Explore
         </h3>
@@ -360,6 +414,23 @@ export default {
             prefix: prefixes[id],
         }))
         
-        return { routes, langs, openAi, icons, uis }
+        const adminUis = {
+            'ai-providers': 'Increase capacity by adding AI Providers that can process LLM Requests',
+            'ai-providers-new-ollama': 'Add local Ollama endpoints and control which of their Models can be used',
+            'ai-models': 'Glossary of LLM models available via Ollama or LLM APIs',
+            'ai-types': 'List of different AI Provider Types that AI Server supports',
+            'media-providers': 'Increase capacity by adding AI Providers that can process Media & FFmpeg Requests',
+            'media-providers-replicate': 'Add a new Replicate API Media Provider and which diffusion models to enable',
+            'media-providers-comfyui': 'Add a new Comfy UI Agent and control which of its models can be used',
+            'media-types': 'Glossary of different Media Provider Types that AI Server supports',
+            'background-jobs': 'View completed and failed Background Jobs from Jobs Dashboard',
+            'background-jobs-live': 'Monitor Live progress of executing AI Requests',
+            'background-jobs-queue': 'View all currently pending and executing AI Requests',
+            'api-keys': 'Use Admin UI to manage API Keys that can access AI Server APIs and Features',
+            'api-keys-edit': 'Edit API Keys for fine grain control over API Keys access and scope',
+        }
+        const adminUiKeys = Object.keys(adminUis)
+        
+        return { routes, langs, openAi, icons, uis, adminUis, adminUiKeys }
     }
 }
