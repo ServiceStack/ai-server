@@ -1326,6 +1326,14 @@ select{
   margin-top: 8rem;
 }
 
+.-mt-px {
+  margin-top: -1px;
+}
+
+.ml-8 {
+  margin-left: 2rem;
+}
+
 .block {
   display: block;
 }
@@ -1442,6 +1450,10 @@ select{
   height: 500px;
 }
 
+.h-2\.5 {
+  height: 0.625rem;
+}
+
 .max-h-52 {
   max-height: 13rem;
 }
@@ -1556,6 +1568,14 @@ select{
 
 .w-screen {
   width: 100vw;
+}
+
+.w-0 {
+  width: 0px;
+}
+
+.w-2\.5 {
+  width: 0.625rem;
 }
 
 .min-w-0 {
@@ -1959,6 +1979,12 @@ select{
   margin-bottom: calc(2rem * var(--tw-space-y-reverse));
 }
 
+.space-x-5 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(1.25rem * var(--tw-space-x-reverse));
+  margin-left: calc(1.25rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
 .divide-x > :not([hidden]) ~ :not([hidden]) {
   --tw-divide-x-reverse: 0;
   border-right-width: calc(1px * var(--tw-divide-x-reverse));
@@ -2121,6 +2147,10 @@ select{
 
 .border-t {
   border-top-width: 1px;
+}
+
+.border-t-2 {
+  border-top-width: 2px;
 }
 
 .border-dashed {
@@ -2433,6 +2463,11 @@ select{
   background-color: rgb(17 24 39 / 0.05);
 }
 
+.bg-indigo-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(199 210 254 / var(--tw-bg-opacity));
+}
+
 .bg-opacity-75 {
   --tw-bg-opacity: 0.75;
 }
@@ -2533,6 +2568,10 @@ select{
 
 .p-6 {
   padding: 1.5rem;
+}
+
+.p-px {
+  padding: 1px;
 }
 
 .px-0 {
@@ -2648,6 +2687,21 @@ select{
 .px-3\.5 {
   padding-left: 0.875rem;
   padding-right: 0.875rem;
+}
+
+.py-20 {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+.py-28 {
+  padding-top: 7rem;
+  padding-bottom: 7rem;
+}
+
+.py-32 {
+  padding-top: 8rem;
+  padding-bottom: 8rem;
 }
 
 .pb-0 {
@@ -3689,6 +3743,16 @@ select{
 .hover\:bg-indigo-500:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(99 102 241 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-gray-400:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(156 163 175 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-indigo-900:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(49 46 129 / var(--tw-bg-opacity));
 }
 
 .hover\:text-blue-800:hover {
@@ -4862,6 +4926,11 @@ select{
     padding-bottom: 8rem;
   }
 
+  .sm\:px-0 {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
   .sm\:pb-0 {
     padding-bottom: 0px;
   }
@@ -4913,6 +4982,10 @@ select{
 
   .md\:ml-1 {
     margin-left: 0.25rem;
+  }
+
+  .md\:-mt-px {
+    margin-top: -1px;
   }
 
   .md\:block {

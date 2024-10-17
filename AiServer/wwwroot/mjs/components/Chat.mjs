@@ -30,7 +30,7 @@ export default {
                         </template>
                     </Autocomplete>                
                     
-                   <Autocomplete id="prompt" :options="prompts" v-model="selectedPrompt" label="Prompt"
+                   <Autocomplete id="prompt" :options="prompts" v-model="selectedPrompt" label="System Prompt"
                         :match="(x, value) => x.name.toLowerCase().includes(value.toLowerCase())"
                         placeholder="Select a System Prompt..."
                         :disabled="!!routes.id">
