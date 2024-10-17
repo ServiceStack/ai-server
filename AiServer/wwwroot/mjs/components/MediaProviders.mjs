@@ -71,7 +71,7 @@ const SelectModels = {
         const showTestConnection = computed(() => {
             return props.providerType?.id === 'ComfyUI' && props.apiBaseUrl
         })
-
+        
         async function testConnection() {
             isTestingConnection.value = true
             connectionStatus.value = null
@@ -138,6 +138,7 @@ const SelectModels = {
         }
 
         function selectAll() {
+            console.log("props.providerType?.apiModels", props.providerType?.apiModels)
             if (comfyModels.value.length > 0) {
                 // Populate selectedModels with all models present in comfyModels that exist in comfyModelMapping values
                 // And populate selectedModels with the key in comfyModelMappings that matches the value in comfyModels
@@ -149,8 +150,11 @@ const SelectModels = {
                 let modelsAvailable = comfyModels.value
                 selectedModels.value = modelsAvailable.filter(model => allModels.includes(model))
                 console.log("selectedModels.value", selectedModels.value)
-            } else {
+            } 
+            if (props.providerModels.length > 0) {
                 selectedModels.value = props.providerModels
+                let allProviderModels = Object.values(props.providerType?.apiModels || {})
+                selectedModels.value = allProviderModels;
             }
         }
 

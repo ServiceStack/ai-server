@@ -257,7 +257,7 @@
     "name": "Image to Text",
     "modelType": "ImageToText",
     "apiModels": {
-      "ComfyUI": "microsoft/Florence-2-base"
+      "ComfyUI": "Florence-2-base"
     },
     "url": "https://huggingface.co/microsoft/Florence-2-base"
   }
