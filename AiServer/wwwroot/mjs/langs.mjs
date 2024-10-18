@@ -132,7 +132,6 @@ request.setModel("mixtral:8x22b")
         .setContent("What's the capital of France?")
 ));
 OpenAiChatResponse response = client.send(request);
-Inspect.printDump(response);
 `
 const kotlin = `
 package myapp
