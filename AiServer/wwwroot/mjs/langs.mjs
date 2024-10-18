@@ -124,7 +124,7 @@ const java = `
 import net.servicestack.client.*;
 import java.util.Collections;
 
-OpenAiChatCompletion request = new OpenAiChatCompletion();
+var request = new OpenAiChatCompletion();
 request.setModel("mixtral:8x22b")
     .setMaxTokens(50)
     .setMessages(Utils.createList(new OpenAiMessage()
