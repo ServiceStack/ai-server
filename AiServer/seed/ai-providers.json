@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "openrouter",
-    "apiTypeId": 2,
+    "aiTypeId": "OpenRouter",
     "apiKeyVar": "OPENROUTER_API_KEY",
     "HeartbeatUrl": "https://openrouter.ai/api/v1/auth/key",
     "concurrency": 1,
@@ -101,7 +101,7 @@
   {
     "id": 2,
     "name": "openrouter-free",
-    "apiTypeId": 3,
+    "aiTypeId": "OpenRouter Free",
     "apiKeyVar": "OPENROUTER_API_KEY",
     "concurrency": 1,
     "priority": 1,
@@ -139,7 +139,7 @@
   {
     "id": 3,
     "name": "openai",
-    "apiTypeId": 4,
+    "aiTypeId": "Open AI",
     "apiKeyVar": "OPENAI_API_KEY",
     "concurrency": 1,
     "priority": 0,
@@ -168,7 +168,7 @@
   {
     "id": 4,
     "name": "mistral",
-    "apiTypeId": 5,
+    "aiTypeId": "Mistral AI",
     "apiKeyVar": "MISTRAL_API_KEY",
     "concurrency": 1,
     "priority": 0,
@@ -200,7 +200,7 @@
   {
     "id": 5,
     "name": "google",
-    "apiTypeId": 6,
+    "aiTypeId": "Google Cloud",
     "apiKeyVar": "GOOGLE_API_KEY",
     "concurrency": 1,
     "priority": 0,
@@ -223,7 +223,7 @@
   {
     "id": 6,
     "name": "groq",
-    "apiTypeId": 7,
+    "aiTypeId": "GroqCloud",
     "apiKeyVar": "GROQ_API_KEY",
     "concurrency": 1,
     "priority": 2,
