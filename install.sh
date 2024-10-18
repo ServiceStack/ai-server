@@ -1,5 +1,26 @@
 #!/bin/bash
 
+check_prerequisites() {
+    echo "Checking prerequisites..."
+
+    # Check if Docker is installed
+    if ! command -v docker &> /dev/null; then
+        echo "Docker is not installed. Please install Docker before running this script."
+        echo "Visit https://docs.docker.com/get-docker/ for installation instructions."
+        exit 1
+    fi
+
+    # Check if Docker Compose is installed
+    if ! command -v docker compose &> /dev/null; then
+        echo "Docker Compose is not installed or not in PATH."
+        echo "Recent Docker Desktop versions include Compose. If you're using Docker Desktop, please make sure it's up to date."
+        echo "Otherwise, visit https://docs.docker.com/compose/install/ for installation instructions."
+        exit 1
+    fi
+
+    echo "Prerequisites check passed. Docker and Docker Compose are installed."
+}
+
 install_gum() {
     echo "Installing gum..."
     
@@ -146,6 +167,9 @@ setup_ai_provider() {
         echo "AI Server not started. You can run it later with 'docker compose up -d'"
     fi
 }
+
+# Run the prerequisites check function
+check_prerequisites
 
 # Run the installation function
 install_gum
