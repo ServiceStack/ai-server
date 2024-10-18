@@ -124,17 +124,15 @@ const java = `
 import net.servicestack.client.*;
 import java.util.Collections;
 
-var client = new JsonServiceClient(baseUrl);
-client.setBearerToken(apiKey);
-
-var response = client.send(new OpenAiChatCompletion()
-    .setModel("mixtral:8x22b")
-    .setMessages(Utils.createList(new OpenAiMessage()
-        ..setRole("user")
-        ..setContent("What's the capital of France?")
-    ))
-    .setMaxTokens(50);
-);
+OpenAiChatCompletion request = new OpenAiChatCompletion();
+request.setModel("mixtral:8x22b")
+.setMaxTokens(50)
+.setMessages(Utils.createList(new OpenAiMessage()
+        .setRole("user")
+        .setContent("What's the capital of France?")
+));
+OpenAiChatResponse response = client.send(request);
+Inspect.printDump(response);
 `
 const kotlin = `
 package myapp
