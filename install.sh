@@ -136,9 +136,9 @@ setup_ai_provider() {
 
         # Open browser (this command varies depending on the OS)
         if [[ "$OSTYPE" == "darwin"* ]]; then
-            open "https://localhost:5005"
+            open "http://localhost:5005"
         elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            xdg-open "https://localhost:5005"
+            xdg-open "http://localhost:5005"
         else
             echo "Please open http://localhost:5005 in your browser."
         fi
