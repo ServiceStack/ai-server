@@ -126,11 +126,11 @@ import java.util.Collections;
 
 OpenAiChatCompletion request = new OpenAiChatCompletion();
 request.setModel("mixtral:8x22b")
-.setMaxTokens(50)
-.setMessages(Utils.createList(new OpenAiMessage()
+    .setMaxTokens(50)
+    .setMessages(Utils.createList(new OpenAiMessage()
         .setRole("user")
         .setContent("What's the capital of France?")
-));
+    ));
 OpenAiChatResponse response = client.send(request);
 `
 const kotlin = `
