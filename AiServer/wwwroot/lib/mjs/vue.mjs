@@ -1,5 +1,5 @@
 /**
-* vue v3.5.11
+* vue v3.5.12
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -763,16 +763,16 @@ function removeSub(link, soft = false) {
     nextSub.prevSub = prevSub;
     link.nextSub = void 0;
   }
-  if (dep.subs === link) {
-    dep.subs = prevSub;
-  }
   if (dep.subsHead === link) {
     dep.subsHead = nextSub;
   }
-  if (!dep.subs && dep.computed) {
-    dep.computed.flags &= ~4;
-    for (let l = dep.computed.deps; l; l = l.nextDep) {
-      removeSub(l, true);
+  if (dep.subs === link) {
+    dep.subs = prevSub;
+    if (!prevSub && dep.computed) {
+      dep.computed.flags &= ~4;
+      for (let l = dep.computed.deps; l; l = l.nextDep) {
+        removeSub(l, true);
+      }
     }
   }
   if (!soft && !--dep.sc && dep.map) {
@@ -1032,7 +1032,7 @@ function trigger(target, type, key, newValue, oldValue, oldTarget) {
         }
       });
     } else {
-      if (key !== void 0) {
+      if (key !== void 0 || depsMap.has(void 0)) {
         run(depsMap.get(key));
       }
       if (isArrayIndex) {
@@ -1407,117 +1407,6 @@ const shallowReadonlyHandlers = /* @__PURE__ */ new ReadonlyReactiveHandler(true
 
 const toShallow = (value) => value;
 const getProto = (v) => Reflect.getPrototypeOf(v);
-function get(target, key, isReadonly2 = false, isShallow2 = false) {
-  target = target["__v_raw"];
-  const rawTarget = toRaw(target);
-  const rawKey = toRaw(key);
-  if (!isReadonly2) {
-    if (hasChanged(key, rawKey)) {
-      track(rawTarget, "get", key);
-    }
-    track(rawTarget, "get", rawKey);
-  }
-  const { has: has2 } = getProto(rawTarget);
-  const wrap = isShallow2 ? toShallow : isReadonly2 ? toReadonly : toReactive;
-  if (has2.call(rawTarget, key)) {
-    return wrap(target.get(key));
-  } else if (has2.call(rawTarget, rawKey)) {
-    return wrap(target.get(rawKey));
-  } else if (target !== rawTarget) {
-    target.get(key);
-  }
-}
-function has(key, isReadonly2 = false) {
-  const target = this["__v_raw"];
-  const rawTarget = toRaw(target);
-  const rawKey = toRaw(key);
-  if (!isReadonly2) {
-    if (hasChanged(key, rawKey)) {
-      track(rawTarget, "has", key);
-    }
-    track(rawTarget, "has", rawKey);
-  }
-  return key === rawKey ? target.has(key) : target.has(key) || target.has(rawKey);
-}
-function size(target, isReadonly2 = false) {
-  target = target["__v_raw"];
-  !isReadonly2 && track(toRaw(target), "iterate", ITERATE_KEY);
-  return Reflect.get(target, "size", target);
-}
-function add(value, _isShallow = false) {
-  if (!_isShallow && !isShallow(value) && !isReadonly(value)) {
-    value = toRaw(value);
-  }
-  const target = toRaw(this);
-  const proto = getProto(target);
-  const hadKey = proto.has.call(target, value);
-  if (!hadKey) {
-    target.add(value);
-    trigger(target, "add", value, value);
-  }
-  return this;
-}
-function set(key, value, _isShallow = false) {
-  if (!_isShallow && !isShallow(value) && !isReadonly(value)) {
-    value = toRaw(value);
-  }
-  const target = toRaw(this);
-  const { has: has2, get: get2 } = getProto(target);
-  let hadKey = has2.call(target, key);
-  if (!hadKey) {
-    key = toRaw(key);
-    hadKey = has2.call(target, key);
-  } else {
-    checkIdentityKeys(target, has2, key);
-  }
-  const oldValue = get2.call(target, key);
-  target.set(key, value);
-  if (!hadKey) {
-    trigger(target, "add", key, value);
-  } else if (hasChanged(value, oldValue)) {
-    trigger(target, "set", key, value, oldValue);
-  }
-  return this;
-}
-function deleteEntry(key) {
-  const target = toRaw(this);
-  const { has: has2, get: get2 } = getProto(target);
-  let hadKey = has2.call(target, key);
-  if (!hadKey) {
-    key = toRaw(key);
-    hadKey = has2.call(target, key);
-  } else {
-    checkIdentityKeys(target, has2, key);
-  }
-  const oldValue = get2 ? get2.call(target, key) : void 0;
-  const result = target.delete(key);
-  if (hadKey) {
-    trigger(target, "delete", key, void 0, oldValue);
-  }
-  return result;
-}
-function clear() {
-  const target = toRaw(this);
-  const hadItems = target.size !== 0;
-  const oldTarget = isMap(target) ? new Map(target) : new Set(target) ;
-  const result = target.clear();
-  if (hadItems) {
-    trigger(target, "clear", void 0, void 0, oldTarget);
-  }
-  return result;
-}
-function createForEach(isReadonly2, isShallow2) {
-  return function forEach(callback, thisArg) {
-    const observed = this;
-    const target = observed["__v_raw"];
-    const rawTarget = toRaw(target);
-    const wrap = isShallow2 ? toShallow : isReadonly2 ? toReadonly : toReactive;
-    !isReadonly2 && track(rawTarget, "iterate", ITERATE_KEY);
-    return target.forEach((value, key) => {
-      return callback.call(thisArg, wrap(value), wrap(key), observed);
-    });
-  };
-}
 function createIterableMethod(method, isReadonly2, isShallow2) {
   return function(...args) {
     const target = this["__v_raw"];
@@ -1560,71 +1449,134 @@ function createReadonlyMethod(type) {
     return type === "delete" ? false : type === "clear" ? void 0 : this;
   };
 }
-function createInstrumentations() {
-  const mutableInstrumentations2 = {
+function createInstrumentations(readonly, shallow) {
+  const instrumentations = {
     get(key) {
-      return get(this, key);
+      const target = this["__v_raw"];
+      const rawTarget = toRaw(target);
+      const rawKey = toRaw(key);
+      if (!readonly) {
+        if (hasChanged(key, rawKey)) {
+          track(rawTarget, "get", key);
+        }
+        track(rawTarget, "get", rawKey);
+      }
+      const { has } = getProto(rawTarget);
+      const wrap = shallow ? toShallow : readonly ? toReadonly : toReactive;
+      if (has.call(rawTarget, key)) {
+        return wrap(target.get(key));
+      } else if (has.call(rawTarget, rawKey)) {
+        return wrap(target.get(rawKey));
+      } else if (target !== rawTarget) {
+        target.get(key);
+      }
     },
     get size() {
-      return size(this);
-    },
-    has,
-    add,
-    set,
-    delete: deleteEntry,
-    clear,
-    forEach: createForEach(false, false)
-  };
-  const shallowInstrumentations2 = {
-    get(key) {
-      return get(this, key, false, true);
-    },
-    get size() {
-      return size(this);
-    },
-    has,
-    add(value) {
-      return add.call(this, value, true);
-    },
-    set(key, value) {
-      return set.call(this, key, value, true);
-    },
-    delete: deleteEntry,
-    clear,
-    forEach: createForEach(false, true)
-  };
-  const readonlyInstrumentations2 = {
-    get(key) {
-      return get(this, key, true);
-    },
-    get size() {
-      return size(this, true);
+      const target = this["__v_raw"];
+      !readonly && track(toRaw(target), "iterate", ITERATE_KEY);
+      return Reflect.get(target, "size", target);
     },
     has(key) {
-      return has.call(this, key, true);
+      const target = this["__v_raw"];
+      const rawTarget = toRaw(target);
+      const rawKey = toRaw(key);
+      if (!readonly) {
+        if (hasChanged(key, rawKey)) {
+          track(rawTarget, "has", key);
+        }
+        track(rawTarget, "has", rawKey);
+      }
+      return key === rawKey ? target.has(key) : target.has(key) || target.has(rawKey);
     },
-    add: createReadonlyMethod("add"),
-    set: createReadonlyMethod("set"),
-    delete: createReadonlyMethod("delete"),
-    clear: createReadonlyMethod("clear"),
-    forEach: createForEach(true, false)
+    forEach(callback, thisArg) {
+      const observed = this;
+      const target = observed["__v_raw"];
+      const rawTarget = toRaw(target);
+      const wrap = shallow ? toShallow : readonly ? toReadonly : toReactive;
+      !readonly && track(rawTarget, "iterate", ITERATE_KEY);
+      return target.forEach((value, key) => {
+        return callback.call(thisArg, wrap(value), wrap(key), observed);
+      });
+    }
   };
-  const shallowReadonlyInstrumentations2 = {
-    get(key) {
-      return get(this, key, true, true);
-    },
-    get size() {
-      return size(this, true);
-    },
-    has(key) {
-      return has.call(this, key, true);
-    },
-    add: createReadonlyMethod("add"),
-    set: createReadonlyMethod("set"),
-    delete: createReadonlyMethod("delete"),
-    clear: createReadonlyMethod("clear"),
-    forEach: createForEach(true, true)
-  };
+  extend(
+    instrumentations,
+    readonly ? {
+      add: createReadonlyMethod("add"),
+      set: createReadonlyMethod("set"),
+      delete: createReadonlyMethod("delete"),
+      clear: createReadonlyMethod("clear")
+    } : {
+      add(value) {
+        if (!shallow && !isShallow(value) && !isReadonly(value)) {
+          value = toRaw(value);
+        }
+        const target = toRaw(this);
+        const proto = getProto(target);
+        const hadKey = proto.has.call(target, value);
+        if (!hadKey) {
+          target.add(value);
+          trigger(target, "add", value, value);
+        }
+        return this;
+      },
+      set(key, value) {
+        if (!shallow && !isShallow(value) && !isReadonly(value)) {
+          value = toRaw(value);
+        }
+        const target = toRaw(this);
+        const { has, get } = getProto(target);
+        let hadKey = has.call(target, key);
+        if (!hadKey) {
+          key = toRaw(key);
+          hadKey = has.call(target, key);
+        } else {
+          checkIdentityKeys(target, has, key);
+        }
+        const oldValue = get.call(target, key);
+        target.set(key, value);
+        if (!hadKey) {
+          trigger(target, "add", key, value);
+        } else if (hasChanged(value, oldValue)) {
+          trigger(target, "set", key, value, oldValue);
+        }
+        return this;
+      },
+      delete(key) {
+        const target = toRaw(this);
+        const { has, get } = getProto(target);
+        let hadKey = has.call(target, key);
+        if (!hadKey) {
+          key = toRaw(key);
+          hadKey = has.call(target, key);
+        } else {
+          checkIdentityKeys(target, has, key);
+        }
+        const oldValue = get ? get.call(target, key) : void 0;
+        const result = target.delete(key);
+        if (hadKey) {
+          trigger(target, "delete", key, void 0, oldValue);
+        }
+        return result;
+      },
+      clear() {
+        const target = toRaw(this);
+        const hadItems = target.size !== 0;
+        const oldTarget = isMap(target) ? new Map(target) : new Set(target) ;
+        const result = target.clear();
+        if (hadItems) {
+          trigger(
+            target,
+            "clear",
+            void 0,
+            void 0,
+            oldTarget
+          );
+        }
+        return result;
+      }
+    }
+  );
   const iteratorMethods = [
     "keys",
     "values",
@@ -1632,30 +1584,12 @@ function createInstrumentations() {
     Symbol.iterator
   ];
   iteratorMethods.forEach((method) => {
-    mutableInstrumentations2[method] = createIterableMethod(method, false, false);
-    readonlyInstrumentations2[method] = createIterableMethod(method, true, false);
-    shallowInstrumentations2[method] = createIterableMethod(method, false, true);
-    shallowReadonlyInstrumentations2[method] = createIterableMethod(
-      method,
-      true,
-      true
-    );
+    instrumentations[method] = createIterableMethod(method, readonly, shallow);
   });
-  return [
-    mutableInstrumentations2,
-    readonlyInstrumentations2,
-    shallowInstrumentations2,
-    shallowReadonlyInstrumentations2
-  ];
+  return instrumentations;
 }
-const [
-  mutableInstrumentations,
-  readonlyInstrumentations,
-  shallowInstrumentations,
-  shallowReadonlyInstrumentations
-] = /* @__PURE__ */ createInstrumentations();
 function createInstrumentationGetter(isReadonly2, shallow) {
-  const instrumentations = shallow ? isReadonly2 ? shallowReadonlyInstrumentations : shallowInstrumentations : isReadonly2 ? readonlyInstrumentations : mutableInstrumentations;
+  const instrumentations = createInstrumentations(isReadonly2, shallow);
   return (target, key, receiver) => {
     if (key === "__v_isReactive") {
       return !isReadonly2;
@@ -1683,9 +1617,9 @@ const readonlyCollectionHandlers = {
 const shallowReadonlyCollectionHandlers = {
   get: /* @__PURE__ */ createInstrumentationGetter(true, true)
 };
-function checkIdentityKeys(target, has2, key) {
+function checkIdentityKeys(target, has, key) {
   const rawKey = toRaw(key);
-  if (rawKey !== key && has2.call(target, rawKey)) {
+  if (rawKey !== key && has.call(target, rawKey)) {
     const type = toRawType(target);
     warn$2(
       `Reactive ${type} contains both the raw and reactive versions of the same object${type === `Map` ? ` as keys` : ``}, which can lead to inconsistencies. Avoid differentiating between the raw and reactive versions of an object and only use the reactive version if possible.`
@@ -3111,7 +3045,7 @@ const TeleportImpl = {
           }
           if (!disabled) {
             mount(target, targetAnchor);
-            updateCssVars(n2);
+            updateCssVars(n2, false);
           }
         } else if (!disabled) {
           warn$1(
@@ -3123,7 +3057,7 @@ const TeleportImpl = {
       };
       if (disabled) {
         mount(container, mainAnchor);
-        updateCssVars(n2);
+        updateCssVars(n2, true);
       }
       if (isTeleportDeferred(n2.props)) {
         queuePostRenderEffect(mountToTarget, parentSuspense);
@@ -3213,7 +3147,7 @@ const TeleportImpl = {
           );
         }
       }
-      updateCssVars(n2);
+      updateCssVars(n2, disabled);
     }
   },
   remove(vnode, parentComponent, parentSuspense, { um: unmount, o: { remove: hostRemove } }, doRemove) {
@@ -3281,9 +3215,10 @@ function hydrateTeleport(node, vnode, parentComponent, parentSuspense, slotScope
     querySelector
   );
   if (target) {
+    const disabled = isTeleportDisabled(vnode.props);
     const targetNode = target._lpa || target.firstChild;
     if (vnode.shapeFlag & 16) {
-      if (isTeleportDisabled(vnode.props)) {
+      if (disabled) {
         vnode.anchor = hydrateChildren(
           nextSibling(node),
           vnode,
@@ -3324,16 +3259,23 @@ function hydrateTeleport(node, vnode, parentComponent, parentSuspense, slotScope
         );
       }
     }
-    updateCssVars(vnode);
+    updateCssVars(vnode, disabled);
   }
   return vnode.anchor && nextSibling(vnode.anchor);
 }
 const Teleport = TeleportImpl;
-function updateCssVars(vnode) {
+function updateCssVars(vnode, isDisabled) {
   const ctx = vnode.ctx;
   if (ctx && ctx.ut) {
-    let node = vnode.targetStart;
-    while (node && node !== vnode.targetAnchor) {
+    let node, anchor;
+    if (isDisabled) {
+      node = vnode.el;
+      anchor = vnode.anchor;
+    } else {
+      node = vnode.targetStart;
+      anchor = vnode.targetAnchor;
+    }
+    while (node && node !== anchor) {
       if (node.nodeType === 1) node.setAttribute("data-v-owner", ctx.uid);
       node = node.nextSibling;
     }
@@ -3783,8 +3725,15 @@ function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
   const setupState = owner.setupState;
   const rawSetupState = toRaw(setupState);
   const canSetSetupRef = setupState === EMPTY_OBJ ? () => false : (key) => {
-    if (knownTemplateRefs.has(rawSetupState[key])) {
-      return false;
+    {
+      if (hasOwn(rawSetupState, key) && !isRef(rawSetupState[key])) {
+        warn$1(
+          `Template ref "${key}" used on a non-ref value. It will not work in the production build.`
+        );
+      }
+      if (knownTemplateRefs.has(rawSetupState[key])) {
+        return false;
+      }
     }
     return hasOwn(rawSetupState, key);
   };
@@ -4081,7 +4030,11 @@ function createHydrationFunctions(rendererInternals) {
       }
       let needCallTransitionHooks = false;
       if (isTemplateNode(el)) {
-        needCallTransitionHooks = needTransition(parentSuspense, transition) && parentComponent && parentComponent.vnode.props && parentComponent.vnode.props.appear;
+        needCallTransitionHooks = needTransition(
+          null,
+          // no need check parentSuspense in hydration
+          transition
+        ) && parentComponent && parentComponent.vnode.props && parentComponent.vnode.props.appear;
         const content = el.content.firstChild;
         if (needCallTransitionHooks) {
           transition.beforeEnter(content);
@@ -4474,6 +4427,8 @@ function isMismatchAllowed(el, allowedType) {
   }
 }
 
+const requestIdleCallback = getGlobalThis().requestIdleCallback || ((cb) => setTimeout(cb, 1));
+const cancelIdleCallback = getGlobalThis().cancelIdleCallback || ((id) => clearTimeout(id));
 const hydrateOnIdle = (timeout = 1e4) => (hydrate) => {
   const id = requestIdleCallback(hydrate, { timeout });
   return () => cancelIdleCallback(id);
@@ -5176,12 +5131,13 @@ function renderSlot(slots, name, props = {}, fallback, noSlotted) {
   }
   openBlock();
   const validSlotContent = slot && ensureValidVNode(slot(props));
+  const slotKey = props.key || // slot content array of a dynamic conditional slot may have a branch
+  // key attached in the `createSlots` helper, respect that
+  validSlotContent && validSlotContent.key;
   const rendered = createBlock(
     Fragment,
     {
-      key: (props.key || // slot content array of a dynamic conditional slot may have a branch
-      // key attached in the `createSlots` helper, respect that
-      validSlotContent && validSlotContent.key || `_${name}`) + // #7256 force differentiate fallback content from actual content
+      key: (slotKey && !isSymbol(slotKey) ? slotKey : `_${name}`) + // #7256 force differentiate fallback content from actual content
       (!validSlotContent && fallback ? "_fb" : "")
     },
     validSlotContent || (fallback ? fallback() : []),
@@ -6539,6 +6495,7 @@ function getType(ctor) {
 function validateProps(rawProps, props, instance) {
   const resolvedValues = toRaw(props);
   const options = instance.propsOptions[0];
+  const camelizePropsKey = Object.keys(rawProps).map((key) => camelize(key));
   for (const key in options) {
     let opt = options[key];
     if (opt == null) continue;
@@ -6547,7 +6504,7 @@ function validateProps(rawProps, props, instance) {
       resolvedValues[key],
       opt,
       shallowReadonly(resolvedValues) ,
-      !hasOwn(rawProps, key) && !hasOwn(rawProps, hyphenate(key))
+      !camelizePropsKey.includes(key)
     );
   }
 }
@@ -8327,14 +8284,13 @@ function doWatch(source, cb, options = EMPTY_OBJ) {
   }
   const baseWatchOptions = extend({}, options);
   baseWatchOptions.onWarn = warn$1;
+  const runsImmediately = cb && immediate || !cb && flush !== "post";
   let ssrCleanup;
   if (isInSSRComponentSetup) {
     if (flush === "sync") {
       const ctx = useSSRContext();
       ssrCleanup = ctx.__watcherHandles || (ctx.__watcherHandles = []);
-    } else if (!cb || immediate) {
-      baseWatchOptions.once = true;
-    } else {
+    } else if (!runsImmediately) {
       const watchStopHandle = () => {
       };
       watchStopHandle.stop = NOOP;
@@ -8373,7 +8329,13 @@ function doWatch(source, cb, options = EMPTY_OBJ) {
     }
   };
   const watchHandle = watch$1(source, cb, baseWatchOptions);
-  if (ssrCleanup) ssrCleanup.push(watchHandle);
+  if (isInSSRComponentSetup) {
+    if (ssrCleanup) {
+      ssrCleanup.push(watchHandle);
+    } else if (runsImmediately) {
+      watchHandle();
+    }
+  }
   return watchHandle;
 }
 function instanceWatch(source, value, options) {
@@ -8408,19 +8370,19 @@ function useModel(props, name, options = EMPTY_OBJ) {
     warn$1(`useModel() called without active instance.`);
     return ref();
   }
-  if (!i.propsOptions[0][name]) {
+  const camelizedName = camelize(name);
+  if (!i.propsOptions[0][camelizedName]) {
     warn$1(`useModel() called with prop "${name}" which is not declared.`);
     return ref();
   }
-  const camelizedName = camelize(name);
   const hyphenatedName = hyphenate(name);
-  const modifiers = getModelModifiers(props, name);
+  const modifiers = getModelModifiers(props, camelizedName);
   const res = customRef((track, trigger) => {
     let localValue;
     let prevSetValue = EMPTY_OBJ;
     let prevEmittedValue;
     watchSyncEffect(() => {
-      const propValue = props[name];
+      const propValue = props[camelizedName];
       if (hasChanged(localValue, propValue)) {
         localValue = propValue;
         trigger();
@@ -10047,9 +10009,9 @@ function setupStatefulComponent(instance, isSSR) {
   }
   const { setup } = Component;
   if (setup) {
+    pauseTracking();
     const setupContext = instance.setupContext = setup.length > 1 ? createSetupContext(instance) : null;
     const reset = setCurrentInstance(instance);
-    pauseTracking();
     const setupResult = callWithErrorHandling(
       setup,
       instance,
@@ -10059,10 +10021,13 @@ function setupStatefulComponent(instance, isSSR) {
         setupContext
       ]
     );
+    const isAsyncSetup = isPromise(setupResult);
     resetTracking();
     reset();
-    if (isPromise(setupResult)) {
-      if (!isAsyncWrapper(instance)) markAsyncBoundary(instance);
+    if ((isAsyncSetup || instance.sp) && !isAsyncWrapper(instance)) {
+      markAsyncBoundary(instance);
+    }
+    if (isAsyncSetup) {
       setupResult.then(unsetCurrentInstance, unsetCurrentInstance);
       if (isSSR) {
         return setupResult.then((resolvedResult) => {
@@ -10525,7 +10490,7 @@ function isMemoSame(cached, memo) {
   return true;
 }
 
-const version = "3.5.11";
+const version = "3.5.12";
 const warn = warn$1 ;
 const ErrorTypeStrings = ErrorTypeStrings$1 ;
 const devtools = devtools$1 ;
@@ -11158,7 +11123,7 @@ function patchAttr(el, key, value, isSVG, instance, isBoolean = isSpecialBoolean
   }
 }
 
-function patchDOMProp(el, key, value, parentComponent) {
+function patchDOMProp(el, key, value, parentComponent, attrName) {
   if (key === "innerHTML" || key === "textContent") {
     if (value != null) {
       el[key] = key === "innerHTML" ? unsafeToTrustedHTML(value) : value;
@@ -11206,7 +11171,7 @@ function patchDOMProp(el, key, value, parentComponent) {
       );
     }
   }
-  needRemove && el.removeAttribute(key);
+  needRemove && el.removeAttribute(attrName || key);
 }
 
 function addEventListener(el, event, handler, options) {
@@ -11316,7 +11281,7 @@ const patchProp = (el, key, prevValue, nextValue, namespace, parentComponent) =>
     // #11081 force set props for possible async custom element
     el._isVueCE && (/[A-Z]/.test(key) || !isString(nextValue))
   ) {
-    patchDOMProp(el, camelize(key), nextValue);
+    patchDOMProp(el, camelize(key), nextValue, parentComponent, key);
   } else {
     if (key === "true-value") {
       el._trueValue = nextValue;
@@ -12034,7 +11999,7 @@ const vModelCheckbox = {
     setChecked(el, binding, vnode);
   }
 };
-function setChecked(el, { value }, vnode) {
+function setChecked(el, { value, oldValue }, vnode) {
   el._modelValue = value;
   let checked;
   if (isArray(value)) {
@@ -12042,6 +12007,7 @@ function setChecked(el, { value }, vnode) {
   } else if (isSet(value)) {
     checked = value.has(vnode.props.value);
   } else {
+    if (value === oldValue) return;
     checked = looseEqual(value, getCheckboxValue(el, true));
   }
   if (el.checked !== checked) {
@@ -14533,6 +14499,9 @@ function getLoc(start, end) {
     source: end == null ? end : getSlice(start, end)
   };
 }
+function cloneLoc(loc) {
+  return getLoc(loc.start.offset, loc.end.offset);
+}
 function setLocEnd(loc, end) {
   loc.end = tokenizer.getPos(end);
   loc.source = getSlice(loc.start.offset, end);
@@ -15877,7 +15846,7 @@ function processIf(node, dir, context, processCodegen) {
     const branch = createIfBranch(node, dir);
     const ifNode = {
       type: 9,
-      loc: node.loc,
+      loc: cloneLoc(node.loc),
       branches: [branch]
     };
     context.replaceNode(ifNode);
