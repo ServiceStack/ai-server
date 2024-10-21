@@ -98,7 +98,7 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         {
             Request = new()
             {
-                Model = "image-to-image",
+                Model = request.Model ?? "image-to-image",
                 Seed = request.Seed,
                 TaskType = AiTaskType.ImageToImage,
                 PositivePrompt = request.PositivePrompt,

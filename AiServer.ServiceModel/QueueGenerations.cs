@@ -153,6 +153,10 @@ public class QueueImageToImage : IQueueGeneration, IReturn<QueueGenerationRespon
     [Description("Negative prompt describing what should not be in the image")]
     [Input(Type = "textarea")]
     public string? NegativePrompt { get; set; }
+    
+    [ApiMember(Description = "The AI model to use for image generation")]
+    [Description("The AI model to use for image generation")]
+    public string? Model { get; set; }
 
     [ApiMember(Description = "Optional specific amount of denoise to apply")]
     [Description("Optional specific amount of denoise to apply")]
