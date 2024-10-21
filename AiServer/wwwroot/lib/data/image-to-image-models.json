@@ -1,0 +1,14 @@
+[
+  {
+    "id": "Default",
+    "model": "image-to-image"
+  },
+  {
+    "id": "SDXL Lightning",
+    "model": "sdxl-lightning"
+  },
+  {
+    "id": "SDXL Realistic",
+    "model": "jib-mix-realistic"
+  }
+]
