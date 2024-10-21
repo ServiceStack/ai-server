@@ -141,7 +141,7 @@ export default {
         const client = useClient()
         const routes = inject('routes')
         const { user, signIn, signOut } = useAuth()
-        const profileUrl = ref(localStorage.getItem('profileUrl') || user.value.profileUrl)
+        const profileUrl = ref(localStorage.getItem('profileUrl') || user.value?.profileUrl)
         const refreshKey = ref(1)
         const showUserMenu = ref(false)
         
