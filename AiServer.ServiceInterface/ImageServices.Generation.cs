@@ -91,7 +91,7 @@ public partial class ImageServices(IBackgroundJobs jobs,
             {
                 PositivePrompt = request.PositivePrompt,
                 NegativePrompt = request.NegativePrompt,
-                Model = "image-to-image",
+                Model = request.Model ?? "image-to-image",
                 Seed = request.Seed,
                 BatchSize = request.BatchSize ?? 1,
                 TaskType = AiTaskType.ImageToImage,
