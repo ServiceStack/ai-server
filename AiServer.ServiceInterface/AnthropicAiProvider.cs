@@ -8,17 +8,23 @@ namespace AiServer.ServiceInterface;
 
 public class AnthropicAiProvider(ILogger<AnthropicAiProvider> log) : OpenAiProviderBase(log)
 {
-    protected override async Task<OpenAiChatResponse> SendOpenAiChatRequestAsync(AiProvider provider, OpenAiChat request, 
-        Action<HttpRequestMessage>? requestFilter, Action<HttpResponseMessage> responseFilter, CancellationToken token=default)
+    protected override Action<HttpRequestMessage>? CreateRequestFilter(AiProvider provider)
     {
-        var url = (provider.ApiBaseUrl ?? provider.AiType?.ApiBaseUrl).CombineWith("/v1/messages");
-        Action<HttpRequestMessage>? useRequestFilter = req => {
+        Action<HttpRequestMessage>? requestFilter = req =>
+        {
             req.Headers.Add("x-api-key", provider.ApiKey);
             req.Headers.Add("anthropic-version", "2023-06-01");
         };
+        return requestFilter;
+    }
+    
+    protected override async Task<OpenAiChatResponse> SendOpenAiChatRequestAsync(AiProvider provider, OpenAiChat request, 
+        Action<HttpRequestMessage>? requestFilter=null, Action<HttpResponseMessage>? responseFilter=null, CancellationToken token=default)
+    {
+        var url = (provider.ApiBaseUrl ?? provider.AiType?.ApiBaseUrl).CombineWith("/v1/messages");
         var anthropicRequest = ToAnthropicMessageRequest(request);
         var responseJson = await url.PostJsonToUrlAsync(anthropicRequest,
-            requestFilter: useRequestFilter,
+            requestFilter: requestFilter,
             responseFilter: responseFilter, token: token);
         
         // responseJson.Print();
@@ -77,6 +83,34 @@ public class AnthropicAiProvider(ILogger<AnthropicAiProvider> log) : OpenAiProvi
         };
 
         return ret;
+    }
+    
+    public override async Task<bool> IsOnlineAsync(AiProvider provider, CancellationToken token = default)
+    {
+        try
+        {
+            var apiModel = provider.GetPreferredAiModel();
+            var request = new OpenAiChat
+            {
+                Model = apiModel,
+                Messages = [
+                    new() { Role = "user", Content = "1+1=" },
+                ],
+                MaxTokens = 2,
+                Stream = false,
+            };
+
+            var requestFilter = CreateRequestFilter(provider);
+            var response = await SendOpenAiChatRequestAsync(provider, request, 
+                requestFilter: requestFilter, responseFilter: null, token: token);
+            return true;
+        }
+        catch (Exception e)
+        {
+            if (e is TaskCanceledException)
+                throw;
+            return false;
+        }
     }
 }
 

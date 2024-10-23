@@ -132,6 +132,8 @@ public static class TestUtils
             ["mixtral:8x7b"] = "mistralai/mistral-7b-instruct",
             ["mistral-nemo:12b"] = "mistralai/mistral-nemo",
             ["gemma:7b"] = "google/gemma-7b-it",
+            ["gemma2:9b"] = "google/gemma-2-9b-it",
+            ["gemma2:27"] = "google/gemma-2-27b-it",
             ["mixtral:8x7b"] = "mistralai/mixtral-8x7b-instruct",
             ["mixtral:8x22b"] = "mistralai/mixtral-8x22b-instruct",
             ["llama3:8b"] = "meta-llama/llama-3-8b-instruct",
@@ -309,9 +311,15 @@ public static class TestUtils
         Enabled = true,
         Models =
         [
-            new() { Model = "gemma2:27b", },
+            // new() { Model = "gemma:7b", },
+            new() { Model = "gemma2:9b", },
+            new() { Model = "gemma2:27", },
             new() { Model = "mixtral:8x22b", },
+            new() { Model = "llama3:8b" },
             new() { Model = "llama3:70b" },
+            new() { Model = "llama3.1:8b" },
+            new() { Model = "llama3.1:70b" },
+            new() { Model = "llama3.1:405b" },
             new() { Model = "wizardlm2:7b", },
             new() { Model = "wizardlm2:8x22b", },
             new() { Model = "mistral-small", },
@@ -436,6 +444,9 @@ public static class TestUtils
         ApiKey = Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY"),
         Enabled = true,
         AiType = AnthropicAiType,
+        Models = [
+            new() { Model = "claude-3-haiku" },
+        ],
     };
 
 }

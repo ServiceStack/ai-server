@@ -76,6 +76,9 @@ public class OpenAiProviderTests
         });
         
         response.PrintDump();
+
+        var isOnline = await openAi.IsOnlineAsync(TestUtils.OpenRouterProvider);
+        Assert.IsTrue(isOnline);
     }
 
     [Test]
@@ -142,6 +145,9 @@ public class OpenAiProviderTests
         });
         
         response.PrintDump();
+
+        var isOnline = await openAi.IsOnlineAsync(TestUtils.GoogleAiProvider);
+        Assert.IsTrue(isOnline);
     }
 
     [Test]
@@ -164,8 +170,10 @@ public class OpenAiProviderTests
             ],
             MaxTokens = 100,
         });
-        
         response.PrintDump();
+        
+        var isOnline = await openAi.IsOnlineAsync(TestUtils.AnthropicProvider);
+        Assert.IsTrue(isOnline);
     }
 
     [Test]

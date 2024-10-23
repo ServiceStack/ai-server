@@ -25,11 +25,26 @@ public class OpenAiProviderBase(ILogger log) : IOpenAiProvider
 
     public virtual async Task<OpenAiChatResult> ChatAsync(AiProvider provider, OpenAiChat request, CancellationToken token = default)
     {
-        Action<HttpRequestMessage>? requestFilter = provider.ApiKey != null
-            ? req => req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", provider.ApiKey)
-            : null;
-
+        var requestFilter = CreateRequestFilter(provider);
         return await ChatAsync(provider, request, token, requestFilter);
+    }
+
+    protected virtual Action<HttpRequestMessage>? CreateRequestFilter(AiProvider provider)
+    {
+        Action<HttpRequestMessage>? requestFilter = provider.ApiKey != null
+            ? req =>
+            {
+                if (provider.ApiKeyHeader != null)
+                {
+                    req.Headers.Add(provider.ApiKeyHeader, provider.ApiKey);
+                }
+                else
+                {
+                    req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", provider.ApiKey);
+                }
+            }
+            : null;
+        return requestFilter;
     }
 
     protected virtual async Task<OpenAiChatResult> ChatAsync(AiProvider provider, OpenAiChat request, CancellationToken token, Action<HttpRequestMessage>? requestFilter)
@@ -103,7 +118,7 @@ public class OpenAiProviderBase(ILogger log) : IOpenAiProvider
     }
 
     protected virtual async Task<OpenAiChatResponse> SendOpenAiChatRequestAsync(AiProvider provider, OpenAiChat request, 
-        Action<HttpRequestMessage>? requestFilter, Action<HttpResponseMessage> responseFilter, CancellationToken token=default)
+        Action<HttpRequestMessage>? requestFilter=null, Action<HttpResponseMessage>? responseFilter=null, CancellationToken token=default)
     {
         var url = GetApiEndpointUrlFor(provider,TaskType.OpenAiChat);
         var responseJson = await url.PostJsonToUrlAsync(request,
@@ -113,14 +128,11 @@ public class OpenAiProviderBase(ILogger log) : IOpenAiProvider
         return response;
     }
 
-    public async Task<bool> IsOnlineAsync(AiProvider provider, CancellationToken token = default)
+    public virtual async Task<bool> IsOnlineAsync(AiProvider provider, CancellationToken token = default)
     {
         try
         {
-            Action<HttpRequestMessage>? requestFilter = provider.ApiKey != null
-                ? req => req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", provider.ApiKey)
-                : null;
-
+            var requestFilter = CreateRequestFilter(provider);
             var heartbeatUrl = provider.HeartbeatUrl;
             if (heartbeatUrl != null)
             {
@@ -138,8 +150,8 @@ public class OpenAiProviderBase(ILogger log) : IOpenAiProvider
                 Stream = false,
             };
 
-            var url = GetApiEndpointUrlFor(provider, TaskType.OpenAiChat);
-            await url.PostJsonToUrlAsync(request, requestFilter:requestFilter, token: token);
+            var response = await SendOpenAiChatRequestAsync(provider, request, 
+                requestFilter: requestFilter, responseFilter: null, token: token);
             return true;
         }
         catch (Exception e)
