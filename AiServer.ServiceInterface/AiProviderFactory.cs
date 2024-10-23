@@ -11,12 +11,14 @@ public interface IOpenAiProvider
     Task<OpenAiChatResult> ChatAsync(AiProvider provider, OpenAiChat request, CancellationToken token = default);
 }
 
-public class AiProviderFactory(OpenAiProvider openAiProvider, GoogleAiProvider googleProvider)
+public class AiProviderFactory(OpenAiProvider openAiProvider, GoogleAiProvider googleProvider, AnthropicAiProvider anthropicAiProvider)
 {
     public IOpenAiProvider GetOpenAiProvider(AiProviderType aiProviderType=AiProviderType.OpenAiProvider)
     {
         return aiProviderType == AiProviderType.GoogleAiProvider
             ? googleProvider
-            : openAiProvider;
+            : aiProviderType == AiProviderType.AnthropicAiProvider
+                ? anthropicAiProvider 
+                : openAiProvider;
     }
 }

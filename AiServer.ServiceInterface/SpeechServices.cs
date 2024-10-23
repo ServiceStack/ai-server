@@ -79,7 +79,7 @@ public class SpeechServices(IBackgroundJobs jobs,
 
     public async Task<object> Any(SpeechToText request)
     {
-        if(Request?.Files == null || Request.Files.Length == 0)
+        if (Request?.Files == null || Request.Files.Length == 0)
         {
             log.LogError("No files attached to request");
             throw new ArgumentNullException(nameof(request.Audio));

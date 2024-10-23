@@ -7,7 +7,11 @@ using AiServer.ServiceModel;
 
 namespace AiServer.ServiceInterface;
 
-public class OpenAiProvider(ILogger<OpenAiProvider> log) : IOpenAiProvider
+public class OpenAiProvider(ILogger<OpenAiProvider> log) : OpenAiProviderBase(log)
+{
+}
+
+public class OpenAiProviderBase(ILogger log) : IOpenAiProvider
 {
     public string GetApiEndpointUrlFor(AiProvider aiProvider, TaskType taskType)
     {
@@ -19,14 +23,18 @@ public class OpenAiProvider(ILogger<OpenAiProvider> log) : IOpenAiProvider
         throw new NotSupportedException($"[{aiProvider.Name}] does not support {taskType}");
     }
 
-    public async Task<OpenAiChatResult> ChatAsync(AiProvider provider, OpenAiChat request, CancellationToken token = default)
+    public virtual async Task<OpenAiChatResult> ChatAsync(AiProvider provider, OpenAiChat request, CancellationToken token = default)
     {
-        var sw = Stopwatch.StartNew();
-        var openApiChatEndpoint = GetApiEndpointUrlFor(provider,TaskType.OpenAiChat);
-
         Action<HttpRequestMessage>? requestFilter = provider.ApiKey != null
             ? req => req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", provider.ApiKey)
             : null;
+
+        return await ChatAsync(provider, request, token, requestFilter);
+    }
+
+    protected virtual async Task<OpenAiChatResult> ChatAsync(AiProvider provider, OpenAiChat request, CancellationToken token, Action<HttpRequestMessage>? requestFilter)
+    {
+        var sw = Stopwatch.StartNew();
 
         var origModel = request.Model;
         request.Model = provider.GetAiModel(request.Model);
@@ -43,30 +51,29 @@ public class OpenAiProvider(ILogger<OpenAiProvider> log) : IOpenAiProvider
             var sleepMs = 1000 * retries;
             try
             {
-                var responseJson = await openApiChatEndpoint.PostJsonToUrlAsync(request,
-                    requestFilter: requestFilter,
-                    responseFilter: res =>
+                Action<HttpResponseMessage>? responseFilter = res =>
+                {
+                    headers = res.Headers.Select(x => $"{x.Key}: {x.Value.FirstOrDefault()}").ToArray();
+                    contentHeaders = res.Content.Headers.Select(x => $"{x.Key}: {x.Value.FirstOrDefault()}")
+                        .ToArray();
+
+                    // GROQ
+                    if (res.Headers.TryGetValues("retry-after", out var retryAfterValues))
                     {
-                        headers = res.Headers.Select(x => $"{x.Key}: {x.Value.FirstOrDefault()}").ToArray();
-                        contentHeaders = res.Content.Headers.Select(x => $"{x.Key}: {x.Value.FirstOrDefault()}")
-                            .ToArray();
+                        var retryAfterStr = retryAfterValues.FirstOrDefault();
+                        log.LogWarning("retry-after: {RetryAfter}", retryAfterStr ?? "null");
+                        if (retryAfterStr != null)
+                            int.TryParse(retryAfterStr, out retryAfter);
+                    }
 
-                        // GROQ
-                        if (res.Headers.TryGetValues("retry-after", out var retryAfterValues))
-                        {
-                            var retryAfterStr = retryAfterValues.FirstOrDefault();
-                            log.LogWarning("retry-after: {RetryAfter}", retryAfterStr ?? "null");
-                            if (retryAfterStr != null)
-                                int.TryParse(retryAfterStr, out retryAfter);
-                        }
-
-                        if (res.StatusCode >= HttpStatusCode.BadRequest)
-                        {
-                            errorResponse = res.Content.ReadAsString();
-                        }
-                    }, token: token);
+                    if (res.StatusCode >= HttpStatusCode.BadRequest)
+                    {
+                        errorResponse = res.Content.ReadAsString();
+                    }
+                };
+        
+                var response = await SendOpenAiChatRequestAsync(provider, request, requestFilter, responseFilter, token);
                 var durationMs = (int)sw.ElapsedMilliseconds;
-                var response = responseJson.FromJson<OpenAiChatResponse>();
                 request.Model = origModel;
                 return new(response, durationMs);
             }
@@ -85,14 +92,25 @@ public class OpenAiProvider(ILogger<OpenAiProvider> log) : IOpenAiProvider
                 {
                     if (retryAfter > 0)
                         sleepMs = retryAfter * 1000;
-                    log.LogInformation("[{Name}] {Message} for {Url}, retrying after {SleepMs}ms",
-                        provider.Name, e.Message, openApiChatEndpoint, sleepMs);
+                    log.LogInformation("[{Name}] {Message} for {Provider}, retrying after {SleepMs}ms",
+                        provider.Name, e.Message, provider.Name, sleepMs);
                     await Task.Delay(sleepMs, token);
                 }
                 else throw;
             }
         }
         throw firstEx ?? new Exception($"[{provider.Name}] Failed to complete OpenAI Chat request after {retries} retries");
+    }
+
+    protected virtual async Task<OpenAiChatResponse> SendOpenAiChatRequestAsync(AiProvider provider, OpenAiChat request, 
+        Action<HttpRequestMessage>? requestFilter, Action<HttpResponseMessage> responseFilter, CancellationToken token=default)
+    {
+        var url = GetApiEndpointUrlFor(provider,TaskType.OpenAiChat);
+        var responseJson = await url.PostJsonToUrlAsync(request,
+            requestFilter: requestFilter,
+            responseFilter: responseFilter, token: token);
+        var response = responseJson.FromJson<OpenAiChatResponse>();
+        return response;
     }
 
     public async Task<bool> IsOnlineAsync(AiProvider provider, CancellationToken token = default)
@@ -120,8 +138,8 @@ public class OpenAiProvider(ILogger<OpenAiProvider> log) : IOpenAiProvider
                 Stream = false,
             };
 
-            var openApiChatEndpoint = GetApiEndpointUrlFor(provider, TaskType.OpenAiChat);
-            await openApiChatEndpoint.PostJsonToUrlAsync(request, requestFilter:requestFilter, token: token);
+            var url = GetApiEndpointUrlFor(provider, TaskType.OpenAiChat);
+            await url.PostJsonToUrlAsync(request, requestFilter:requestFilter, token: token);
             return true;
         }
         catch (Exception e)
@@ -132,3 +150,4 @@ public class OpenAiProvider(ILogger<OpenAiProvider> log) : IOpenAiProvider
         }
     }
 }
+

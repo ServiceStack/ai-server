@@ -411,6 +411,32 @@ public static class TestUtils
         ],
         AiType = MistralAiType,
     };
+    
+    public static AiType AnthropicAiType = new()
+    {
+        Id = "Anthropic",
+        Provider = AiProviderType.AnthropicAiProvider,
+        Website = "https://www.anthropic.com",
+        ApiBaseUrl = "https://api.anthropic.com",
+        Icon = "/img/providers/anthropic.svg",
+        ApiModels = new()
+        {
+            ["claude-3-haiku"] = "claude-3-haiku-20240307",
+            ["claude-3-sonnet"] = "claude-3-sonnet-20240229",
+            ["claude-3-opus"] = "claude-3-opus-latest",
+            ["claude-3-5-sonnet"] = "claude-3-5-sonnet-latest",
+            ["claude-3-5-haiku"] = "claude-3-5-haiku-latest",
+        }
+    };
+
+    public static AiProvider AnthropicProvider = new()
+    {
+        Name = "Anthropic",
+        AiTypeId = "Anthropic",
+        ApiKey = Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY"),
+        Enabled = true,
+        AiType = AnthropicAiType,
+    };
 
 }
 

@@ -12,7 +12,8 @@ public class OpenAiProviderTests
 {
     private readonly AiProviderFactory factory = new(
         new OpenAiProvider(new NullLogger<OpenAiProvider>()),
-        new GoogleAiProvider(new NullLogger<GoogleAiProvider>()));
+        new GoogleAiProvider(new NullLogger<GoogleAiProvider>()),
+        new AnthropicAiProvider(new NullLogger<AnthropicAiProvider>()));
 
     [Test]
     public async Task Can_Send_Ollama_Phi3_Request()
@@ -126,6 +127,30 @@ public class OpenAiProviderTests
         var response = await openAi.ChatAsync(TestUtils.GoogleAiProvider, new OpenAiChat
         {
             Model = "gemini-pro",
+            Messages =
+            [
+                new() {
+                    Role = "system",
+                    Content = TestUtils.SystemPrompt,
+                },
+                new() {
+                    Role = "user",
+                    Content = "What is the capital of France?",
+                },
+            ],
+            MaxTokens = 100,
+        });
+        
+        response.PrintDump();
+    }
+
+    [Test]
+    public async Task Can_Send_Anthropic_Haiku_Request()
+    {
+        var openAi = factory.GetOpenAiProvider(AiProviderType.AnthropicAiProvider);
+        var response = await openAi.ChatAsync(TestUtils.AnthropicProvider, new OpenAiChat
+        {
+            Model = "claude-3-haiku",
             Messages =
             [
                 new() {

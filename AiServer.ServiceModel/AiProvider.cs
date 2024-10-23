@@ -105,6 +105,7 @@ public enum AiProviderType
 {
     OpenAiProvider,
     GoogleAiProvider,
+    AnthropicAiProvider,
 }
 
 /// <summary>

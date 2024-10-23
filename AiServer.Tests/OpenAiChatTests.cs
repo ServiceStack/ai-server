@@ -44,11 +44,10 @@ public class OpenAiChatTests
         var response = await apiClient.PostAsync<OpenAiChatResponse>("/v1/chat/completions", new OpenAiChat()
         {
             Model = "llama3:8b",
-            Messages = new List<OpenAiMessage>
-            {
-                new OpenAiMessage { Role = "system", Content = "You are a helpful AI assistant." },
-                new OpenAiMessage { Role = "user", Content = "How do LLMs work?" }
-            },
+            Messages = [
+                new() { Role = "system", Content = "You are a helpful AI assistant." },
+                new() { Role = "user", Content = "How do LLMs work?" }
+            ],
             MaxTokens = 50
         });
 

@@ -254,5 +254,30 @@
         "model": "mixtral:8x7b"
       }
     ]
+  },
+  {
+    "id": 7,
+    "aiTypeId": "Anthropic",
+    "apiKeyVar": "ANTHROPIC_API_KEY",
+    "concurrency": 1,
+    "priority": 0,
+    "enabled": true,
+    "models": [
+      {
+        "model": "claude-3-haiku"
+      },
+      {
+        "model": "claude-3-sonnet"
+      },
+      {
+        "model": "claude-3-opus"
+      },
+      {
+        "model": "claude-3-5-haiku"
+      },
+      {
+        "model": "claude-3-5-sonnet"
+      }
+    ]
   }
 ]
