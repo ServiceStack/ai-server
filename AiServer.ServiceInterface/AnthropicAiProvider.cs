@@ -41,7 +41,7 @@ public class AnthropicAiProvider(ILogger<AnthropicAiProvider> log) : OpenAiProvi
         {
             Model = request.Model,
             Messages = messages,
-            MaxTokens = request.MaxTokens,
+            MaxTokens = request.MaxTokens ?? 2048,
             Metadata = request.User != null
                 ? new AnthropicMetadata { UserId = request.User }
                 : null,
