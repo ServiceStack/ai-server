@@ -6,7 +6,7 @@ services:
     container_name: ai-server
     restart: always
     ports:
-      - "${PORT:-5005}:8080"
+      - "${PORT:-5006}:8080"
     env_file: ".env"
     volumes:
       - ./App_Data:/app/App_Data

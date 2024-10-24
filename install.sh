@@ -107,61 +107,115 @@ setup_ai_provider() {
     # Ensure gum is installed
     install_gum
 
-    # Ask user to select AI provider
-    AI_PROVIDER=$(gum choose --height 10 "OpenAI" "OpenRouter" "OpenRouter Free*" "Mistral AI" "Google Cloud" "Groq Cloud")
+    # Define supported providers and their environment variables
+    declare -A PROVIDER_ENV_VARS=(
+        ["OpenRouter"]="OPENROUTER_API_KEY"
+        ["OpenAI"]="OPENAI_API_KEY"
+        ["Mistral AI"]="MISTRAL_API_KEY"
+        ["Google Cloud"]="GOOGLE_API_KEY"
+        ["Anthropic Claude"]="ANTHROPIC_API_KEY"
+        ["Groq Cloud"]="GROQ_API_KEY"
+    )
 
-    # Set the corresponding environment variable name based on the selection
-    case "$AI_PROVIDER" in
-        "OpenAI")
-            ENV_VAR="OPENAI_API_KEY"
-            ;;
-        "OpenRouter" | "OpenRouter Free*")
-            ENV_VAR="OPENROUTER_API_KEY"
-            ;;
-        "Mistral AI")
-            ENV_VAR="MISTRAL_API_KEY"
-            ;;
-        "Google Cloud")
-            ENV_VAR="GOOGLE_API_KEY"
-            ;;
-        "Groq Cloud")
-            ENV_VAR="GROQ_API_KEY"
-            ;;
-    esac
+    # Initialize array to store selected environment variables
+    declare -A SELECTED_ENV_VARS
 
-    # Check if the environment variable is already set
-    if [ -n "${!ENV_VAR}" ]; then
-        echo "Existing $ENV_VAR found:"
-        echo "${!ENV_VAR}" | cut -c1-10
-        USE_EXISTING=$(gum confirm "Use existing $ENV_VAR?" && echo "yes" || echo "no")
-        if [ "$USE_EXISTING" = "yes" ]; then
-            API_KEY="${!ENV_VAR}"
-        else
-            API_KEY=$(gum input --password --placeholder "Enter your $ENV_VAR")
+    # First, check for existing environment variables
+    for provider in "${!PROVIDER_ENV_VARS[@]}"; do
+        env_var="${PROVIDER_ENV_VARS[$provider]}"
+        
+        if [ -n "${!env_var}" ]; then
+            echo "Existing $env_var found for $provider:"
+            echo "${!env_var}" | cut -c1-10
+            USE_EXISTING=$(gum confirm "Use existing $env_var?" && echo "yes" || echo "no")
+            if [ "$USE_EXISTING" = "yes" ]; then
+                SELECTED_ENV_VARS[$env_var]="${!env_var}"
+                echo "Added $provider configuration"
+            fi
         fi
-    else
+    done
+
+    # Keep asking for additional providers until user chooses to complete setup
+    while true; do
+        echo "Do you want to add any more providers or complete setup?"
+        ACTION=$(gum choose "Add provider" "Complete setup")
+        
+        if [ "$ACTION" = "Complete setup" ]; then
+            break
+        fi
+
+        # Filter out already selected providers
+        AVAILABLE_PROVIDERS=()
+        for provider in "${!PROVIDER_ENV_VARS[@]}"; do
+            env_var="${PROVIDER_ENV_VARS[$provider]}"
+            if [ -z "${SELECTED_ENV_VARS[$env_var]}" ]; then
+                AVAILABLE_PROVIDERS+=("$provider")
+            fi
+        done
+
+        # If no more providers available
+        if [ ${#AVAILABLE_PROVIDERS[@]} -eq 0 ]; then
+            echo "No more providers available to add."
+            break
+        fi
+
+        # Select provider to add
+        SELECTED_PROVIDER=$(gum choose --height 10 "${AVAILABLE_PROVIDERS[@]}")
+        ENV_VAR="${PROVIDER_ENV_VARS[$SELECTED_PROVIDER]}"
+
+        # Get API key
         API_KEY=$(gum input --password --placeholder "Enter your $ENV_VAR")
+        SELECTED_ENV_VARS[$ENV_VAR]="$API_KEY"
+        echo "Added $SELECTED_PROVIDER configuration"
+    done
+
+    # Ask for AUTH_SECRET
+    AUTH_SECRET=$(gum input --password --placeholder "What Auth Secret would you like to use? (default p@55wOrd)")
+    if [ -z "$AUTH_SECRET" ]; then
+        AUTH_SECRET="p@55wOrd"
     fi
 
-    # Save the result to .env file
-    echo "$ENV_VAR=$API_KEY" > .env
-    echo "API key saved to .env file."
+    # Save all environment variables to .env file
+    : > .env  # Clear the file
+    for env_var in "${!SELECTED_ENV_VARS[@]}"; do
+        echo "$env_var=${SELECTED_ENV_VARS[$env_var]}" >> .env
+    done
+    echo "AUTH_SECRET=$AUTH_SECRET" >> .env
+    echo "Environment variables saved to .env file."
 
     # Ask if the user wants to run "AI Server"
     if gum confirm "Do you want to run AI Server?"; then
         echo "Starting AI Server..."
         docker compose up -d
 
-        # Wait for the server to start (adjust the sleep time if needed)
+        # Wait for the server to start
         sleep 5
 
-        # Open browser (this command varies depending on the OS)
+        # Ask about ComfyUI Agent setup only if AI Server was started
+        if gum confirm "Do you want to configure a local ComfyUI Agent with your AI Server for testing?"; then
+            echo "Setting up ComfyUI Agent..."
+            
+            # Initialize and update submodules
+            git submodule init
+            git submodule update
+            
+            # Check if the agent-comfy directory exists and install script is executable
+            if [ -f "./agent-comfy/install.sh" ]; then
+                chmod +x "./agent-comfy/install.sh"
+                ./agent-comfy/install.sh
+            else
+                echo "Error: Could not find agent-comfy/install.sh"
+                exit 1
+            fi
+        fi
+
+        # Open browser based on OS
         if [[ "$OSTYPE" == "darwin"* ]]; then
-            open "http://localhost:5005"
+            open "http://localhost:5006"
         elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            xdg-open "http://localhost:5005"
+            xdg-open "http://localhost:5006"
         else
-            echo "Please open http://localhost:5005 in your browser."
+            echo "Please open http://localhost:5006 in your browser."
         fi
     else
         echo "AI Server not started. You can run it later with 'docker compose up -d'"
