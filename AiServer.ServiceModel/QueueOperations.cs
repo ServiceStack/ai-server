@@ -3,11 +3,11 @@ using ServiceStack;
 
 namespace AiServer.ServiceModel;
 
-[Tag(Tag.Admin)]
+[Tag(Tags.Admin)]
 [ValidateAuthSecret]
 public class Reload : IPost, IReturn<EmptyResponse> {}
 
-[Tag(Tag.Admin)]
+[Tag(Tags.Admin)]
 [ValidateAuthSecret]
 public class ChangeAiProviderStatus : IPost, IReturn<StringResponse>
 {

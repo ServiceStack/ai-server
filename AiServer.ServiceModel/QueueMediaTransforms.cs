@@ -6,7 +6,7 @@ using ServiceStack.Jobs;
 namespace AiServer.ServiceModel;
 
 [ValidateApiKey]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [Api("Scale video")]
 [Description("Scale a video to specified dimensions")]
 public class QueueScaleVideo : IQueueMediaTransform, IReturn<QueueMediaTransformResponse>
@@ -41,7 +41,7 @@ public class QueueScaleVideo : IQueueMediaTransform, IReturn<QueueMediaTransform
 }
 
 [ValidateApiKey]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [Api("Watermark video")]
 [Description("Add a watermark to a video")]
 public class QueueWatermarkVideo : IQueueMediaTransform, IReturn<QueueMediaTransformResponse>
@@ -111,7 +111,7 @@ public class QueueMediaTransformResponse
 }
 
 [Description("Convert an image to a different format")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class QueueConvertImage : IQueueMediaTransform, IPost, IReturn<QueueMediaTransformResponse>
 {
@@ -141,7 +141,7 @@ public class QueueConvertImage : IQueueMediaTransform, IPost, IReturn<QueueMedia
 }
 
 [Description("Crop an image to a specified area")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class QueueCropImage : IQueueMediaTransform, IPost, IReturn<QueueMediaTransformResponse>
 {
@@ -182,7 +182,7 @@ public class QueueCropImage : IQueueMediaTransform, IPost, IReturn<QueueMediaTra
 }
 
 [Description("Add a watermark to an image")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class QueueWatermarkImage : IQueueMediaTransform, IPost, IReturn<QueueMediaTransformResponse>
 {
@@ -218,7 +218,7 @@ public class QueueWatermarkImage : IQueueMediaTransform, IPost, IReturn<QueueMed
 }
 
 [Description("Scale an image to a specified size")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class QueueScaleImage : IQueueMediaTransform,IPost, IReturn<MediaTransformResponse>
 {
@@ -250,7 +250,7 @@ public class QueueScaleImage : IQueueMediaTransform,IPost, IReturn<MediaTransfor
 }
 
 [Description("Convert a video to a different format")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class QueueConvertVideo : IQueueMediaTransform, IReturn<QueueMediaTransformResponse>
 {
@@ -277,7 +277,7 @@ public class QueueConvertVideo : IQueueMediaTransform, IReturn<QueueMediaTransfo
 }
 
 [Description("Crop a video to a specified area")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class QueueCropVideo : IQueueMediaTransform, IReturn<QueueMediaTransformResponse>
 {
@@ -323,7 +323,7 @@ public class QueueCropVideo : IQueueMediaTransform, IReturn<QueueMediaTransformR
 }
 
 [Description("Trim a video to a specified duration via start and end times")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class QueueTrimVideo : IQueueMediaTransform, IReturn<QueueMediaTransformResponse>
 {
@@ -354,7 +354,7 @@ public class QueueTrimVideo : IQueueMediaTransform, IReturn<QueueMediaTransformR
 }
 
 [Description("Convert an audio file to a different format")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class QueueConvertAudio : IQueueMediaTransform, IReturn<QueueMediaTransformResponse>
 {

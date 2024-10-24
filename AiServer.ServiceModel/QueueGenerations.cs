@@ -5,7 +5,7 @@ using ServiceStack.Jobs;
 namespace AiServer.ServiceModel;
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Convert speech to text")]
 [Description("Transcribe audio content to text")]
 public class QueueSpeechToText : IQueueGeneration, IReturn<QueueGenerationResponse>
@@ -35,7 +35,7 @@ public class QueueSpeechToText : IQueueGeneration, IReturn<QueueGenerationRespon
 }
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Convert text to speech")]
 [Description("Generate speech audio from text input")]
 public class QueueTextToSpeech : IQueueGeneration, IReturn<QueueGenerationResponse>
@@ -73,7 +73,7 @@ public class QueueTextToSpeech : IQueueGeneration, IReturn<QueueGenerationRespon
 }
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Generate image from text description")]
 [Description("Create an image based on a text prompt")]
 public class QueueTextToImage : IQueueGeneration, IReturn<QueueGenerationResponse>
@@ -132,7 +132,7 @@ public class QueueTextToImage : IQueueGeneration, IReturn<QueueGenerationRespons
 }
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Generate image from another image")]
 [Description("Create a new image based on an existing image and a text prompt")]
 public class QueueImageToImage : IQueueGeneration, IReturn<QueueGenerationResponse>
@@ -192,7 +192,7 @@ public class QueueImageToImage : IQueueGeneration, IReturn<QueueGenerationRespon
 }
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Upscale an image")]
 [Description("Increase the resolution and quality of an input image")]
 public class QueueImageUpscale : IQueueGeneration, IReturn<QueueGenerationResponse>
@@ -227,7 +227,7 @@ public class QueueImageUpscale : IQueueGeneration, IReturn<QueueGenerationRespon
 }
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Generate image with masked area")]
 [Description("Create a new image by applying a mask to an existing image and generating content for the masked area")]
 public class QueueImageWithMask : IQueueGeneration, IReturn<QueueGenerationResponse>
@@ -284,7 +284,7 @@ public class QueueImageWithMask : IQueueGeneration, IReturn<QueueGenerationRespo
 }
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Convert image to text")]
 [Description("Extract text content from an image")]
 public class QueueImageToText : IQueueGeneration, IReturn<QueueGenerationResponse>
@@ -326,7 +326,7 @@ public interface IQueueGeneration
 }
 
 [ValidateApiKey]
-[Tag(Tag.Jobs)]
+[Tag(Tags.Admin)]
 [Api("Get job status")]
 [Description("Retrieve the status of a background job")]
 public class GetJobStatus : IGet, IReturn<GetJobStatusResponse>

@@ -4,7 +4,7 @@ using ServiceStack.DataAnnotations;
 
 namespace AiServer.ServiceModel;
 
-[Tag(Tag.Info)]
+[Tag(Tags.AiInfo)]
 [ValidateApiKey]
 [Description("Media Providers")]
 public class QueryMediaProviders : QueryDb<MediaProvider>
@@ -13,7 +13,7 @@ public class QueryMediaProviders : QueryDb<MediaProvider>
     public string? Name { get; set; }
 }
 
-[Tag(Tag.Admin)]
+[Tag(Tags.Admin)]
 [ValidateAuthSecret]
 [Description("Add an API Provider to Generation API Providers")]
 [AutoPopulate(nameof(MediaProvider.CreatedDate),  Eval = "utcNow")]
@@ -60,15 +60,14 @@ public class CreateMediaProvider : ICreateDb<MediaProvider>, IReturn<IdResponse>
     public string MediaTypeId { get; set; }
 }
 
-[Tag(Tag.Info)]
-[ValidateApiKey]
+[Tag(Tags.AiInfo)]
 [Description("Media Models")]
 public class QueryMediaModels : QueryDb<MediaModel>
 {
     public string? Id { get; set; }
 }
 
-[Tag(Tag.Admin)]
+[Tag(Tags.Admin)]
 [ValidateAuthSecret]
 [Description("Update a Generation API Provider")]
 public class UpdateMediaProvider : IPatchDb<MediaProvider>, IReturn<IdResponse>
@@ -102,7 +101,7 @@ public class UpdateMediaProvider : IPatchDb<MediaProvider>, IReturn<IdResponse>
     public List<string>? Models { get; set; }
 }
 
-[Tag(Tag.Admin)]
+[Tag(Tags.Admin)]
 [ValidateAuthSecret]
 [Description("Delete a Generation API Provider")]
 public class DeleteMediaProvider : IDeleteDb<MediaProvider>, IReturn<IdResponse>
@@ -111,7 +110,7 @@ public class DeleteMediaProvider : IDeleteDb<MediaProvider>, IReturn<IdResponse>
     public string? Name { get; set; }
 }
 
-[Tag(Tag.Info)]
+[Tag(Tags.AiInfo)]
 [Description("Text to Speech Voice models")]
 public class QueryTextToSpeechVoices : QueryDb<TextToSpeechVoice>
 {

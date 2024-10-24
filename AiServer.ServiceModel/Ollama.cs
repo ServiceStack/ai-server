@@ -3,6 +3,7 @@ using ServiceStack;
 
 namespace AiServer.ServiceModel;
 
+[Tag(Tags.AiInfo)]
 public class GetOllamaModels : IGet, IReturn<GetOllamaModelsResponse> 
 {
     [ValidateNotEmpty]

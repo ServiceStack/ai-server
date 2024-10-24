@@ -4,7 +4,7 @@ using ServiceStack.DataAnnotations;
 namespace AiServer.ServiceModel;
 
 [ValidateApiKey]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [Api("Scale video")]
 [Description("Scale a video to specified dimensions")]
 public class ScaleVideo : IMediaTransform, IReturn<MediaTransformResponse>
@@ -35,7 +35,7 @@ public class ScaleVideo : IMediaTransform, IReturn<MediaTransformResponse>
 }
 
 [ValidateApiKey]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [Api("Watermark video")]
 [Description("Add a watermark to a video")]
 public class WatermarkVideo : IMediaTransform, IReturn<MediaTransformResponse>
@@ -76,7 +76,7 @@ public enum WatermarkPosition
 
 
 [Description("Convert an image to a different format")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class ConvertImage : IMediaTransform, IPost, IReturn<MediaTransformResponse>
 {
@@ -101,7 +101,7 @@ public class ConvertImage : IMediaTransform, IPost, IReturn<MediaTransformRespon
 }
 
 [Description("Crop an image to a specified area")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class CropImage : IMediaTransform, IPost, IReturn<MediaTransformResponse>
 {
@@ -137,7 +137,7 @@ public class CropImage : IMediaTransform, IPost, IReturn<MediaTransformResponse>
 }
 
 [Description("Scale an image to a specified size")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class ScaleImage : IMediaTransform, IPost, IReturn<MediaTransformResponse>
 {
@@ -165,7 +165,7 @@ public class ScaleImage : IMediaTransform, IPost, IReturn<MediaTransformResponse
 }
 
 [Description("Add a watermark to an image")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class WatermarkImage : IMediaTransform, IPost, IReturn<MediaTransformResponse>
 {
@@ -197,7 +197,7 @@ public class WatermarkImage : IMediaTransform, IPost, IReturn<MediaTransformResp
 }
 
 [Description("Convert a video to a different format")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class ConvertVideo : IMediaTransform, IReturn<MediaTransformResponse>
 {
@@ -220,7 +220,7 @@ public class ConvertVideo : IMediaTransform, IReturn<MediaTransformResponse>
 }
 
 [Description("Crop a video to a specified area")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class CropVideo : IMediaTransform, IReturn<MediaTransformResponse>
 {
@@ -262,7 +262,7 @@ public class CropVideo : IMediaTransform, IReturn<MediaTransformResponse>
 }
 
 [Description("Trim a video to a specified duration via start and end times")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class TrimVideo : IMediaTransform, IReturn<MediaTransformResponse>
 {
@@ -289,7 +289,7 @@ public class TrimVideo : IMediaTransform, IReturn<MediaTransformResponse>
 }
 
 [Description("Convert an audio file to a different format")]
-[Tag("Media")]
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class ConvertAudio : IMediaTransform, IReturn<MediaTransformResponse>
 {

@@ -5,6 +5,7 @@ using ServiceStack.DataAnnotations;
 
 namespace AiServer.ServiceModel;
 
+[Tag(Tags.Media)]
 [ValidateApiKey]
 public class CreateMediaTransform : IReturn<CreateTransformResponse>
 {

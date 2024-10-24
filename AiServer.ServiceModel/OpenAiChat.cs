@@ -7,7 +7,7 @@ namespace AiServer.ServiceModel;
 /// <summary>
 /// https://platform.openai.com/docs/api-reference/chat/create
 /// </summary>
-[Tag(Tag.OpenAi)]
+[Tag(Tags.AiInfo)]
 [Description("Given a list of messages comprising a conversation, the model will return a response.")]
 [DataContract]
 public class OpenAiChat
