@@ -201,8 +201,16 @@ setup_ai_provider() {
             
             # Check if the agent-comfy directory exists and install script is executable
             if [ -f "./agent-comfy/install.sh" ]; then
+                # Export necessary environment variables for the install script
+                export AI_SERVER_AUTH_SECRET="$AUTH_SECRET"
+                export AI_SERVER_URL="http://localhost:5006"
+                
                 chmod +x "./agent-comfy/install.sh"
                 ./agent-comfy/install.sh
+                
+                # Optionally unset the environment variables after installation
+                unset AI_SERVER_AUTH_SECRET
+                unset AI_SERVER_URL
             else
                 echo "Error: Could not find agent-comfy/install.sh"
                 exit 1
