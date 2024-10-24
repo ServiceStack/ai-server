@@ -6,7 +6,7 @@ using ServiceStack.Jobs;
 
 namespace AiServer.ServiceModel;
 
-[Tag(Tag.OpenAi)]
+[Tag(Tags.AiInfo)]
 [ValidateApiKey]
 public class GetOpenAiChat : IGet, IReturn<GetOpenAiChatResponse>
 {
@@ -19,6 +19,7 @@ public class GetOpenAiChatResponse
     public ResponseStatus? ResponseStatus { get; set; }
 }
 
+[Tag(Tags.AiInfo)]
 public class GetOpenAiChatStatus : IGet, IReturn<GetOpenAiChatStatusResponse>
 {
     public long JobId { get; set; }
@@ -52,7 +53,7 @@ public class GetOpenAiChatStatusResponse
     public OpenAiChatResponse? ChatResponse { get; set; }
 }
 
-[Tag(Tag.OpenAi)]
+[Tag(Tags.AiInfo)]
 [ValidateApiKey]
 public class WaitForOpenAiChat : IGet, IReturn<GetOpenAiChatResponse>
 {
@@ -60,7 +61,7 @@ public class WaitForOpenAiChat : IGet, IReturn<GetOpenAiChatResponse>
     public string? RefId { get; set; }
 }
 
-[Tag(Tag.OpenAi)]
+[Tag(Tags.AiInfo)]
 [Route("/icons/models/{Model}", "GET")]
 public class GetModelImage : IGet, IReturn<byte[]>
 {
@@ -68,7 +69,7 @@ public class GetModelImage : IGet, IReturn<byte[]>
 }
 
 
-[Tag(ServiceModel.Tag.OpenAi)]
+[Tag(Tags.AI)]
 [ValidateApiKey]
 [SystemJson(UseSystemJson.Response)]
 public class QueueOpenAiChatCompletion : IReturn<QueueOpenAiChatResponse>
@@ -89,7 +90,7 @@ public class QueueOpenAiChatResponse
     public ResponseStatus? ResponseStatus { get; set; }
 }
 
-[Tag(ServiceModel.Tag.OpenAi)]
+[Tag(Tags.AI)]
 [ValidateApiKey]
 [Route("/v1/chat/completions", "POST")]
 [SystemJson(UseSystemJson.Response)]
@@ -105,7 +106,7 @@ public class OpenAiChatCompletion : OpenAiChat, IPost, IReturn<OpenAiChatRespons
     public string? Tag { get; set; }
 }
 
-[Tag(Tag.Info)]
+[Tag(Tags.AiInfo)]
 [ValidateApiKey]
 public class GetActiveProviders : IGet, IReturn<GetActiveProvidersResponse> {}
 
@@ -115,7 +116,7 @@ public class GetActiveProvidersResponse
     public ResponseStatus? ResponseStatus { get; set; }
 }
 
-[Tag(Tag.OpenAi)]
+[Tag(Tags.AiInfo)]
 [ValidateApiKey]
 public class ChatAiProvider : IPost, IReturn<OpenAiChatResponse>
 {
@@ -127,7 +128,7 @@ public class ChatAiProvider : IPost, IReturn<OpenAiChatResponse>
     public string? Prompt { get; set; }
 }
 
-[Tag(Tag.Admin)]
+[Tag(Tags.Admin)]
 [ValidateAuthSecret]
 public class CreateApiKey : IPost, IReturn<CreateApiKeyResponse>
 {
@@ -155,7 +156,7 @@ public class CreateApiKeyResponse
     public string? Notes { get; set; }
 }
 
-[Tag(Tag.Admin)]
+[Tag(Tags.Admin)]
 [ValidateAuthSecret]
 public class GetWorkerStats : IGet, IReturn<GetWorkerStatsResponse> { }
 public class GetWorkerStatsResponse
@@ -165,7 +166,7 @@ public class GetWorkerStatsResponse
     public ResponseStatus? ResponseStatus { get; set; }
 }
 
-[Tag(Tag.Admin)]
+[Tag(Tags.Admin)]
 [ValidateAuthSecret]
 public class CancelWorker : IReturn<EmptyResponse>
 {

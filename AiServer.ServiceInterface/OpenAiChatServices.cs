@@ -5,6 +5,7 @@ using ServiceStack.Jobs;
 using ServiceStack.OrmLite;
 using AiServer.ServiceInterface.Jobs;
 using AiServer.ServiceModel;
+using ServiceStack.DataAnnotations;
 
 namespace AiServer.ServiceInterface;
 
@@ -16,6 +17,7 @@ public class OpenAiChatServices(
     AppData appData,
     IBackgroundJobs jobs) : Service
 {
+    [ExcludeMetadata]
     class QueryAiModelsData : QueryData<AiModel> {}
     public object Any(QueryAiModels request)
     {
@@ -24,6 +26,7 @@ public class OpenAiChatServices(
         return autoQueryData.Execute(query, autoQueryData.CreateQuery(query, Request, db), db);
     }
     
+    [ExcludeMetadata]
     class QueryAiTypesData : QueryData<AiType> {}
     public object Any(QueryAiTypes request)
     {

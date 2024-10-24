@@ -2,12 +2,14 @@
 using AiServer.ServiceModel;
 using Microsoft.Extensions.Logging;
 using ServiceStack;
+using ServiceStack.DataAnnotations;
 using ServiceStack.Jobs;
 using ServiceStack.OrmLite;
 using ServiceStack.Text;
 
 namespace AiServer.ServiceInterface;
 
+[ExcludeMetadata]
 public class PopulateChatSummary : IGet, IReturn<StringsResponse> {}
 
 public class ChatSummaryServices(ILogger<ChatSummaryServices> log, IBackgroundJobs jobs) : Service

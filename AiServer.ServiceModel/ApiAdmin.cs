@@ -3,20 +3,20 @@ using ServiceStack.DataAnnotations;
 
 namespace AiServer.ServiceModel;
 
-[Tag(Tag.Info)]
+[Tag(Tags.AiInfo)]
 [Description("Different Models available in AI Server")]
 public class QueryAiModels : QueryDb<AiModel> {}
 
-[Tag(Tag.Info)]
+[Tag(Tags.AiInfo)]
 [Description("The Type and behavior of different API Providers")]
 public class QueryAiTypes : QueryDb<AiType> {}
 
-[Tag(Tag.Info)]
+[Tag(Tags.AiInfo)]
 [Description("Active AI Worker Models available in AI Server")]
 public class ActiveAiModels : IGet, IReturn<StringsResponse> {}
 
 
-[Tag(Tag.Info)]
+[Tag(Tags.AiInfo)]
 [ValidateApiKey]
 [Description("AI Providers")]
 public class QueryAiProviders : QueryDb<AiProvider>
@@ -24,7 +24,7 @@ public class QueryAiProviders : QueryDb<AiProvider>
     public string? Name { get; set; }
 }
 
-[Tag(Tag.Admin)]
+[Tag(Tags.Admin)]
 [ValidateAuthSecret]
 [Description("Add an AI Provider to process AI Requests")]
 [AutoPopulate(nameof(AiProvider.CreatedDate),  Eval = "utcNow")]
@@ -81,7 +81,7 @@ public class CreateAiProvider : ICreateDb<AiProvider>, IReturn<IdResponse>
     public List<string>? SelectedModels { get; set; }
 }
 
-[Tag(Tag.Admin)]
+[Tag(Tags.Admin)]
 [ValidateAuthSecret]
 public class UpdateAiProvider : IPatchDb<AiProvider>, IReturn<IdResponse>
 {
@@ -133,14 +133,16 @@ public class UpdateAiProvider : IPatchDb<AiProvider>, IReturn<IdResponse>
     public List<string>? SelectedModels { get; set; }
 }
 
-[Tag(Tag.Admin)]
-[ValidateApiKey]
+[Tag(Tags.Admin)]
+[ValidateAuthSecret]
 [Description("Delete API Provider")]
 public class DeleteAiProvider : IDeleteDb<AiProvider>, IReturnVoid
 {
     public int Id { get; set; }
 }
 
+[Tag(Tags.Admin)]
+[ValidateAuthSecret]
 public class AdminData : IGet, IReturn<AdminDataResponse> {}
 
 public class PageStats

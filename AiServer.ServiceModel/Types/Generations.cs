@@ -4,6 +4,7 @@ using ServiceStack.Model;
 
 namespace AiServer.ServiceModel.Types;
 
+[Tag(Tags.MediaInfo)]
 public class QueryMediaTypes : QueryDb<MediaType> { }
 
 

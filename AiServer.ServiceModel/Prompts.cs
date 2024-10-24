@@ -1,8 +1,10 @@
 using ServiceStack;
+using ServiceStack.DataAnnotations;
 using ServiceStack.Model;
 
 namespace AiServer.ServiceModel;
 
+[ExcludeMetadata]
 public class QueryPrompts : QueryData<Prompt> {}
 public class Prompt : IHasId<string>
 {

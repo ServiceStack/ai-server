@@ -154,7 +154,7 @@ namespace AiServer.ServiceModel;
 //     public List<ComfyHostedFileOutput>? Sounds { get; set; } = new();
 // }
 
-[Tag(Tag.Comfy)]
+[Tag(Tags.Media)]
 public class ConfigureAndDownloadModel : IReturn<ComfyAgentDownloadStatus>
 {
     public string Name { get; set; }

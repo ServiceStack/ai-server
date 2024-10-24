@@ -4,6 +4,7 @@ using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.Logging;
 using ServiceStack;
+using ServiceStack.DataAnnotations;
 using ServiceStack.Jobs;
 using ServiceStack.OrmLite;
 using ServiceStack.Text;
@@ -20,6 +21,7 @@ public class MediaProviderServices(ILogger<MediaProviderServices> log,
     AppConfig appConfig,
     AppData appData) : Service
 {
+    [ExcludeMetadata]
     class QueryMediaTypesData : QueryData<MediaType> {}
     public object Any(QueryMediaTypes request)
     {
@@ -38,6 +40,7 @@ public class MediaProviderServices(ILogger<MediaProviderServices> log,
         return r;
     }
     
+    [ExcludeMetadata]
     class QueryTextToSpeechVoicesData : QueryData<TextToSpeechVoice> {}
     public object Any(QueryTextToSpeechVoices request)
     {

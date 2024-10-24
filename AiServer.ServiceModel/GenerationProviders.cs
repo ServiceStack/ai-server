@@ -15,6 +15,7 @@ public class AiProviderTextOutput
     public string? Text { get; set; }
 }
 
+[Tag(Tags.Media)]
 [ValidateApiKey]
 [Route("/generate", "POST")]
 public class CreateGeneration : IReturn<CreateGenerationResponse>
@@ -33,6 +34,7 @@ public class CreateGenerationResponse
     public string RefId { get; set; }
 }
 
+[Tag(Tags.MediaInfo)]
 [Route("/generation/{Id}", "GET")]
 [Route("/generation/ref/{RefId}", "GET")]
 public class GetGeneration : IReturn<GetGenerationResponse>
@@ -108,6 +110,7 @@ public class GenerationResult
     public string? Error { get; set; }
 }
 
+[Tag(Tags.Files)]
 [Route("/artifacts/{**Path}")]
 public class GetArtifact : IGet, IReturn<byte[]>
 {
@@ -116,6 +119,7 @@ public class GetArtifact : IGet, IReturn<byte[]>
     public bool? Download { get; set; }
 }
 
+[Tag(Tags.Files)]
 [Route("/variants/{Variant}/{**Path}")]
 public class GetVariant : IGet, IReturn<byte[]>
 {
@@ -125,6 +129,7 @@ public class GetVariant : IGet, IReturn<byte[]>
     public string Path { get; set; } = null!;
 }
 
+[Tag(Tags.Files)]
 [ValidateApiKey]
 [Route("/files/{**Path}")]
 public class DeleteFile : IDelete, IReturn<EmptyResponse>
@@ -133,6 +138,7 @@ public class DeleteFile : IDelete, IReturn<EmptyResponse>
     public string Path { get; set; } = null!;
 }
 
+[Tag(Tags.Files)]
 [ValidateApiKey]
 public class DeleteFiles : IPost, IReturn<DeleteFilesResponse>
 {
@@ -146,6 +152,7 @@ public class DeleteFilesResponse
     public ResponseStatus? ResponseStatus { get; set; }
 }
 
+[ExcludeMetadata]
 [ValidateApiKey]
 public class MigrateArtifact : IPost, IReturn<MigrateArtifactResponse>
 {

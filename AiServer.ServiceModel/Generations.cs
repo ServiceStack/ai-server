@@ -3,13 +3,13 @@ using ServiceStack.DataAnnotations;
 
 namespace AiServer.ServiceModel;
 
-[Tag(Tag.Info)]
+[Tag(Tags.AiInfo)]
 [Description("Active Media Worker Models available in AI Server")]
 public class ActiveMediaModels : IGet, IReturn<StringsResponse> {}
 
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Convert speech to text")]
 [Description("Transcribe audio content to text")]
 [SystemJson(UseSystemJson.Response)]
@@ -31,7 +31,7 @@ public class SpeechToText : IGeneration, IReturn<GenerationResponse>
 }
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Convert text to speech")]
 [Description("Generate speech audio from text input")]
 [SystemJson(UseSystemJson.Response)]
@@ -61,7 +61,7 @@ public class TextToSpeech : IGeneration, IReturn<GenerationResponse>
 }
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Generate image from text description")]
 [Description("Create an image based on a text prompt")]
 [SystemJson(UseSystemJson.Response)]
@@ -112,7 +112,7 @@ public class TextToImage : IGeneration, IReturn<GenerationResponse>
 }
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Generate image from another image")]
 [Description("Create a new image based on an existing image and a text prompt")]
 [SystemJson(UseSystemJson.Response)]
@@ -164,7 +164,7 @@ public class ImageToImage : IGeneration, IReturn<GenerationResponse>
 }
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Upscale an image")]
 [Description("Increase the resolution and quality of an input image")]
 [SystemJson(UseSystemJson.Response)]
@@ -191,7 +191,7 @@ public class ImageUpscale : IGeneration, IReturn<GenerationResponse>
 }
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Generate image with masked area")]
 [Description("Create a new image by applying a mask to an existing image and generating content for the masked area")]
 [SystemJson(UseSystemJson.Response)]
@@ -240,7 +240,7 @@ public class ImageWithMask : IGeneration, IReturn<GenerationResponse>
 }
 
 [ValidateApiKey]
-[Tag("AI")]
+[Tag(Tags.AI)]
 [Api("Convert image to text")]
 [Description("Extract text content from an image")]
 [SystemJson(UseSystemJson.Response)]
