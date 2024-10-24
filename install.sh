@@ -169,24 +169,6 @@ setup_ai_provider() {
         echo "Added $SELECTED_PROVIDER configuration"
     done
 
-    # Ask about ComfyUI Agent setup
-    if gum confirm "Do you want to run a ComfyUI Agent locally for testing?"; then
-        echo "Setting up ComfyUI Agent..."
-        
-        # Initialize and update submodules
-        git submodule init
-        git submodule update
-        
-        # Check if the agent-comfy directory exists and install script is executable
-        if [ -f "./agent-comfy/install.sh" ]; then
-            chmod +x "./agent-comfy/install.sh"
-            ./agent-comfy/install.sh
-        else
-            echo "Error: Could not find agent-comfy/install.sh"
-            exit 1
-        fi
-    fi
-
     # Ask for AUTH_SECRET
     AUTH_SECRET=$(gum input --password --placeholder "What Auth Secret would you like to use? (default p@55wOrd)")
     if [ -z "$AUTH_SECRET" ]; then
@@ -208,6 +190,24 @@ setup_ai_provider() {
 
         # Wait for the server to start
         sleep 5
+
+        # Ask about ComfyUI Agent setup only if AI Server was started
+        if gum confirm "Do you want to configure a local ComfyUI Agent with your AI Server for testing?"; then
+            echo "Setting up ComfyUI Agent..."
+            
+            # Initialize and update submodules
+            git submodule init
+            git submodule update
+            
+            # Check if the agent-comfy directory exists and install script is executable
+            if [ -f "./agent-comfy/install.sh" ]; then
+                chmod +x "./agent-comfy/install.sh"
+                ./agent-comfy/install.sh
+            else
+                echo "Error: Could not find agent-comfy/install.sh"
+                exit 1
+            fi
+        fi
 
         # Open browser based on OS
         if [[ "$OSTYPE" == "darwin"* ]]; then
