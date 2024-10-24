@@ -143,3 +143,43 @@ export const ArtifactGallery = {
         }
     }
 }
+
+export const ArtifactDownloads = {
+    template:`
+        <div class="z-40 fixed bottom-0 gap-x-6 w-full flex justify-center p-4 bg-black/20">
+            <a :href="url + '?download=1'" @mouseover="showVariants=false" class="flex text-sm text-gray-300 hover:text-gray-100 hover:drop-shadow">
+                <svg class="w-5 h-5 mr-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 20h12M12 4v12m0 0l3.5-3.5M12 16l-3.5-3.5"></path></svg> 
+                download 
+            </a>
+            <div @mouseover="showVariants=true">
+                <button type="button" class="flex text-sm text-gray-300 hover:text-gray-100 hover:drop-shadow" aria-expanded="true" aria-haspopup="true">
+                  <span class="sr-only">Open Variants</span>
+                  <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                    <path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM11.5 15.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
+                  </svg>
+                  <span>variants</span>
+                </button>
+                <div v-if="showVariants" class="font-normal absolute z-10 w-40 -ml-4 bottom-10 rounded-md bg-white dark:bg-black py-1 shadow-lg ring-1 ring-black dark:ring-gray-600 ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                    <a :href="variant({width:512,height:512})" target="_blank" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800" role="menuitem" tabindex="-1">512 x 512</a>
+                    <a :href="variant({width:256,height:256})" target="_blank" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800" role="menuitem" tabindex="-1">256 x 256</a>
+                    <a :href="variant({width:128})" target="_blank" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800" role="menuitem" tabindex="-1">128w</a>
+                    <a :href="variant({height:128})" target="_blank" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800" role="menuitem" tabindex="-1">128h</a>
+                </div>
+            </div>
+            <div @mouseover="showVariants=false">
+                <slot></slot>
+            </div>
+        </div>
+    `,
+    props: {
+        url:String,
+    },
+    setup(props) {
+        const showVariants = ref(false)
+        function variant(args) {
+            const variants = Object.keys(args).map(x => `${x}=${args[x]}`).join(',')
+            return props.url.replace('/artifacts/',`/variants/${variants}/`)
+        }
+        return { showVariants, variant }
+    }
+}

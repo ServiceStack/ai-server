@@ -3,7 +3,7 @@ import { useClient } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
 import { TextToImage, ActiveMediaModels } from "dtos"
 import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, toArtifacts } from "../utils.mjs"
-import { ArtifactGallery } from "./Artifacts.mjs"
+import { ArtifactGallery, ArtifactDownloads } from "./Artifacts.mjs"
 import PromptGenerator from "./PromptGenerator.mjs"
 
 export default {
@@ -12,6 +12,7 @@ export default {
         HistoryTitle,
         HistoryGroups,
         ArtifactGallery,
+        ArtifactDownloads,
         PromptGenerator,
     },
     template:`
@@ -91,16 +92,12 @@ export default {
 
                     <ArtifactGallery :results="toArtifacts(result)">
                         <template #bottom="{ selected }">
-                            <div class="z-40 fixed bottom-0 gap-x-6 w-full flex justify-center p-4 bg-black/20">
-                                <a :href="selected.url + '?download=1'" class="flex text-sm text-gray-300 hover:text-gray-100 hover:drop-shadow">
-                                    <svg class="w-5 h-5 mr-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 20h12M12 4v12m0 0l3.5-3.5M12 16l-3.5-3.5"></path></svg> 
-                                    download 
-                                </a>
+                            <ArtifactDownloads :url="selected.url">
                                 <div @click.stop.prevent="toggleIcon(selected)" class="flex cursor-pointer text-sm text-gray-300 hover:text-gray-100 hover:drop-shadow">
                                     <svg :class="['w-5 h-5 mr-0.5',selected.url == threadRef.icon ? '-rotate-45' : '']" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14 18l-8 8M20.667 4L28 11.333l-6.38 6.076a2 2 0 0 0-.62 1.448v3.729c0 .89-1.077 1.337-1.707.707L8.707 12.707c-.63-.63-.184-1.707.707-1.707h3.729a2 2 0 0 0 1.448-.62z"/></svg>
                                     {{selected.url == threadRef.icon ? 'unpin icon' : 'pin icon' }}
                                 </div>
-                            </div>
+                            </ArtifactDownloads>
                         </template>
                     </ArtifactGallery>
                 </div>
