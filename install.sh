@@ -205,9 +205,14 @@ setup_ai_provider() {
         gum style --foreground="#00FF00" "✓ Added $SELECTED_PROVIDER configuration"
     done
 
+    style_header "AI Server Auth Secret"
+
+    echo "The Auth Secret is used to secure the AI Server API. It should be a strong password if used in production."
+    echo "You can use the default value or set a custom value. Press Enter to use the default value of 'p@55wOrd'."
     # Get Auth Secret
     AUTH_SECRET=$(get_input "Set your Auth Secret" "p@55wOrd" "true" "Enter Auth Secret")
 
+    
     # Save configuration
     for env_var in "${!SELECTED_ENV_VARS[@]}"; do
         write_env "$env_var" "${SELECTED_ENV_VARS[$env_var]}"
