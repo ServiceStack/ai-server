@@ -102,24 +102,17 @@ public class Migration1002 : MigrationBase
             var apiKey = mediaProvider.ApiKeyVar != null
                 ? Environment.GetEnvironmentVariable(mediaProvider.ApiKeyVar)
                 : null;
-
+            // Only insert if we have an API Key
+            if(apiKey == null)
+                continue;
             var mediaType = mediaTypes.First(x => x.Id == mediaProvider.MediaTypeId);
             mediaProvider.MediaType = mediaType;
-            if (mediaProvider.ApiKeyVar == null || apiKey != null)
-            {
-                if (apiKey != null)
-                {
-                    mediaProvider.ApiKey = apiKey;
-                    Console.WriteLine($"Found API Key for {mediaProvider.ApiKeyVar}");
-                }
-                mediaProvider.CreatedDate = now;
-                mediaProvider.ApiBaseUrl ??= mediaType.ApiBaseUrl;
-                mediaProvider.ApiKeyHeader ??= mediaType.ApiKeyHeader;
+            mediaProvider.CreatedDate = now;
+            mediaProvider.ApiBaseUrl ??= mediaType.ApiBaseUrl;
+            mediaProvider.ApiKeyHeader ??= mediaType.ApiKeyHeader;
                 
-                // Support all by default
-                mediaProvider.Models = mediaType.ApiModels.Values.ToList();
-                Console.WriteLine($"Adding {mediaProvider.Name} API Provider...");
-            }
+            // Support all by default
+            mediaProvider.Models = mediaType.ApiModels.Values.ToList();
             if (mediaProvider.ApiUrlVar != null)
             {
                 var apiUrl = Environment.GetEnvironmentVariable(mediaProvider.ApiUrlVar);

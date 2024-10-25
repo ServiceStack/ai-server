@@ -104,8 +104,51 @@ install_using_go() {
 }
 
 setup_ai_provider() {
-    # Ensure gum is installed
-    install_gum
+    # Initialize/reset .env file
+    : > .env
+
+    # Reusable style function for headers
+    style_header() {
+        gum style \
+            --foreground="#00FFFF" \
+            --border-foreground="#00FFFF" \
+            --border double \
+            --align center \
+            --width 50 \
+            "$1"
+    }
+
+    # Reusable input prompt function
+    get_input() {
+        local prompt="$1"
+        local default="$2"
+        local is_password="$3"
+        local placeholder="$4"
+    
+        # Print prompts to stderr so they don't get captured in variable assignment
+        echo >&2
+        gum style --foreground="#CCCCCC" "$prompt" >&2
+        [ -n "$default" ] && gum style --foreground="#888888" "Default: $default" >&2
+    
+        local input_args=(
+            --value "${default:-}"
+            --placeholder "$placeholder"
+            --prompt "> "
+            --prompt.foreground="#00FFFF"
+        )
+        [ "$is_password" = "true" ] && input_args+=(--password)
+    
+        # Only return the actual input value
+        gum input "${input_args[@]}"
+    }
+
+    # Reusable function to write to .env
+    write_env() {
+        echo "$1=$2" >> .env
+    }
+
+    # Provider setup
+    style_header "AI Provider Configuration"
 
     # Define supported providers and their environment variables
     declare -A PROVIDER_ENV_VARS=(
@@ -115,104 +158,97 @@ setup_ai_provider() {
         ["Google Cloud"]="GOOGLE_API_KEY"
         ["Anthropic Claude"]="ANTHROPIC_API_KEY"
         ["Groq Cloud"]="GROQ_API_KEY"
+        ["Replicate"]="REPLICATE_API_KEY"
     )
 
     # Initialize array to store selected environment variables
     declare -A SELECTED_ENV_VARS
 
-    # First, check for existing environment variables
+    # Check existing environment variables
     for provider in "${!PROVIDER_ENV_VARS[@]}"; do
         env_var="${PROVIDER_ENV_VARS[$provider]}"
         
         if [ -n "${!env_var}" ]; then
-            echo "Existing $env_var found for $provider:"
-            echo "${!env_var}" | cut -c1-10
-            USE_EXISTING=$(gum confirm "Use existing $env_var?" && echo "yes" || echo "no")
-            if [ "$USE_EXISTING" = "yes" ]; then
+            gum style --foreground="#CCCCCC" "Found existing $provider API key:"
+            gum style --foreground="#888888" "$(echo "${!env_var}" | cut -c1-10)..."
+            
+            if gum confirm "Use existing $provider API key?"; then
                 SELECTED_ENV_VARS[$env_var]="${!env_var}"
-                echo "Added $provider configuration"
+                gum style --foreground="#00FF00" "✓ Using existing $provider configuration"
             fi
         fi
     done
 
-    # Keep asking for additional providers until user chooses to complete setup
+    # Provider selection loop
     while true; do
-        echo "Do you want to add any more providers or complete setup?"
+        style_header "Provider Selection"
         ACTION=$(gum choose "Add provider" "Complete setup")
         
-        if [ "$ACTION" = "Complete setup" ]; then
-            break
-        fi
+        [ "$ACTION" = "Complete setup" ] && break
 
-        # Filter out already selected providers
+        # Filter available providers
         AVAILABLE_PROVIDERS=()
         for provider in "${!PROVIDER_ENV_VARS[@]}"; do
             env_var="${PROVIDER_ENV_VARS[$provider]}"
-            if [ -z "${SELECTED_ENV_VARS[$env_var]}" ]; then
-                AVAILABLE_PROVIDERS+=("$provider")
-            fi
+            [ -z "${SELECTED_ENV_VARS[$env_var]}" ] && AVAILABLE_PROVIDERS+=("$provider")
         done
 
-        # If no more providers available
-        if [ ${#AVAILABLE_PROVIDERS[@]} -eq 0 ]; then
-            echo "No more providers available to add."
+        # Check if providers are available
+        [ ${#AVAILABLE_PROVIDERS[@]} -eq 0 ] && {
+            gum style --foreground="#FFFF00" "No more providers available to add."
             break
-        fi
+        }
 
-        # Select provider to add
+        # Get provider selection and API key
         SELECTED_PROVIDER=$(gum choose --height 10 "${AVAILABLE_PROVIDERS[@]}")
         ENV_VAR="${PROVIDER_ENV_VARS[$SELECTED_PROVIDER]}"
-
-        # Get API key
-        API_KEY=$(gum input --password --placeholder "Enter your $ENV_VAR")
+        API_KEY=$(get_input "Enter your $SELECTED_PROVIDER API key" "" "true" "Enter API key")
+        
         SELECTED_ENV_VARS[$ENV_VAR]="$API_KEY"
-        echo "Added $SELECTED_PROVIDER configuration"
+        gum style --foreground="#00FF00" "✓ Added $SELECTED_PROVIDER configuration"
     done
 
-    # Ask for AUTH_SECRET
-    AUTH_SECRET=$(gum input --password --placeholder "What Auth Secret would you like to use? (default p@55wOrd)")
-    if [ -z "$AUTH_SECRET" ]; then
-        AUTH_SECRET="p@55wOrd"
-    fi
+    style_header "AI Server Auth Secret"
 
-    # Save all environment variables to .env file
-    : > .env  # Clear the file
+    echo "The Auth Secret is used to secure the AI Server API. It should be a strong password if used in production."
+    echo "You can use the default value or set a custom value. Press Enter to use the default value of 'p@55wOrd'."
+    # Get Auth Secret
+    AUTH_SECRET=$(get_input "Set your Auth Secret" "p@55wOrd" "true" "Enter Auth Secret")
+
+    # Save configuration
     for env_var in "${!SELECTED_ENV_VARS[@]}"; do
-        echo "$env_var=${SELECTED_ENV_VARS[$env_var]}" >> .env
+        write_env "$env_var" "${SELECTED_ENV_VARS[$env_var]}"
     done
-    echo "AUTH_SECRET=$AUTH_SECRET" >> .env
-    echo "Environment variables saved to .env file."
+    write_env "AUTH_SECRET" "$AUTH_SECRET"
+    
+    gum style --foreground="#00FF00" "✓ Environment variables saved to .env file"
 
-    # Ask if the user wants to run "AI Server"
+    # Server setup
+    style_header "AI Server Setup"
     if gum confirm "Do you want to run AI Server?"; then
-        echo "Starting AI Server..."
+        gum style --foreground="#CCCCCC" "Starting AI Server..."
         docker compose up -d
-
-        # Wait for the server to start
         sleep 5
 
-        # Ask about ComfyUI Agent setup only if AI Server was started
-        if gum confirm "Do you want to configure a local ComfyUI Agent with your AI Server for testing?"; then
-            echo "Setting up ComfyUI Agent..."
+        if gum confirm "Do you want to configure a local ComfyUI Agent?"; then
+            gum style --foreground="#CCCCCC" "Setting up ComfyUI Agent..."
             
-            # Initialize and update submodules
             git submodule init
             git submodule update
             
-            # Check if the agent-comfy directory exists and install script is executable
             if [ -f "./agent-comfy/install.sh" ]; then
-                # Export necessary environment variables for the install script
                 export AI_SERVER_AUTH_SECRET="$AUTH_SECRET"
                 export AI_SERVER_URL="http://localhost:5006"
                 
                 chmod +x "./agent-comfy/install.sh"
-                ./agent-comfy/install.sh
+                cd agent-comfy
+                ./install.sh
+                cd ..
                 
-                # Optionally unset the environment variables after installation
                 unset AI_SERVER_AUTH_SECRET
                 unset AI_SERVER_URL
             else
-                echo "Error: Could not find agent-comfy/install.sh"
+                gum style --foreground="#FF0000" "Error: Could not find agent-comfy/install.sh"
                 exit 1
             fi
         fi
@@ -223,10 +259,10 @@ setup_ai_provider() {
         elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
             xdg-open "http://localhost:5006"
         else
-            echo "Please open http://localhost:5006 in your browser."
+            gum style --foreground="#CCCCCC" "Please open http://localhost:5006 in your browser"
         fi
     else
-        echo "AI Server not started. You can run it later with 'docker compose up -d'"
+        gum style --foreground="#CCCCCC" "AI Server not started. Run later with 'docker compose up -d'"
     fi
 }
 
