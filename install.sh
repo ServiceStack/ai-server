@@ -158,6 +158,7 @@ setup_ai_provider() {
         ["Google Cloud"]="GOOGLE_API_KEY"
         ["Anthropic Claude"]="ANTHROPIC_API_KEY"
         ["Groq Cloud"]="GROQ_API_KEY"
+        ["Replicate"]="REPLICATE_API_KEY"
     )
 
     # Initialize array to store selected environment variables
