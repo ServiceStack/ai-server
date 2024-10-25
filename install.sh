@@ -240,7 +240,9 @@ setup_ai_provider() {
                 export AI_SERVER_URL="http://localhost:5006"
                 
                 chmod +x "./agent-comfy/install.sh"
-                ./agent-comfy/install.sh
+                cd agent-comfy
+                ./install.sh
+                cd ..
                 
                 unset AI_SERVER_AUTH_SECRET
                 unset AI_SERVER_URL
