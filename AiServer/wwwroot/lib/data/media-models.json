@@ -61,6 +61,65 @@
     "vae": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors?download=true"
   },
   {
+    "id": "sd-3.5-large",
+    "name": "Stable Diffusion 3.5 Large",
+    "apiModels": {
+      "ComfyUI": "sd3.5_large.safetensors",
+      "Replicate": "stability-ai/stable-diffusion-3.5-large"
+    },
+    "modelType": "TextToImage",
+    "filename": "sd3.5_large.safetensors",
+    "path": "/data/models/checkpoints",
+    "dependsOn": ["stable-diffusion-clip-g","stable-diffusion-clip-l","stable-diffusion-encoder-t5xxl_fp16"],
+    "cfgScale": 1.0,
+    "steps": 40,
+    "scheduler": "sgm_uniform",
+    "sampler": "dpmpp_2m",
+    "width": 1024,
+    "height": 1024,
+    "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large",
+    "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large/resolve/main/sd3.5_large.safetensors?download=true"
+  },
+  {
+    "id": "sd-3.5-large-turbo",
+    "name": "Stable Diffusion 3.5 Large Turbo",
+    "apiModels": {
+      "ComfyUI": "sd3.5_large_turbo.safetensors",
+      "Replicate": "stability-ai/stable-diffusion-3.5-large-turbo"
+    },
+    "modelType": "TextToImage",
+    "filename": "sd3.5_large_turbo.safetensors",
+    "path": "/data/models/checkpoints",
+    "dependsOn": ["stable-diffusion-clip-g","stable-diffusion-clip-l","stable-diffusion-encoder-t5xxl_fp16"],
+    "cfgScale": 1.0,
+    "steps": 4,
+    "scheduler": "sgm_uniform",
+    "sampler": "dpmpp_2m",
+    "width": 1024,
+    "height": 1024,
+    "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo",
+    "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo/resolve/main/sd3.5_large_turbo.safetensors?download=true"
+  },
+  {
+    "id": "sd-3.5-fp8",
+    "name": "Stable Diffusion 3.5 FP8",
+    "apiModels": {
+      "ComfyUI": "sd3.5_large_fp8_scaled.safetensors"
+    },
+    "modelType": "TextToImage",
+    "filename": "sd3.5_large_fp8_scaled.safetensors",
+    "path": "/data/models/checkpoints",
+    "dependsOn": ["stable-diffusion-encoder-t5xxl_fp16"],
+    "cfgScale": 1.0,
+    "steps": 4,
+    "scheduler": "sgm_uniform",
+    "sampler": "dpmpp_2m",
+    "width": 1024,
+    "height": 1024,
+    "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/sd3.5_large_fp8_scaled.safetensors?download=true"
+  },
+  {
     "id": "flux-dev",
     "name": "FLUX Dev",
     "apiModels": {
@@ -215,6 +274,33 @@
     "path": "/data/models/clip",
     "downloadUrl": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors?download=true",
     "url": "https://huggingface.co/comfyanonymous/flux_text_encoders"
+  },
+  {
+    "id": "stable-diffusion-clip-g",
+    "name": "Stable Diffusion Text Encoder (CLIP-G)",
+    "modelType": "TextEncoder",
+    "filename": "clip_g.safetensors",
+    "path": "/data/models/clip",
+    "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3-medium/resolve/main/text_encoders/clip_g.safetensors?download=true",
+    "url": "https://huggingface.co/stabilityai/stable-diffusion-3-medium/tree/main/text_encoders"
+  },
+  {
+    "id": "stable-diffusion-clip-l",
+    "name": "Stable Diffusion Text Encoder (CLIP-L)",
+    "modelType": "TextEncoder",
+    "filename": "clip_l.safetensors",
+    "path": "/data/models/clip",
+    "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3-medium/resolve/main/text_encoders/clip_l.safetensors?download=true",
+    "url": "https://huggingface.co/stabilityai/stable-diffusion-3-medium/tree/main/text_encoders"
+  },
+  {
+    "id": "stable-diffusion-encoder-t5xxl_fp16",
+    "name": "Stable Diffusion Text Encoder (T5-XXL-FP16)",
+    "modelType": "TextEncoder",
+    "filename": "t5xxl_fp16.safetensors",
+    "path": "/data/models/clip",
+    "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3-medium/resolve/main/text_encoders/t5xxl_fp16.safetensors?download=true",
+    "url": "https://huggingface.co/stabilityai/stable-diffusion-3-medium/tree/main/text_encoders"
   },
   {
     "id": "clip-t5-base",
