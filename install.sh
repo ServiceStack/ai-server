@@ -124,10 +124,12 @@ setup_ai_provider() {
         local default="$2"
         local is_password="$3"
         local placeholder="$4"
-
-        gum style --foreground="#CCCCCC" "$prompt"
-        [ -n "$default" ] && gum style --foreground="#888888" "Default: $default"
-        
+    
+        # Print prompts to stderr so they don't get captured in variable assignment
+        echo >&2
+        gum style --foreground="#CCCCCC" "$prompt" >&2
+        [ -n "$default" ] && gum style --foreground="#888888" "Default: $default" >&2
+    
         local input_args=(
             --value "${default:-}"
             --placeholder "$placeholder"
@@ -135,7 +137,8 @@ setup_ai_provider() {
             --prompt.foreground="#00FFFF"
         )
         [ "$is_password" = "true" ] && input_args+=(--password)
-        
+    
+        # Only return the actual input value
         gum input "${input_args[@]}"
     }
 
