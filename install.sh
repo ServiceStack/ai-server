@@ -125,7 +125,6 @@ setup_ai_provider() {
         local is_password="$3"
         local placeholder="$4"
 
-        echo
         gum style --foreground="#CCCCCC" "$prompt"
         [ -n "$default" ] && gum style --foreground="#888888" "Default: $default"
         
@@ -212,7 +211,6 @@ setup_ai_provider() {
     # Get Auth Secret
     AUTH_SECRET=$(get_input "Set your Auth Secret" "p@55wOrd" "true" "Enter Auth Secret")
 
-    
     # Save configuration
     for env_var in "${!SELECTED_ENV_VARS[@]}"; do
         write_env "$env_var" "${SELECTED_ENV_VARS[$env_var]}"
