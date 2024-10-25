@@ -85,6 +85,22 @@
     "modelType": "TextToImage"
   },
   {
+    "id": "stable-diffusion-3.5-large",
+    "name": "Stable Diffusion 3.5 Large",
+    "apiModels": {
+      "Replicate": "stability-ai/stable-diffusion-3.5-large"
+    },
+    "modelType": "TextToImage"
+  },
+  {
+    "id": "stable-diffusion-3.5-large-turbo",
+    "name": "Stable Diffusion 3.5 Large Turbo",
+    "apiModels": {
+      "Replicate": "stability-ai/stable-diffusion-3.5-large-turbo"
+    },
+    "modelType": "TextToImage"
+  },
+  {
     "id": "image-to-image",
     "name": "Image to Image Default",
     "modelType": "ImageToImage",
