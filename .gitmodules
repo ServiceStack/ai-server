@@ -1,0 +1,3 @@
+[submodule "agent-comfy"]
+	path = agent-comfy
+	url = https://github.com/ServiceStack/agent-comfy.git
