@@ -35,7 +35,6 @@
     "sampler": "dpmpp_2m_sde_gpu",
     "width": 1024,
     "height": 1024,
-    "downloadApiKeyVar": "CIVITAI_TOKEN",
     "url": "https://huggingface.co/CompVis/jib-mix-realistic-xl-v140-crystal-clarity",
     "downloadUrl": "https://huggingface.co/CompVis/jib-mix-realistic-xl-v140-crystal-clarity/resolve/main/jibMixRealisticXL_v140CrystalClarity.safetensors?download=true"
   },
