@@ -36,7 +36,7 @@
     "width": 1024,
     "height": 1024,
     "url": "https://huggingface.co/CompVis/jib-mix-realistic-xl-v140-crystal-clarity",
-    "downloadUrl": "https://huggingface.co/CompVis/jib-mix-realistic-xl-v140-crystal-clarity/resolve/main/jibMixRealisticXL_v140CrystalClarity.safetensors?download=true"
+    "downloadUrl": "https://civitai.com/api/download/models/839642?type=Model&format=SafeTensor&size=pruned&fp=fp16"
   },
   {
     "id": "flux-schnell",
