@@ -5,6 +5,10 @@
       "ComfyUI": "sdxl_lightning_4step.safetensors",
       "Replicate": "bytedance/sdxl-lightning-4step"
     },
+    "installer": {
+      "name": "Text & Image to Image (SDXL)",
+      "value": "sdxl-lightning"
+    },
     "modelType": "TextToImage",
     "filename": "sdxl_lightning_4step.safetensors",
     "path": "/data/models/checkpoints",
@@ -44,6 +48,10 @@
     "apiModels": {
       "ComfyUI": "flux1-schnell.safetensors",
       "Replicate": "black-forest-labs/flux-schnell"
+    },
+    "installer": {
+      "name": "Text to Image (Flux.Schnell)",
+      "value": "flux-schnell"
     },
     "modelType": "TextToImage",
     "filename": "flux1-schnell.safetensors",
@@ -107,6 +115,10 @@
     "name": "Stable Diffusion 3.5 FP8",
     "apiModels": {
       "ComfyUI": "sd3.5_large_fp8_scaled.safetensors"
+    },
+    "installer": {
+      "name": "Text to Image (SD 3.5)",
+      "value": "sd-3.5-fp8"
     },
     "modelType": "TextToImage",
     "filename": "sd3.5_large_fp8_scaled.safetensors",
@@ -228,6 +240,10 @@
     "name": "Text to Speech",
     "dependsOn": ["piper-tts-lessac-high","piper-tts-lessac-high-config"],
     "modelType": "TextToSpeech",
+    "installer": {
+      "name": "Text to Speech (Piper)",
+      "value": "text-to-speech"
+    },
     "apiModels": {
       "ComfyUI": "high:en_US-lessac",
       "OpenAI": "tts-1:alloy"
@@ -237,6 +253,10 @@
     "id": "speech-to-text",
     "name": "Speech to Text",
     "modelType": "SpeechToText",
+    "installer": {
+      "name": "Speech to Text (Whisper)",
+      "value": "speech-to-text"
+    },
     "apiModels": {
       "ComfyUI": "base",
       "OpenAI": "whisper-1"
@@ -343,6 +363,10 @@
   {
     "id": "image-upscale-2x",
     "filename": "RealESRGAN_x2.pth",
+    "installer": {
+      "name": "Image Upscale (RealESRGAN_x2)",
+      "value": "image-upscale-2x"
+    },
     "name": "RealESRGAN 2x",
     "modelType": "ImageUpscale",
     "path": "/data/models/RealESRGAN",
@@ -385,6 +409,10 @@
     "id": "image-to-text",
     "name": "Image to Text",
     "modelType": "ImageToText",
+    "installer": {
+      "name": "Image to Text (Florence2)",
+      "value": "image-to-text"
+    },
     "apiModels": {
       "ComfyUI": "Florence-2-base"
     },
