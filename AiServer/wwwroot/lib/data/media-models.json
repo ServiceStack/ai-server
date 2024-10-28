@@ -67,6 +67,7 @@
       "ComfyUI": "sd3.5_large.safetensors",
       "Replicate": "stability-ai/stable-diffusion-3.5-large"
     },
+    "downloadApiKeyVar": "HF_TOKEN",
     "modelType": "TextToImage",
     "filename": "sd3.5_large.safetensors",
     "path": "/data/models/checkpoints",
@@ -87,6 +88,7 @@
       "ComfyUI": "sd3.5_large_turbo.safetensors",
       "Replicate": "stability-ai/stable-diffusion-3.5-large-turbo"
     },
+    "downloadApiKeyVar": "HF_TOKEN",
     "modelType": "TextToImage",
     "filename": "sd3.5_large_turbo.safetensors",
     "path": "/data/models/checkpoints",

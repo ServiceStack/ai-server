@@ -51,7 +51,8 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
             {
                 TextToImageModelOverrides = new Dictionary<string, string>
                 {
-                    ["flux1-schnell.safetensors"] = "flux1/text_to_image.json"
+                    ["flux1-schnell.safetensors"] = "flux1/text_to_image.json",
+                    ["sd3.5_large_fp8_scaled.safetensors"] = "sd35/text_to_image.json"
                 }
             });
             services.AddSingleton<ComfyProvider>();
