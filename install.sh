@@ -228,7 +228,7 @@ setup_ai_provider() {
     AI_SERVER_URL=$(get_input "Set your AI Server URL" "http://localhost:5006" "false" "Enter AI Server URL")
     
     # Save AI Server URL
-    write_env "AI_SERVER_URL" "$AI_SERVER_URL"
+    write_env "ASSETS_BASE_URL" "$AI_SERVER_URL"
     
     gum style --foreground="#00FF00" "✓ Environment variables saved to .env file"
 
