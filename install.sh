@@ -221,6 +221,15 @@ setup_ai_provider() {
     done
     write_env "AUTH_SECRET" "$AUTH_SECRET"
     
+    style_header "AI Server URL"
+    echo "The AI Server URL is used with the ComfyUI Agent to connect to the AI Server, and assets are served from this URL."
+    echo "You can use the default value or set a custom value. Press Enter to use the default value of 'http://localhost:5006'."
+    # Get AI Server URL
+    AI_SERVER_URL=$(get_input "Set your AI Server URL" "http://localhost:5006" "false" "Enter AI Server URL")
+    
+    # Save AI Server URL
+    write_env "AI_SERVER_URL" "$AI_SERVER_URL"
+    
     gum style --foreground="#00FF00" "✓ Environment variables saved to .env file"
 
     # Server setup
@@ -242,7 +251,7 @@ setup_ai_provider() {
             
             if [ -f "./agent-comfy/install.sh" ]; then
                 export AI_SERVER_AUTH_SECRET="$AUTH_SECRET"
-                export AI_SERVER_URL="http://localhost:5006"
+                export AI_SERVER_URL="$AI_SERVER_URL"
                 export AGENT_URL="http://agent-comfy:7860"
                 
                 chmod +x "./agent-comfy/install.sh"

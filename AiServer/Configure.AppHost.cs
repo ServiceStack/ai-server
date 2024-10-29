@@ -30,6 +30,9 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
             var filesPath = Environment.GetEnvironmentVariable("AI_FILES_PATH");
             if (filesPath != null)
                 appConfig.FilesPath = filesPath;
+            var assetsBaseUrl = Environment.GetEnvironmentVariable("ASSETS_BASE_URL");
+            if (assetsBaseUrl != null)
+                appConfig.AssetsBaseUrl = assetsBaseUrl;
             
             appConfig.ReplicateApiKey ??= Environment.GetEnvironmentVariable("REPLICATE_API_KEY");
             
