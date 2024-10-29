@@ -57,11 +57,11 @@ const SelectModels = {
                         <label :for="'chk-' + key" 
                                :class="{'opacity-50': !isModelSelectable(model)}"
                                class="font-medium text-gray-900">
-                            {{ key }}
+                            {{ model.id }}
                         </label>
                         <div class="flex gap-x-2 text-xs text-gray-500">
-                            <span>{{ model.modelType }}</span>
-                            <span v-if="model.onDemand" class="text-blue-600">On Demand</span>
+                            <span>{{ key }}</span>
+                            <span v-if="isModelOnDemand(model)" class="text-blue-600">On Demand</span>
                             <span v-if="!isModelAvailable(key)" class="text-amber-600">
                                 Not Available
                             </span>
@@ -114,14 +114,20 @@ const SelectModels = {
 
         // Check if model is available either remotely or on-demand
         const isModelSelectable = (model) => {
-            console.log("model", model)
             const modelProviders = Object.keys(model.apiModels)
             const providerId = props.providerType?.id
             if(modelProviders.length === 0 || !modelProviders.includes(providerId)) {
                 return false
             }
             const modelName = model.apiModels[providerId]
-            return model.onDemand || isModelAvailable(modelName)
+            return isModelOnDemand(model) || isModelAvailable(modelName)
+        }
+        
+        const isModelOnDemand = (model) => {
+            if(!model.onDemand) return false
+            if(!props.providerType) return false
+            if(!props.providerType.id) return false
+            return model.onDemand && model.onDemand[props.providerType.id]
         }
 
         // Check if model is available in remote system
@@ -205,7 +211,8 @@ const SelectModels = {
             showTestConnection,
             testConnection,
             isModelSelectable,
-            isModelAvailable
+            isModelAvailable,
+            isModelOnDemand
         }
     }
 }
@@ -293,8 +300,6 @@ export default {
                     providerTypes.value[apiType.id] = apiType
                     allProviderModels.value[apiType.id] = Object.keys(apiType.apiModels || {})
                 })
-                console.log(Object.assign({},providerTypes.value))
-                console.log(Object.assign({},allProviderModels.value))
             }
         })
 

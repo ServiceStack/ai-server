@@ -253,7 +253,9 @@
     "id": "speech-to-text",
     "name": "Speech to Text",
     "modelType": "SpeechToText",
-    "onDemand": true,
+    "onDemand": {
+      "ComfyUI": true
+    },
     "installer": {
       "name": "Speech to Text (Whisper)",
       "value": "speech-to-text"
@@ -410,7 +412,9 @@
     "id": "image-to-text",
     "name": "Image to Text",
     "modelType": "ImageToText",
-    "onDemand": true,
+    "onDemand": {
+      "ComfyUI": true
+    },
     "installer": {
       "name": "Image to Text (Florence2)",
       "value": "image-to-text"

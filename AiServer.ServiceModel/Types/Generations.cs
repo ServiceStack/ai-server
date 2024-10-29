@@ -146,8 +146,9 @@ public class MediaModel : IHasId<string>
     public ModelType? ModelType { get; set; }
     /// <summary>
     /// Flag for models that are pulled down when run for the first time
+    /// Keys are the ProviderId strings
     /// </summary>
-    public bool? OnDemand { get; set; }
+    public Dictionary<string,bool>? OnDemand { get; set; }
 }
 
 public enum ModelType
