@@ -227,6 +227,8 @@ setup_ai_provider() {
     style_header "AI Server Setup"
     if gum confirm "Do you want to run AI Server?"; then
         gum style --foreground="#CCCCCC" "Starting AI Server..."
+        # Create Docker network if it doesn't exist, used for local ComfyUI Agent
+        docker network create ai-services 2>/dev/null
         docker compose pull
         docker compose up -d
         docker compose run app-fix-permissions

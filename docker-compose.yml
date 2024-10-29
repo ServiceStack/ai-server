@@ -1,4 +1,6 @@
-version: '3.8'
+networks:
+  ai-services:
+    external: true
 
 services:
   app:
