@@ -227,6 +227,7 @@ setup_ai_provider() {
     style_header "AI Server Setup"
     if gum confirm "Do you want to run AI Server?"; then
         gum style --foreground="#CCCCCC" "Starting AI Server..."
+        docker compose pull
         docker compose up -d
         docker compose run app-fix-permissions
         sleep 3
