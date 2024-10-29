@@ -110,6 +110,7 @@ public class Migration1002 : MigrationBase
             mediaProvider.CreatedDate = now;
             mediaProvider.ApiBaseUrl ??= mediaType.ApiBaseUrl;
             mediaProvider.ApiKeyHeader ??= mediaType.ApiKeyHeader;
+            mediaProvider.Name = mediaType.Id;
                 
             // Support all by default
             mediaProvider.Models = mediaType.ApiModels.Values.ToList();
