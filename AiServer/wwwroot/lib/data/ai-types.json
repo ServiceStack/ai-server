@@ -117,7 +117,7 @@
       "mistral:7b": "open-mistral-7b",
       "mixtral:8x7b": "open-mixtral-8x7b",
       "mixtral:8x22b": "open-mixtral-8x22b",
-      "codestral:22b": "codestral",
+      "codestral:22b": "codestral-latest",
       "mistral-nemo:12b": "open-mistral-nemo-2407",
       "mistral-large:123b": "mistral-large-2407",
       "mistral-embed": "mistral-embed"
