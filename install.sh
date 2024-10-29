@@ -228,7 +228,8 @@ setup_ai_provider() {
     if gum confirm "Do you want to run AI Server?"; then
         gum style --foreground="#CCCCCC" "Starting AI Server..."
         docker compose up -d
-        sleep 5
+        docker compose run app-fix-permissions
+        sleep 3
 
         if gum confirm "Do you want to configure a local ComfyUI Agent?"; then
             gum style --foreground="#CCCCCC" "Setting up ComfyUI Agent..."
