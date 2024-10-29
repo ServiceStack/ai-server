@@ -239,7 +239,7 @@ setup_ai_provider() {
             if [ -f "./agent-comfy/install.sh" ]; then
                 export AI_SERVER_AUTH_SECRET="$AUTH_SECRET"
                 export AI_SERVER_URL="http://localhost:5006"
-                export AGENT_URL="http://agent_comfy:7860"
+                export AGENT_URL="http://agent-comfy:7860"
                 
                 chmod +x "./agent-comfy/install.sh"
                 cd agent-comfy
