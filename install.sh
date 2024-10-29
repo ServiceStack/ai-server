@@ -249,6 +249,7 @@ setup_ai_provider() {
                 
                 unset AI_SERVER_AUTH_SECRET
                 unset AI_SERVER_URL
+                unset AGENT_URL
             else
                 gum style --foreground="#FF0000" "Error: Could not find agent-comfy/install.sh"
                 exit 1
