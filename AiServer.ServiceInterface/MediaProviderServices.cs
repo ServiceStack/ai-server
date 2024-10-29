@@ -225,6 +225,7 @@ public class MediaProviderServices(ILogger<MediaProviderServices> log,
         // Ensure all model settings have Id as related model name
         // Use the Id from the provider, and the key from each model settings in the providers dictionary
         var hasId = !string.IsNullOrEmpty(request.Id);
+        var hasProviderId = !string.IsNullOrEmpty(request.ProviderId);
         List<MediaModel> allModelSettings;
         if (hasId)
         {
@@ -240,6 +241,17 @@ public class MediaProviderServices(ILogger<MediaProviderServices> log,
                 Results = allModelSettings
             };
         } 
+        if (hasProviderId)
+        {
+            allModelSettings = appData.MediaModelsMap.Values
+                .Where(x => request.ProviderId != null && x.ApiModels.ContainsKey(request.ProviderId))
+                .ToList();
+            return new QueryResponse<MediaModel>
+            {
+                Results = allModelSettings,
+                Total = allModelSettings.Count
+            };
+        }
         allModelSettings = appData.MediaModelsMap.Values
             .ToList();
         return new QueryResponse<MediaModel>

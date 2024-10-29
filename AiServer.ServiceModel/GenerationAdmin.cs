@@ -65,6 +65,8 @@ public class CreateMediaProvider : ICreateDb<MediaProvider>, IReturn<IdResponse>
 public class QueryMediaModels : QueryDb<MediaModel>
 {
     public string? Id { get; set; }
+    
+    public string? ProviderId { get; set; }
 }
 
 [Tag(Tags.Admin)]

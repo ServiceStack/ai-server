@@ -144,6 +144,10 @@ public class MediaModel : IHasId<string>
     public int? Steps { get; set; }
     public string? NegativePrompt { get; set; }
     public ModelType? ModelType { get; set; }
+    /// <summary>
+    /// Flag for models that are pulled down when run for the first time
+    /// </summary>
+    public bool? OnDemand { get; set; }
 }
 
 public enum ModelType

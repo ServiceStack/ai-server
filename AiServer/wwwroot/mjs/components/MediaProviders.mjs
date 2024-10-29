@@ -2,49 +2,81 @@ import {ref, computed, onMounted, watch, nextTick, toRef, watchEffect} from "vue
 import {leftPart, rightPart} from "@servicestack/client"
 import {useClient} from "@servicestack/vue"
 import {QueryMediaTypes, GetComfyModels, GetComfyModelMappings} from "dtos"
+import {QueryMediaModels} from "../dtos.mjs";
 
 const SelectModels = {
     template: `
-    <h4 v-if="providerModels.length || comfyModelMappings" class="flex gap-x-2 justify-between">
-        <div>Active Models</div>
-        <div class="flex gap-x-2 pr-6">
-            <button v-if="providerType?.id == 'ComfyUI' && apiBaseUrl" @click="refresh" title="Refresh" type="button" :class="btnCls">
-                refresh
+    <div>
+        <!-- Header with actions -->
+        <h4 v-if="availableModels || remoteModels.length" class="flex gap-x-2 justify-between">
+            <div>Active Models</div>
+            <div class="flex gap-x-2 pr-6">
+                <button v-if="providerType?.id === 'ComfyUI' && apiBaseUrl" 
+                        @click="refresh" 
+                        title="Refresh remote models" 
+                        type="button" 
+                        :class="btnCls">
+                    refresh
+                </button>
+                <button @click="selectAll" type="button" :class="btnCls">select all</button>
+                <button @click="selectNone" type="button" :class="btnCls">select none</button>
+            </div>
+        </h4>
+
+        <!-- Connection Test & Status -->
+        <div v-if="showTestConnection || connectionStatus" class="mt-4 flex items-center gap-x-2">
+            <button v-if="showTestConnection" 
+                    @click="testConnection" 
+                    type="button" 
+                    :class="btnCls" 
+                    :disabled="isTestingConnection">
+                {{ isTestingConnection ? 'Testing...' : 'Test Connection' }}
             </button>
-            <button @click="selectAll" type="button" :class="btnCls">select all</button>
-            <button @click="selectNone" type="button" :class="btnCls">select none</button>
+            <div v-if="connectionStatus" 
+                 :class="connectionStatus === 'success' ? 'text-green-600' : 'text-red-600'">
+                {{ connectionStatus === 'success' ? 'Connection Successful' : 'Connection Failed' }}
+            </div>
         </div>
-    </h4>
-    <div v-if="showTestConnection || connectionStatus" class="mt-4 flex items-center gap-x-2">
-        <button v-if="showTestConnection" @click="testConnection" type="button" :class="btnCls" :disabled="isTestingConnection">
-            {{ isTestingConnection ? 'Testing...' : 'Test Connection' }}
-        </button>
-        <div v-if="connectionStatus" :class="connectionStatus === 'success' ? 'text-green-600' : 'text-red-600'">
-            {{ connectionStatus === 'success' ? 'Connection Successful' : 'Connection Failed' }}
-        </div>
+
+        <!-- Model Selection List -->
+        <fieldset class="mt-2" v-if="availableModels">
+            <div class="grid grid-cols-1">
+                <div v-for="(model, key) in availableModels" 
+                     :key="key"
+                     class="relative flex items-start py-2">
+                    <div class="flex h-6 items-center">
+                        <input v-model="selectedModels" 
+                               :value="key"
+                               :id="'chk-' + key" 
+                               type="checkbox" 
+                               :disabled="!isModelSelectable(model)"
+                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600
+                                      disabled:opacity-50 disabled:cursor-not-allowed">
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                        <label :for="'chk-' + key" 
+                               :class="{'opacity-50': !isModelSelectable(model)}"
+                               class="font-medium text-gray-900">
+                            {{ key }}
+                        </label>
+                        <div class="flex gap-x-2 text-xs text-gray-500">
+                            <span>{{ model.modelType }}</span>
+                            <span v-if="model.onDemand" class="text-blue-600">On Demand</span>
+                            <span v-if="!isModelAvailable(key)" class="text-amber-600">
+                                Not Available
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
     </div>
-    <fieldset class="mt-2" v-if="supportedModels?.length > 0">
-      <div class="grid grid-cols-1">
-        <div v-for="model in supportedModels" class="relative flex items-start" v-if="qualifiedModelMappings">
-          <div class="flex h-6 items-center">
-            <input v-model="selectedModels" :value="qualifiedModelMappings[model]" :id="'chk-' + model" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-          </div>
-          <div class="ml-3 text-sm leading-6">
-            <label :for="'chk-' + model" class="font-medium text-gray-900">{{model}} - ({{qualifiedModelMappings[model]}})</label>
-          </div>
-        </div>
-      </div>
-      </fieldset>                     
     `,
     props: {
         providerType: {
             type: Object,
             required: false,
             default: () => ({})
-        },
-        providerModels: {
-            type: Array,
-            default: () => []
         },
         apiBaseUrl: String,
         apiKey: String,
@@ -55,133 +87,125 @@ const SelectModels = {
         }
     },
     emits: ['update:selectedModels'],
-    setup(props, {emit}) {
+    setup(props, { emit }) {
         const client = useClient()
-        const comfyModelsUrl = ref('')
-        const comfyModels = ref([])
-        const supportedModels = ref([])
-        const comfyModelMappings = ref({})
-        const qualifiedModelMappings = ref({})
+        const remoteModels = ref([])
+        const availableModels = ref(null)
         const selectedModels = ref(props.initialSelectedModels)
-        const isConnectionTested = ref(false)
         const isTestingConnection = ref(false)
         const connectionStatus = ref(null)
+
         const btnCls = 'rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed'
 
         const showTestConnection = computed(() => {
             return props.providerType?.id === 'ComfyUI' && props.apiBaseUrl
         })
-        
+
+        // Transform API response to required format
+        const transformModelData = (data, providerId = "ComfyUI") => {
+            return data.results.reduce((acc, entry) => {
+                if (entry.apiModels && entry.apiModels[providerId]) {
+                    const modelName = entry.apiModels[providerId]
+                    acc[modelName] = entry
+                }
+                return acc
+            }, {})
+        }
+
+        // Check if model is available either remotely or on-demand
+        const isModelSelectable = (model) => {
+            console.log("model", model)
+            const modelProviders = Object.keys(model.apiModels)
+            const providerId = props.providerType?.id
+            if(modelProviders.length === 0 || !modelProviders.includes(providerId)) {
+                return false
+            }
+            const modelName = model.apiModels[providerId]
+            return model.onDemand || isModelAvailable(modelName)
+        }
+
+        // Check if model is available in remote system
+        const isModelAvailable = (modelName) => {
+            if(props.providerType?.id === 'ComfyUI') {
+                return remoteModels.value.includes(modelName)
+            }
+            return true
+        }
+
         async function testConnection() {
             isTestingConnection.value = true
             connectionStatus.value = null
-            let res = await client.api(new GetComfyModels({apiBaseUrl: props.apiBaseUrl, apiKey: props.apiKey}))
+            const res = await client.api(new GetComfyModels({
+                apiBaseUrl: props.apiBaseUrl,
+                apiKey: props.apiKey
+            }))
             isTestingConnection.value = false
             connectionStatus.value = res.succeeded ? 'success' : 'failure'
             if (res.succeeded) {
-                comfyModels.value = res.response.results
+                remoteModels.value = res.response.results
             }
             return res.succeeded
         }
 
-        function truncateModelName(name) {
-            if (name.length <= 12) return name
-            return name.slice(0, 12) + '...'
-        }
-
-        watch(() => selectedModels.value, () => {
-            emit('update:selectedModels', selectedModels.value)
-        })
-
-        watch(() => props.apiBaseUrl, async () => {
-            if (props.apiBaseUrl && comfyModelsUrl.value !== props.apiBaseUrl) {
-                await refresh()
-            }
-        })
-
-        onMounted(async () => {
-            //isConnectionTested.value = false
-            await refresh()
-        })
-
         async function refresh() {
+            // Get remote models if ComfyUI
             if (props.providerType?.id === 'ComfyUI' && props.apiBaseUrl) {
-                const apiComfy = await client.api(new GetComfyModels({
-                    apiBaseUrl: props.apiBaseUrl,
-                    apiKey: props.apiKey
-                }))
-                if (apiComfy.succeeded) {
-                    comfyModelsUrl.value = props.apiBaseUrl
-                    comfyModels.value = apiComfy.response.results
-                    connectionStatus.value = null
-                }
-                else {
-                    connectionStatus.value = 'failure'
-                }
-                const apiModelMaps = await client.api(new GetComfyModelMappings());
-                // console.log("apiModelMaps", apiModelMaps)
-                if (apiModelMaps.succeeded) {
-                    comfyModelMappings.value = apiModelMaps.response.models
-                    supportedModels.value = Object.values(apiModelMaps.response.models, [])
-                    // flip the object so we can look up the key by value
-                    qualifiedModelMappings.value = Object.keys(apiModelMaps.response.models).reduce((acc, key) => {
-                        acc[apiModelMaps.response.models[key]] = key
-                        return acc
-                    }, {})
-                }
-                return;
-            } else {
-                if (props.providerType?.apiModels) {
-                    console.log(props.providerType?.apiModels)
-                    supportedModels.value = Object.keys(props.providerType?.apiModels, [])
-                    qualifiedModelMappings.value = props.providerType?.apiModels
-                }
+                await testConnection()
             }
-            comfyModels.value = []
-            isConnectionTested.value = false
+
+            // Get available models from API
+            const mediaModels = await client.api(new QueryMediaModels({
+                providerId: props.providerType?.id
+            }))
+
+            if (mediaModels.succeeded) {
+                availableModels.value = transformModelData(
+                    mediaModels.response,
+                    props.providerType?.id
+                )
+            }
         }
 
         function selectAll() {
-            console.log("props.providerType?.apiModels", props.providerType?.apiModels)
-            if (comfyModels.value.length > 0) {
-                // Populate selectedModels with all models present in comfyModels that exist in comfyModelMapping values
-                // And populate selectedModels with the key in comfyModelMappings that matches the value in comfyModels
-                // comfyModelMappings is an object with the key of the specific model name in comfyModels and value of the 
-                // "qualified" model name that we want to display in the UI
-                console.log("comfyModelMappings.value", comfyModelMappings.value)
-                console.log("comfyModels.value", comfyModels.value)
-                let allModels = Object.keys(comfyModelMappings.value, [])
-                let modelsAvailable = comfyModels.value
-                selectedModels.value = modelsAvailable.filter(model => allModels.includes(model))
-                console.log("selectedModels.value", selectedModels.value)
-            } 
-            if (props.providerModels.length > 0) {
-                selectedModels.value = props.providerModels
-                let allProviderModels = Object.values(props.providerType?.apiModels || {})
-                selectedModels.value = allProviderModels;
-            }
+            if (!availableModels.value) return
+
+            selectedModels.value = Object.entries(availableModels.value)
+                .filter(([key, model]) => isModelSelectable(model))
+                .map(([key]) => key)
         }
 
         function selectNone() {
             selectedModels.value = []
         }
 
+        // Watch for changes
+        watch(() => selectedModels.value, () => {
+            emit('update:selectedModels', selectedModels.value)
+        })
+
+        watch(() => props.apiBaseUrl, async () => {
+            if (props.apiBaseUrl) {
+                await refresh()
+            }
+        })
+
+        // Initial load
+        onMounted(refresh)
+
         return {
             btnCls,
             selectedModels,
-            comfyModels,
-            supportedModels,
-            comfyModelMappings,
-            qualifiedModelMappings,
+            remoteModels,
+            availableModels,
             refresh,
             selectAll,
             selectNone,
-            truncateModelName,
-            isConnectionTested,
             isTestingConnection,
             connectionStatus,
             showTestConnection,
-            testConnection
+            testConnection,
+            isModelSelectable,
+            isModelAvailable
         }
     }
 }
