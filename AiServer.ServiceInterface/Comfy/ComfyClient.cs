@@ -129,8 +129,15 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
     
     public async Task<string> PopulateWorkflowAsync(ComfyWorkflowRequest request, string templatePath, CancellationToken token)
     {
+        var buildInTemplatePath = Path.Combine(WorkflowTemplatePath, templatePath);
+        var overrideTemplatePath = Path.Combine("App_Data","overrides", templatePath);
+        string useTemplatePath = buildInTemplatePath;
+        if (File.Exists(overrideTemplatePath))
+            useTemplatePath = overrideTemplatePath;
+        else if (!File.Exists(buildInTemplatePath))
+            throw new Exception($"Template file not found: {useTemplatePath}");
         // Read template from file for Text to Image
-        var template = await File.ReadAllTextAsync(Path.Combine(WorkflowTemplatePath, templatePath), token);
+        var template = await File.ReadAllTextAsync(useTemplatePath, token);
         // Populate template with request
         var workflowPageResult = new PageResult(context.OneTimePage(template))
         {
@@ -139,24 +146,6 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
 
         // Render template to JSON
         return await workflowPageResult.RenderToStringAsync();
-    }
-    
-    public async Task<Stream> ResizeImageAsync(Stream originalImage, int? width, int? height, int? quality, CancellationToken token)
-    {
-        var options = new List<string>();
-        if (width.HasValue) options.Add($"width={width.Value}");
-        if (height.HasValue) options.Add($"height={height.Value}");
-        if (quality.HasValue) options.Add($"quality={quality.Value}");
-
-        var optionsString = string.Join(",", options);
-    
-        var content = new MultipartFormDataContent();
-        content.Add(new StreamContent(originalImage), "image", "image.png");
-
-        var url = $"/variants/{optionsString}/image.png";
-        var response = await httpClient.PostAsync(url, content, token);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadAsStreamAsync(token);
     }
     
     private string GetModelTemplatePath(ComfyTaskType taskType, string? modelName = null)
