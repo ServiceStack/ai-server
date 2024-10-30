@@ -360,7 +360,6 @@
     "filename": "t5_base.safetensors",
     "path": "/data/models/clip",
     "downloadUrl": "https://huggingface.co/t5-base/resolve/main/model.safetensors?download=true",
-    "downloadApiKeyVar": "HF_TOKEN",
     "url": "https://huggingface.co/t5-base"
   },
   {
