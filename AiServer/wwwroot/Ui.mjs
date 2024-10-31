@@ -71,7 +71,8 @@ export default {
               </button>
             </div>
             <div v-if="showUserMenu" class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
-              <a href="/auth/logout?redirect=/" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</a>
+              <a v-if="hasRole('Admin')" href="/admin" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1">Admin</a>
+              <a href="/auth/logout?redirect=/" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1">Sign out</a>
             </div>
           </div>
           <div v-else>
@@ -119,6 +120,7 @@ export default {
           </div>
         </div>
         <div class="mt-3 space-y-1">
+          <a v-if="hasRole('Admin')" href="/admin" class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800">Admin</a>
           <a href="/auth/logout?redirect=/" class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800">Sign out</a>
         </div>
       </div>
@@ -140,7 +142,7 @@ export default {
 
         const client = useClient()
         const routes = inject('routes')
-        const { user, signIn, signOut } = useAuth()
+        const { user, hasRole, signIn, signOut } = useAuth()
         const profileUrl = ref(localStorage.getItem('profileUrl') || user.value?.profileUrl)
         const refreshKey = ref(1)
         const showUserMenu = ref(false)
@@ -198,7 +200,7 @@ export default {
                 activeSection.value = sections.find(x => x.id === routes.admin) || HomeSection)
         })
         
-        return { routes, user, sections, activeSection, profileUrl, refreshKey, showUserMenu,
+        return { routes, user, hasRole, sections, activeSection, profileUrl, refreshKey, showUserMenu,
             icons, navTo, 
         }
     }
