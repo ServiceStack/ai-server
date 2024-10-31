@@ -922,8 +922,8 @@ select{
   bottom: 0px;
 }
 
-.bottom-4 {
-  bottom: 1rem;
+.bottom-10 {
+  bottom: 2.5rem;
 }
 
 .bottom-full {
@@ -990,14 +990,6 @@ select{
   top: 2rem;
 }
 
-.bottom-12 {
-  bottom: 3rem;
-}
-
-.bottom-10 {
-  bottom: 2.5rem;
-}
-
 .z-0 {
   z-index: 0;
 }
@@ -1012,10 +1004,6 @@ select{
 
 .z-40 {
   z-index: 40;
-}
-
-.z-50 {
-  z-index: 50;
 }
 
 .col-span-12 {
@@ -1122,6 +1110,10 @@ select{
 
 .-ml-3 {
   margin-left: -0.75rem;
+}
+
+.-ml-4 {
+  margin-left: -1rem;
 }
 
 .-ml-px {
@@ -1310,10 +1302,6 @@ select{
 
 .mt-auto {
   margin-top: auto;
-}
-
-.-ml-4 {
-  margin-left: -1rem;
 }
 
 .block {

@@ -86,6 +86,7 @@
     "sampler": "dpmpp_2m",
     "width": 1024,
     "height": 1024,
+    "type": "sd3",
     "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large",
     "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large/resolve/main/sd3.5_large.safetensors?download=true"
   },
@@ -107,6 +108,7 @@
     "sampler": "dpmpp_2m",
     "width": 1024,
     "height": 1024,
+    "type": "sd3",
     "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo",
     "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo/resolve/main/sd3.5_large_turbo.safetensors?download=true"
   },
@@ -129,6 +131,7 @@
     "sampler": "euler",
     "width": 1024,
     "height": 1024,
+    "type": "sd3",
     "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8",
     "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/sd3.5_large_fp8_scaled.safetensors?download=true"
   },
