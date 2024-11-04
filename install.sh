@@ -209,9 +209,7 @@ setup_ai_provider() {
         )
         [ "$is_password" = "true" ] && input_args+=(--password)
     
-        # Only return the actual input value
-        LOCAL_OUT=`gum input "${input_args[@]}"`
-        echo "$LOCAL_OUT"
+        gum input "${input_args[@]}"
     }
 
     # Reusable function to write to .env
