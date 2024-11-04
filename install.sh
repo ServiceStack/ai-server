@@ -1,7 +1,26 @@
 #!/bin/bash
 
+# Initialize verbose flag
+VERBOSE=false
+
+# Process command line arguments
+while getopts "v" opt; do
+    case $opt in
+        v) VERBOSE=true ;;
+        *) echo "Usage: $0 [-v]" >&2
+           exit 1 ;;
+    esac
+done
+
+# Helper function for verbose logging
+log() {
+    if [ "$VERBOSE" = true ]; then
+        echo "$1"
+    fi
+}
+
 check_prerequisites() {
-    echo "Checking prerequisites..."
+    log "Checking prerequisites..."
 
     # Check if Docker is installed
     if ! command -v docker &> /dev/null; then
@@ -18,15 +37,15 @@ check_prerequisites() {
         exit 1
     fi
 
-    echo "Prerequisites check passed. Docker and Docker Compose are installed."
+    log "Prerequisites check passed. Docker and Docker Compose are installed."
 }
 
 install_gum() {
-    echo "Installing gum..."
+    log "Installing gum..."
     
     # Check if gum is already installed
     if command -v gum &> /dev/null; then
-        echo "gum is already installed."
+        log "gum is already installed."
         return
     fi
 
@@ -72,17 +91,17 @@ gpgkey=https://repo.charm.sh/yum/gpg.key' | sudo tee /etc/zypp/repos.d/charm.rep
             # Arch Linux
             sudo pacman -S gum
         else
-            echo "Unsupported Linux distribution. Attempting to install using Go..."
+            log "Unsupported Linux distribution. Attempting to install using Go..."
             install_using_go
         fi
     else
-        echo "Unsupported operating system. Attempting to install using Go..."
+        log "Unsupported operating system. Attempting to install using Go..."
         install_using_go
     fi
 
     # Verify installation
     if command -v gum &> /dev/null; then
-        echo "gum has been successfully installed."
+        log "gum has been successfully installed."
     else
         echo "Failed to install gum. Please try manual installation."
         exit 1
@@ -191,7 +210,8 @@ setup_ai_provider() {
         [ "$is_password" = "true" ] && input_args+=(--password)
     
         # Only return the actual input value
-        gum input "${input_args[@]}"
+        LOCAL_OUT=`gum input "${input_args[@]}"`
+        echo "$LOCAL_OUT"
     }
 
     # Reusable function to write to .env
@@ -217,6 +237,8 @@ setup_ai_provider() {
             if gum confirm "Use existing $provider API key?"; then
                 SELECTED_ENV_VARS="$SELECTED_ENV_VARS $env_var=${!env_var}"
                 gum style --foreground="#00FF00" "✓ Using existing $provider configuration"
+            elif test $? -eq 130; then
+                exit 0
             fi
         fi
     done
@@ -226,6 +248,10 @@ setup_ai_provider() {
     while true; do
         style_header "Provider Selection"
         ACTION=$(gum choose "Add provider" "Complete setup")
+        
+        [ "$ACTION" = "" ] && exit 0
+        
+        echo "$ACTION"
         
         [ "$ACTION" = "Complete setup" ] && break
 
@@ -245,8 +271,21 @@ setup_ai_provider() {
 
         # Get provider selection and API key
         SELECTED_PROVIDER=$(gum choose --height 10 "${AVAILABLE_PROVIDERS[@]}")
+        # Handle cancel/ctl-c
+        [ "$SELECTED_PROVIDER" = "" ] && exit 0
         ENV_VAR=$(get_env_var_name "$SELECTED_PROVIDER")
         API_KEY=$(get_input "Enter your $SELECTED_PROVIDER API key" "" "true" "Enter API key")
+        
+        # Handle empty API key by asking if they want to exit
+        if [ -z "$API_KEY" ]; then
+            if gum confirm "API key is empty. Do you want to exit?"; then
+                exit 0
+            elif test $? -eq 130; then
+                exit 0
+            else
+                continue
+            fi
+        fi
         
         SELECTED_ENV_VARS="$SELECTED_ENV_VARS $ENV_VAR=$API_KEY"
         gum style --foreground="#00FF00" "✓ Added $SELECTED_PROVIDER configuration"
@@ -258,6 +297,17 @@ setup_ai_provider() {
     echo "You can use the default value or set a custom value. Press Enter to use the default value of 'p@55wOrd'."
     # Get Auth Secret
     AUTH_SECRET=$(get_input "Set your Auth Secret" "p@55wOrd" "true" "Enter Auth Secret")
+    
+    # Handle empty Auth Secret by asking if they want to exit
+    if [ -z "$AUTH_SECRET" ]; then
+        if gum confirm "Auth Secret is empty. Do you want to exit?"; then
+            exit 0
+        elif test $? -eq 130; then
+            exit 0
+        else
+            AUTH_SECRET="p@55wOrd"
+        fi
+    fi
 
     # Save configuration
     echo "$SELECTED_ENV_VARS" | tr ' ' '\n' | while read -r env_setting; do
@@ -313,6 +363,8 @@ setup_ai_provider() {
                 gum style --foreground="#FF0000" "Error: Could not find agent-comfy/install.sh"
                 exit 1
             fi
+        elif test $? -eq 130; then
+            exit 0
         fi
 
         # Open browser based on OS
@@ -323,6 +375,8 @@ setup_ai_provider() {
         else
             gum style --foreground="#CCCCCC" "Please open http://localhost:5006 in your browser"
         fi
+    elif test $? -eq 130; then
+        exit 0
     else
         gum style --foreground="#CCCCCC" "AI Server not started. Run later with 'docker compose up -d'"
     fi
