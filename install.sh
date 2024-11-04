@@ -103,6 +103,58 @@ install_using_go() {
     fi
 }
 
+# Define supported providers and their environment variables
+PROVIDERS=(
+    "OpenRouter"
+    "OpenAI"
+    "Mistral AI"
+    "Google Cloud"
+    "Anthropic Claude"
+    "Groq Cloud"
+    "Replicate"
+)
+
+PROVIDER_ENV_VARS=(
+    "OPENROUTER_API_KEY"
+    "OPENAI_API_KEY"
+    "MISTRAL_API_KEY"
+    "GOOGLE_API_KEY"
+    "ANTHROPIC_API_KEY"
+    "GROQ_API_KEY"
+    "REPLICATE_API_KEY"
+)
+
+# Helper function to get environment variable name for a provider
+get_env_var_name() {
+    local provider="$1"
+    local i
+    for i in "${!PROVIDERS[@]}"; do
+        if [ "${PROVIDERS[$i]}" = "$provider" ]; then
+            echo "${PROVIDER_ENV_VARS[$i]}"
+            return
+        fi
+    done
+}
+
+# Helper function to check if provider is in array
+is_provider_available() {
+    local provider="$1"
+    local selected_vars="$2"
+    local env_var
+    
+    env_var=$(get_env_var_name "$provider")
+    if [[ -z "$env_var" ]]; then
+        return 1
+    fi
+    
+    # Check if the env var is already selected
+    if [[ "$selected_vars" == *"$env_var"* ]]; then
+        return 1
+    fi
+    
+    return 0
+}
+
 setup_ai_provider() {
     # Initialize/reset .env file
     : > .env
@@ -150,34 +202,25 @@ setup_ai_provider() {
     # Provider setup
     style_header "AI Provider Configuration"
 
-    # Define supported providers and their environment variables
-    declare -A PROVIDER_ENV_VARS=(
-        ["OpenRouter"]="OPENROUTER_API_KEY"
-        ["OpenAI"]="OPENAI_API_KEY"
-        ["Mistral AI"]="MISTRAL_API_KEY"
-        ["Google Cloud"]="GOOGLE_API_KEY"
-        ["Anthropic Claude"]="ANTHROPIC_API_KEY"
-        ["Groq Cloud"]="GROQ_API_KEY"
-        ["Replicate"]="REPLICATE_API_KEY"
-    )
-
-    # Initialize array to store selected environment variables
-    declare -A SELECTED_ENV_VARS
+    # Initialize string to store selected environment variables
+    SELECTED_ENV_VARS=""
 
     # Check existing environment variables
-    for provider in "${!PROVIDER_ENV_VARS[@]}"; do
-        env_var="${PROVIDER_ENV_VARS[$provider]}"
+    for i in "${!PROVIDERS[@]}"; do
+        provider="${PROVIDERS[$i]}"
+        env_var="${PROVIDER_ENV_VARS[$i]}"
         
         if [ -n "${!env_var}" ]; then
             gum style --foreground="#CCCCCC" "Found existing $provider API key:"
             gum style --foreground="#888888" "$(echo "${!env_var}" | cut -c1-10)..."
             
             if gum confirm "Use existing $provider API key?"; then
-                SELECTED_ENV_VARS[$env_var]="${!env_var}"
+                SELECTED_ENV_VARS="$SELECTED_ENV_VARS $env_var=${!env_var}"
                 gum style --foreground="#00FF00" "✓ Using existing $provider configuration"
             fi
         fi
     done
+
 
     # Provider selection loop
     while true; do
@@ -188,9 +231,10 @@ setup_ai_provider() {
 
         # Filter available providers
         AVAILABLE_PROVIDERS=()
-        for provider in "${!PROVIDER_ENV_VARS[@]}"; do
-            env_var="${PROVIDER_ENV_VARS[$provider]}"
-            [ -z "${SELECTED_ENV_VARS[$env_var]}" ] && AVAILABLE_PROVIDERS+=("$provider")
+        for provider in "${PROVIDERS[@]}"; do
+            if is_provider_available "$provider" "$SELECTED_ENV_VARS"; then
+                AVAILABLE_PROVIDERS+=("$provider")
+            fi
         done
 
         # Check if providers are available
@@ -201,10 +245,10 @@ setup_ai_provider() {
 
         # Get provider selection and API key
         SELECTED_PROVIDER=$(gum choose --height 10 "${AVAILABLE_PROVIDERS[@]}")
-        ENV_VAR="${PROVIDER_ENV_VARS[$SELECTED_PROVIDER]}"
+        ENV_VAR=$(get_env_var_name "$SELECTED_PROVIDER")
         API_KEY=$(get_input "Enter your $SELECTED_PROVIDER API key" "" "true" "Enter API key")
         
-        SELECTED_ENV_VARS[$ENV_VAR]="$API_KEY"
+        SELECTED_ENV_VARS="$SELECTED_ENV_VARS $ENV_VAR=$API_KEY"
         gum style --foreground="#00FF00" "✓ Added $SELECTED_PROVIDER configuration"
     done
 
@@ -216,9 +260,12 @@ setup_ai_provider() {
     AUTH_SECRET=$(get_input "Set your Auth Secret" "p@55wOrd" "true" "Enter Auth Secret")
 
     # Save configuration
-    for env_var in "${!SELECTED_ENV_VARS[@]}"; do
-        write_env "$env_var" "${SELECTED_ENV_VARS[$env_var]}"
+    echo "$SELECTED_ENV_VARS" | tr ' ' '\n' | while read -r env_setting; do
+        if [ -n "$env_setting" ]; then
+            write_env "${env_setting%%=*}" "${env_setting#*=}"
+        fi
     done
+    
     write_env "AUTH_SECRET" "$AUTH_SECRET"
     
     style_header "AI Server URL"
