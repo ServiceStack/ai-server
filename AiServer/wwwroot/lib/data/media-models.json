@@ -32,6 +32,7 @@
     "modelType": "TextToImage",
     "filename": "jibMixRealisticXL_v140CrystalClarity.safetensors",
     "path": "/data/models/checkpoints",
+    "downloadApiKeyVar": "HF_TOKEN",
     "dependsOn": ["sdxl_vae"],
     "cfgScale": 2.7,
     "steps": 20,
@@ -179,7 +180,7 @@
     "name": "Image to Image Default",
     "modelType": "ImageToImage",
     "apiModels": {
-      "ComfyUI": "jibMixRealisticXL_v140CrystalClarity.safetensors"
+      "ComfyUI": "sdxl_lightning_4step.safetensors"
     }
   },
   {
@@ -187,7 +188,7 @@
     "name": "Image with Mask Default",
     "modelType": "ImageWithMask",
     "apiModels": {
-      "ComfyUI": "jibMixRealisticXL_v140CrystalClarity.safetensors"
+      "ComfyUI": "sdxl_lightning_4step.safetensors"
     }
   },
   {
