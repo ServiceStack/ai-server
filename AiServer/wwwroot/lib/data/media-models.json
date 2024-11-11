@@ -5,6 +5,9 @@
       "ComfyUI": "sdxl_lightning_4step.safetensors",
       "Replicate": "bytedance/sdxl-lightning-4step"
     },
+    "supportedTasks": {
+      "ComfyUI": ["TextToImage","ImageToImage","ImageWithMask"]
+    },
     "installer": {
       "name": "Text & Image to Image (SDXL)",
       "value": "sdxl-lightning"

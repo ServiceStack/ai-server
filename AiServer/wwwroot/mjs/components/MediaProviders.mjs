@@ -57,10 +57,10 @@ const SelectModels = {
                         <label :for="'chk-' + key" 
                                :class="{'opacity-50': !isModelSelectable(model)}"
                                class="font-medium text-gray-900">
-                            {{ model.id }}
+                            {{ key }}
                         </label>
                         <div class="flex gap-x-2 text-xs text-gray-500">
-                            <span>{{ key }}</span>
+                            <span>{{ getSupportedTasks(model) }}</span>
                             <span v-if="isModelOnDemand(model)" class="text-blue-600">On Demand</span>
                             <span v-if="!isModelAvailable(key) && isModelOnDemand(model)" class="text-amber-600">
                                 Not Available
@@ -101,12 +101,17 @@ const SelectModels = {
             return props.providerType?.id === 'ComfyUI' && props.apiBaseUrl
         })
 
-        // Transform API response to required format
         const transformModelData = (data, providerId = "ComfyUI") => {
             return data.results.reduce((acc, entry) => {
                 if (entry.apiModels && entry.apiModels[providerId]) {
                     const modelName = entry.apiModels[providerId]
-                    acc[modelName] = entry
+                    // Only update if there's no existing entry OR if current entry has supportedTasks
+                    // and existing entry doesn't have supportedTasks
+                    if (!acc[modelName] ||
+                        (entry.supportedTasks?.[providerId] &&
+                            !acc[modelName].supportedTasks?.[providerId])) {
+                        acc[modelName] = entry
+                    }
                 }
                 return acc
             }, {})
@@ -136,6 +141,13 @@ const SelectModels = {
                 return remoteModels.value.includes(modelName)
             }
             return true
+        }
+        
+        const getSupportedTasks = (model) => {
+            if (model.supportedTasks && model.supportedTasks[props.providerType.id] != null) {
+                return model.supportedTasks[props.providerType.id].join(', ')
+            }
+            return model.modelType
         }
 
         async function testConnection() {
@@ -209,6 +221,7 @@ const SelectModels = {
             isTestingConnection,
             connectionStatus,
             showTestConnection,
+            getSupportedTasks,
             testConnection,
             isModelSelectable,
             isModelAvailable,
