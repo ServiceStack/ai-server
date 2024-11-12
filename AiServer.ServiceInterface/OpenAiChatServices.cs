@@ -125,6 +125,9 @@ public class OpenAiChatServices(
     {
         if (request.Request == null)
             throw new ArgumentNullException(nameof(request.Request));
+        
+        if (request.Request.Messages.IsNullOrEmpty())
+            throw new ArgumentNullException(nameof(request.Request.Messages));
     
         var qualifiedModel = appData.GetQualifiedModel(request.Request.Model);
         if (qualifiedModel == null)
