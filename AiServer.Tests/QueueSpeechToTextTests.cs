@@ -26,10 +26,9 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
 
         try
         {
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueSpeechToText
-            {
-
-            }, new []{ new UploadFile("speech.wav", fileStream) { FieldName = "audio"} });
+            response = client.PostFilesWithRequest(
+                new QueueSpeechToText(), 
+                [new UploadFile("speech.wav", fileStream) { FieldName = "audio"}]);
         }
         catch (Exception e)
         {
@@ -58,10 +57,12 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
 
         try
         {
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueSpeechToText
-            {
-                ReplyTo = "https://localhost:5005/dummyreplyto"
-            }, new []{ new UploadFile("speech.wav", fileStream) { FieldName = "audio"} });
+            response = client.PostFilesWithRequest(
+                new QueueSpeechToText
+                {
+                    ReplyTo = "https://localhost:5005/dummyreplyto"
+                },
+            [new UploadFile("speech.wav", fileStream) { FieldName = "audio"}]);
         }
         catch (Exception e)
         {
@@ -128,10 +129,9 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
 
         try
         {
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueSpeechToText
-            {
-
-            }, new []{ new UploadFile("speech.wav", fileStream) { FieldName = "audio"} });
+            response = client.PostFilesWithRequest(
+                new QueueSpeechToText(), 
+            [new UploadFile("speech.wav", fileStream) { FieldName = "audio"}]);
         }
         catch (Exception e)
         {
