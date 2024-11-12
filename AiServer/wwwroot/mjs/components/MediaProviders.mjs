@@ -57,7 +57,7 @@ const SelectModels = {
                         <label :for="'chk-' + key" 
                                :class="{'opacity-50': !isModelSelectable(model)}"
                                class="font-medium text-gray-900">
-                            {{ key }}
+                             {{model.commonNames}}
                         </label>
                         <div class="flex gap-x-2 text-xs text-gray-500">
                             <span>{{ getSupportedTasks(model) }}</span>
@@ -65,6 +65,9 @@ const SelectModels = {
                             <span v-if="!isModelAvailable(key) && isModelOnDemand(model)" class="text-amber-600">
                                 Not Available
                             </span>
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            <span>{{ key }}</span>
                         </div>
                     </div>
                 </div>
@@ -102,15 +105,34 @@ const SelectModels = {
         })
 
         const transformModelData = (data, providerId = "ComfyUI") => {
-            return data.results.reduce((acc, entry) => {
+            // First pass: Map through all entries to collect commonNames
+            const mappedEntries = data.results.map(entry => {
+                // Create a copy to avoid mutating the original entry
+                const mappedEntry = { ...entry }
+                // Initialize commonNames with the entry's id
+                mappedEntry.commonNames = entry.id
+                return mappedEntry
+            })
+
+            // Second pass: Reduce to final structure while merging commonNames
+            return mappedEntries.reduce((acc, entry) => {
                 if (entry.apiModels && entry.apiModels[providerId]) {
                     const modelName = entry.apiModels[providerId]
-                    // Only update if there's no existing entry OR if current entry has supportedTasks
-                    // and existing entry doesn't have supportedTasks
-                    if (!acc[modelName] ||
-                        (entry.supportedTasks?.[providerId] &&
-                            !acc[modelName].supportedTasks?.[providerId])) {
+
+                    if (!acc[modelName]) {
+                        // First occurrence of this model
                         acc[modelName] = entry
+                    } else {
+                        // Model exists, update commonNames and check for supportedTasks
+                        acc[modelName].commonNames += `, ${entry.id}`
+
+                        // Replace entire entry if current one has supportedTasks and existing one doesn't
+                        if (entry.supportedTasks?.[providerId] &&
+                            !acc[modelName].supportedTasks?.[providerId]) {
+                            const existingCommonNames = acc[modelName].commonNames
+                            acc[modelName] = entry
+                            acc[modelName].commonNames = existingCommonNames
+                        }
                     }
                 }
                 return acc
