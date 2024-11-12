@@ -62,7 +62,7 @@ const SelectModels = {
                         <div class="flex gap-x-2 text-xs text-gray-500">
                             <span>{{ getSupportedTasks(model) }}</span>
                             <span v-if="isModelOnDemand(model)" class="text-blue-600">On Demand</span>
-                            <span v-if="!isModelAvailable(key) && isModelOnDemand(model)" class="text-amber-600">
+                            <span v-else-if="!isModelAvailable(key)" class="text-amber-600">
                                 Not Available
                             </span>
                         </div>
