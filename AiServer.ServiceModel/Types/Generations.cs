@@ -149,6 +149,7 @@ public class MediaModel : IHasId<string>
     /// Keys are the ProviderId strings
     /// </summary>
     public Dictionary<string,bool>? OnDemand { get; set; }
+    public Dictionary<string,List<string>>? SupportedTasks { get; set; }
 }
 
 public enum ModelType

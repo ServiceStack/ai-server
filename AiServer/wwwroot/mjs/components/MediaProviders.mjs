@@ -57,14 +57,17 @@ const SelectModels = {
                         <label :for="'chk-' + key" 
                                :class="{'opacity-50': !isModelSelectable(model)}"
                                class="font-medium text-gray-900">
-                            {{ model.id }}
+                             {{model.commonNames}}
                         </label>
                         <div class="flex gap-x-2 text-xs text-gray-500">
-                            <span>{{ key }}</span>
+                            <span>{{ getSupportedTasks(model) }}</span>
                             <span v-if="isModelOnDemand(model)" class="text-blue-600">On Demand</span>
                             <span v-if="!isModelAvailable(key) && isModelOnDemand(model)" class="text-amber-600">
                                 Not Available
                             </span>
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            <span>{{ key }}</span>
                         </div>
                     </div>
                 </div>
@@ -101,12 +104,36 @@ const SelectModels = {
             return props.providerType?.id === 'ComfyUI' && props.apiBaseUrl
         })
 
-        // Transform API response to required format
         const transformModelData = (data, providerId = "ComfyUI") => {
-            return data.results.reduce((acc, entry) => {
+            // First pass: Map through all entries to collect commonNames
+            const mappedEntries = data.results.map(entry => {
+                // Create a copy to avoid mutating the original entry
+                const mappedEntry = { ...entry }
+                // Initialize commonNames with the entry's id
+                mappedEntry.commonNames = entry.id
+                return mappedEntry
+            })
+
+            // Second pass: Reduce to final structure while merging commonNames
+            return mappedEntries.reduce((acc, entry) => {
                 if (entry.apiModels && entry.apiModels[providerId]) {
                     const modelName = entry.apiModels[providerId]
-                    acc[modelName] = entry
+
+                    if (!acc[modelName]) {
+                        // First occurrence of this model
+                        acc[modelName] = entry
+                    } else {
+                        // Model exists, update commonNames and check for supportedTasks
+                        acc[modelName].commonNames += `, ${entry.id}`
+
+                        // Replace entire entry if current one has supportedTasks and existing one doesn't
+                        if (entry.supportedTasks?.[providerId] &&
+                            !acc[modelName].supportedTasks?.[providerId]) {
+                            const existingCommonNames = acc[modelName].commonNames
+                            acc[modelName] = entry
+                            acc[modelName].commonNames = existingCommonNames
+                        }
+                    }
                 }
                 return acc
             }, {})
@@ -136,6 +163,13 @@ const SelectModels = {
                 return remoteModels.value.includes(modelName)
             }
             return true
+        }
+        
+        const getSupportedTasks = (model) => {
+            if (model.supportedTasks && model.supportedTasks[props.providerType.id] != null) {
+                return model.supportedTasks[props.providerType.id].join(', ')
+            }
+            return model.modelType
         }
 
         async function testConnection() {
@@ -209,6 +243,7 @@ const SelectModels = {
             isTestingConnection,
             connectionStatus,
             showTestConnection,
+            getSupportedTasks,
             testConnection,
             isModelSelectable,
             isModelAvailable,
