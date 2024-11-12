@@ -729,6 +729,37 @@
     "icon": "/img/models/qwen.svg"
   },
   {
+    "id": "qwen2.5",
+    "tags": [
+      "0.5b",
+      "1.5b",
+      "3b",
+      "7b",
+      "14b",
+      "32b",
+      "72b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.com/library/qwen2.5",
+    "description": "Qwen2.5 models are pretrained on Alibaba's latest large-scale dataset, encompassing up to 18 trillion tokens. The model supports up to 128K tokens and has multilingual support",
+    "icon": "/img/models/qwen.svg"
+  },
+  {
+    "id": "qwen2.5-coder",
+    "tags": [
+      "0.5b",
+      "1.5b",
+      "3b",
+      "7b",
+      "14b",
+      "32b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.com/library/qwen2.5-coder",
+    "description": "The latest series of Code-Specific Qwen models, with significant improvements in code generation, code reasoning, and code fixing",
+    "icon": "/img/models/qwen.svg"
+  },
+  {
     "id": "samantha-mistral",
     "tags": [
       "7b"
