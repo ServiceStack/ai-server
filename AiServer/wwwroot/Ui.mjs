@@ -13,6 +13,7 @@ import TextToSpeech from "/mjs/components/TextToSpeech.mjs"
 import Transform from "/mjs/components/Transform.mjs"
 import UiHome from "/mjs/components/UiHome.mjs"
 import SignInForm from "/mjs/components/SignInForm.mjs"
+import ShellCommand from "./mjs/components/ShellCommand.mjs"
 import { prefixes, icons, uiLabel } from "/mjs/utils.mjs"
 
 const HomeSection = {
@@ -36,6 +37,7 @@ export default {
     components: {
         SignIn,
         SignInForm,
+        ShellCommand,
         ...components,
     },
     template: `

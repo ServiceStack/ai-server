@@ -94,7 +94,7 @@ public class QueueOpenAiChatResponse
 [ValidateApiKey]
 [Route("/v1/chat/completions", "POST")]
 [SystemJson(UseSystemJson.Response)]
-public class OpenAiChatCompletion : OpenAiChat, IPost, IReturn<OpenAiChatResponse>
+public class    OpenAiChatCompletion : OpenAiChat, IPost, IReturn<OpenAiChatResponse>
 {
     [Description("Provide a unique identifier to track requests")]
     public string? RefId { get; set; }

@@ -1,8 +1,14 @@
 import { ref, inject, watch, onMounted } from "vue"
 import { langs, openAi } from "../langs.mjs"
 import { prefixes, icons, uiLabel } from "../utils.mjs"
+import ShellCommand from "./ShellCommand.mjs"
+import AsciiCinema from "./AsciiCinema.mjs"
 
 export default {
+    components: {
+        ShellCommand,
+        AsciiCinema,
+    },
     template: `
 <div class="bg-white py-24 sm:py-32">
   <div class="mx-auto max-w-7xl px-6 lg:px-8">
@@ -26,7 +32,7 @@ export default {
         <div class="flex flex-col">
           <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
             <img :src="icons.one" class="h-5 w-5 flex-none text-indigo-600">
-            Simple Unified API
+            Centralized Management and Unified API
           </dt>
           <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
             <p class="flex-auto">
@@ -176,6 +182,73 @@ export default {
     
   </div>
 </div>
+
+    <div class="py-12 lg:pb-40">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl text-center">
+          <h1 class="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Install</h1>
+          <p class="mt-6 text-lg leading-8 text-gray-600">
+            AI Server can be installed on Linux, macOS or WSL/Windows with Docker
+          </p>
+        
+            <p class="my-4 text-lg leading-8 text-gray-600">
+                1. Clone the Repository
+            </p>
+            <ShellCommand>git clone https://github.com/ServiceStack/ai-server</ShellCommand>
+            <p class="my-4 text-lg leading-8 text-gray-600">
+                2. Run the Installer
+            </p>
+            <ShellCommand>cd ai-server && cat install.sh | bash</ShellCommand>
+
+          <p class="my-6 text-lg leading-8 text-gray-600">
+            The installer will detect common environment variables for its supported AI Providers including OpenAI, Anthropic, 
+            Mistral AI, Google, etc. and prompt if you would like to include any others in your AI Server configuration.
+          </p>
+
+          <AsciiCinema src="https://docs.servicestack.net/pages/ai-server/ai-server-install.cast" 
+                       loop="true" poster="npt:00:21" theme="dracula" style="height:400px" />
+                       
+            <h3 class="mt-12 mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-50 sm:text-4xl"> 
+                Optional: Install Comfy UI Agent 
+            </h3>
+            
+          <p class="my-6 text-lg leading-8 text-gray-600">
+            If your server is running <b>Linux</b> or <b>WSL/Windows</b> with an <b>NVIDIA GPU</b> you can also get the installer to install a 
+            <a class="text-indigo-600 hover:text-indigo-800" href="https://docs.servicestack.net/ai-server/comfy-extension">Comfy UI Agent</a>
+            on the same server.
+          </p>
+        
+          <p class="my-6 text-lg leading-8 text-gray-600">
+            Alternatively Comfy Agent can be installed on another server by running its Installer
+          </p>
+
+            <p class="my-4 text-lg leading-8 text-gray-600">
+                1. Clone the Comfy Agent Repository
+            </p>
+            <ShellCommand>git clone https://github.com/ServiceStack/agent-comfy.git</ShellCommand>
+            <p class="my-4 text-lg leading-8 text-gray-600">
+                2. Run the Installer
+            </p>
+            <ShellCommand>cd agent-comfy && cat install.sh | bash</ShellCommand>
+        
+          <p class="my-6 text-lg leading-8 text-gray-600">
+            The ComfyUI Agent is a separate Docker agent for running 
+            <a class="text-indigo-600 hover:text-indigo-800" href="https://www.comfy.org">ComfyUI</a>, 
+            <a class="text-indigo-600 hover:text-indigo-800" href="https://github.com/openai/whisper">Whisper</a> and 
+            <a class="text-indigo-600 hover:text-indigo-800" href="https://www.ffmpeg.org">FFmpeg</a> on <b>servers with GPUs</b> 
+            to handle AI Server's
+            <a class="text-indigo-600 hover:text-indigo-800" href="https://docs.servicestack.net/ai-server/text-to-image">Media AI Requests</a> along with any
+            <a class="text-indigo-600 hover:text-indigo-800" href="https://docs.servicestack.net/ai-server/transform/image">Image</a> and
+            <a class="text-indigo-600 hover:text-indigo-800" href="https://docs.servicestack.net/ai-server/transform/video">Video transformations</a> 
+          </p>
+
+          <AsciiCinema src="https://docs.servicestack.net/pages/ai-server/agent-comfy-install.cast" 
+                       loop="true" poster="npt:00:21" theme="dracula" style="height:400px" />
+
+        </div>
+
+      </div>
+    </div>
 
     <div class="py-12 lg:pb-40">
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
