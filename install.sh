@@ -368,10 +368,12 @@ setup_ai_provider() {
         # Open browser based on OS
         if [[ "$OSTYPE" == "darwin"* ]]; then
             open "http://localhost:5006"
-        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            xdg-open "http://localhost:5006"
+        elif command -v wslview &> /dev/null; then
+            wslview "http://localhost:5006"
         elif command -v explorer.exe &> /dev/null; then
             explorer.exe "http://localhost:5006"
+        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            xdg-open "http://localhost:5006"
         else
             gum style --foreground="#CCCCCC" "Please open http://localhost:5006 in your browser"
         fi
