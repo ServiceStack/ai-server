@@ -226,7 +226,7 @@ public class ComfyProvider(
         {
             var scaleWidth = args.ScaleWidth ?? -1;
             var scaleHeight = args.ScaleHeight ?? -1;
-            filterComplex.Add($"scale={scaleWidth}:{scaleHeight}");
+            filterComplex.Add($"[0:v]scale={scaleWidth}:{scaleHeight}");
         }
 
         // Handle cropping
