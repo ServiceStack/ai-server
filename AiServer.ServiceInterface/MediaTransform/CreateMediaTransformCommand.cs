@@ -62,7 +62,7 @@ public class CreateMediaTransformCommand(ILogger<CreateMediaTransformCommand> lo
             log.LogInformation("Finished {TaskType} generation request {RefId} with {Provider} in {DurationMs}ms",
                 request.Request.TaskType, request.RefId, apiProviderInstance.Name, durationMs);
             if (response.Outputs != null && response.Outputs.Count > 0)
-                await DownloadOutputsAsync(transformProvider, apiProviderInstance, response.Outputs, keyId);
+                await DownloadOutputsAsync(transformProvider, apiProviderInstance, response.Outputs, keyId, token);
 
             ResponseStatus? error = null;
             var outputs = new List<TransformFileOutput>();
@@ -308,10 +308,10 @@ public class CreateMediaTransformCommand(ILogger<CreateMediaTransformCommand> lo
     
     async Task DownloadOutputsAsync(IMediaTransformProvider aiProvider, 
         MediaProvider apiProvider,
-        IEnumerable<TransformFileOutput> outputs, string keyId)
+        IEnumerable<TransformFileOutput> outputs, string keyId, CancellationToken token = default)
     {
         var now = DateTime.UtcNow;
-        var downloadTasks = outputs.Select(x => DownloadOutputAsync(aiProvider, apiProvider, x, now, keyId));
+        var downloadTasks = outputs.Select(x => DownloadOutputAsync(aiProvider, apiProvider, x, now, keyId, token));
         await Task.WhenAll(downloadTasks);
     }
     
@@ -331,12 +331,12 @@ public class CreateMediaTransformCommand(ILogger<CreateMediaTransformCommand> lo
     
     async Task DownloadOutputAsync(IMediaTransformProvider aiProvider,
         MediaProvider apiProvider,
-        TransformFileOutput output, DateTime now, string keyId)
+        TransformFileOutput output, DateTime now, string keyId, CancellationToken token = default)
     {
         using var client = httpFactory.CreateClient();
         try
         {
-            var response = await aiProvider.DownloadOutputAsync(apiProvider, output);
+            var response = await aiProvider.DownloadOutputAsync(apiProvider, output, token);
             response.EnsureSuccessStatusCode();
             
             // Grab file extension from response
@@ -360,13 +360,13 @@ public class CreateMediaTransformCommand(ILogger<CreateMediaTransformCommand> lo
                 _ => "mp4"
             };
 
-            var imageBytes = await response.Content.ReadAsByteArrayAsync();
+            var imageBytes = await response.Content.ReadAsByteArrayAsync(token);
             var sha256 = imageBytes.ComputeSha256();
             output.FileName = $"{sha256}.{ext}";
             var relativePath = $"{now:yyyy}/{now:MM}/{now:dd}/{keyId}/{output.FileName}";
             var path = appConfig.ArtifactsPath.CombineWith(relativePath);
             Path.GetDirectoryName(path).AssertDir();
-            await File.WriteAllBytesAsync(path, imageBytes);
+            await File.WriteAllBytesAsync(path, imageBytes, token);
             output.Url = $"/artifacts/{relativePath}";
         }
         catch (Exception e)

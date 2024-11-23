@@ -226,13 +226,13 @@ public class ComfyProvider(
         {
             var scaleWidth = args.ScaleWidth ?? -1;
             var scaleHeight = args.ScaleHeight ?? -1;
-            filterComplex.Add($"scale={scaleWidth}:{scaleHeight}");
+            filterComplex.Add($"[0:v]scale={scaleWidth}:{scaleHeight}");
         }
 
         // Handle cropping
         if (args is { CropX: not null, CropY: not null, CropWidth: not null, CropHeight: not null })
         {
-            filterComplex.Add($"crop={args.CropWidth}:{args.CropHeight}:{args.CropX}:{args.CropY}");
+            filterComplex.Add($"[0:v]crop={args.CropWidth}:{args.CropHeight}:{args.CropX}:{args.CropY}");
         }
 
         if (args is { WatermarkInput: not null, WatermarkPosition: not null })
