@@ -94,11 +94,6 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
                     maxFileBytes: 10 * 1024 * 1024,
                     resolvePath:ctx => "secure".CombineWith((ctx.Request.GetApiKey() as ApiKeysFeature.ApiKey)?.Id ?? 0, ctx.FileName))
             ));
-            
-            services.ConfigurePlugin<NativeTypesFeature>(feature =>
-            {
-                feature.MetadataTypesConfig.InitializeCollections = false;
-            });
 
         });
 
