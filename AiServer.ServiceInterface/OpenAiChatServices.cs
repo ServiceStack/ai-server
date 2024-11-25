@@ -121,7 +121,7 @@ public class OpenAiChatServices(
         return await chatRequest.ProcessSync(jobs, this);
     }
     
-    public async Task<object> Any(QueueOpenAiChatCompletion request)
+    public QueueOpenAiChatResponse Any(QueueOpenAiChatCompletion request)
     {
         if (request.Request == null)
             throw new ArgumentNullException(nameof(request.Request));
@@ -428,15 +428,14 @@ public class OpenAiChatServices(
 
 public static class OpenAiChatServiceExtensions
 {
-    public static async Task<object> ProcessSync(this QueueOpenAiChatCompletion chatRequest,
-        IBackgroundJobs jobs,
-        OpenAiChatServices chatService)
+    public static async Task<OpenAiChatResponse> ProcessSync(this QueueOpenAiChatCompletion chatRequest,
+        IBackgroundJobs jobs, OpenAiChatServices chatService)
     {
         QueueOpenAiChatResponse? chatResponse = null;
         try
         {
-            var response = await chatService.Any(chatRequest);
-            chatResponse = response as QueueOpenAiChatResponse;
+            var response = chatService.Any(chatRequest);
+            chatResponse = response;
         }
         catch (Exception e)
         {
@@ -458,14 +457,12 @@ public static class OpenAiChatServiceExtensions
         // We know at this point, we definitely have a job
         JobResult queuedJob = job;
         
-        var completedResponse = new OpenAiChatResponse()
-        {
-        };
+        var completedResponse = new OpenAiChatResponse();
 
         // Handle failed jobs
         if (job.Failed != null)
         {
-            throw new Exception(job.Failed.Error.Message);
+            throw new Exception(job.Failed.Error!.Message);
         }
         
         // Wait for the job to complete max 1 minute

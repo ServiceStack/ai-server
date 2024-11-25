@@ -126,7 +126,7 @@ public class VideoServices(IBackgroundJobs jobs) : Service
         }
     }
 
-    public async Task<object> Any(QueueScaleVideo request)
+    public async Task<QueueMediaTransformResponse> Any(QueueScaleVideo request)
     {
         // Convert request
         var transformRequest = new CreateMediaTransform
@@ -144,7 +144,7 @@ public class VideoServices(IBackgroundJobs jobs) : Service
         return await transformRequest.ProcessQueuedTransformAsync(jobs, transformService);
     }
 
-    public async Task<object> Any(QueueWatermarkVideo request)
+    public async Task<QueueMediaTransformResponse> Any(QueueWatermarkVideo request)
     {
         string watermarkPosition;
         switch (request.Position)
@@ -205,7 +205,7 @@ public class VideoServices(IBackgroundJobs jobs) : Service
         }
     }
 
-    public async Task<object> Any(QueueConvertVideo request)
+    public async Task<QueueMediaTransformResponse> Any(QueueConvertVideo request)
     {
         if (Request?.Files == null || Request.Files.Length == 0)
             throw new ArgumentException("No video file provided");
@@ -230,7 +230,7 @@ public class VideoServices(IBackgroundJobs jobs) : Service
         return await transformRequest.ProcessQueuedTransformAsync(jobs, transformService);
     }
 
-    public async Task<object> Any(QueueCropVideo request)
+    public async Task<QueueMediaTransformResponse> Any(QueueCropVideo request)
     {
         // Convert request
         var transformRequest = new CreateMediaTransform
@@ -251,7 +251,7 @@ public class VideoServices(IBackgroundJobs jobs) : Service
         return await transformRequest.ProcessQueuedTransformAsync(jobs, transformService);
     }
 
-    public async Task<object> Any(QueueTrimVideo request)
+    public async Task<QueueMediaTransformResponse> Any(QueueTrimVideo request)
     {
         if (Request?.Files == null || Request.Files.Length == 0)
             throw new ArgumentException("No video file provided");
