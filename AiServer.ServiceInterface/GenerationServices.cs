@@ -105,7 +105,6 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
                 NegativePrompt = request.NegativePrompt,
                 Denoise = request.Denoise,
                 BatchSize = request.BatchSize,
-                ImageInput = request.Image
             }
         };
         
@@ -123,7 +122,6 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
                 Model = "image-upscale-2x",
                 Seed = request.Seed,
                 TaskType = AiTaskType.ImageUpscale,
-                ImageInput = request.Image
             }
         };
         
@@ -144,8 +142,6 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
                 PositivePrompt = request.PositivePrompt,
                 NegativePrompt = request.NegativePrompt,
                 Denoise = request.Denoise,
-                ImageInput = request.Image,
-                MaskInput = request.Mask
             }
         };
         
@@ -162,7 +158,6 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
             {
                 Model = "image-to-text",
                 TaskType = AiTaskType.ImageToText,
-                ImageInput = request.Image
             }
         };
         
