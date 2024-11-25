@@ -10,7 +10,6 @@ public class ComfyApiServices(AppData appData) : Service
 {
     public async Task<object> Any(GetComfyModels request)
     {
-        
         try
         {
             var comfyClient = new ComfyClient(request.ApiBaseUrl!, request.ApiKey);
@@ -42,4 +41,3 @@ public class ComfyApiServices(AppData appData) : Service
         };
     }
 }
-

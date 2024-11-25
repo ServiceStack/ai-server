@@ -110,7 +110,7 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
         Assert.That(hasRepyTo.Succeeded, Is.True);
         
         // Verify that we can get the job status
-        var getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
+        var getStatusResponse = await client.SendAsync(new GetArtifactGenerationStatus
         {
             JobId = response.JobId
         });
@@ -138,7 +138,6 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
             Assert.Fail(e.Message);
         }
 
-
         Assert.That(response, Is.Not.Null);
         Assert.That(response.RefId, Is.Not.Null);
         Assert.That(response.RefId, Is.Not.Empty);
@@ -147,7 +146,7 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
         Assert.True(response.JobState is BackgroundJobState.Queued or BackgroundJobState.Started);
 
         // Verify that we can get the job status
-        var getStatusResponse = await client.PostAsync(new GetTextGenerationStatus
+        var getStatusResponse = await client.SendAsync(new GetTextGenerationStatus
         {
             JobId = response.JobId
         });
@@ -155,7 +154,7 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
         while (getStatusResponse.JobState == BackgroundJobState.Queued || getStatusResponse.JobState == BackgroundJobState.Started)
         {
             await Task.Delay(1000);
-            getStatusResponse = await client.PostAsync(new GetTextGenerationStatus
+            getStatusResponse = await client.SendAsync(new GetTextGenerationStatus
             {
                 JobId = response.JobId
             });

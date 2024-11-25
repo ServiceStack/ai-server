@@ -6,7 +6,7 @@ namespace AiServer.ServiceInterface;
 
 public class AudioServices(IBackgroundJobs jobs) : Service
 {
-    public async Task<object> Any(ConvertAudio request)
+    public async Task<ArtifactGenerationResponse> Any(ConvertAudio request)
     {
         if (Request?.Files == null || Request.Files.Length == 0)
         {
@@ -27,9 +27,9 @@ public class AudioServices(IBackgroundJobs jobs) : Service
         };
 
         var transformService = base.ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs, transformService, sync: true);
+        return await transformRequest.ProcessSyncTransformAsync(jobs, transformService);
     }
-    public async Task<object> Any(QueueConvertAudio request)
+    public async Task<QueueMediaTransformResponse> Any(QueueConvertAudio request)
     {
         if (Request?.Files == null || Request.Files.Length == 0)
         {
@@ -52,7 +52,7 @@ public class AudioServices(IBackgroundJobs jobs) : Service
         };
 
         var transformService = base.ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs, transformService);
+        return await transformRequest.ProcessQueuedTransformAsync(jobs, transformService);
     }
 
     private bool IsAudioFormat(MediaOutputFormat outputformat)

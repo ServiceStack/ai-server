@@ -15,7 +15,7 @@ public partial class ImageServices(IBackgroundJobs jobs,
     ILogger<ImageServices> log,
     AppData appData) : Service
 {
-    public async Task<object> Any(QueueTextToImage request)
+    public async Task<QueueGenerationResponse> Any(QueueTextToImage request)
     {
         if (!string.IsNullOrEmpty(request.Model) && !appData.ModelSupportsTask(request.Model, AiTaskType.TextToImage))
         {
@@ -44,10 +44,10 @@ public partial class ImageServices(IBackgroundJobs jobs,
         };
 
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices);
+        return await diffRequest.ProcessQueuedGenerationAsync(jobs, diffServices);
     }
     
-    public async Task<object> Any(QueueImageUpscale request)
+    public async Task<QueueGenerationResponse> Any(QueueImageUpscale request)
     {
         if(Request?.Files == null || Request.Files.Length == 0)
         {
@@ -70,10 +70,10 @@ public partial class ImageServices(IBackgroundJobs jobs,
         };
 
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices);
+        return await diffRequest.ProcessQueuedGenerationAsync(jobs, diffServices);
     }
     
-    public async Task<object> Any(QueueImageToImage request)
+    public async Task<QueueGenerationResponse> Any(QueueImageToImage request)
     {
         if (Request?.Files == null || Request.Files.Length == 0)
         {
@@ -100,10 +100,10 @@ public partial class ImageServices(IBackgroundJobs jobs,
         };
 
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices);
+        return await diffRequest.ProcessQueuedGenerationAsync(jobs, diffServices);
     }
     
-    public async Task<object> Any(QueueImageWithMask request)
+    public async Task<QueueGenerationResponse> Any(QueueImageWithMask request)
     {
         if (Request?.Files == null || Request.Files.Length > 2)
         {
@@ -129,10 +129,10 @@ public partial class ImageServices(IBackgroundJobs jobs,
         };
 
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices);
+        return await diffRequest.ProcessQueuedGenerationAsync(jobs, diffServices);
     }
     
-    public async Task<object> Any(QueueImageToText request)
+    public async Task<QueueGenerationResponse> Any(QueueImageToText request)
     {
         var diffRequest = new CreateGeneration
         {
@@ -147,7 +147,7 @@ public partial class ImageServices(IBackgroundJobs jobs,
         };
 
         await using var genServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, genServices);
+        return await diffRequest.ProcessQueuedGenerationAsync(jobs, genServices);
     }
 }
 

@@ -10,17 +10,13 @@ namespace AiServer.ServiceInterface;
 
 public partial class ImageServices
 {
-    public async Task<object> Post(ConvertImage request)
+    public async Task<ArtifactGenerationResponse> Post(ConvertImage request)
     {
         if (Request?.Files == null || Request.Files.Length == 0)
-        {
             throw new ArgumentException("No image file provided");
-        }
         
         if (request.OutputFormat == null)
-        {
             throw new ArgumentException("No output format provided");
-        }
 
         // Process via commands
         var mediaArgs = new MediaTransformArgs
@@ -35,21 +31,17 @@ public partial class ImageServices
         };
         
         var transformService = ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs,transformService,true);
+        return await transformRequest.ProcessSyncTransformAsync(jobs, transformService);
     }
     
-    public async Task<object> Post(CropImage request)
+    public async Task<ArtifactGenerationResponse> Post(CropImage request)
     {
         // Validate the request
         if (Request?.Files == null || Request.Files.Length == 0)
-        {
             throw new ArgumentException("No image file provided");
-        }
         
         if (request.X < 0 || request.Y < 0 || request.Width <= 0 || request.Height <= 0)
-        {
             throw new ArgumentException("Invalid crop dimensions");
-        }
 
         // Process via commands
         var mediaArgs = new MediaTransformArgs
@@ -67,21 +59,17 @@ public partial class ImageServices
         };
         
         var transformService = ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs,transformService,true);
+        return await transformRequest.ProcessSyncTransformAsync(jobs, transformService);
     }
 
-    public async Task<object> Any(WatermarkImage request)
+    public async Task<ArtifactGenerationResponse> Any(WatermarkImage request)
     {
         // Validate request
         if (Request?.Files == null || Request.Files.Length == 0)
-        {
             throw new ArgumentException("No image file provided");
-        }
         
         if (Request.Files.Length < 2)
-        {
             throw new ArgumentException("No watermark image file provided");
-        }
         
         // Process via commands
         var mediaArgs = new MediaTransformArgs
@@ -99,21 +87,17 @@ public partial class ImageServices
         };
         
         var transformService = ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs,transformService,true);
+        return await transformRequest.ProcessSyncTransformAsync(jobs, transformService);
     }
 
-    public async Task<object> Post(ScaleImage request)
+    public async Task<ArtifactGenerationResponse> Post(ScaleImage request)
     {
         // Validate the request
         if (Request?.Files == null || Request.Files.Length == 0)
-        {
             throw new ArgumentException("No image file provided");
-        }
         
         if (request.Width <= 0 || request.Height <= 0)
-        {
             throw new ArgumentException("Invalid scale dimensions");
-        }
 
         // Process via commands
         var mediaArgs = new MediaTransformArgs
@@ -129,21 +113,17 @@ public partial class ImageServices
         };
         
         var transformService = ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs,transformService,true);
+        return await transformRequest.ProcessSyncTransformAsync(jobs, transformService);
     }
 
-    public async Task<object> Post(QueueCropImage request)
+    public async Task<QueueMediaTransformResponse> Post(QueueCropImage request)
     {
         // Validate the request
         if (Request?.Files == null || Request.Files.Length == 0)
-        {
             throw new ArgumentException("No image file provided");
-        }
         
         if (request.X < 0 || request.Y < 0 || request.Width <= 0 || request.Height <= 0)
-        {
             throw new ArgumentException("Invalid crop dimensions");
-        }
 
         // Process via commands
         var mediaArgs = new MediaTransformArgs
@@ -161,21 +141,17 @@ public partial class ImageServices
         };
         
         var transformService = ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs,transformService);
+        return await transformRequest.ProcessQueuedTransformAsync(jobs,transformService);
     }
     
-    public async Task<object> Post(QueueScaleImage request)
+    public async Task<QueueMediaTransformResponse> Post(QueueScaleImage request)
     {
         // Validate the request
         if (Request?.Files == null || Request.Files.Length == 0)
-        {
             throw new ArgumentException("No image file provided");
-        }
         
         if (request.Width <= 0 || request.Height <= 0)
-        {
             throw new ArgumentException("Invalid scale dimensions");
-        }
 
         // Process via commands
         var mediaArgs = new MediaTransformArgs
@@ -191,21 +167,17 @@ public partial class ImageServices
         };
         
         var transformService = ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs,transformService);
+        return await transformRequest.ProcessQueuedTransformAsync(jobs, transformService);
     }
     
-    public async Task<object> Post(QueueWatermarkImage request)
+    public async Task<QueueMediaTransformResponse> Post(QueueWatermarkImage request)
     {
         // Validate request
         if (Request?.Files == null || Request.Files.Length == 0)
-        {
             throw new ArgumentException("No image file provided");
-        }
         
         if (Request.Files.Length < 2)
-        {
             throw new ArgumentException("No watermark image file provided");
-        }
         
         // Process via commands
         var mediaArgs = new MediaTransformArgs
@@ -223,20 +195,16 @@ public partial class ImageServices
         };
         
         var transformService = ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs,transformService);
+        return await transformRequest.ProcessQueuedTransformAsync(jobs, transformService);
     }
     
-    public async Task<object> Post(QueueConvertImage request)
+    public async Task<QueueMediaTransformResponse> Post(QueueConvertImage request)
     {
         if (Request?.Files == null || Request.Files.Length == 0)
-        {
             throw new ArgumentException("No image file provided");
-        }
         
         if (request.OutputFormat == null)
-        {
             throw new ArgumentException("No output format provided");
-        }
 
         // Process via commands
         var mediaArgs = new MediaTransformArgs
@@ -251,6 +219,6 @@ public partial class ImageServices
         };
         
         var transformService = ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs,transformService);
+        return await transformRequest.ProcessQueuedTransformAsync(jobs, transformService);
     }
 }

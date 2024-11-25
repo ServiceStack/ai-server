@@ -19,8 +19,7 @@ public class QueueAudioIntegrationTests : IntegrationTestBase
         {
             var inputAudioPath = "files/test_audio.wav";
             await using var audioStream = File.OpenRead(inputAudioPath);
-            response = client.PostFilesWithRequest(new QueueConvertAudio
-            {
+            response = client.PostFilesWithRequest(new QueueConvertAudio {
                 OutputFormat = AudioFormat.MP3
             }, [
                 new UploadFile("audio.wav", audioStream) { FieldName = "audio" }
@@ -33,7 +32,8 @@ public class QueueAudioIntegrationTests : IntegrationTestBase
 
         Assert.That(response, Is.Not.Null);
         Assert.That(response.JobId, Is.Not.Zero);
-        Assert.That(response.JobState, Is.EqualTo(BackgroundJobState.Completed));
+        Assert.That(response.JobState, Is.EqualTo(BackgroundJobState.Queued).Or.EqualTo(BackgroundJobState.Started));
+
         // Assert.That(response.Outputs, Is.Not.Null);
         // Assert.That(response.Outputs, Is.Not.Empty);
         // Assert.That(response.Outputs[0].FileName, Does.EndWith(".mp3"));
@@ -59,7 +59,7 @@ public class QueueAudioIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        QueueMediaTransformResponse response = null;
+        QueueMediaTransformResponse? response = null;
         try
         {
             await using var audioStream = File.OpenRead("files/test_audio.mp3");
@@ -77,7 +77,7 @@ public class QueueAudioIntegrationTests : IntegrationTestBase
 
         Assert.That(response, Is.Not.Null);
         Assert.That(response.JobId, Is.Not.Zero);
-        Assert.That(response.JobState, Is.EqualTo(BackgroundJobState.Completed));
+        Assert.That(response.JobState, Is.EqualTo(BackgroundJobState.Queued).Or.EqualTo(BackgroundJobState.Started));
         // Assert.That(response.Outputs, Is.Not.Null);
         // Assert.That(response.Outputs, Is.Not.Empty);
         // Assert.That(response.Outputs[0].FileName, Does.EndWith(".wav"));
