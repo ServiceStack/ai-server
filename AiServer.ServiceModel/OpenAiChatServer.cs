@@ -48,9 +48,9 @@ public class GetOpenAiChatStatusResponse
     [Description("Detailed response status information")]
     public ResponseStatus? ResponseStatus { get; set; }
     
-    [ApiMember(Description = "Chat response")]
-    [Description("Chat response")]
-    public OpenAiChatResponse? ChatResponse { get; set; }
+    [ApiMember(Description = "Chat result")]
+    [Description("Chat result")]
+    public OpenAiChatResponse? Result { get; set; }
 }
 
 [Tag(Tags.AiInfo)]

@@ -13,7 +13,7 @@ public class ActiveMediaModels : IGet, IReturn<StringsResponse> {}
 [Api("Convert speech to text")]
 [Description("Transcribe audio content to text")]
 [SystemJson(UseSystemJson.Response)]
-public class SpeechToText : IGeneration, IReturn<GenerationResponse>
+public class SpeechToText : IGeneration, IReturn<TextGenerationResponse>
 {
     [ApiMember(Description = "The audio stream containing the speech to be transcribed")]
     [Description("The audio stream containing the speech to be transcribed")]
@@ -35,7 +35,7 @@ public class SpeechToText : IGeneration, IReturn<GenerationResponse>
 [Api("Convert text to speech")]
 [Description("Generate speech audio from text input")]
 [SystemJson(UseSystemJson.Response)]
-public class TextToSpeech : IGeneration, IReturn<GenerationResponse>
+public class TextToSpeech : IGeneration, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The text to be converted to speech")]
     [Description("The text to be converted to speech")]
@@ -65,7 +65,7 @@ public class TextToSpeech : IGeneration, IReturn<GenerationResponse>
 [Api("Generate image from text description")]
 [Description("Create an image based on a text prompt")]
 [SystemJson(UseSystemJson.Response)]
-public class TextToImage : IGeneration, IReturn<GenerationResponse>
+public class TextToImage : IGeneration, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The main prompt describing the desired image")]
     [Description("The main prompt describing the desired image")]
@@ -116,7 +116,7 @@ public class TextToImage : IGeneration, IReturn<GenerationResponse>
 [Api("Generate image from another image")]
 [Description("Create a new image based on an existing image and a text prompt")]
 [SystemJson(UseSystemJson.Response)]
-public class ImageToImage : IGeneration, IReturn<GenerationResponse>
+public class ImageToImage : IGeneration, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The image to use as input")]
     [Description("The image to use as input")]
@@ -168,7 +168,7 @@ public class ImageToImage : IGeneration, IReturn<GenerationResponse>
 [Api("Upscale an image")]
 [Description("Increase the resolution and quality of an input image")]
 [SystemJson(UseSystemJson.Response)]
-public class ImageUpscale : IGeneration, IReturn<GenerationResponse>
+public class ImageUpscale : IGeneration, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The image to upscale")]
     [Description("The image to upscale")]
@@ -195,7 +195,7 @@ public class ImageUpscale : IGeneration, IReturn<GenerationResponse>
 [Api("Generate image with masked area")]
 [Description("Create a new image by applying a mask to an existing image and generating content for the masked area")]
 [SystemJson(UseSystemJson.Response)]
-public class ImageWithMask : IGeneration, IReturn<GenerationResponse>
+public class ImageWithMask : IGeneration, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "Prompt describing the desired output in the masked area")]
     [Description("Prompt describing the desired output in the masked area")]
@@ -244,7 +244,7 @@ public class ImageWithMask : IGeneration, IReturn<GenerationResponse>
 [Api("Convert image to text")]
 [Description("Extract text content from an image")]
 [SystemJson(UseSystemJson.Response)]
-public class ImageToText : IGeneration, IReturn<GenerationResponse>
+public class ImageToText : IGeneration, IReturn<TextGenerationResponse>
 {
     [ApiMember(Description = "The image to convert to text")]
     [Description("The image to convert to text")]
@@ -259,6 +259,30 @@ public class ImageToText : IGeneration, IReturn<GenerationResponse>
     [ApiMember(Description = "Tag to identify the request")]
     [Description("Tag to identify the request")]
     public string? Tag { get; set; }
+}
+
+[Description("Response object for artifact generation requests")]
+public class ArtifactGenerationResponse
+{
+    [ApiMember(Description = "List of generated outputs")]
+    [Description("List of generated outputs")]
+    public List<ArtifactOutput>? Results { get; set; }
+
+    [ApiMember(Description = "Detailed response status information")]
+    [Description("Detailed response status information")]
+    public ResponseStatus? ResponseStatus { get; set; }
+}
+
+[Description("Response object for text generation requests")]
+public class TextGenerationResponse
+{
+    [ApiMember(Description = "List of generated text outputs")]
+    [Description("List of generated text outputs")]
+    public List<TextOutput>? Results { get; set; }
+
+    [ApiMember(Description = "Detailed response status information")]
+    [Description("Detailed response status information")]
+    public ResponseStatus? ResponseStatus { get; set; }
 }
 
 [Description("Response object for generation requests")]

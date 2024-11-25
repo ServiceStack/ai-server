@@ -92,10 +92,10 @@ public class OpenAiChatTaskTests
         answer.PrintDump();
 
         Assert.That(answer, Is.Not.Null);
-        Assert.That(answer.ChatResponse, Is.Not.Null);
-        Assert.That(answer.ChatResponse.Choices, Is.Not.Empty);
-        Assert.That(answer.ChatResponse.Choices[0].Message, Is.Not.Null);
-        Assert.That(answer.ChatResponse.Choices[0].Message.Content, Is.Not.Empty);
+        Assert.That(answer.Result, Is.Not.Null);
+        Assert.That(answer.Result.Choices, Is.Not.Empty);
+        Assert.That(answer.Result.Choices[0].Message, Is.Not.Null);
+        Assert.That(answer.Result.Choices[0].Message.Content, Is.Not.Empty);
     }
 
     private async Task QueueQuestionTasks(IEnumerable<string> questionFiles, string model, string? provider = null, string? replyTo = null)

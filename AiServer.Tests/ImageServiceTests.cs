@@ -29,11 +29,11 @@ public class ImageIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        MediaTransformResponse response = null;
+        ArtifactGenerationResponse response = null;
         try
         {
             await using var imageStream = File.OpenRead("files/test_image.jpg");
-            response = client.PostFilesWithRequest<MediaTransformResponse>(new ConvertImage
+            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertImage
             {
                 OutputFormat = ImageOutputFormat.Png
             }, [
@@ -46,11 +46,11 @@ public class ImageIntegrationTests : IntegrationTestBase
         }
 
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.Outputs, Is.Not.Null);
-        Assert.That(response.Outputs.Count, Is.GreaterThan(0));
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results.Count, Is.GreaterThan(0));
         
         // Download the image
-        var outputUrl = response.Outputs[0].Url;
+        var outputUrl = response.Results[0].Url;
         Assert.That(outputUrl, Is.Not.Null);
         var outputImage = await client.GetAsync<Stream>(outputUrl!);
         
@@ -66,11 +66,11 @@ public class ImageIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        MediaTransformResponse response = null;
+        ArtifactGenerationResponse response = null;
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<MediaTransformResponse>(new ConvertImage
+            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertImage
             {
                 OutputFormat = ImageOutputFormat.Jpg
             }, [
@@ -83,11 +83,11 @@ public class ImageIntegrationTests : IntegrationTestBase
         }
 
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.Outputs, Is.Not.Null);
-        Assert.That(response.Outputs.Count, Is.GreaterThan(0));
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results.Count, Is.GreaterThan(0));
         
         // Download the image
-        var outputUrl = response.Outputs[0].Url;
+        var outputUrl = response.Results[0].Url;
         Assert.That(outputUrl, Is.Not.Null);
         var outputImage = await client.GetAsync<Stream>(outputUrl!);
         
@@ -107,7 +107,7 @@ public class ImageIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            var response = client.PostFilesWithRequest<MediaTransformResponse>(new ConvertImage
+            var response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertImage
             {
                 OutputFormat = null
             }, [
@@ -133,7 +133,7 @@ public class ImageIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/test_image.jpg");
-            var response = client.PostFilesWithRequest<MediaTransformResponse>(new CropImage
+            var response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new CropImage
             {
                 X = -10,
                 Y = -10,
@@ -159,7 +159,7 @@ public class ImageIntegrationTests : IntegrationTestBase
         var client = CreateClient();
         
         await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-        var response = client.PostFilesWithRequest<MediaTransformResponse>(new CropImage
+        var response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new CropImage
         {
             X = 10,
             Y = 10,
@@ -171,11 +171,11 @@ public class ImageIntegrationTests : IntegrationTestBase
         
         Assert.That(response, Is.Not.Null);
         var stream = response;
-        Assert.That(response.Outputs, Is.Not.Null);
-        Assert.That(response.Outputs.Count, Is.GreaterThan(0));
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results.Count, Is.GreaterThan(0));
         
         // Download the image
-        var outputUrl = response.Outputs[0].Url;
+        var outputUrl = response.Results[0].Url;
         Assert.That(outputUrl, Is.Not.Null);
         var outputImage = await client.GetAsync<Stream>(outputUrl!);
         
@@ -190,12 +190,12 @@ public class ImageIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        MediaTransformResponse response = null;
+        ArtifactGenerationResponse response = null;
         try
         {
             await using var imageStream = File.OpenRead("files/test_image.jpg");
             await using var watermarkStream = File.OpenRead("files/watermark_image.png");
-            response = client.PostFilesWithRequest<MediaTransformResponse>(new WatermarkImage
+            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new WatermarkImage
             {
                 Position = WatermarkPosition.BottomRight,
                 Opacity = 0.7f
@@ -210,11 +210,11 @@ public class ImageIntegrationTests : IntegrationTestBase
         }
 
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.Outputs, Is.Not.Null);
-        Assert.That(response.Outputs.Count, Is.GreaterThan(0));
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results.Count, Is.GreaterThan(0));
         
         // Download the image
-        var outputUrl = response.Outputs[0].Url;
+        var outputUrl = response.Results[0].Url;
         Assert.That(outputUrl, Is.Not.Null);
         var outputImage = await client.GetAsync<Stream>(outputUrl!);
         

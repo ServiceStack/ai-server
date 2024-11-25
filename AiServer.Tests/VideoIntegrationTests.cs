@@ -24,11 +24,11 @@ public class VideoIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        MediaTransformResponse response = null;
+        ArtifactGenerationResponse response = null;
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.webm");
-            response = client.PostFilesWithRequest<MediaTransformResponse>(new ConvertVideo
+            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertVideo
             {
                 OutputFormat = ConvertVideoOutputFormat.MP4,
             }, [
@@ -42,13 +42,13 @@ public class VideoIntegrationTests : IntegrationTestBase
 
         Assert.That(response, Is.Not.Null);
         
-        Assert.That(response.Outputs, Is.Not.Null);
-        Assert.That(response.Outputs, Is.Not.Empty);
-        Assert.That(response.Outputs[0].FileName, Does.EndWith(".mp4"));
-        Assert.That(response.Outputs[0].Url, Does.StartWith("http"));
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results, Is.Not.Empty);
+        Assert.That(response.Results[0].FileName, Does.EndWith(".mp4"));
+        Assert.That(response.Results[0].Url, Does.StartWith("http"));
         
         // Download the output file
-        var output = await response.Outputs[0].Url.GetStreamFromUrlAsync();
+        var output = await response.Results[0].Url.GetStreamFromUrlAsync();
         Assert.That(output, Is.Not.Null);
         // Download the output file
         await using var fs = File.Create("files/test_video.mp4");
@@ -60,11 +60,11 @@ public class VideoIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        MediaTransformResponse response = null;
+        ArtifactGenerationResponse response = null;
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            response = client.PostFilesWithRequest<MediaTransformResponse>(new CropVideo
+            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new CropVideo
             {
                 X = 100,
                 Y = 100,
@@ -81,15 +81,15 @@ public class VideoIntegrationTests : IntegrationTestBase
 
         Assert.That(response, Is.Not.Null);
         
-        Assert.That(response.Outputs, Is.Not.Null);
-        Assert.That(response.Outputs, Is.Not.Empty);
-        Assert.That(response.Outputs[0].FileName, Does.EndWith(".mp4"));
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results, Is.Not.Empty);
+        Assert.That(response.Results[0].FileName, Does.EndWith(".mp4"));
         
         // Download the output file
-        Assert.That(response.Outputs[0].Url, Does.StartWith("http"));
+        Assert.That(response.Results[0].Url, Does.StartWith("http"));
         
         // Download the output file
-        var output = await response.Outputs[0].Url.GetStreamFromUrlAsync();
+        var output = await response.Results[0].Url.GetStreamFromUrlAsync();
         Assert.That(output, Is.Not.Null);
         
         // Save the cropped video
@@ -110,11 +110,11 @@ public class VideoIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        MediaTransformResponse response = null;
+        ArtifactGenerationResponse response = null;
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            response = client.PostFilesWithRequest<MediaTransformResponse>(new TrimVideo
+            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new TrimVideo
             {
                 StartTime = "00:01",
                 EndTime = "00:06"
@@ -129,14 +129,14 @@ public class VideoIntegrationTests : IntegrationTestBase
 
         Assert.That(response, Is.Not.Null);
         
-        Assert.That(response.Outputs, Is.Not.Null);
-        Assert.That(response.Outputs, Is.Not.Empty);
-        Assert.That(response.Outputs[0].FileName, Does.EndWith(".mp4"));
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results, Is.Not.Empty);
+        Assert.That(response.Results[0].FileName, Does.EndWith(".mp4"));
         
-        Assert.That(response.Outputs[0].Url, Does.StartWith("http"));
+        Assert.That(response.Results[0].Url, Does.StartWith("http"));
         
         // Download the output file
-        var output = await response.Outputs[0].Url.GetStreamFromUrlAsync();
+        var output = await response.Results[0].Url.GetStreamFromUrlAsync();
         Assert.That(output, Is.Not.Null);
         
         // Save the trimmed video
@@ -160,7 +160,7 @@ public class VideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            var response = client.PostFilesWithRequest<MediaTransformResponse>(new TrimVideo
+            var response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new TrimVideo
             {
                 StartTime = "invalid",
                 EndTime = "00:05"
@@ -187,7 +187,7 @@ public class VideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            var response = client.PostFilesWithRequest<MediaTransformResponse>(new TrimVideo
+            var response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new TrimVideo
             {
                 StartTime = "00:01",
                 EndTime = "invalid"

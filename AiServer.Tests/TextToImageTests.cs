@@ -22,7 +22,7 @@ public class TextToImageIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        ApiResult<GenerationResponse>? response = null;
+        ApiResult<ArtifactGenerationResponse>? response = null;
         try
         {
             response = await client.ApiAsync(new TextToImage
@@ -43,11 +43,11 @@ public class TextToImageIntegrationTests : IntegrationTestBase
         Assert.That(response, Is.Not.Null);
         Assert.That(response.Response, Is.Not.Null);
         
-        Assert.That(response.Response.Outputs, Is.Not.Null);
-        Assert.That(response.Response.Outputs, Is.Not.Empty);
+        Assert.That(response.Response.Results, Is.Not.Null);
+        Assert.That(response.Response.Results, Is.Not.Empty);
         
         // Validate that the output image is a valid image
-        var outputImage = response.Response.Outputs[0];
+        var outputImage = response.Response.Results[0];
         Assert.That(outputImage.FileName, Does.EndWith(".webp"));
         // Download the image
         

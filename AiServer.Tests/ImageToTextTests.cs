@@ -13,11 +13,11 @@ public class ImageToTextIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        GenerationResponse? response = null;
+        TextGenerationResponse? response = null;
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<GenerationResponse>(new ImageToText
+            response = client.PostFilesWithRequest<TextGenerationResponse>(new ImageToText
             {
 
             }, [
@@ -31,8 +31,8 @@ public class ImageToTextIntegrationTests : IntegrationTestBase
 
         Assert.That(response, Is.Not.Null);
         
-        Assert.That(response.TextOutputs, Is.Not.Null);
-        Assert.That(response.TextOutputs, Is.Not.Empty);
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results, Is.Not.Empty);
     }
     
 }

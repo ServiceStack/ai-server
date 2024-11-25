@@ -337,7 +337,7 @@ public static class TransformServiceExtensions
         
         // Return the job status URL
         var jobStatusUrl = AppConfig.Instance.ApplicationBaseUrl.CombineWith(
-            $"/api/{nameof(GetJobStatus)}?RefId=" + transformResponse.RefId);
+            $"/api/{nameof(GetArtifactGenerationStatus)}?RefId=" + transformResponse.RefId);
 
         var queueTransformResponse = new QueueMediaTransformResponse
         {
@@ -360,7 +360,7 @@ public static class TransformServiceExtensions
             return queueTransformResponse;
         }
 
-        var completedResponse = new MediaTransformResponse();
+        var completedResponse = new ArtifactGenerationResponse();
 
         // Wait for the job to complete max 1 minute
         var timeout = DateTime.UtcNow.AddMinutes(1);
@@ -376,7 +376,7 @@ public static class TransformServiceExtensions
 
         var outputs = queuedJob.GetOutputs();
 
-        completedResponse.Outputs = outputs.Item1;
+        completedResponse.Results = outputs.Item1;
         return completedResponse;
     }
 }

@@ -61,7 +61,7 @@ public class QueueTextToSpeechIntegrationTests : IntegrationTestBase
         Assert.That(response?.Response?.JobId, Is.Not.Zero);
 
         // Get Job
-        var job = await client.ApiAsync(new GetJobStatus
+        var job = await client.ApiAsync(new GetArtifactGenerationStatus
         {
             JobId = response.Response.JobId
         });
@@ -119,7 +119,7 @@ public class QueueTextToSpeechIntegrationTests : IntegrationTestBase
         Assert.True(response.JobState is BackgroundJobState.Queued or BackgroundJobState.Started or BackgroundJobState.Completed); 
 
         // Verify that we can get the job status
-        var getStatusResponse = await client.PostAsync(new GetJobStatus
+        var getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
         {
             JobId = response.JobId
         });
@@ -127,7 +127,7 @@ public class QueueTextToSpeechIntegrationTests : IntegrationTestBase
         while (getStatusResponse.JobState == BackgroundJobState.Queued || getStatusResponse.JobState == BackgroundJobState.Started)
         {
             await Task.Delay(1000);
-            getStatusResponse = await client.PostAsync(new GetJobStatus
+            getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
             {
                 JobId = response.JobId
             });
@@ -138,8 +138,8 @@ public class QueueTextToSpeechIntegrationTests : IntegrationTestBase
         Assert.That(getStatusResponse.RefId, Is.EqualTo(response.RefId));
         Assert.That(getStatusResponse.JobState, Is.Not.Null);
         Assert.That(getStatusResponse.JobState, Is.EqualTo(BackgroundJobState.Completed));
-        Assert.That(getStatusResponse.Outputs, Is.Not.Null);
-        Assert.That(getStatusResponse.Outputs, Is.Not.Empty);
-        Assert.That(getStatusResponse.Outputs[0].FileName, Does.EndWith(".mp3").Or.EndWith(".wav"));
+        Assert.That(getStatusResponse.Results, Is.Not.Null);
+        Assert.That(getStatusResponse.Results, Is.Not.Empty);
+        Assert.That(getStatusResponse.Results[0].FileName, Does.EndWith(".mp3").Or.EndWith(".wav"));
     }
 }

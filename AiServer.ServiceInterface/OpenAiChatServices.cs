@@ -320,7 +320,7 @@ public class OpenAiChatServices(
             RefId = request.RefId,
             JobState = job.State,
             Status = job.State.ToString(),
-            ChatResponse = chatResponse,
+            Result = chatResponse,
         };
     }
     
