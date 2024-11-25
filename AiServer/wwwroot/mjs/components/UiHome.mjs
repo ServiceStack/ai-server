@@ -69,6 +69,10 @@ export default {
       </dl>
     </div>
     
+  <div class="mt-24">
+        <lite-youtube class="mx-auto max-w-5xl aspect-video w-full" videoid="Ojo80oFQte8"
+                      style="background-image: url('https://img.youtube.com/vi/Ojo80oFQte8/maxresdefault.jpg')"></lite-youtube>
+  </div>
     
 <div class="overflow-hidden bg-white py-24 sm:py-32">
   <div class="mx-auto max-w-7xl px-6 lg:px-8">
