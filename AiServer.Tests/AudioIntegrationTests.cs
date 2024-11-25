@@ -19,7 +19,7 @@ public class AudioIntegrationTests : IntegrationTestBase
         {
             var inputAudioPath = "files/test_audio.wav";
             await using var audioStream = File.OpenRead(inputAudioPath);
-            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertAudio
+            response = client.PostFilesWithRequest(new ConvertAudio
             {
                 OutputFormat = AudioFormat.MP3
             }, [
@@ -62,7 +62,7 @@ public class AudioIntegrationTests : IntegrationTestBase
         try
         {
             await using var audioStream = File.OpenRead("files/test_audio.mp3");
-            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertAudio
+            response = client.PostFilesWithRequest(new ConvertAudio
             {
                 OutputFormat = AudioFormat.WAV
             }, [
@@ -105,7 +105,7 @@ public class AudioIntegrationTests : IntegrationTestBase
         try
         {
             await using var audioStream = File.OpenRead("files/test_audio.mp3");
-            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertAudio
+            response = client.PostFilesWithRequest(new ConvertAudio
             {
                 OutputFormat = AudioFormat.FLAC
             }, [

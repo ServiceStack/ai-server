@@ -14,11 +14,11 @@ public class ImageToImageIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        GenerationResponse? response = null;
+        ArtifactGenerationResponse? response = null;
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<GenerationResponse>(new ImageToImage
+            response = client.PostFilesWithRequest(new ImageToImage
             {
                 PositivePrompt = "A futuristic version of the input image",
                 BatchSize = 1
@@ -33,11 +33,11 @@ public class ImageToImageIntegrationTests : IntegrationTestBase
 
         Assert.That(response, Is.Not.Null);
         
-        Assert.That(response.Outputs, Is.Not.Null);
-        Assert.That(response.Outputs, Is.Not.Empty);
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results, Is.Not.Empty);
         
         // Validate that the output image is a valid image
-        var outputImage = response.Outputs[0];
+        var outputImage = response.Results[0];
         Assert.That(outputImage.FileName, Does.EndWith(".webp"));
         // Download the image
         var downloadResponse = await client.GetHttpClient().GetStreamAsync(outputImage.Url);
@@ -66,13 +66,13 @@ public class ImageToImageIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        GenerationResponse? response = null;
+        ArtifactGenerationResponse? response = null;
         try
         {
             using var imageStream = new MemoryStream(File.ReadAllBytes("files/comfyui_upload_test.png"));
             using var maskStream = new MemoryStream(File.ReadAllBytes("files/comfyui_upload_test_mask.png"));
 
-            response = client.PostFilesWithRequest<GenerationResponse>(new ImageWithMask
+            response = client.PostFilesWithRequest(new ImageWithMask
             {
                 PositivePrompt = "A beautiful flower in the masked area",
                 NegativePrompt = "No insects or weeds"
@@ -89,11 +89,11 @@ public class ImageToImageIntegrationTests : IntegrationTestBase
 
         Assert.That(response, Is.Not.Null);
         
-        Assert.That(response.Outputs, Is.Not.Null);
-        Assert.That(response.Outputs, Is.Not.Empty);
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results, Is.Not.Empty);
         
         // Validate that the output image is a valid image
-        var outputImage = response.Outputs[0];
+        var outputImage = response.Results[0];
         Assert.That(outputImage.FileName, Does.EndWith(".webp"));
         // Download the image
         var downloadResponse = await client.GetHttpClient().GetStreamAsync(outputImage.Url);

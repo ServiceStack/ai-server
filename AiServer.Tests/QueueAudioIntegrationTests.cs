@@ -19,7 +19,7 @@ public class QueueAudioIntegrationTests : IntegrationTestBase
         {
             var inputAudioPath = "files/test_audio.wav";
             await using var audioStream = File.OpenRead(inputAudioPath);
-            response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueConvertAudio
+            response = client.PostFilesWithRequest(new QueueConvertAudio
             {
                 OutputFormat = AudioFormat.MP3
             }, [
@@ -63,7 +63,7 @@ public class QueueAudioIntegrationTests : IntegrationTestBase
         try
         {
             await using var audioStream = File.OpenRead("files/test_audio.mp3");
-            response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueConvertAudio
+            response = client.PostFilesWithRequest(new QueueConvertAudio
             {
                 OutputFormat = AudioFormat.WAV
             }, [
@@ -107,7 +107,7 @@ public class QueueAudioIntegrationTests : IntegrationTestBase
         try
         {
             await using var audioStream = File.OpenRead("files/test_audio.mp3");
-            response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueConvertAudio
+            response = client.PostFilesWithRequest(new QueueConvertAudio
             {
                 OutputFormat = AudioFormat.FLAC
             }, [

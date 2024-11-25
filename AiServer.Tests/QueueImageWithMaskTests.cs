@@ -20,7 +20,7 @@ public class QueueImageWithMaskIntegrationTests : IntegrationTestBase
             using var imageStream = new MemoryStream(File.ReadAllBytes("files/comfyui_upload_test.png"));
             using var maskStream = new MemoryStream(File.ReadAllBytes("files/comfyui_upload_test_mask.png"));
 
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueImageWithMask
+            response = client.PostFilesWithRequest(new QueueImageWithMask
             {
                 PositivePrompt = "A beautiful flower in the masked area",
                 NegativePrompt = "No insects or weeds"
@@ -56,7 +56,7 @@ public class QueueImageWithMaskIntegrationTests : IntegrationTestBase
             using var imageStream = new MemoryStream(File.ReadAllBytes("files/comfyui_upload_test.png"));
             using var maskStream = new MemoryStream(File.ReadAllBytes("files/comfyui_upload_test_mask.png"));
 
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueImageWithMask
+            response = client.PostFilesWithRequest(new QueueImageWithMask
             {
                 PositivePrompt = "A scary storm is brewing",
                 NegativePrompt = "No insects or weeds",
@@ -123,7 +123,7 @@ public class QueueImageWithMaskIntegrationTests : IntegrationTestBase
             using var imageStream = new MemoryStream(File.ReadAllBytes("files/comfyui_upload_test.png"));
             using var maskStream = new MemoryStream(File.ReadAllBytes("files/comfyui_upload_test_mask.png"));
 
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueImageWithMask
+            response = client.PostFilesWithRequest(new QueueImageWithMask
             {
                 PositivePrompt = "A beautiful flower in the masked area",
                 NegativePrompt = "No insects or weeds"

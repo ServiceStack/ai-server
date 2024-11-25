@@ -14,11 +14,11 @@ public class ImageUpscaleIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        GenerationResponse? response = null;
+        ArtifactGenerationResponse? response = null;
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<GenerationResponse>(new ImageUpscale
+            response = client.PostFilesWithRequest(new ImageUpscale
             {
 
             }, [
@@ -33,12 +33,12 @@ public class ImageUpscaleIntegrationTests : IntegrationTestBase
         Assert.That(response, Is.Not.Null);
         Assert.That(response, Is.Not.Null);
         
-        Assert.That(response.Outputs, Is.Not.Null);
-        Assert.That(response.Outputs, Is.Not.Empty);
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results, Is.Not.Empty);
         
         // Download image
         // Validate that the output image is a valid image
-        var outputImage = response.Outputs[0];
+        var outputImage = response.Results[0];
         Assert.That(outputImage.FileName, Does.EndWith(".webp"));
         // Download the image
         var downloadResponse = await client.GetHttpClient().GetStreamAsync(outputImage.Url);

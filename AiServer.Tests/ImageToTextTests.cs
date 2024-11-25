@@ -17,7 +17,7 @@ public class ImageToTextIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<TextGenerationResponse>(new ImageToText
+            response = client.PostFilesWithRequest(new ImageToText
             {
 
             }, [

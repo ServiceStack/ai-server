@@ -18,7 +18,7 @@ public class QueueImageToTextIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueImageToText
+            response = client.PostFilesWithRequest(new QueueImageToText
             {
 
             }, [
@@ -49,7 +49,7 @@ public class QueueImageToTextIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueImageToText
+            response = client.PostFilesWithRequest(new QueueImageToText
             {
                 ReplyTo = "https://localhost:5005/dummyreplyto"
             }, [
@@ -109,7 +109,7 @@ public class QueueImageToTextIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueImageToText
+            response = client.PostFilesWithRequest(new QueueImageToText
             {
             }, [
                 new UploadFile("image.png", imageStream){ FieldName = "image"}

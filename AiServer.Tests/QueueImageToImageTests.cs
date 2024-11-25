@@ -18,7 +18,7 @@ public class QueueImageToImageIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueImageToImage
+            response = client.PostFilesWithRequest(new QueueImageToImage
             {
                 PositivePrompt = "A futuristic version of the input image",
                 BatchSize = 1
@@ -51,7 +51,7 @@ public class QueueImageToImageIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueImageToImage
+            response = client.PostFilesWithRequest(new QueueImageToImage
             {
                 PositivePrompt = "A futuristic version of the input image",
                 BatchSize = 1,
@@ -113,7 +113,7 @@ public class QueueImageToImageIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueImageToImage
+            response = client.PostFilesWithRequest(new QueueImageToImage
             {
                 PositivePrompt = "A futuristic version of the input image",
                 BatchSize = 1

@@ -28,7 +28,7 @@ public class VideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.webm");
-            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertVideo
+            response = client.PostFilesWithRequest(new ConvertVideo
             {
                 OutputFormat = ConvertVideoOutputFormat.MP4,
             }, [
@@ -64,7 +64,7 @@ public class VideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new CropVideo
+            response = client.PostFilesWithRequest(new CropVideo
             {
                 X = 100,
                 Y = 100,
@@ -114,7 +114,7 @@ public class VideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new TrimVideo
+            response = client.PostFilesWithRequest(new TrimVideo
             {
                 StartTime = "00:01",
                 EndTime = "00:06"
@@ -160,7 +160,7 @@ public class VideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            var response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new TrimVideo
+            var response = client.PostFilesWithRequest(new TrimVideo
             {
                 StartTime = "invalid",
                 EndTime = "00:05"
@@ -187,7 +187,7 @@ public class VideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            var response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new TrimVideo
+            var response = client.PostFilesWithRequest(new TrimVideo
             {
                 StartTime = "00:01",
                 EndTime = "invalid"

@@ -18,7 +18,7 @@ public class QueueImageUpscaleIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueImageUpscale
+            response = client.PostFilesWithRequest(new QueueImageUpscale
             {
 
             }, [
@@ -50,7 +50,7 @@ public class QueueImageUpscaleIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueImageUpscale
+            response = client.PostFilesWithRequest(new QueueImageUpscale
             {
                 ReplyTo = "https://localhost:5005/dummyreplyto"
             }, [
@@ -110,7 +110,7 @@ public class QueueImageUpscaleIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(new QueueImageUpscale
+            response = client.PostFilesWithRequest(new QueueImageUpscale
             {
             }, [
                 new UploadFile("image.png", imageStream){ FieldName = "image"}

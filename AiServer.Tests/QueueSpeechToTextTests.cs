@@ -26,7 +26,7 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
 
         try
         {
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(
+            response = client.PostFilesWithRequest(
                 new QueueSpeechToText(), 
                 [new UploadFile("speech.wav", fileStream) { FieldName = "audio"}]);
         }
@@ -57,7 +57,7 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
 
         try
         {
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(
+            response = client.PostFilesWithRequest(
                 new QueueSpeechToText
                 {
                     ReplyTo = "https://localhost:5005/dummyreplyto"
@@ -129,7 +129,7 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
 
         try
         {
-            response = client.PostFilesWithRequest<QueueGenerationResponse>(
+            response = client.PostFilesWithRequest(
                 new QueueSpeechToText(), 
             [new UploadFile("speech.wav", fileStream) { FieldName = "audio"}]);
         }

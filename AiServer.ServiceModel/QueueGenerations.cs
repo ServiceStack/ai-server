@@ -8,7 +8,7 @@ namespace AiServer.ServiceModel;
 [Tag(Tags.AI)]
 [Api("Convert speech to text")]
 [Description("Transcribe audio content to text")]
-public class QueueSpeechToText : IQueueGeneration, IReturn<GetTextGenerationStatusResponse>
+public class QueueSpeechToText : IQueueGeneration, IReturn<QueueGenerationResponse>
 {
     [ApiMember(Description = "The audio stream containing the speech to be transcribed")]
     [Description("The audio stream containing the speech to be transcribed")]

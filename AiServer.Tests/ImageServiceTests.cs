@@ -33,7 +33,7 @@ public class ImageIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/test_image.jpg");
-            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertImage
+            response = client.PostFilesWithRequest(new ConvertImage
             {
                 OutputFormat = ImageOutputFormat.Png
             }, [
@@ -70,7 +70,7 @@ public class ImageIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertImage
+            response = client.PostFilesWithRequest(new ConvertImage
             {
                 OutputFormat = ImageOutputFormat.Jpg
             }, [
@@ -107,7 +107,7 @@ public class ImageIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            var response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertImage
+            var response = client.PostFilesWithRequest(new ConvertImage
             {
                 OutputFormat = null
             }, [
@@ -133,7 +133,7 @@ public class ImageIntegrationTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/test_image.jpg");
-            var response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new CropImage
+            var response = client.PostFilesWithRequest(new CropImage
             {
                 X = -10,
                 Y = -10,
@@ -159,7 +159,7 @@ public class ImageIntegrationTests : IntegrationTestBase
         var client = CreateClient();
         
         await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-        var response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new CropImage
+        var response = client.PostFilesWithRequest(new CropImage
         {
             X = 10,
             Y = 10,
@@ -195,7 +195,7 @@ public class ImageIntegrationTests : IntegrationTestBase
         {
             await using var imageStream = File.OpenRead("files/test_image.jpg");
             await using var watermarkStream = File.OpenRead("files/watermark_image.png");
-            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new WatermarkImage
+            response = client.PostFilesWithRequest(new WatermarkImage
             {
                 Position = WatermarkPosition.BottomRight,
                 Opacity = 0.7f

@@ -30,7 +30,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/test_image.jpg");
-            response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueConvertImage
+            response = client.PostFilesWithRequest(new QueueConvertImage
             {
                 OutputFormat = ImageOutputFormat.Png
             }, [
@@ -88,7 +88,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueConvertImage
+            response = client.PostFilesWithRequest(new QueueConvertImage
             {
                 OutputFormat = ImageOutputFormat.Jpg
             }, [
@@ -146,7 +146,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-            var response = client.PostFilesWithRequest<QueueMediaTransformResponse>(
+            var response = client.PostFilesWithRequest(
                 new QueueConvertImage
             {
                 OutputFormat = null
@@ -173,7 +173,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         try
         {
             await using var imageStream = File.OpenRead("files/test_image.jpg");
-            var response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueCropImage
+            var response = client.PostFilesWithRequest(new QueueCropImage
             {
                 X = -10,
                 Y = -10,
@@ -199,7 +199,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         var client = CreateClient();
         
         await using var imageStream = File.OpenRead("files/comfyui_upload_test.png");
-        var response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueCropImage
+        var response = client.PostFilesWithRequest(new QueueCropImage
         {
             X = 10,
             Y = 10,
@@ -256,7 +256,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         {
             await using var imageStream = File.OpenRead("files/test_image.jpg");
             await using var watermarkStream = File.OpenRead("files/watermark_image.png");
-            response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueWatermarkImage
+            response = client.PostFilesWithRequest(new QueueWatermarkImage
             {
                 Position = WatermarkPosition.BottomRight,
                 Opacity = 0.7f

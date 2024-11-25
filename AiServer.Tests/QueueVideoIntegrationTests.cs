@@ -18,7 +18,7 @@ public class QueueVideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.webm");
-            response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueConvertVideo
+            response = client.PostFilesWithRequest(new QueueConvertVideo
             {
                 OutputFormat = ConvertVideoOutputFormat.MP4,
             }, [
@@ -57,7 +57,7 @@ public class QueueVideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.webm");
-            response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueConvertVideo
+            response = client.PostFilesWithRequest(new QueueConvertVideo
             {
                 OutputFormat = ConvertVideoOutputFormat.MP4,
                 ReplyTo = "https://localhost:5005/dummyreplyto"
@@ -105,7 +105,7 @@ public class QueueVideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueCropVideo
+            response = client.PostFilesWithRequest(new QueueCropVideo
             {
                 X = 100,
                 Y = 100,
@@ -155,7 +155,7 @@ public class QueueVideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueCropVideo
+            response = client.PostFilesWithRequest(new QueueCropVideo
             {
                 X = 50,
                 Y = 50,
@@ -189,7 +189,7 @@ public class QueueVideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueTrimVideo
+            response = client.PostFilesWithRequest(new QueueTrimVideo
             {
                 StartTime = "00:01",
                 EndTime = "00:06"
@@ -236,7 +236,7 @@ public class QueueVideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueTrimVideo
+            response = client.PostFilesWithRequest(new QueueTrimVideo
             {
                 StartTime = "00:02",
                 EndTime = "00:05",
@@ -268,7 +268,7 @@ public class QueueVideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            var response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueTrimVideo
+            var response = client.PostFilesWithRequest(new QueueTrimVideo
             {
                 StartTime = "invalid",
                 EndTime = "00:05"
@@ -295,7 +295,7 @@ public class QueueVideoIntegrationTests : IntegrationTestBase
         try
         {
             await using var videoStream = File.OpenRead("files/test_video.mp4");
-            var response = client.PostFilesWithRequest<QueueMediaTransformResponse>(new QueueTrimVideo
+            var response = client.PostFilesWithRequest(new QueueTrimVideo
             {
                 StartTime = "00:01",
                 EndTime = "invalid"
