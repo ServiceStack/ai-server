@@ -7,7 +7,7 @@ namespace AiServer.ServiceModel;
 [Tag(Tags.Media)]
 [Api("Scale video")]
 [Description("Scale a video to specified dimensions")]
-public class ScaleVideo : IMediaTransform, IReturn<MediaTransformResponse>
+public class ScaleVideo : IMediaTransform, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The video file to be scaled")]
     [Description("The video file to be scaled")]
@@ -38,7 +38,7 @@ public class ScaleVideo : IMediaTransform, IReturn<MediaTransformResponse>
 [Tag(Tags.Media)]
 [Api("Watermark video")]
 [Description("Add a watermark to a video")]
-public class WatermarkVideo : IMediaTransform, IReturn<MediaTransformResponse>
+public class WatermarkVideo : IMediaTransform, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The video file to be watermarked")]
     [Description("The video file to be watermarked")]
@@ -78,7 +78,7 @@ public enum WatermarkPosition
 [Description("Convert an image to a different format")]
 [Tag(Tags.Media)]
 [ValidateApiKey]
-public class ConvertImage : IMediaTransform, IPost, IReturn<MediaTransformResponse>
+public class ConvertImage : IMediaTransform, IPost, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The image file to be converted")]
     [Description("The image file to be converted")]
@@ -103,7 +103,7 @@ public class ConvertImage : IMediaTransform, IPost, IReturn<MediaTransformRespon
 [Description("Crop an image to a specified area")]
 [Tag(Tags.Media)]
 [ValidateApiKey]
-public class CropImage : IMediaTransform, IPost, IReturn<MediaTransformResponse>
+public class CropImage : IMediaTransform, IPost, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The X-coordinate of the top-left corner of the crop area")]
     [Description("The X-coordinate of the top-left corner of the crop area")]
@@ -139,7 +139,7 @@ public class CropImage : IMediaTransform, IPost, IReturn<MediaTransformResponse>
 [Description("Scale an image to a specified size")]
 [Tag(Tags.Media)]
 [ValidateApiKey]
-public class ScaleImage : IMediaTransform, IPost, IReturn<MediaTransformResponse>
+public class ScaleImage : IMediaTransform, IPost, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The image file to be scaled")]
     [Description("The image file to be scaled")]
@@ -167,7 +167,7 @@ public class ScaleImage : IMediaTransform, IPost, IReturn<MediaTransformResponse
 [Description("Add a watermark to an image")]
 [Tag(Tags.Media)]
 [ValidateApiKey]
-public class WatermarkImage : IMediaTransform, IPost, IReturn<MediaTransformResponse>
+public class WatermarkImage : IMediaTransform, IPost, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The image file to be watermarked")]
     [Description("The image file to be watermarked")]
@@ -199,7 +199,7 @@ public class WatermarkImage : IMediaTransform, IPost, IReturn<MediaTransformResp
 [Description("Convert a video to a different format")]
 [Tag(Tags.Media)]
 [ValidateApiKey]
-public class ConvertVideo : IMediaTransform, IReturn<MediaTransformResponse>
+public class ConvertVideo : IMediaTransform, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The desired output format for the converted video")]
     [Description("The desired output format for the converted video")]
@@ -222,7 +222,7 @@ public class ConvertVideo : IMediaTransform, IReturn<MediaTransformResponse>
 [Description("Crop a video to a specified area")]
 [Tag(Tags.Media)]
 [ValidateApiKey]
-public class CropVideo : IMediaTransform, IReturn<MediaTransformResponse>
+public class CropVideo : IMediaTransform, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The X-coordinate of the top-left corner of the crop area")]
     [Description("The X-coordinate of the top-left corner of the crop area")]
@@ -264,7 +264,7 @@ public class CropVideo : IMediaTransform, IReturn<MediaTransformResponse>
 [Description("Trim a video to a specified duration via start and end times")]
 [Tag(Tags.Media)]
 [ValidateApiKey]
-public class TrimVideo : IMediaTransform, IReturn<MediaTransformResponse>
+public class TrimVideo : IMediaTransform, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The start time of the trimmed video (format: MM:SS)")]
     [Description("The start time of the trimmed video (format: MM:SS)")]
@@ -291,7 +291,7 @@ public class TrimVideo : IMediaTransform, IReturn<MediaTransformResponse>
 [Description("Convert an audio file to a different format")]
 [Tag(Tags.Media)]
 [ValidateApiKey]
-public class ConvertAudio : IMediaTransform, IReturn<MediaTransformResponse>
+public class ConvertAudio : IMediaTransform, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The desired output format for the converted audio")]
     [Description("The desired output format for the converted audio")]
@@ -315,21 +315,4 @@ public interface IMediaTransform
 {
     public string? RefId { get; set; }
     public string? Tag { get; set; }
-}
-
-[Description("Response object for transform requests")]
-public class MediaTransformResponse
-{
-    
-    [ApiMember(Description = "List of generated outputs")]
-    [Description("List of generated outputs")]
-    public List<ArtifactOutput>? Outputs { get; set; }
-
-    [ApiMember(Description = "List of generated text outputs")]
-    [Description("List of generated text outputs")]
-    public List<TextOutput>? TextOutputs { get; set; }
-
-    [ApiMember(Description = "Detailed response status information")]
-    [Description("Detailed response status information")]
-    public ResponseStatus? ResponseStatus { get; set; }
 }

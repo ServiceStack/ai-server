@@ -78,7 +78,7 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
         Assert.That(response?.JobId, Is.Not.Zero);
 
         // Get Job
-        var job = await client.ApiAsync(new GetJobStatus
+        var job = await client.ApiAsync(new GetArtifactGenerationStatus
         {
             JobId = response.JobId
         });
@@ -110,13 +110,13 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
         Assert.That(hasRepyTo.Succeeded, Is.True);
         
         // Verify that we can get the job status
-        var getStatusResponse = await client.PostAsync(new GetJobStatus
+        var getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
         {
             JobId = response.JobId
         });
         
-        Assert.That(getStatusResponse.TextOutputs, Is.Not.Null);
-        Assert.That(getStatusResponse.TextOutputs, Is.Not.Empty);
+        Assert.That(getStatusResponse.Results, Is.Not.Null);
+        Assert.That(getStatusResponse.Results, Is.Not.Empty);
     }
 
     [Test]
@@ -147,7 +147,7 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
         Assert.True(response.JobState is BackgroundJobState.Queued or BackgroundJobState.Started);
 
         // Verify that we can get the job status
-        var getStatusResponse = await client.PostAsync(new GetJobStatus
+        var getStatusResponse = await client.PostAsync(new GetTextGenerationStatus
         {
             JobId = response.JobId
         });
@@ -155,7 +155,7 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
         while (getStatusResponse.JobState == BackgroundJobState.Queued || getStatusResponse.JobState == BackgroundJobState.Started)
         {
             await Task.Delay(1000);
-            getStatusResponse = await client.PostAsync(new GetJobStatus
+            getStatusResponse = await client.PostAsync(new GetTextGenerationStatus
             {
                 JobId = response.JobId
             });
@@ -166,9 +166,9 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
         Assert.That(getStatusResponse.RefId, Is.EqualTo(response.RefId));
         Assert.That(getStatusResponse.JobState, Is.Not.Null);
         Assert.That(getStatusResponse.JobState, Is.EqualTo(BackgroundJobState.Completed));
-        Assert.That(getStatusResponse.TextOutputs, Is.Not.Null);
-        Assert.That(getStatusResponse.TextOutputs, Is.Not.Empty);
-        Assert.That(getStatusResponse.TextOutputs[0].Text, Is.Not.Null);
-        Assert.That(getStatusResponse.TextOutputs[0].Text, Is.Not.Empty);
+        Assert.That(getStatusResponse.Results, Is.Not.Null);
+        Assert.That(getStatusResponse.Results, Is.Not.Empty);
+        Assert.That(getStatusResponse.Results?[0].Text, Is.Not.Null);
+        Assert.That(getStatusResponse.Results?[0].Text, Is.Not.Empty);
     }
 }

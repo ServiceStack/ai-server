@@ -14,12 +14,12 @@ public class AudioIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        MediaTransformResponse response = null;
+        ArtifactGenerationResponse response = null;
         try
         {
             var inputAudioPath = "files/test_audio.wav";
             await using var audioStream = File.OpenRead(inputAudioPath);
-            response = client.PostFilesWithRequest<MediaTransformResponse>(new ConvertAudio
+            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertAudio
             {
                 OutputFormat = AudioFormat.MP3
             }, [
@@ -33,12 +33,12 @@ public class AudioIntegrationTests : IntegrationTestBase
 
         Assert.That(response, Is.Not.Null);
         
-        Assert.That(response.Outputs, Is.Not.Null);
-        Assert.That(response.Outputs, Is.Not.Empty);
-        Assert.That(response.Outputs[0].FileName, Does.EndWith(".mp3"));
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results, Is.Not.Empty);
+        Assert.That(response.Results[0].FileName, Does.EndWith(".mp3"));
         
         // Test download
-        var downloadResponse = await client.GetHttpClient().GetStreamAsync(response.Outputs[0].Url);
+        var downloadResponse = await client.GetHttpClient().GetStreamAsync(response.Results[0].Url);
         Assert.That(downloadResponse, Is.Not.Null);
         // Save to disk
         var audioPath = "files/test_audio.mp3";
@@ -58,11 +58,11 @@ public class AudioIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        MediaTransformResponse response = null;
+        ArtifactGenerationResponse response = null;
         try
         {
             await using var audioStream = File.OpenRead("files/test_audio.mp3");
-            response = client.PostFilesWithRequest<MediaTransformResponse>(new ConvertAudio
+            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertAudio
             {
                 OutputFormat = AudioFormat.WAV
             }, [
@@ -76,12 +76,12 @@ public class AudioIntegrationTests : IntegrationTestBase
 
         Assert.That(response, Is.Not.Null);
         
-        Assert.That(response.Outputs, Is.Not.Null);
-        Assert.That(response.Outputs, Is.Not.Empty);
-        Assert.That(response.Outputs[0].FileName, Does.EndWith(".wav"));
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results, Is.Not.Empty);
+        Assert.That(response.Results[0].FileName, Does.EndWith(".wav"));
         
         // Test download
-        var downloadResponse = await client.GetHttpClient().GetStreamAsync(response.Outputs[0].Url);
+        var downloadResponse = await client.GetHttpClient().GetStreamAsync(response.Results[0].Url);
         Assert.That(downloadResponse, Is.Not.Null);
         // Save to disk
         var audioPath = "files/test_audio.wav";
@@ -101,11 +101,11 @@ public class AudioIntegrationTests : IntegrationTestBase
     {
         var client = CreateClient();
 
-        MediaTransformResponse response = null;
+        ArtifactGenerationResponse response = null;
         try
         {
             await using var audioStream = File.OpenRead("files/test_audio.mp3");
-            response = client.PostFilesWithRequest<MediaTransformResponse>(new ConvertAudio
+            response = client.PostFilesWithRequest<ArtifactGenerationResponse>(new ConvertAudio
             {
                 OutputFormat = AudioFormat.FLAC
             }, [
@@ -119,12 +119,12 @@ public class AudioIntegrationTests : IntegrationTestBase
 
         Assert.That(response, Is.Not.Null);
         
-        Assert.That(response.Outputs, Is.Not.Null);
-        Assert.That(response.Outputs, Is.Not.Empty);
-        Assert.That(response.Outputs[0].FileName, Does.EndWith(".flac"));
+        Assert.That(response.Results, Is.Not.Null);
+        Assert.That(response.Results, Is.Not.Empty);
+        Assert.That(response.Results[0].FileName, Does.EndWith(".flac"));
 
         // Test download
-        var downloadResponse = await client.GetHttpClient().GetStreamAsync(response.Outputs[0].Url);
+        var downloadResponse = await client.GetHttpClient().GetStreamAsync(response.Results[0].Url);
         Assert.That(downloadResponse, Is.Not.Null);
         // Save to disk
         var audioPath = "files/test_audio.flac";

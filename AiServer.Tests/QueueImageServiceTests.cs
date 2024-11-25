@@ -45,7 +45,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         Assert.That(response, Is.Not.Null);
         
         // Verify that we can get the job status
-        var getStatusResponse = await client.PostAsync(new GetJobStatus
+        var getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
         {
             JobId = response.JobId
         });
@@ -53,7 +53,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         while (getStatusResponse.JobState == BackgroundJobState.Queued || getStatusResponse.JobState == BackgroundJobState.Started)
         {
             await Task.Delay(1000);
-            getStatusResponse = await client.PostAsync(new GetJobStatus
+            getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
             {
                 JobId = response.JobId
             });
@@ -64,11 +64,11 @@ public class QueueImageServiceTests : IntegrationTestBase
         Assert.That(getStatusResponse.RefId, Is.EqualTo(response.RefId));
         Assert.That(getStatusResponse.JobState, Is.Not.Null);
         
-        Assert.That(getStatusResponse.Outputs, Is.Not.Null);
-        Assert.That(getStatusResponse.Outputs.Count, Is.GreaterThan(0));
+        Assert.That(getStatusResponse.Results, Is.Not.Null);
+        Assert.That(getStatusResponse.Results.Count, Is.GreaterThan(0));
         
         // Download the image
-        var outputUrl = getStatusResponse.Outputs[0].Url;
+        var outputUrl = getStatusResponse.Results[0].Url;
         Assert.That(outputUrl, Is.Not.Null);
         var outputImage = await client.GetAsync<Stream>(outputUrl!);
         
@@ -103,7 +103,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         Assert.That(response, Is.Not.Null);
         
         // Verify that we can get the job status
-        var getStatusResponse = await client.PostAsync(new GetJobStatus
+        var getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
         {
             JobId = response.JobId
         });
@@ -111,7 +111,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         while (getStatusResponse.JobState == BackgroundJobState.Queued || getStatusResponse.JobState == BackgroundJobState.Started)
         {
             await Task.Delay(1000);
-            getStatusResponse = await client.PostAsync(new GetJobStatus
+            getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
             {
                 JobId = response.JobId
             });
@@ -122,11 +122,11 @@ public class QueueImageServiceTests : IntegrationTestBase
         Assert.That(getStatusResponse.RefId, Is.EqualTo(response.RefId));
         Assert.That(getStatusResponse.JobState, Is.Not.Null);
         
-        Assert.That(getStatusResponse.Outputs, Is.Not.Null);
-        Assert.That(getStatusResponse.Outputs.Count, Is.GreaterThan(0));
+        Assert.That(getStatusResponse.Results, Is.Not.Null);
+        Assert.That(getStatusResponse.Results.Count, Is.GreaterThan(0));
 
         // Download the image
-        var outputUrl = getStatusResponse.Outputs[0].Url;
+        var outputUrl = getStatusResponse.Results[0].Url;
         Assert.That(outputUrl, Is.Not.Null);
         var outputImage = await client.GetAsync<Stream>(outputUrl!);
         
@@ -212,7 +212,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         Assert.That(response, Is.Not.Null);
         
         // Verify that we can get the job status
-        var getStatusResponse = await client.PostAsync(new GetJobStatus
+        var getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
         {
             JobId = response.JobId
         });
@@ -220,7 +220,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         while (getStatusResponse.JobState == BackgroundJobState.Queued || getStatusResponse.JobState == BackgroundJobState.Started)
         {
             await Task.Delay(1000);
-            getStatusResponse = await client.PostAsync(new GetJobStatus
+            getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
             {
                 JobId = response.JobId
             });
@@ -231,12 +231,12 @@ public class QueueImageServiceTests : IntegrationTestBase
         Assert.That(getStatusResponse.RefId, Is.EqualTo(response.RefId));
         Assert.That(getStatusResponse.JobState, Is.Not.Null);
         
-        Assert.That(getStatusResponse.Outputs, Is.Not.Null);
-        Assert.That(getStatusResponse.Outputs.Count, Is.GreaterThan(0));
+        Assert.That(getStatusResponse.Results, Is.Not.Null);
+        Assert.That(getStatusResponse.Results.Count, Is.GreaterThan(0));
 
         
         // Download the image
-        var outputUrl = getStatusResponse.Outputs[0].Url;
+        var outputUrl = getStatusResponse.Results[0].Url;
         Assert.That(outputUrl, Is.Not.Null);
         var outputImage = await client.GetAsync<Stream>(outputUrl!);
         
@@ -273,7 +273,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         Assert.That(response, Is.Not.Null);
         
         // Verify that we can get the job status
-        var getStatusResponse = await client.PostAsync(new GetJobStatus
+        var getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
         {
             JobId = response.JobId
         });
@@ -281,7 +281,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         while (getStatusResponse.JobState == BackgroundJobState.Queued || getStatusResponse.JobState == BackgroundJobState.Started)
         {
             await Task.Delay(1000);
-            getStatusResponse = await client.PostAsync(new GetJobStatus
+            getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
             {
                 JobId = response.JobId
             });
@@ -292,12 +292,12 @@ public class QueueImageServiceTests : IntegrationTestBase
         Assert.That(getStatusResponse.RefId, Is.EqualTo(response.RefId));
         Assert.That(getStatusResponse.JobState, Is.Not.Null);
         
-        Assert.That(getStatusResponse.Outputs, Is.Not.Null);
-        Assert.That(getStatusResponse.Outputs.Count, Is.GreaterThan(0));
+        Assert.That(getStatusResponse.Results, Is.Not.Null);
+        Assert.That(getStatusResponse.Results.Count, Is.GreaterThan(0));
 
         
         // Download the image
-        var outputUrl = getStatusResponse.Outputs[0].Url;
+        var outputUrl = getStatusResponse.Results[0].Url;
         Assert.That(outputUrl, Is.Not.Null);
         var outputImage = await client.GetAsync<Stream>(outputUrl!);
         

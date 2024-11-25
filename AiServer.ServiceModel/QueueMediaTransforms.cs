@@ -220,7 +220,7 @@ public class QueueWatermarkImage : IQueueMediaTransform, IPost, IReturn<QueueMed
 [Description("Scale an image to a specified size")]
 [Tag(Tags.Media)]
 [ValidateApiKey]
-public class QueueScaleImage : IQueueMediaTransform,IPost, IReturn<MediaTransformResponse>
+public class QueueScaleImage : IQueueMediaTransform,IPost, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The image file to be scaled")]
     [Description("The image file to be scaled")]

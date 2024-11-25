@@ -68,7 +68,7 @@ public class QueueImageToTextIntegrationTests : IntegrationTestBase
         Assert.That(response?.JobId, Is.Not.Zero);
 
         // Get Job
-        var job = await client.ApiAsync(new GetJobStatus
+        var job = await client.ApiAsync(new GetArtifactGenerationStatus
         {
             JobId = response.JobId
         });
@@ -128,7 +128,7 @@ public class QueueImageToTextIntegrationTests : IntegrationTestBase
         Assert.That(response.JobState is BackgroundJobState.Started or BackgroundJobState.Queued, Is.True);
 
         // Verify that we can get the job status
-        var getStatusResponse = await client.PostAsync(new GetJobStatus
+        var getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
         {
             JobId = response.JobId
         });
@@ -136,7 +136,7 @@ public class QueueImageToTextIntegrationTests : IntegrationTestBase
         while (getStatusResponse.JobState == BackgroundJobState.Queued || getStatusResponse.JobState == BackgroundJobState.Started)
         {
             await Task.Delay(1000);
-            getStatusResponse = await client.PostAsync(new GetJobStatus
+            getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
             {
                 JobId = response.JobId
             });

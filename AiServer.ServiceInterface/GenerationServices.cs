@@ -9,7 +9,7 @@ namespace AiServer.ServiceInterface;
 
 public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
 {
-    public async Task<object> Any(GetJobStatus request)
+    public async Task<object> Any(GetArtifactGenerationStatus request)
     {
         JobResult? job = null;
         if (request.JobId != null)
@@ -22,17 +22,17 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
             job = jobs.GetJobByRefId(request.RefId);
         }
         
-        if(job == null || job.Summary.RefId == null)
+        if(job == null || job.Job == null || job.Summary.RefId == null)
             throw HttpError.NotFound("Job not found");
         
         // We know at this point, we definitely have a job
         JobResult queuedJob = job;
         
-        var completedResponse = new GetJobStatusResponse
+        var completedResponse = new GetArtifactGenerationStatusResponse
         {
             RefId = queuedJob.Job?.RefId ?? queuedJob.Summary.RefId,
             JobId = queuedJob.Job?.Id ?? queuedJob.Summary.Id,
-            Status = queuedJob.Job?.Status,
+            Status = queuedJob.Job?.Status ?? queuedJob.Job!.State.ToString(),
             JobState = queuedJob.Job?.State ?? queuedJob.Summary.State
         };
         
@@ -47,8 +47,7 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         
         // Process successful job results
         var outputs = queuedJob.GetOutputs();
-        completedResponse.Outputs = outputs.Item1;
-        completedResponse.TextOutputs = outputs.Item2;
+        completedResponse.Results = outputs.Item1;
         
         return completedResponse;
     }
@@ -89,7 +88,8 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices, sync: true);
+        var result = await diffRequest.ProcessGeneration(jobs, diffServices, sync: true) as GenerationResponse;
+        return result.ConvertTo<ArtifactGenerationResponse>();
     }
 
     public async Task<object> Any(ImageToImage request)
@@ -110,7 +110,8 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices, sync: true);
+        var result = await diffRequest.ProcessGeneration(jobs, diffServices, sync: true) as GenerationResponse;
+        return result.ConvertTo<ArtifactGenerationResponse>();
     }
 
     public async Task<object> Any(ImageUpscale request)
@@ -127,7 +128,8 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices, sync: true);
+        var result = await diffRequest.ProcessGeneration(jobs, diffServices, sync: true) as GenerationResponse;
+        return result.ConvertTo<ArtifactGenerationResponse>();
     }
 
     public async Task<object> Any(ImageWithMask request)
@@ -148,7 +150,8 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices, sync: true);
+        var result = await diffRequest.ProcessGeneration(jobs, diffServices, sync: true) as GenerationResponse;
+        return result.ConvertTo<ArtifactGenerationResponse>();
     }
 
     public async Task<object> Any(ImageToText request)
@@ -164,7 +167,8 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices, sync: true);
+        var result = await diffRequest.ProcessGeneration(jobs, diffServices, sync: true) as GenerationResponse;
+        return result.ConvertTo<TextGenerationResponse>();
     }
 }
 
@@ -201,7 +205,7 @@ public static class GenerationServiceExtensions
 
         // Return the job status URL
         var jobStatusUrl = AppConfig.Instance.ApplicationBaseUrl.CombineWith(
-            $"/api/{nameof(GetJobStatus)}?RefId=" + diffResponse.RefId);
+            $"/api/{nameof(GetArtifactGenerationStatus)}?RefId=" + diffResponse.RefId);
         
         var queueResponse = new QueueGenerationResponse
         {
@@ -209,7 +213,7 @@ public static class GenerationServiceExtensions
             JobId = diffResponse.Id,
             Status = queuedJob.Job?.Status,
             JobState = queuedJob.Job?.State ?? queuedJob.Summary.State,
-            StatusUrl = jobStatusUrl
+            StatusUrl = GetStatusUrl(diffRequest, diffResponse)
         };
 
         // Handle failed jobs
@@ -224,10 +228,7 @@ public static class GenerationServiceExtensions
             return queueResponse;
         }
         
-        var completedResponse = new GenerationResponse()
-        {
-
-        };
+        var completedResponse = new GenerationResponse { };
         
         // Wait for the job to complete max 1 minute
         var timeout = DateTime.UtcNow.AddMinutes(1);
@@ -261,6 +262,27 @@ public static class GenerationServiceExtensions
         completedResponse.TextOutputs = outputs.Item2;
 
         return completedResponse;
+    }
+    
+    public static string GetStatusUrl(this CreateGeneration request, CreateGenerationResponse response)
+    {
+        switch (request.Request.TaskType)
+        {
+            case AiTaskType.TextToImage:
+            case AiTaskType.ImageToImage:
+            case AiTaskType.ImageUpscale:
+            case AiTaskType.ImageWithMask:
+            case AiTaskType.TextToSpeech:
+            case AiTaskType.TextToAudio:
+                return AppConfig.Instance.ApplicationBaseUrl.CombineWith(
+                    $"/api/{nameof(GetArtifactGenerationStatus)}?RefId=" + response.RefId);
+            case AiTaskType.SpeechToText:
+            case AiTaskType.ImageToText:
+                return AppConfig.Instance.ApplicationBaseUrl.CombineWith(
+                    $"/api/{nameof(GetTextGenerationStatus)}?RefId=" + response.RefId);
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     public static Tuple<List<ArtifactOutput>?,List<TextOutput>?> GetOutputs(this JobResult? job)

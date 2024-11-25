@@ -8,7 +8,7 @@ namespace AiServer.ServiceModel;
 [Tag(Tags.AI)]
 [Api("Convert speech to text")]
 [Description("Transcribe audio content to text")]
-public class QueueSpeechToText : IQueueGeneration, IReturn<QueueGenerationResponse>
+public class QueueSpeechToText : IQueueGeneration, IReturn<GetTextGenerationStatusResponse>
 {
     [ApiMember(Description = "The audio stream containing the speech to be transcribed")]
     [Description("The audio stream containing the speech to be transcribed")]
@@ -329,7 +329,7 @@ public interface IQueueGeneration
 [Tag(Tags.Admin)]
 [Api("Get job status")]
 [Description("Retrieve the status of a background job")]
-public class GetJobStatus : IGet, IReturn<GetJobStatusResponse>
+public class GetArtifactGenerationStatus : IGet, IReturn<GetArtifactGenerationStatusResponse>
 {
     [ApiMember(Description = "Unique identifier of the background job")]
     [Description("Unique identifier of the background job")]
@@ -340,7 +340,7 @@ public class GetJobStatus : IGet, IReturn<GetJobStatusResponse>
     public string? RefId { get; set; }
 }
 
-public class GetJobStatusResponse
+public class GetArtifactGenerationStatusResponse
 {
     [ApiMember(Description = "Unique identifier of the background job")]
     [Description("Unique identifier of the background job")]
@@ -356,21 +356,53 @@ public class GetJobStatusResponse
 
     [ApiMember(Description = "Current status of the generation request")]
     [Description("Current status of the generation request")]
-    public string? Status { get; set; }
+    public string Status { get; set; }
     
     [ApiMember(Description = "List of generated outputs")]
     [Description("List of generated outputs")]
-    public List<ArtifactOutput>? Outputs { get; set; }
-
-    [ApiMember(Description = "List of generated text outputs")]
-    [Description("List of generated text outputs")]
-    public List<TextOutput>? TextOutputs { get; set; }
+    public List<ArtifactOutput>? Results { get; set; }
 
     [ApiMember(Description = "Detailed response status information")]
     [Description("Detailed response status information")]
     public ResponseStatus? ResponseStatus { get; set; }
+}
+
+public class GetTextGenerationStatus : IGet, IReturn<GetTextGenerationStatusResponse>
+{
+    [ApiMember(Description = "Unique identifier of the background job")]
+    [Description("Unique identifier of the background job")]
+    public long? JobId { get; set; }
+
+    [ApiMember(Description = "Client-provided identifier for the request")]
+    [Description("Client-provided identifier for the request")]
+    public string? RefId { get; set; }
+}
+
+public class GetTextGenerationStatusResponse
+{
+    [ApiMember(Description = "Unique identifier of the background job")]
+    [Description("Unique identifier of the background job")]
+    public long JobId { get; set; }
+
+    [ApiMember(Description = "Client-provided identifier for the request")]
+    [Description("Client-provided identifier for the request")]
+    public string RefId { get; set; }
+
+    [ApiMember(Description = "Current state of the background job")]
+    [Description("Current state of the background job")]
+    public BackgroundJobState JobState { get; set; }
+
+    [ApiMember(Description = "Current status of the generation request")]
+    [Description("Current status of the generation request")]
+    public string Status { get; set; }
     
-    
+    [ApiMember(Description = "Generated text")]
+    [Description("Generated text")]
+    public List<TextOutput>? Results { get; set; }
+
+    [ApiMember(Description = "Detailed response status information")]
+    [Description("Detailed response status information")]
+    public ResponseStatus? ResponseStatus { get; set; }
 }
 
 public class QueueGenerationResponse
