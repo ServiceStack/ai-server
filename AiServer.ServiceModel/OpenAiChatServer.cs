@@ -106,7 +106,7 @@ public class GetActiveProviders : IGet, IReturn<GetActiveProvidersResponse> {}
 
 public class GetActiveProvidersResponse
 {
-    public AiProvider[] Results { get; set; }
+    public List<AiProvider> Results { get; set; } = [];
     public ResponseStatus? ResponseStatus { get; set; }
 }
 
