@@ -7,6 +7,7 @@ using ServiceStack.Configuration;
 using ServiceStack.Data;
 using ServiceStack.IO;
 using ServiceStack.Jobs;
+using ServiceStack.NativeTypes;
 using ServiceStack.OrmLite;
 
 [assembly: HostingStartup(typeof(AiServer.AppHost))]
@@ -150,7 +151,12 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
             MaxTokens = 50
         };
         
-        #if DEBUG && !FALSE
+        ConfigurePlugin<NativeTypesFeature>(feature =>
+        {
+            feature.MetadataTypesConfig.DefaultNamespaces.Add(typeof(BackgroundJobBase).Namespace);
+        });
+        
+        #if DEBUG && FALSE
         Metadata.ForceInclude = [
             typeof(AdminQueryApiKeys),
             typeof(AdminCreateApiKey),
