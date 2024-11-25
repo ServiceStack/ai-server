@@ -45,7 +45,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         Assert.That(response, Is.Not.Null);
         
         // Verify that we can get the job status
-        var getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
+        var getStatusResponse = await client.SendAsync(new GetArtifactGenerationStatus
         {
             JobId = response.JobId
         });
@@ -53,7 +53,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         while (getStatusResponse.JobState is BackgroundJobState.Queued or BackgroundJobState.Started)
         {
             await Task.Delay(1000);
-            getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
+            getStatusResponse = await client.SendAsync(new GetArtifactGenerationStatus
             {
                 JobId = response.JobId
             });
@@ -103,7 +103,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         Assert.That(response, Is.Not.Null);
         
         // Verify that we can get the job status
-        var getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
+        var getStatusResponse = await client.SendAsync(new GetArtifactGenerationStatus
         {
             JobId = response.JobId
         });
@@ -111,7 +111,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         while (getStatusResponse.JobState is BackgroundJobState.Queued or BackgroundJobState.Started)
         {
             await Task.Delay(1000);
-            getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
+            getStatusResponse = await client.SendAsync(new GetArtifactGenerationStatus
             {
                 JobId = response.JobId
             });
@@ -212,7 +212,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         Assert.That(response, Is.Not.Null);
         
         // Verify that we can get the job status
-        var getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
+        var getStatusResponse = await client.SendAsync(new GetArtifactGenerationStatus
         {
             JobId = response.JobId
         });
@@ -220,7 +220,7 @@ public class QueueImageServiceTests : IntegrationTestBase
         while (getStatusResponse.JobState is BackgroundJobState.Queued or BackgroundJobState.Started)
         {
             await Task.Delay(1000);
-            getStatusResponse = await client.PostAsync(new GetArtifactGenerationStatus
+            getStatusResponse = await client.SendAsync(new GetArtifactGenerationStatus
             {
                 JobId = response.JobId
             });
