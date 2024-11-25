@@ -29,27 +29,21 @@ public class GetOpenAiChatStatus : IGet, IReturn<GetOpenAiChatStatusResponse>
 public class GetOpenAiChatStatusResponse
 {
     [ApiMember(Description = "Unique identifier of the background job")]
-    [Description("Unique identifier of the background job")]
     public long JobId { get; set; }
 
     [ApiMember(Description = "Client-provided identifier for the request")]
-    [Description("Client-provided identifier for the request")]
     public string RefId { get; set; }
 
     [ApiMember(Description = "Current state of the background job")]
-    [Description("Current state of the background job")]
     public BackgroundJobState JobState { get; set; }
 
     [ApiMember(Description = "Current status of the generation request")]
-    [Description("Current status of the generation request")]
     public string? Status { get; set; }
     
     [ApiMember(Description = "Detailed response status information")]
-    [Description("Detailed response status information")]
     public ResponseStatus? ResponseStatus { get; set; }
     
     [ApiMember(Description = "Chat result")]
-    [Description("Chat result")]
     public OpenAiChatResponse? Result { get; set; }
 }
 

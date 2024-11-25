@@ -6,7 +6,6 @@ namespace AiServer.ServiceModel;
 
 [Tag(Tags.AiInfo)]
 [ValidateApiKey]
-[Description("Media Providers")]
 public class QueryMediaProviders : QueryDb<MediaProvider>
 {
     public int? Id { get; set; }
@@ -15,23 +14,17 @@ public class QueryMediaProviders : QueryDb<MediaProvider>
 
 [Tag(Tags.Admin)]
 [ValidateAuthSecret]
-[Description("Add an API Provider to Generation API Providers")]
 [AutoPopulate(nameof(MediaProvider.CreatedDate),  Eval = "utcNow")]
 public class CreateMediaProvider : ICreateDb<MediaProvider>, IReturn<IdResponse>
 {
-    [Description("The name of the API Provider")]
     public string Name { get; set; }
 
-    [Description("The API Key to use for this Provider")]
     public string? ApiKey { get; set; }
 
-    [Description("Send the API Key in the Header instead of Authorization Bearer")]
     public string? ApiKeyHeader { get; set; }
 
-    [Description("Base URL for the Generation Provider")]
     public string? ApiBaseUrl { get; set; }
 
-    [Description("Url to check if the API is online")]
     [Input(Type = "hidden")]
     public string? HeartbeatUrl { get; set; }
     

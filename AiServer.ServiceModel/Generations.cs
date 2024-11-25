@@ -11,80 +11,65 @@ public class ActiveMediaModels : IGet, IReturn<StringsResponse> {}
 [ValidateApiKey]
 [Tag(Tags.AI)]
 [Api("Convert speech to text")]
-[Description("Transcribe audio content to text")]
 [SystemJson(UseSystemJson.Response)]
 public class SpeechToText : IGeneration, IReturn<TextGenerationResponse>
 {
     [ApiMember(Description = "The audio stream containing the speech to be transcribed")]
-    [Description("The audio stream containing the speech to be transcribed")]
     [Required]
     [Input(Type = "file")]
     public Stream Audio { get; set; }
     
     [ApiMember(Description = "Optional client-provided identifier for the request")]
-    [Description("Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
 
     [ApiMember(Description = "Tag to identify the request")]
-    [Description("Tag to identify the request")]
     public string? Tag { get; set; }
 }
 
 [ValidateApiKey]
 [Tag(Tags.AI)]
 [Api("Convert text to speech")]
-[Description("Generate speech audio from text input")]
 [SystemJson(UseSystemJson.Response)]
 public class TextToSpeech : IGeneration, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The text to be converted to speech")]
-    [Description("The text to be converted to speech")]
     [ValidateNotEmpty]
     public string Input { get; set; }
 
     [ApiMember(Description = "Optional specific model and voice to use for speech generation")]
-    [Description("Optional specific model and voice to use for speech generation")]
     public string? Model { get; set; }
     
     [ApiMember(Description = "Optional seed for reproducible results in speech generation")]
-    [Description("Optional seed for reproducible results in speech generation")]
     [Range(0, int.MaxValue)]
     public int? Seed { get; set; }
     
     [ApiMember(Description = "Optional client-provided identifier for the request")]
-    [Description("Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
 
     [ApiMember(Description = "Tag to identify the request")]
-    [Description("Tag to identify the request")]
     public string? Tag { get; set; }
 }
 
 [ValidateApiKey]
 [Tag(Tags.AI)]
 [Api("Generate image from text description")]
-[Description("Create an image based on a text prompt")]
 [SystemJson(UseSystemJson.Response)]
 public class TextToImage : IGeneration, IReturn<ArtifactGenerationResponse>
 {
     [ApiMember(Description = "The main prompt describing the desired image")]
-    [Description("The main prompt describing the desired image")]
     [ValidateNotEmpty]
     [Input(Type = "textarea")]
     public string PositivePrompt { get; set; }
 
     [ApiMember(Description = "Optional prompt specifying what should not be in the image")]
-    [Description("Optional prompt specifying what should not be in the image")]
     [Input(Type = "textarea")]
     public string? NegativePrompt { get; set; }
 
     [ApiMember(Description = "Desired width of the generated image")]
-    [Description("Desired width of the generated image")]
     [Range(64, 2048)]
     public int? Width { get; set; }
 
     [ApiMember(Description = "Desired height of the generated image")]
-    [Description("Desired height of the generated image")]
     [Range(64, 2048)]
     public int? Height { get; set; }
 
