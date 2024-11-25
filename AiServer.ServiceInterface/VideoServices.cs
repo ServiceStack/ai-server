@@ -7,7 +7,7 @@ namespace AiServer.ServiceInterface;
 
 public class VideoServices(IBackgroundJobs jobs) : Service
 {
-    public async Task<object> Any(ScaleVideo request)
+    public async Task<ArtifactGenerationResponse> Any(ScaleVideo request)
     {
         var transformRequest = new CreateMediaTransform()
         {
@@ -19,10 +19,10 @@ public class VideoServices(IBackgroundJobs jobs) : Service
             }
         };
         var transformService = base.ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs, transformService, sync: true);
+        return await transformRequest.ProcessSyncTransformAsync(jobs, transformService);
     }
 
-    public async Task<object> Any(WatermarkVideo request)
+    public async Task<ArtifactGenerationResponse> Any(WatermarkVideo request)
     {
         string watermarkPosition = GetWatermarkPosition(request.Position);
 
@@ -36,7 +36,7 @@ public class VideoServices(IBackgroundJobs jobs) : Service
         };
 
         var transformService = base.ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs, transformService, sync: true);
+        return await transformRequest.ProcessSyncTransformAsync(jobs, transformService);
     }
 
     private string GetWatermarkPosition(WatermarkPosition? position)
@@ -52,12 +52,10 @@ public class VideoServices(IBackgroundJobs jobs) : Service
         };
     }
 
-    public async Task<object> Any(ConvertVideo request)
+    public async Task<ArtifactGenerationResponse> Any(ConvertVideo request)
     {
         if (Request?.Files == null || Request.Files.Length == 0)
-        {
             throw new ArgumentException("No video file provided");
-        }
 
         var mediaOutputFormat = Enum.Parse<MediaOutputFormat>(request.OutputFormat.ToString());
         if (!IsVideoFormat(mediaOutputFormat))
@@ -74,10 +72,10 @@ public class VideoServices(IBackgroundJobs jobs) : Service
             }
         };
 
-        return await transformRequest.ProcessTransform(jobs, transformService, sync: true);
+        return await transformRequest.ProcessSyncTransformAsync(jobs, transformService);
     }
 
-    public async Task<object> Any(CropVideo request)
+    public async Task<ArtifactGenerationResponse> Any(CropVideo request)
     {
         var transformRequest = new CreateMediaTransform
         {
@@ -92,15 +90,13 @@ public class VideoServices(IBackgroundJobs jobs) : Service
         };
 
         var transformService = base.ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs, transformService, sync: true);
+        return await transformRequest.ProcessSyncTransformAsync(jobs, transformService);
     }
 
-    public async Task<object> Any(TrimVideo request)
+    public async Task<ArtifactGenerationResponse> Any(TrimVideo request)
     {
         if (Request?.Files == null || Request.Files.Length == 0)
-        {
             throw new ArgumentException("No video file provided");
-        }
 
         ValidateTimeFormat(request.StartTime, "start time");
         if (request.EndTime != null)
@@ -119,7 +115,7 @@ public class VideoServices(IBackgroundJobs jobs) : Service
         };
 
         var transformService = base.ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs, transformService, sync: true);
+        return await transformRequest.ProcessSyncTransformAsync(jobs, transformService);
     }
 
     private void ValidateTimeFormat(string time, string fieldName)
@@ -133,7 +129,7 @@ public class VideoServices(IBackgroundJobs jobs) : Service
     public async Task<object> Any(QueueScaleVideo request)
     {
         // Convert request
-        var transformRequest = new CreateMediaTransform()
+        var transformRequest = new CreateMediaTransform
         {
             Request = new MediaTransformArgs
             {
@@ -145,7 +141,7 @@ public class VideoServices(IBackgroundJobs jobs) : Service
             RefId = request.RefId
         };
         var transformService = base.ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs, transformService);
+        return await transformRequest.ProcessQueuedTransformAsync(jobs, transformService);
     }
 
     public async Task<object> Any(QueueWatermarkVideo request)
@@ -186,7 +182,7 @@ public class VideoServices(IBackgroundJobs jobs) : Service
         };
 
         var transformService = base.ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs, transformService);
+        return await transformRequest.ProcessQueuedTransformAsync(jobs, transformService);
     }
 
     private bool IsVideoFormat(MediaOutputFormat outputFormat)
@@ -212,9 +208,7 @@ public class VideoServices(IBackgroundJobs jobs) : Service
     public async Task<object> Any(QueueConvertVideo request)
     {
         if (Request?.Files == null || Request.Files.Length == 0)
-        {
             throw new ArgumentException("No video file provided");
-        }
 
         var mediaOutputFormat = Enum.Parse<MediaOutputFormat>(request.OutputFormat.ToString());
         if (!IsVideoFormat(mediaOutputFormat))
@@ -233,7 +227,7 @@ public class VideoServices(IBackgroundJobs jobs) : Service
             RefId = request.RefId
         };
 
-        return await transformRequest.ProcessTransform(jobs, transformService);
+        return await transformRequest.ProcessQueuedTransformAsync(jobs, transformService);
     }
 
     public async Task<object> Any(QueueCropVideo request)
@@ -254,27 +248,21 @@ public class VideoServices(IBackgroundJobs jobs) : Service
         };
 
         var transformService = base.ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs, transformService);
+        return await transformRequest.ProcessQueuedTransformAsync(jobs, transformService);
     }
 
     public async Task<object> Any(QueueTrimVideo request)
     {
         if (Request?.Files == null || Request.Files.Length == 0)
-        {
             throw new ArgumentException("No video file provided");
-        }
 
         // Validate request.StartTime is in format "mm:ss"
         if (!Regex.IsMatch(request.StartTime, @"^\d{2}:\d{2}$"))
-        {
             throw new ArgumentException("Invalid start time format");
-        }
 
         // Validate request.EndTime is in format "mm:ss"
         if (request.EndTime != null && !Regex.IsMatch(request.EndTime, @"^\d{2}:\d{2}$"))
-        {
             throw new ArgumentException("Invalid end time format");
-        }
 
         // Convert request
         var transformRequest = new CreateMediaTransform
@@ -290,7 +278,7 @@ public class VideoServices(IBackgroundJobs jobs) : Service
         };
 
         var transformService = base.ResolveService<MediaTransformProviderServices>();
-        return await transformRequest.ProcessTransform(jobs, transformService);
+        return await transformRequest.ProcessQueuedTransformAsync(jobs, transformService);
     }
 
     private float ParseTime(string? time)
@@ -304,10 +292,8 @@ public class VideoServices(IBackgroundJobs jobs) : Service
 
 public static class TransformServiceExtensions
 {
-    public static async Task<object> ProcessTransform(this CreateMediaTransform mediaTransformRequest,
-        IBackgroundJobs jobs,
-        MediaTransformProviderServices transformService,
-        bool sync = false)
+    public static async Task<QueueMediaTransformResponse> ProcessQueuedTransformAsync(this CreateMediaTransform mediaTransformRequest,
+        IBackgroundJobs jobs, MediaTransformProviderServices transformService)
     {
         CreateTransformResponse? transformResponse;
         try
@@ -354,12 +340,38 @@ public static class TransformServiceExtensions
             queueTransformResponse.ResponseStatus = job.Failed.Error;
         }
 
-        // If not a synchronous request, return immediately with job details
-        if (sync != true)
+        return queueTransformResponse;
+    }
+        
+    public static async Task<ArtifactGenerationResponse> ProcessSyncTransformAsync(this CreateMediaTransform mediaTransformRequest,
+        IBackgroundJobs jobs, MediaTransformProviderServices transformService)
+    {
+        CreateTransformResponse? transformResponse;
+        try
         {
-            return queueTransformResponse;
+            var response = await transformService.Any(mediaTransformRequest);
+            transformResponse = response as CreateTransformResponse;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
 
+        if (transformResponse == null)
+            throw new Exception("Failed to start transform");
+
+        var job = jobs.GetJob(transformResponse.Id);
+        // For all requests, wait for the job to be created
+        while (job == null)
+        {
+            await Task.Delay(1000);
+            job = jobs.GetJob(transformResponse.Id);
+        }
+
+        // We know at this point, we definitely have a job
+        var queuedJob = job;
+        
         var completedResponse = new ArtifactGenerationResponse();
 
         // Wait for the job to complete max 1 minute

@@ -1,11 +1,7 @@
-using AiServer.ServiceInterface.Jobs;
 using AiServer.ServiceModel;
-using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.Logging;
 using ServiceStack;
-using ServiceStack.DataAnnotations;
 using ServiceStack.Jobs;
-using ServiceStack.Web;
 
 namespace AiServer.ServiceInterface;
 
@@ -13,7 +9,7 @@ public class SpeechServices(IBackgroundJobs jobs,
     ILogger<SpeechServices> log,
     AppData appData) : Service
 {
-    public async Task<object> Any(QueueTextToSpeech request)
+    public async Task<QueueGenerationResponse> Any(QueueTextToSpeech request)
     {
         var diffRequest = new CreateGeneration
         {
@@ -30,10 +26,10 @@ public class SpeechServices(IBackgroundJobs jobs,
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices);
+        return await diffRequest.ProcessQueuedGenerationAsync(jobs, diffServices);
     }
 
-    public async Task<object> Any(QueueSpeechToText request)
+    public async Task<QueueGenerationResponse> Any(QueueSpeechToText request)
     {
         if(Request?.Files == null || Request.Files.Length == 0)
         {
@@ -54,10 +50,10 @@ public class SpeechServices(IBackgroundJobs jobs,
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices);
+        return await diffRequest.ProcessQueuedGenerationAsync(jobs, diffServices);
     }
 
-    public async Task<object> Any(TextToSpeech request)
+    public async Task<ArtifactGenerationResponse> Any(TextToSpeech request)
     {
         var model = !string.IsNullOrEmpty(request.Model) ? request.Model : "text-to-speech";
         var prompt = request.Input.Trim();
@@ -73,10 +69,11 @@ public class SpeechServices(IBackgroundJobs jobs,
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices, sync: true);
+        var result = await diffRequest.ProcessSyncGenerationAsync(jobs, diffServices);
+        return result.ToArtifactGenerationResponse();
     }
 
-    public async Task<object> Any(SpeechToText request)
+    public async Task<TextGenerationResponse> Any(SpeechToText request)
     {
         if (Request?.Files == null || Request.Files.Length == 0)
         {
@@ -94,7 +91,8 @@ public class SpeechServices(IBackgroundJobs jobs,
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices, sync: true);
+        var result = await diffRequest.ProcessSyncGenerationAsync(jobs, diffServices);
+        return result.ToTextGenerationResponse();
     }
 }
 

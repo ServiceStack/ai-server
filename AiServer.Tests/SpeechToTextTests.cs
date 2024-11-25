@@ -20,10 +20,8 @@ public class SpeechToTextIntegrationTests : IntegrationTestBase
 
         try
         {
-            response = client.PostFilesWithRequest(new SpeechToText
-            {
-
-            }, new []{ new UploadFile("speech.wav", fileStream) { FieldName = "audio"} });
+            response = client.PostFilesWithRequest(new SpeechToText {
+            }, [new UploadFile("speech.wav", fileStream) { FieldName = "audio"}]);
         }
         catch (Exception e)
         {

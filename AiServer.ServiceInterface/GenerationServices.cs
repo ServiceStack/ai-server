@@ -70,7 +70,7 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         };
     }
     
-    public async Task<object> Any(TextToImage request)
+    public async Task<ArtifactGenerationResponse> Any(TextToImage request)
     {
         var diffRequest = new CreateGeneration
         {
@@ -88,11 +88,11 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        var result = await diffRequest.ProcessGeneration(jobs, diffServices, sync: true) as GenerationResponse;
-        return result.ConvertTo<ArtifactGenerationResponse>();
+        var result = await diffRequest.ProcessSyncGenerationAsync(jobs, diffServices);
+        return result.ToArtifactGenerationResponse();
     }
 
-    public async Task<object> Any(ImageToImage request)
+    public async Task<ArtifactGenerationResponse> Any(ImageToImage request)
     {
         var diffRequest = new CreateGeneration
         {
@@ -109,11 +109,11 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        var result = await diffRequest.ProcessGeneration(jobs, diffServices, sync: true) as GenerationResponse;
-        return result.ConvertTo<ArtifactGenerationResponse>();
+        var result = await diffRequest.ProcessSyncGenerationAsync(jobs, diffServices);
+        return result.ToArtifactGenerationResponse();
     }
 
-    public async Task<object> Any(ImageUpscale request)
+    public async Task<ArtifactGenerationResponse> Any(ImageUpscale request)
     {
         var diffRequest = new CreateGeneration
         {
@@ -126,11 +126,11 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        var result = await diffRequest.ProcessGeneration(jobs, diffServices, sync: true) as GenerationResponse;
-        return result.ConvertTo<ArtifactGenerationResponse>();
+        var result = await diffRequest.ProcessSyncGenerationAsync(jobs, diffServices);
+        return result.ToArtifactGenerationResponse();
     }
 
-    public async Task<object> Any(ImageWithMask request)
+    public async Task<ArtifactGenerationResponse> Any(ImageWithMask request)
     {
         var diffRequest = new CreateGeneration
         {
@@ -146,11 +146,11 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        var result = await diffRequest.ProcessGeneration(jobs, diffServices, sync: true) as GenerationResponse;
-        return result.ConvertTo<ArtifactGenerationResponse>();
+        var result = await diffRequest.ProcessSyncGenerationAsync(jobs, diffServices);
+        return result.ToArtifactGenerationResponse();
     }
 
-    public async Task<object> Any(ImageToText request)
+    public async Task<TextGenerationResponse> Any(ImageToText request)
     {
         var diffRequest = new CreateGeneration
         {
@@ -162,15 +162,14 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         };
         
         await using var diffServices = ResolveService<MediaProviderServices>();
-        var result = await diffRequest.ProcessGeneration(jobs, diffServices, sync: true) as GenerationResponse;
-        return result.ConvertTo<TextGenerationResponse>();
+        var result = await diffRequest.ProcessSyncGenerationAsync(jobs, diffServices);
+        return result.ToTextGenerationResponse();
     }
 }
 
 public static class GenerationServiceExtensions
 {
-    public static async Task<object> ProcessGeneration(this CreateGeneration diffRequest, IBackgroundJobs jobs,
-        MediaProviderServices genProviderServices, bool sync = false)
+    public static async Task<QueueGenerationResponse> ProcessQueuedGenerationAsync(this CreateGeneration diffRequest, IBackgroundJobs jobs, MediaProviderServices genProviderServices)
     {
         CreateGenerationResponse? diffResponse = null;
         try
@@ -184,7 +183,7 @@ public static class GenerationServiceExtensions
             throw;
         }
         
-        if(diffResponse == null)
+        if (diffResponse == null)
             throw new Exception("Failed to start generation");
         
         var job = jobs.GetJob(diffResponse.Id);
@@ -217,12 +216,37 @@ public static class GenerationServiceExtensions
             throw new Exception($"Job failed: {job.Failed.Error}");
         }
         
-        // If not a synchronous request, return immediately with job details
-        if (sync != true)
+        return queueResponse;
+    }
+
+    public static async Task<GenerationResponse> ProcessSyncGenerationAsync(this CreateGeneration diffRequest, IBackgroundJobs jobs, MediaProviderServices genProviderServices)
+    {
+        CreateGenerationResponse? diffResponse = null;
+        try
         {
-            return queueResponse;
+            var response = genProviderServices.Any(diffRequest);
+            diffResponse = response as CreateGenerationResponse;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
         
+        if (diffResponse == null)
+            throw new Exception("Failed to start generation");
+        
+        var job = jobs.GetJob(diffResponse.Id);
+        // For synchronous requests, wait for the job to be created
+        while (job == null)
+        {
+            await Task.Delay(1000);
+            job = jobs.GetJob(diffResponse.Id);
+        }
+        
+        // We know at this point, we definitely have a job
+        JobResult? queuedJob = job;
+
         var completedResponse = new GenerationResponse { };
         
         // Wait for the job to complete max 1 minute

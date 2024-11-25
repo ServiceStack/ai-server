@@ -15,7 +15,7 @@ public partial class ImageServices(IBackgroundJobs jobs,
     ILogger<ImageServices> log,
     AppData appData) : Service
 {
-    public async Task<object> Any(QueueTextToImage request)
+    public async Task<QueueGenerationResponse> Any(QueueTextToImage request)
     {
         if (!string.IsNullOrEmpty(request.Model) && !appData.ModelSupportsTask(request.Model, AiTaskType.TextToImage))
         {
@@ -44,7 +44,7 @@ public partial class ImageServices(IBackgroundJobs jobs,
         };
 
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices);
+        return await diffRequest.ProcessQueuedGenerationAsync(jobs, diffServices);
     }
     
     public async Task<object> Any(QueueImageUpscale request)
@@ -70,7 +70,7 @@ public partial class ImageServices(IBackgroundJobs jobs,
         };
 
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices);
+        return await diffRequest.ProcessSyncGenerationAsync(jobs, diffServices);
     }
     
     public async Task<object> Any(QueueImageToImage request)
@@ -100,7 +100,7 @@ public partial class ImageServices(IBackgroundJobs jobs,
         };
 
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices);
+        return await diffRequest.ProcessSyncGenerationAsync(jobs, diffServices);
     }
     
     public async Task<object> Any(QueueImageWithMask request)
@@ -129,7 +129,7 @@ public partial class ImageServices(IBackgroundJobs jobs,
         };
 
         await using var diffServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, diffServices);
+        return await diffRequest.ProcessSyncGenerationAsync(jobs, diffServices);
     }
     
     public async Task<object> Any(QueueImageToText request)
@@ -147,7 +147,7 @@ public partial class ImageServices(IBackgroundJobs jobs,
         };
 
         await using var genServices = ResolveService<MediaProviderServices>();
-        return await diffRequest.ProcessGeneration(jobs, genServices);
+        return await diffRequest.ProcessSyncGenerationAsync(jobs, genServices);
     }
 }
 
