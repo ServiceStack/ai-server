@@ -118,16 +118,27 @@ public class ComfyProvider(
         var status = await comfyClient.GetWorkflowStatusAsync(response.PromptId, token);
         var previewQ = GetPreviewQueryStringByTaskType(request.TaskType ?? AiTaskType.TextToImage);
         var duration = DateTime.UtcNow - start;
-        var diffResponse = new GenerationResult
+        var diffResponse = new GenerationResult { };
+        if (!status.Outputs.IsNullOrEmpty())
         {
-            Outputs = status.Outputs.SelectMany(x => x.Files)
-                .Select(x => new AiProviderFileOutput {
-                    FileName = x.Filename,
-                    Url = $"{provider.ApiBaseUrl}/view?filename={x.Filename}&type={x.Type}&subfolder={x.Subfolder}{previewQ}"
-                }).ToList(),
-            TextOutputs = status.Outputs.SelectMany(x => x.Texts)
-                .Select(x => new AiProviderTextOutput { Text = x.Text }).ToList()
-        };
+            if (!status.Outputs.Any(x => x.Files.IsNullOrEmpty()))
+            {
+                diffResponse.Outputs = status.Outputs.SelectMany(x => x.Files)
+                    .Select(x => new AiProviderFileOutput
+                    {
+                        FileName = x.Filename,
+                        Url =
+                            $"{provider.ApiBaseUrl}/view?filename={x.Filename}&type={x.Type}&subfolder={x.Subfolder}{previewQ}"
+                    }).ToList();
+            }
+            if(!status.Outputs.Any(x => x.Texts.IsNullOrEmpty()))
+            {
+                var textOutputs = status.Outputs.SelectMany(x => x.Texts)
+                    .Select(x => new AiProviderTextOutput { Text = x.Text }).ToList();
+                // Sort text outputs intentionally so that text that is JSON is last
+                diffResponse.TextOutputs = textOutputs.OrderBy(x => x.Text != null && x.Text.StartsWith("{")).ToList();
+            }
+        }
         return (diffResponse, duration);
     }
 
