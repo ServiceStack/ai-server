@@ -19,7 +19,7 @@ public class GetQuestionBody : IGet, IReturn<string>
     public int Id { get; set; }
 }
 
-[Description("StackOverflow Question")]
+[Api("StackOverflow Question")]
 [Notes("A StackOverflow Question Post")]
 public class Post
 {

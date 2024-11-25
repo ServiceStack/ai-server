@@ -88,15 +88,15 @@ public class QueueOpenAiChatResponse
 [ValidateApiKey]
 [Route("/v1/chat/completions", "POST")]
 [SystemJson(UseSystemJson.Response)]
-public class    OpenAiChatCompletion : OpenAiChat, IPost, IReturn<OpenAiChatResponse>
+public class OpenAiChatCompletion : OpenAiChat, IPost, IReturn<OpenAiChatResponse>
 {
-    [Description("Provide a unique identifier to track requests")]
+    [ApiMember(Description="Provide a unique identifier to track requests")]
     public string? RefId { get; set; }
     
-    [Description("Specify which AI Provider to use")]
+    [ApiMember(Description="Specify which AI Provider to use")]
     public string? Provider { get; set; }
     
-    [Description("Categorize like requests under a common group")]
+    [ApiMember(Description="Categorize like requests under a common group")]
     public string? Tag { get; set; }
 }
 

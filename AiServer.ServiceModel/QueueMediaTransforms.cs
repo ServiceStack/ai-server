@@ -46,7 +46,7 @@ public class QueueWatermarkVideo : IQueueMediaTransform, IReturn<QueueMediaTrans
     [ApiMember(Description = "The image file to use as a watermark")]
     [Required]
     [Input(Type = "file")]
-    public Stream? Watermark { get; set; }
+    public string? Watermark { get; set; }
     
     [ApiMember(Description = "Position of the watermark")]
     public WatermarkPosition? Position { get; set; }
@@ -245,7 +245,7 @@ public class QueueCropVideo : IQueueMediaTransform, IReturn<QueueMediaTransformR
     
     [Required]
     [Input(Type = "file")]
-    public Stream Video { get; set; }
+    public string? Video { get; set; }
     
     [ApiMember(Description = "Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
@@ -270,7 +270,7 @@ public class QueueTrimVideo : IQueueMediaTransform, IReturn<QueueMediaTransformR
     
     [Required]
     [Input(Type = "file")]
-    public Stream Video { get; set; }
+    public string? Video { get; set; }
     
     [ApiMember(Description = "Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
@@ -292,7 +292,7 @@ public class QueueConvertAudio : IQueueMediaTransform, IReturn<QueueMediaTransfo
     
     [Required]
     [Input(Type = "file")]
-    public Stream Audio { get; set; }
+    public string? Audio { get; set; }
     
     [ApiMember(Description = "Optional client-provided identifier for the request")]
     public string? RefId { get; set; }

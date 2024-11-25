@@ -12,7 +12,7 @@ public class QueueSpeechToText : IQueueGeneration, IReturn<QueueGenerationRespon
     [ApiMember(Description = "The audio stream containing the speech to be transcribed")]
     [Required]
     [Input(Type = "file")]
-    public Stream Audio { get; set; }
+    public string? Audio { get; set; }
     
     [ApiMember(Description = "Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
@@ -113,7 +113,7 @@ public class QueueImageToImage : IQueueGeneration, IReturn<QueueGenerationRespon
     [ApiMember(Description = "The image to use as input")]
     [Required]
     [Input(Type = "file")]
-    public Stream Image { get; set; }
+    public string? Image { get; set; }
 
     [ApiMember(Description = "Prompt describing the desired output")]
     [ValidateNotEmpty]
@@ -161,7 +161,7 @@ public class QueueImageUpscale : IQueueGeneration, IReturn<QueueGenerationRespon
     [ApiMember(Description = "The image to upscale")]
     [Required]
     [Input(Type = "file")]
-    public string Image { get; set; }
+    public string? Image { get; set; }
 
     [ApiMember(Description = "Optional seed for reproducible results in image generation")]
     [Range(0, int.MaxValue)]
@@ -198,12 +198,12 @@ public class QueueImageWithMask : IQueueGeneration, IReturn<QueueGenerationRespo
     [ApiMember(Description = "The image to use as input")]
     [Required]
     [Input(Type = "file")]
-    public string Image { get; set; }
+    public string? Image { get; set; }
 
     [ApiMember(Description = "The mask to use as input")]
     [Required]
     [Input(Type = "file")]
-    public string Mask { get; set; }
+    public string? Mask { get; set; }
 
     [ApiMember(Description = "Optional specific amount of denoise to apply")]
     [Range(0, 1)]
@@ -235,7 +235,7 @@ public class QueueImageToText : IQueueGeneration, IReturn<QueueGenerationRespons
     [ApiMember(Description = "The image to convert to text")]
     [Required]
     [Input(Type = "file")]
-    public string Image { get; set; }
+    public string? Image { get; set; }
     
     [ApiMember(Description = "Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
