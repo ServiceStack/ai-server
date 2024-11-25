@@ -9,7 +9,7 @@ namespace AiServer.ServiceInterface;
 
 public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
 {
-    public async Task<GetTextGenerationStatusResponse> Any(GetTextGenerationStatus request)
+    public GetTextGenerationStatusResponse Any(GetTextGenerationStatus request)
     {
         var job = (request.JobId != null
                       ? jobs.GetJob((long)request.JobId)
@@ -39,7 +39,7 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
         return ret;
     }
     
-    public async Task<GetArtifactGenerationStatusResponse> Any(GetArtifactGenerationStatus request)
+    public GetArtifactGenerationStatusResponse Any(GetArtifactGenerationStatus request)
     {
         var job = (request.JobId != null
               ? jobs.GetJob((long)request.JobId)
