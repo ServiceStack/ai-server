@@ -138,7 +138,6 @@ public class QueueSpeechToTextIntegrationTests : IntegrationTestBase
             Assert.Fail(e.Message);
         }
 
-
         Assert.That(response, Is.Not.Null);
         Assert.That(response.RefId, Is.Not.Null);
         Assert.That(response.RefId, Is.Not.Empty);

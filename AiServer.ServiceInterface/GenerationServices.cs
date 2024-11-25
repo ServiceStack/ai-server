@@ -9,47 +9,64 @@ namespace AiServer.ServiceInterface;
 
 public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
 {
-    public async Task<object> Any(GetArtifactGenerationStatus request)
+    public async Task<GetTextGenerationStatusResponse> Any(GetTextGenerationStatus request)
     {
-        JobResult? job = null;
-        if (request.JobId != null)
-        {
-            job = jobs.GetJob((long)request.JobId);
-        }
+        var job = (request.JobId != null
+                      ? jobs.GetJob((long)request.JobId)
+                      : null)
+                  ?? (!string.IsNullOrEmpty(request.RefId)
+                      ? jobs.GetJobByRefId(request.RefId)
+                      : null);
 
-        if (!string.IsNullOrEmpty(request.RefId))
-        {
-            job = jobs.GetJobByRefId(request.RefId);
-        }
-        
-        if(job == null || job.Job == null || job.Summary.RefId == null)
+        if (job?.Job == null || job.Summary.RefId == null)
             throw HttpError.NotFound("Job not found");
+        if (job.Failed != null)
+            throw new Exception($"Job failed: {job.Failed.Error}");
         
-        // We know at this point, we definitely have a job
-        JobResult queuedJob = job;
-        
-        var completedResponse = new GetArtifactGenerationStatusResponse
+        var ret = new GetTextGenerationStatusResponse
         {
-            RefId = queuedJob.Job?.RefId ?? queuedJob.Summary.RefId,
-            JobId = queuedJob.Job?.Id ?? queuedJob.Summary.Id,
-            Status = queuedJob.Job?.Status ?? queuedJob.Job!.State.ToString(),
-            JobState = queuedJob.Job?.State ?? queuedJob.Summary.State
+            RefId = job.Job?.RefId ?? job.Summary.RefId,
+            JobId = job.Job?.Id ?? job.Summary.Id,
+            Status = job.Job?.Status ?? job.Job!.State.ToString(),
+            JobState = job.Job?.State ?? job.Summary.State
         };
         
-        // Handle failed jobs
-        if (queuedJob.Failed != null)
+        if ((job.Job?.State ?? job.Summary.State) != BackgroundJobState.Completed)
+            return ret;
+        
+        var outputs = job.GetOutputs();
+        ret.Results = outputs.Item2; // Get TextOutputs
+        return ret;
+    }
+    
+    public async Task<GetArtifactGenerationStatusResponse> Any(GetArtifactGenerationStatus request)
+    {
+        var job = (request.JobId != null
+              ? jobs.GetJob((long)request.JobId)
+              : null)
+          ?? (!string.IsNullOrEmpty(request.RefId)
+              ? jobs.GetJobByRefId(request.RefId)
+              : null);
+
+        if (job?.Job == null || job.Summary.RefId == null)
+            throw HttpError.NotFound("Job not found");
+        if (job.Failed != null)
+            throw new Exception($"Job failed: {job.Failed.Error}");
+        
+        var ret = new GetArtifactGenerationStatusResponse
         {
-            throw new Exception($"Job failed: {queuedJob.Failed.Error}");
-        }
+            RefId = job.Job?.RefId ?? job.Summary.RefId,
+            JobId = job.Job?.Id ?? job.Summary.Id,
+            Status = job.Job?.Status ?? job.Job!.State.ToString(),
+            JobState = job.Job?.State ?? job.Summary.State
+        };
         
-        if ((queuedJob.Job?.State ?? queuedJob.Summary.State) != BackgroundJobState.Completed)
-            return completedResponse;
+        if ((job.Job?.State ?? job.Summary.State) != BackgroundJobState.Completed)
+            return ret;
         
-        // Process successful job results
-        var outputs = queuedJob.GetOutputs();
-        completedResponse.Results = outputs.Item1;
-        
-        return completedResponse;
+        var outputs = job.GetOutputs();
+        ret.Results = outputs.Item1; // Get ArtifactOutputs
+        return ret;
     }
     
     public object Any(ActiveMediaModels request)
