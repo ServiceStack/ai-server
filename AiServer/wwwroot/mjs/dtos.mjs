@@ -1,5 +1,5 @@
 /* Options:
-Date: 2024-10-16 19:05:12
+Date: 2024-11-26 19:06:34
 Version: 8.41
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5005
@@ -41,7 +41,7 @@ export var WatermarkPosition;
     WatermarkPosition["Center"] = "Center"
 })(WatermarkPosition || (WatermarkPosition = {}));
 export class QueryBase {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {?number} */
     skip;
@@ -55,12 +55,12 @@ export class QueryBase {
     include;
     /** @type {string} */
     fields;
-    /** @type {{ [index: string]: string; }} */
+    /** @type {{ [index:string]: string; }} */
     meta;
 }
 /** @typedef T {any} */
 export class QueryDb extends QueryBase {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
 }
 /** @typedef {'Replicate'|'Comfy'|'OpenAi'} */
@@ -71,7 +71,7 @@ export var AiServiceProvider;
     AiServiceProvider["OpenAi"] = "OpenAi"
 })(AiServiceProvider || (AiServiceProvider = {}));
 export class MediaType {
-    /** @param {{id?:string,apiBaseUrl?:string,apiKeyHeader?:string,website?:string,icon?:string,apiModels?:{ [index: string]: string; },provider?:AiServiceProvider}} [init] */
+    /** @param {{id?:string,apiBaseUrl?:string,apiKeyHeader?:string,website?:string,icon?:string,apiModels?:{ [index:string]: string; },provider?:AiServiceProvider}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string} */
     id;
@@ -83,8 +83,8 @@ export class MediaType {
     website;
     /** @type {?string} */
     icon;
-    /** @type {{ [index: string]: string; }} */
-    apiModels;
+    /** @type {{ [index:string]: string; }} */
+    apiModels = {};
     /** @type {AiServiceProvider} */
     provider;
 }
@@ -122,7 +122,7 @@ export class MediaProvider {
     /** @type {?MediaType} */
     mediaType;
     /** @type {string[]} */
-    models;
+    models = [];
 }
 export class TextToSpeechVoice {
     /** @param {{id?:string,model?:string}} [init] */
@@ -247,12 +247,12 @@ export var ModelType;
     ModelType["VAE"] = "VAE"
 })(ModelType || (ModelType = {}));
 export class MediaModel {
-    /** @param {{id?:string,apiModels?:{ [index: string]: string; },url?:string,quality?:number,aspectRatio?:string,cfgScale?:number,scheduler?:string,sampler?:ComfySampler,width?:number,height?:number,steps?:number,negativePrompt?:string,modelType?:ModelType}} [init] */
+    /** @param {{id?:string,apiModels?:{ [index:string]: string; },url?:string,quality?:number,aspectRatio?:string,cfgScale?:number,scheduler?:string,sampler?:ComfySampler,width?:number,height?:number,steps?:number,negativePrompt?:string,modelType?:ModelType,onDemand?:{ [index:string]: boolean; },supportedTasks?:{ [index:string]: string[]; }}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string} */
     id;
-    /** @type {{ [index: string]: string; }} */
-    apiModels;
+    /** @type {{ [index:string]: string; }} */
+    apiModels = {};
     /** @type {?string} */
     url;
     /** @type {?number} */
@@ -275,6 +275,10 @@ export class MediaModel {
     negativePrompt;
     /** @type {?ModelType} */
     modelType;
+    /** @type {?{ [index:string]: boolean; }} */
+    onDemand;
+    /** @type {?{ [index:string]: string[]; }} */
+    supportedTasks;
 }
 /** @typedef {'ImageScale'|'VideoScale'|'ImageConvert'|'AudioConvert'|'VideoConvert'|'ImageCrop'|'VideoCrop'|'VideoCut'|'AudioCut'|'WatermarkImage'|'WatermarkVideo'} */
 export var MediaTransformTaskType;
@@ -366,7 +370,7 @@ export class AiModel {
     /** @type {string} */
     id;
     /** @type {string[]} */
-    tags;
+    tags = [];
     /** @type {?string} */
     latest;
     /** @type {?string} */
@@ -376,14 +380,15 @@ export class AiModel {
     /** @type {?string} */
     icon;
 }
-/** @typedef {'OpenAiProvider'|'GoogleAiProvider'} */
+/** @typedef {'OpenAiProvider'|'GoogleAiProvider'|'AnthropicAiProvider'} */
 export var AiProviderType;
 (function (AiProviderType) {
     AiProviderType["OpenAiProvider"] = "OpenAiProvider"
     AiProviderType["GoogleAiProvider"] = "GoogleAiProvider"
+    AiProviderType["AnthropicAiProvider"] = "AnthropicAiProvider"
 })(AiProviderType || (AiProviderType = {}));
 export class AiType {
-    /** @param {{id?:string,provider?:AiProviderType,website?:string,apiBaseUrl?:string,heartbeatUrl?:string,icon?:string,apiModels?:{ [index: string]: string; }}} [init] */
+    /** @param {{id?:string,provider?:AiProviderType,website?:string,apiBaseUrl?:string,heartbeatUrl?:string,icon?:string,apiModels?:{ [index:string]: string; }}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string} */
     id;
@@ -397,8 +402,8 @@ export class AiType {
     heartbeatUrl;
     /** @type {?string} */
     icon;
-    /** @type {{ [index: string]: string; }} */
-    apiModels;
+    /** @type {{ [index:string]: string; }} */
+    apiModels = {};
 }
 export class AiProviderModel {
     /** @param {{model?:string,apiModel?:string}} [init] */
@@ -436,13 +441,29 @@ export class AiProvider {
     /** @type {string} */
     createdDate;
     /** @type {AiProviderModel[]} */
-    models;
+    models = [];
     /** @type {string} */
     aiTypeId;
     /** @type {AiType} */
     aiType;
     /** @type {string[]} */
-    selectedModels;
+    selectedModels = [];
+}
+export class ToolCall {
+    /** @param {{id?:string,type?:string,function?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /**
+     * @type {string}
+     * @description The ID of the tool call. */
+    id;
+    /**
+     * @type {string}
+     * @description The type of the tool. Currently, only `function` is supported. */
+    type;
+    /**
+     * @type {string}
+     * @description The function that the model called. */
+    function;
 }
 export class OpenAiMessage {
     /** @param {{content?:string,role?:string,name?:string,tool_calls?:ToolCall[],tool_call_id?:string}} [init] */
@@ -496,12 +517,12 @@ export class OpenAiTools {
     type;
 }
 export class OpenAiChat {
-    /** @param {{messages?:OpenAiMessage[],model?:string,frequency_penalty?:number,logit_bias?:{ [index: number]: number; },logprobs?:boolean,top_logprobs?:number,max_tokens?:number,n?:number,presence_penalty?:number,response_format?:OpenAiResponseFormat,seed?:number,stop?:string[],stream?:boolean,temperature?:number,top_p?:number,tools?:OpenAiTools[],user?:string}} [init] */
+    /** @param {{messages?:OpenAiMessage[],model?:string,frequency_penalty?:number,logit_bias?:{ [index:number]: number; },logprobs?:boolean,top_logprobs?:number,max_tokens?:number,n?:number,presence_penalty?:number,response_format?:OpenAiResponseFormat,seed?:number,stop?:string[],stream?:boolean,temperature?:number,top_p?:number,tools?:OpenAiTools[],user?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {OpenAiMessage[]}
      * @description A list of messages comprising the conversation so far. */
-    messages;
+    messages = [];
     /**
      * @type {string}
      * @description ID of the model to use. See the model endpoint compatibility table for details on which models work with the Chat API */
@@ -511,7 +532,7 @@ export class OpenAiChat {
      * @description Number between `-2.0` and `2.0`. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim. */
     frequency_penalty;
     /**
-     * @type {?{ [index: number]: number; }}
+     * @type {?{ [index:number]: number; }}
      * @description Modify the likelihood of specified tokens appearing in the completion. */
     logit_bias;
     /**
@@ -575,7 +596,7 @@ export var TaskType;
 })(TaskType || (TaskType = {}));
 /** @typedef T {any} */
 export class QueryData extends QueryBase {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
 }
 export class Prompt {
@@ -606,7 +627,7 @@ export var BackgroundJobState;
     BackgroundJobState["Cancelled"] = "Cancelled"
 })(BackgroundJobState || (BackgroundJobState = {}));
 export class ResponseError {
-    /** @param {{errorCode?:string,fieldName?:string,message?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{errorCode?:string,fieldName?:string,message?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string} */
     errorCode;
@@ -614,11 +635,11 @@ export class ResponseError {
     fieldName;
     /** @type {string} */
     message;
-    /** @type {{ [index: string]: string; }} */
+    /** @type {{ [index:string]: string; }} */
     meta;
 }
 export class ResponseStatus {
-    /** @param {{errorCode?:string,message?:string,stackTrace?:string,errors?:ResponseError[],meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{errorCode?:string,message?:string,stackTrace?:string,errors?:ResponseError[],meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string} */
     errorCode;
@@ -628,11 +649,11 @@ export class ResponseStatus {
     stackTrace;
     /** @type {ResponseError[]} */
     errors;
-    /** @type {{ [index: string]: string; }} */
+    /** @type {{ [index:string]: string; }} */
     meta;
 }
 export class BackgroundJobBase {
-    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,batchId?:string,callback?:string,dependsOn?:number,runAfter?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,userId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,retryLimit?:number,attempts?:number,durationMs?:number,timeoutSecs?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index: string]: string; },meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,batchId?:string,callback?:string,dependsOn?:number,runAfter?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,userId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,retryLimit?:number,attempts?:number,durationMs?:number,timeoutSecs?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index:string]: string; },meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {number} */
     id;
@@ -702,13 +723,13 @@ export class BackgroundJobBase {
     errorCode;
     /** @type {?ResponseStatus} */
     error;
-    /** @type {?{ [index: string]: string; }} */
+    /** @type {?{ [index:string]: string; }} */
     args;
-    /** @type {?{ [index: string]: string; }} */
+    /** @type {?{ [index:string]: string; }} */
     meta;
 }
 export class BackgroundJob extends BackgroundJobBase {
-    /** @param {{id?:number,id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,batchId?:string,callback?:string,dependsOn?:number,runAfter?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,userId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,retryLimit?:number,attempts?:number,durationMs?:number,timeoutSecs?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index: string]: string; },meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{id?:number,id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,batchId?:string,callback?:string,dependsOn?:number,runAfter?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,userId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,retryLimit?:number,attempts?:number,durationMs?:number,timeoutSecs?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index:string]: string; },meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     /** @type {number} */
     id;
@@ -760,7 +781,7 @@ export class JobSummary {
     errorMessage;
 }
 export class BackgroundJobOptions {
-    /** @param {{refId?:string,parentId?:number,worker?:string,runAfter?:string,callback?:string,dependsOn?:number,userId?:string,retryLimit?:number,replyTo?:string,tag?:string,batchId?:string,createdBy?:string,timeoutSecs?:number,timeout?:string,args?:{ [index: string]: string; },runCommand?:boolean}} [init] */
+    /** @param {{refId?:string,parentId?:number,worker?:string,runAfter?:string,callback?:string,dependsOn?:number,userId?:string,retryLimit?:number,replyTo?:string,tag?:string,batchId?:string,createdBy?:string,timeoutSecs?:number,timeout?:string,args?:{ [index:string]: string; },runCommand?:boolean}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {?string} */
     refId;
@@ -790,7 +811,7 @@ export class BackgroundJobOptions {
     timeoutSecs;
     /** @type {?string} */
     timeout;
-    /** @type {?{ [index: string]: string; }} */
+    /** @type {?{ [index:string]: string; }} */
     args;
     /** @type {?boolean} */
     runCommand;
@@ -822,11 +843,11 @@ export class ScheduledTask {
     lastJobId;
 }
 export class CompletedJob extends BackgroundJobBase {
-    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,batchId?:string,callback?:string,dependsOn?:number,runAfter?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,userId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,retryLimit?:number,attempts?:number,durationMs?:number,timeoutSecs?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index: string]: string; },meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,batchId?:string,callback?:string,dependsOn?:number,runAfter?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,userId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,retryLimit?:number,attempts?:number,durationMs?:number,timeoutSecs?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index:string]: string; },meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
 }
 export class FailedJob extends BackgroundJobBase {
-    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,batchId?:string,callback?:string,dependsOn?:number,runAfter?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,userId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,retryLimit?:number,attempts?:number,durationMs?:number,timeoutSecs?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index: string]: string; },meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,batchId?:string,callback?:string,dependsOn?:number,runAfter?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,userId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,retryLimit?:number,attempts?:number,durationMs?:number,timeoutSecs?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index:string]: string; },meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
 }
 export class PageStats {
@@ -853,14 +874,6 @@ export class ArtifactOutput {
      * @description Provider used for image generation */
     provider;
 }
-export class TextOutput {
-    /** @param {{text?:string}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /**
-     * @type {?string}
-     * @description The generated text */
-    text;
-}
 export class SummaryStats {
     /** @param {{name?:string,total?:number,totalPromptTokens?:number,totalCompletionTokens?:number,totalMinutes?:number,tokensPerSecond?:number}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -876,6 +889,14 @@ export class SummaryStats {
     totalMinutes;
     /** @type {number} */
     tokensPerSecond;
+}
+export class TextOutput {
+    /** @param {{text?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /**
+     * @type {?string}
+     * @description The generated text */
+    text;
 }
 export class AiProviderTextOutput {
     /** @param {{text?:string}} [init] */
@@ -911,7 +932,7 @@ export class OllamaModelDetails {
     /** @type {string} */
     family;
     /** @type {string[]} */
-    families;
+    families = [];
     /** @type {string} */
     parameter_size;
     /** @type {string} */
@@ -961,7 +982,7 @@ export class ChoiceMessage {
      * @description The contents of the message. */
     content;
     /**
-     * @type {ToolCall[]}
+     * @type {?ToolCall[]}
      * @description The tool calls generated by the model, such as function calls. */
     tool_calls;
     /**
@@ -1002,7 +1023,7 @@ export class OpenAiUsage {
     total_tokens;
 }
 export class PartialApiKey {
-    /** @param {{id?:number,name?:string,userId?:string,userName?:string,visibleKey?:string,environment?:string,createdDate?:string,expiryDate?:string,cancelledDate?:string,lastUsedDate?:string,scopes?:string[],features?:string[],restrictTo?:string[],notes?:string,refId?:number,refIdStr?:string,meta?:{ [index: string]: string; },active?:boolean}} [init] */
+    /** @param {{id?:number,name?:string,userId?:string,userName?:string,visibleKey?:string,environment?:string,createdDate?:string,expiryDate?:string,cancelledDate?:string,lastUsedDate?:string,scopes?:string[],features?:string[],restrictTo?:string[],notes?:string,refId?:number,refIdStr?:string,meta?:{ [index:string]: string; },active?:boolean}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {number} */
     id;
@@ -1036,7 +1057,7 @@ export class PartialApiKey {
     refId;
     /** @type {string} */
     refIdStr;
-    /** @type {{ [index: string]: string; }} */
+    /** @type {{ [index:string]: string; }} */
     meta;
     /** @type {boolean} */
     active;
@@ -1071,39 +1092,19 @@ export class HourSummary {
     /** @type {number} */
     cancelled;
 }
-export class ToolCall {
-    /** @param {{id?:string,type?:string,function?:string}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /**
-     * @type {string}
-     * @description The ID of the tool call. */
-    id;
-    /**
-     * @type {string}
-     * @description The type of the tool. Currently, only `function` is supported. */
-    type;
-    /**
-     * @type {string}
-     * @description The function that the model called. */
-    function;
-}
 export class AdminDataResponse {
     /** @param {{pageStats?:PageStats[]}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {PageStats[]} */
-    pageStats;
+    pageStats = [];
 }
-export class MediaTransformResponse {
-    /** @param {{outputs?:ArtifactOutput[],textOutputs?:TextOutput[],responseStatus?:ResponseStatus}} [init] */
+export class ArtifactGenerationResponse {
+    /** @param {{results?:ArtifactOutput[],responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {?ArtifactOutput[]}
      * @description List of generated outputs */
-    outputs;
-    /**
-     * @type {?TextOutput[]}
-     * @description List of generated text outputs */
-    textOutputs;
+    results;
     /**
      * @type {?ResponseStatus}
      * @description Detailed response status information */
@@ -1141,38 +1142,28 @@ export class GetSummaryStatsResponse {
     /** @param {{providerStats?:SummaryStats[],modelStats?:SummaryStats[],monthStats?:SummaryStats[]}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {SummaryStats[]} */
-    providerStats;
+    providerStats = [];
     /** @type {SummaryStats[]} */
-    modelStats;
+    modelStats = [];
     /** @type {SummaryStats[]} */
-    monthStats;
-}
-export class StringsResponse {
-    /** @param {{results?:string[],meta?:{ [index: string]: string; },responseStatus?:ResponseStatus}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {string[]} */
-    results;
-    /** @type {{ [index: string]: string; }} */
-    meta;
-    /** @type {ResponseStatus} */
-    responseStatus;
+    monthStats = [];
 }
 export class GetComfyModelsResponse {
     /** @param {{results?:string[],responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string[]} */
-    results;
+    results = [];
     /** @type {?ResponseStatus} */
     responseStatus;
 }
 export class GetComfyModelMappingsResponse {
-    /** @param {{models?:{ [index: string]: string; }}} [init] */
+    /** @param {{models?:{ [index:string]: string; }}} [init] */
     constructor(init) { Object.assign(this, init) }
-    /** @type {{ [index: string]: string; }} */
-    models;
+    /** @type {{ [index:string]: string; }} */
+    models = {};
 }
-export class GetJobStatusResponse {
-    /** @param {{jobId?:number,refId?:string,jobState?:BackgroundJobState,status?:string,outputs?:ArtifactOutput[],textOutputs?:TextOutput[],responseStatus?:ResponseStatus}} [init] */
+export class GetTextGenerationStatusResponse {
+    /** @param {{jobId?:number,refId?:string,jobState?:BackgroundJobState,status?:string,results?:TextOutput[],responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {number}
@@ -1187,33 +1178,63 @@ export class GetJobStatusResponse {
      * @description Current state of the background job */
     jobState;
     /**
-     * @type {?string}
+     * @type {string}
      * @description Current status of the generation request */
     status;
     /**
-     * @type {?ArtifactOutput[]}
-     * @description List of generated outputs */
-    outputs;
-    /**
      * @type {?TextOutput[]}
-     * @description List of generated text outputs */
-    textOutputs;
+     * @description Generated text */
+    results;
     /**
      * @type {?ResponseStatus}
      * @description Detailed response status information */
     responseStatus;
 }
-export class GenerationResponse {
-    /** @param {{outputs?:ArtifactOutput[],textOutputs?:TextOutput[],responseStatus?:ResponseStatus}} [init] */
+export class GetArtifactGenerationStatusResponse {
+    /** @param {{jobId?:number,refId?:string,jobState?:BackgroundJobState,status?:string,results?:ArtifactOutput[],responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
+    /**
+     * @type {number}
+     * @description Unique identifier of the background job */
+    jobId;
+    /**
+     * @type {string}
+     * @description Client-provided identifier for the request */
+    refId;
+    /**
+     * @type {BackgroundJobState}
+     * @description Current state of the background job */
+    jobState;
+    /**
+     * @type {string}
+     * @description Current status of the generation request */
+    status;
     /**
      * @type {?ArtifactOutput[]}
      * @description List of generated outputs */
-    outputs;
+    results;
+    /**
+     * @type {?ResponseStatus}
+     * @description Detailed response status information */
+    responseStatus;
+}
+export class StringsResponse {
+    /** @param {{results?:string[],meta?:{ [index:string]: string; },responseStatus?:ResponseStatus}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string[]} */
+    results;
+    /** @type {{ [index:string]: string; }} */
+    meta;
+    /** @type {ResponseStatus} */
+    responseStatus;
+}
+export class TextGenerationResponse {
+    /** @param {{results?:TextOutput[],responseStatus?:ResponseStatus}} [init] */
+    constructor(init) { Object.assign(this, init) }
     /**
      * @type {?TextOutput[]}
      * @description List of generated text outputs */
-    textOutputs;
+    results;
     /**
      * @type {?ResponseStatus}
      * @description Detailed response status information */
@@ -1249,7 +1270,7 @@ export class QueueGenerationResponse {
 }
 /** @typedef T {any} */
 export class QueryResponse {
-    /** @param {{offset?:number,total?:number,results?:T[],meta?:{ [index: string]: string; },responseStatus?:ResponseStatus}} [init] */
+    /** @param {{offset?:number,total?:number,results?:T[],meta?:{ [index:string]: string; },responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {number} */
     offset;
@@ -1257,7 +1278,7 @@ export class QueryResponse {
     total;
     /** @type {T[]} */
     results;
-    /** @type {{ [index: string]: string; }} */
+    /** @type {{ [index:string]: string; }} */
     meta;
     /** @type {ResponseStatus} */
     responseStatus;
@@ -1308,17 +1329,17 @@ export class GetOllamaModelsResponse {
     /** @param {{results?:OllamaModel[],responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {OllamaModel[]} */
-    results;
+    results = [];
     /** @type {ResponseStatus} */
     responseStatus;
 }
 export class GetWorkerStatsResponse {
-    /** @param {{results?:WorkerStats[],queueCounts?:{ [index: string]: number; },responseStatus?:ResponseStatus}} [init] */
+    /** @param {{results?:WorkerStats[],queueCounts?:{ [index:string]: number; },responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {WorkerStats[]} */
-    results;
-    /** @type {{ [index: string]: number; }} */
-    queueCounts;
+    results = [];
+    /** @type {{ [index:string]: number; }} */
+    queueCounts = {};
     /** @type {?ResponseStatus} */
     responseStatus;
 }
@@ -1338,7 +1359,7 @@ export class OpenAiChatResponse {
     /**
      * @type {Choice[]}
      * @description A list of chat completion choices. Can be more than one if n is greater than 1. */
-    choices;
+    choices = [];
     /**
      * @type {number}
      * @description The Unix timestamp (in seconds) of when the chat completion was created. */
@@ -1383,7 +1404,7 @@ export class GetOpenAiChatResponse {
     responseStatus;
 }
 export class GetOpenAiChatStatusResponse {
-    /** @param {{jobId?:number,refId?:string,jobState?:BackgroundJobState,status?:string,responseStatus?:ResponseStatus,chatResponse?:OpenAiChatResponse}} [init] */
+    /** @param {{jobId?:number,refId?:string,jobState?:BackgroundJobState,status?:string,responseStatus?:ResponseStatus,result?:OpenAiChatResponse}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {number}
@@ -1407,14 +1428,14 @@ export class GetOpenAiChatStatusResponse {
     responseStatus;
     /**
      * @type {?OpenAiChatResponse}
-     * @description Chat response */
-    chatResponse;
+     * @description Chat result */
+    result;
 }
 export class GetActiveProvidersResponse {
     /** @param {{results?:AiProvider[],responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {AiProvider[]} */
-    results;
+    results = [];
     /** @type {?ResponseStatus} */
     responseStatus;
 }
@@ -1443,11 +1464,11 @@ export class CreateApiKeyResponse {
     notes;
 }
 export class StringResponse {
-    /** @param {{result?:string,meta?:{ [index: string]: string; },responseStatus?:ResponseStatus}} [init] */
+    /** @param {{result?:string,meta?:{ [index:string]: string; },responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string} */
     result;
-    /** @type {{ [index: string]: string; }} */
+    /** @type {{ [index:string]: string; }} */
     meta;
     /** @type {ResponseStatus} */
     responseStatus;
@@ -1456,24 +1477,16 @@ export class DeleteFilesResponse {
     /** @param {{deleted?:string[],missing?:string[],failed?:string[],responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string[]} */
-    deleted;
+    deleted = [];
     /** @type {string[]} */
-    missing;
+    missing = [];
     /** @type {string[]} */
-    failed;
-    /** @type {?ResponseStatus} */
-    responseStatus;
-}
-export class MigrateArtifactResponse {
-    /** @param {{filePath?:string,responseStatus?:ResponseStatus}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {string} */
-    filePath;
+    failed = [];
     /** @type {?ResponseStatus} */
     responseStatus;
 }
 export class AuthenticateResponse {
-    /** @param {{userId?:string,sessionId?:string,userName?:string,displayName?:string,referrerUrl?:string,bearerToken?:string,refreshToken?:string,refreshTokenExpiry?:string,profileUrl?:string,roles?:string[],permissions?:string[],authProvider?:string,responseStatus?:ResponseStatus,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{userId?:string,sessionId?:string,userName?:string,displayName?:string,referrerUrl?:string,bearerToken?:string,refreshToken?:string,refreshTokenExpiry?:string,profileUrl?:string,roles?:string[],permissions?:string[],authProvider?:string,responseStatus?:ResponseStatus,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string} */
     userId;
@@ -1501,7 +1514,7 @@ export class AuthenticateResponse {
     authProvider;
     /** @type {ResponseStatus} */
     responseStatus;
-    /** @type {{ [index: string]: string; }} */
+    /** @type {{ [index:string]: string; }} */
     meta;
 }
 export class AdminApiKeysResponse {
@@ -1524,23 +1537,27 @@ export class AdminJobDashboardResponse {
     /** @param {{commands?:JobStatSummary[],apis?:JobStatSummary[],workers?:JobStatSummary[],today?:HourSummary[],responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {JobStatSummary[]} */
-    commands;
+    commands = [];
     /** @type {JobStatSummary[]} */
-    apis;
+    apis = [];
     /** @type {JobStatSummary[]} */
-    workers;
+    workers = [];
     /** @type {HourSummary[]} */
-    today;
+    today = [];
     /** @type {?ResponseStatus} */
     responseStatus;
 }
 export class AdminJobInfoResponse {
-    /** @param {{monthDbs?:string[],tableCounts?:{ [index: string]: number; },responseStatus?:ResponseStatus}} [init] */
+    /** @param {{monthDbs?:string[],tableCounts?:{ [index:string]: number; },workerStats?:WorkerStats[],queueCounts?:{ [index:string]: number; },responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string[]} */
-    monthDbs;
-    /** @type {{ [index: string]: number; }} */
-    tableCounts;
+    monthDbs = [];
+    /** @type {{ [index:string]: number; }} */
+    tableCounts = {};
+    /** @type {WorkerStats[]} */
+    workerStats = [];
+    /** @type {{ [index:string]: number; }} */
+    queueCounts = {};
     /** @type {?ResponseStatus} */
     responseStatus;
 }
@@ -1577,22 +1594,22 @@ export class AdminGetJobProgressResponse {
     responseStatus;
 }
 export class AdminRequeueFailedJobsJobsResponse {
-    /** @param {{results?:number[],errors?:{ [index: number]: string; },responseStatus?:ResponseStatus}} [init] */
+    /** @param {{results?:number[],errors?:{ [index:number]: string; },responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {number[]} */
-    results;
-    /** @type {{ [index: number]: string; }} */
-    errors;
+    results = [];
+    /** @type {{ [index:number]: string; }} */
+    errors = {};
     /** @type {?ResponseStatus} */
     responseStatus;
 }
 export class AdminCancelJobsResponse {
-    /** @param {{results?:number[],errors?:{ [index: number]: string; },responseStatus?:ResponseStatus}} [init] */
+    /** @param {{results?:number[],errors?:{ [index:number]: string; },responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {number[]} */
-    results;
-    /** @type {{ [index: number]: string; }} */
-    errors;
+    results = [];
+    /** @type {{ [index:number]: string; }} */
+    errors = {};
     /** @type {?ResponseStatus} */
     responseStatus;
 }
@@ -1621,7 +1638,7 @@ export class ConvertAudio {
     tag;
     getTypeName() { return 'ConvertAudio' }
     getMethod() { return 'POST' }
-    createResponse() { return new MediaTransformResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class QueueConvertAudio {
     /** @param {{outputFormat?:AudioFormat,audio?:string,refId?:string,replyTo?:string,tag?:string}} [init] */
@@ -1659,12 +1676,6 @@ export class GetSummaryStats {
     getMethod() { return 'GET' }
     createResponse() { return new GetSummaryStatsResponse() }
 }
-export class PopulateChatSummary {
-    constructor(init) { Object.assign(this, init) }
-    getTypeName() { return 'PopulateChatSummary' }
-    getMethod() { return 'GET' }
-    createResponse() { return new StringsResponse() }
-}
 export class GetComfyModels {
     /** @param {{apiBaseUrl?:string,apiKey?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -1682,7 +1693,7 @@ export class GetComfyModelMappings {
     getMethod() { return 'POST' }
     createResponse() { return new GetComfyModelMappingsResponse() }
 }
-export class GetJobStatus {
+export class GetTextGenerationStatus {
     /** @param {{jobId?:number,refId?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
@@ -1693,9 +1704,24 @@ export class GetJobStatus {
      * @type {?string}
      * @description Client-provided identifier for the request */
     refId;
-    getTypeName() { return 'GetJobStatus' }
+    getTypeName() { return 'GetTextGenerationStatus' }
     getMethod() { return 'GET' }
-    createResponse() { return new GetJobStatusResponse() }
+    createResponse() { return new GetTextGenerationStatusResponse() }
+}
+export class GetArtifactGenerationStatus {
+    /** @param {{jobId?:number,refId?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /**
+     * @type {?number}
+     * @description Unique identifier of the background job */
+    jobId;
+    /**
+     * @type {?string}
+     * @description Client-provided identifier for the request */
+    refId;
+    getTypeName() { return 'GetArtifactGenerationStatus' }
+    getMethod() { return 'GET' }
+    createResponse() { return new GetArtifactGenerationStatusResponse() }
 }
 export class ActiveMediaModels {
     constructor(init) { Object.assign(this, init) }
@@ -1744,10 +1770,10 @@ export class TextToImage {
     tag;
     getTypeName() { return 'TextToImage' }
     getMethod() { return 'POST' }
-    createResponse() { return new GenerationResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class ImageToImage {
-    /** @param {{image?:string,positivePrompt?:string,negativePrompt?:string,denoise?:number,batchSize?:number,seed?:number,refId?:string,tag?:string}} [init] */
+    /** @param {{image?:string,positivePrompt?:string,negativePrompt?:string,model?:string,denoise?:number,batchSize?:number,seed?:number,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -1761,6 +1787,10 @@ export class ImageToImage {
      * @type {?string}
      * @description Negative prompt describing what should not be in the image */
     negativePrompt;
+    /**
+     * @type {?string}
+     * @description The AI model to use for image generation */
+    model;
     /**
      * @type {?number}
      * @description Optional specific amount of denoise to apply */
@@ -1783,7 +1813,7 @@ export class ImageToImage {
     tag;
     getTypeName() { return 'ImageToImage' }
     getMethod() { return 'POST' }
-    createResponse() { return new GenerationResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class ImageUpscale {
     /** @param {{image?:string,seed?:number,refId?:string,tag?:string}} [init] */
@@ -1806,7 +1836,7 @@ export class ImageUpscale {
     tag;
     getTypeName() { return 'ImageUpscale' }
     getMethod() { return 'POST' }
-    createResponse() { return new GenerationResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class ImageWithMask {
     /** @param {{positivePrompt?:string,negativePrompt?:string,image?:string,mask?:string,denoise?:number,seed?:number,refId?:string,tag?:string}} [init] */
@@ -1845,7 +1875,7 @@ export class ImageWithMask {
     tag;
     getTypeName() { return 'ImageWithMask' }
     getMethod() { return 'POST' }
-    createResponse() { return new GenerationResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class ImageToText {
     /** @param {{image?:string,refId?:string,tag?:string}} [init] */
@@ -1864,7 +1894,7 @@ export class ImageToText {
     tag;
     getTypeName() { return 'ImageToText' }
     getMethod() { return 'POST' }
-    createResponse() { return new GenerationResponse() }
+    createResponse() { return new TextGenerationResponse() }
 }
 export class QueueTextToImage {
     /** @param {{positivePrompt?:string,negativePrompt?:string,width?:number,height?:number,batchSize?:number,model?:string,seed?:number,refId?:string,replyTo?:string,tag?:string,state?:string}} [init] */
@@ -1949,7 +1979,7 @@ export class QueueImageUpscale {
     createResponse() { return new QueueGenerationResponse() }
 }
 export class QueueImageToImage {
-    /** @param {{image?:string,positivePrompt?:string,negativePrompt?:string,denoise?:number,batchSize?:number,seed?:number,refId?:string,replyTo?:string,state?:string,tag?:string}} [init] */
+    /** @param {{image?:string,positivePrompt?:string,negativePrompt?:string,model?:string,denoise?:number,batchSize?:number,seed?:number,refId?:string,replyTo?:string,state?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -1963,6 +1993,10 @@ export class QueueImageToImage {
      * @type {?string}
      * @description Negative prompt describing what should not be in the image */
     negativePrompt;
+    /**
+     * @type {?string}
+     * @description The AI model to use for image generation */
+    model;
     /**
      * @type {?number}
      * @description Optional specific amount of denoise to apply */
@@ -2090,7 +2124,7 @@ export class ConvertImage {
     tag;
     getTypeName() { return 'ConvertImage' }
     getMethod() { return 'POST' }
-    createResponse() { return new MediaTransformResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class CropImage {
     /** @param {{x?:number,y?:number,width?:number,height?:number,image?:string,refId?:string,tag?:string}} [init] */
@@ -2125,7 +2159,7 @@ export class CropImage {
     tag;
     getTypeName() { return 'CropImage' }
     getMethod() { return 'POST' }
-    createResponse() { return new MediaTransformResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class WatermarkImage {
     /** @param {{image?:string,position?:WatermarkPosition,watermarkScale?:number,opacity?:number,refId?:string,tag?:string}} [init] */
@@ -2156,7 +2190,7 @@ export class WatermarkImage {
     tag;
     getTypeName() { return 'WatermarkImage' }
     getMethod() { return 'POST' }
-    createResponse() { return new MediaTransformResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class ScaleImage {
     /** @param {{image?:string,width?:number,height?:number,refId?:string,tag?:string}} [init] */
@@ -2183,7 +2217,7 @@ export class ScaleImage {
     tag;
     getTypeName() { return 'ScaleImage' }
     getMethod() { return 'POST' }
-    createResponse() { return new MediaTransformResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class QueueCropImage {
     /** @param {{x?:number,y?:number,width?:number,height?:number,image?:string,refId?:string,replyTo?:string,tag?:string}} [init] */
@@ -2253,7 +2287,7 @@ export class QueueScaleImage {
     tag;
     getTypeName() { return 'QueueScaleImage' }
     getMethod() { return 'POST' }
-    createResponse() { return new MediaTransformResponse() }
+    createResponse() { return new QueueMediaTransformResponse() }
 }
 export class QueueWatermarkImage {
     /** @param {{image?:string,position?:WatermarkPosition,opacity?:number,watermarkScale?:number,refId?:string,replyTo?:string,tag?:string}} [init] */
@@ -2318,14 +2352,14 @@ export class QueueConvertImage {
     createResponse() { return new QueueMediaTransformResponse() }
 }
 export class QueryMediaTypes extends QueryDb {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     getTypeName() { return 'QueryMediaTypes' }
     getMethod() { return 'GET' }
     createResponse() { return new QueryResponse() }
 }
 export class QueryMediaProviders extends QueryDb {
-    /** @param {{id?:number,name?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{id?:number,name?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     /** @type {?number} */
     id;
@@ -2336,7 +2370,7 @@ export class QueryMediaProviders extends QueryDb {
     createResponse() { return new QueryResponse() }
 }
 export class QueryTextToSpeechVoices extends QueryDb {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     getTypeName() { return 'QueryTextToSpeechVoices' }
     getMethod() { return 'GET' }
@@ -2360,10 +2394,12 @@ export class CreateGeneration {
     createResponse() { return new CreateGenerationResponse() }
 }
 export class QueryMediaModels extends QueryDb {
-    /** @param {{id?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{id?:string,providerId?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     /** @type {?string} */
     id;
+    /** @type {?string} */
+    providerId;
     getTypeName() { return 'QueryMediaModels' }
     getMethod() { return 'GET' }
     createResponse() { return new QueryResponse() }
@@ -2423,25 +2459,15 @@ export class UpdateMediaProvider {
 export class CreateMediaProvider {
     /** @param {{name?:string,apiKey?:string,apiKeyHeader?:string,apiBaseUrl?:string,heartbeatUrl?:string,concurrency?:number,priority?:number,enabled?:boolean,offlineDate?:string,models?:string[],mediaTypeId?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
-    /**
-     * @type {string}
-     * @description The name of the API Provider */
+    /** @type {string} */
     name;
-    /**
-     * @type {?string}
-     * @description The API Key to use for this Provider */
+    /** @type {?string} */
     apiKey;
-    /**
-     * @type {?string}
-     * @description Send the API Key in the Header instead of Authorization Bearer */
+    /** @type {?string} */
     apiKeyHeader;
-    /**
-     * @type {?string}
-     * @description Base URL for the Generation Provider */
+    /** @type {?string} */
     apiBaseUrl;
-    /**
-     * @type {?string}
-     * @description Url to check if the API is online */
+    /** @type {?string} */
     heartbeatUrl;
     /**
      * @type {number}
@@ -2505,14 +2531,14 @@ export class GetOllamaModels {
     createResponse() { return new GetOllamaModelsResponse() }
 }
 export class QueryAiModels extends QueryDb {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     getTypeName() { return 'QueryAiModels' }
     getMethod() { return 'GET' }
     createResponse() { return new QueryResponse() }
 }
 export class QueryAiTypes extends QueryDb {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     getTypeName() { return 'QueryAiTypes' }
     getMethod() { return 'GET' }
@@ -2525,7 +2551,7 @@ export class ActiveAiModels {
     createResponse() { return new StringsResponse() }
 }
 export class QueryAiProviders extends QueryDb {
-    /** @param {{name?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{name?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     /** @type {?string} */
     name;
@@ -2558,7 +2584,7 @@ export class GetModelImage {
     createResponse() { return new Blob() }
 }
 export class OpenAiChatCompletion extends OpenAiChat {
-    /** @param {{refId?:string,provider?:string,tag?:string,messages?:OpenAiMessage[],model?:string,frequency_penalty?:number,logit_bias?:{ [index: number]: number; },logprobs?:boolean,top_logprobs?:number,max_tokens?:number,n?:number,presence_penalty?:number,response_format?:OpenAiResponseFormat,seed?:number,stop?:string[],stream?:boolean,temperature?:number,top_p?:number,tools?:OpenAiTools[],user?:string}} [init] */
+    /** @param {{refId?:string,provider?:string,tag?:string,messages?:OpenAiMessage[],model?:string,frequency_penalty?:number,logit_bias?:{ [index:number]: number; },logprobs?:boolean,top_logprobs?:number,max_tokens?:number,n?:number,presence_penalty?:number,response_format?:OpenAiResponseFormat,seed?:number,stop?:string[],stream?:boolean,temperature?:number,top_p?:number,tools?:OpenAiTools[],user?:string}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     /**
      * @type {?string}
@@ -2648,7 +2674,7 @@ export class ChatAiProvider {
     createResponse() { return new OpenAiChatResponse() }
 }
 export class CreateApiKey {
-    /** @param {{key?:string,name?:string,userId?:string,userName?:string,scopes?:string[],notes?:string,refId?:number,refIdStr?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{key?:string,name?:string,userId?:string,userName?:string,scopes?:string[],notes?:string,refId?:number,refIdStr?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string} */
     key;
@@ -2659,21 +2685,21 @@ export class CreateApiKey {
     /** @type {?string} */
     userName;
     /** @type {string[]} */
-    scopes;
+    scopes = [];
     /** @type {?string} */
     notes;
     /** @type {?number} */
     refId;
     /** @type {?string} */
     refIdStr;
-    /** @type {?{ [index: string]: string; }} */
+    /** @type {?{ [index:string]: string; }} */
     meta;
     getTypeName() { return 'CreateApiKey' }
     getMethod() { return 'POST' }
     createResponse() { return new CreateApiKeyResponse() }
 }
 export class CreateAiProvider {
-    /** @param {{aiTypeId?:string,apiBaseUrl?:string,name?:string,apiKeyVar?:string,apiKey?:string,apiKeyHeader?:string,heartbeatUrl?:string,taskPaths?:{ [index: string]: string; },concurrency?:number,priority?:number,enabled?:boolean,models?:AiProviderModel[],selectedModels?:string[]}} [init] */
+    /** @param {{aiTypeId?:string,apiBaseUrl?:string,name?:string,apiKeyVar?:string,apiKey?:string,apiKeyHeader?:string,heartbeatUrl?:string,taskPaths?:{ [index:string]: string; },concurrency?:number,priority?:number,enabled?:boolean,models?:AiProviderModel[],selectedModels?:string[]}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -2704,7 +2730,7 @@ export class CreateAiProvider {
      * @description The URL to check if the API Provider is still online */
     heartbeatUrl;
     /**
-     * @type {?{ [index: string]: string; }}
+     * @type {?{ [index:string]: string; }}
      * @description Override API Paths for different AI Requests */
     taskPaths;
     /**
@@ -2732,7 +2758,7 @@ export class CreateAiProvider {
     createResponse() { return new IdResponse() }
 }
 export class UpdateAiProvider {
-    /** @param {{id?:number,aiTypeId?:string,apiBaseUrl?:string,name?:string,apiKeyVar?:string,apiKey?:string,apiKeyHeader?:string,heartbeatUrl?:string,taskPaths?:{ [index: string]: string; },concurrency?:number,priority?:number,enabled?:boolean,models?:AiProviderModel[],selectedModels?:string[]}} [init] */
+    /** @param {{id?:number,aiTypeId?:string,apiBaseUrl?:string,name?:string,apiKeyVar?:string,apiKey?:string,apiKeyHeader?:string,heartbeatUrl?:string,taskPaths?:{ [index:string]: string; },concurrency?:number,priority?:number,enabled?:boolean,models?:AiProviderModel[],selectedModels?:string[]}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {number} */
     id;
@@ -2765,7 +2791,7 @@ export class UpdateAiProvider {
      * @description The URL to check if the API Provider is still online */
     heartbeatUrl;
     /**
-     * @type {?{ [index: string]: string; }}
+     * @type {?{ [index:string]: string; }}
      * @description Override API Paths for different AI Requests */
     taskPaths;
     /**
@@ -2802,7 +2828,7 @@ export class DeleteAiProvider {
     createResponse() { }
 }
 export class QueryPrompts extends QueryData {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     getTypeName() { return 'QueryPrompts' }
     getMethod() { return 'GET' }
@@ -2912,7 +2938,7 @@ export class TextToSpeech {
     tag;
     getTypeName() { return 'TextToSpeech' }
     getMethod() { return 'POST' }
-    createResponse() { return new GenerationResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class SpeechToText {
     /** @param {{audio?:string,refId?:string,tag?:string}} [init] */
@@ -2931,7 +2957,7 @@ export class SpeechToText {
     tag;
     getTypeName() { return 'SpeechToText' }
     getMethod() { return 'POST' }
-    createResponse() { return new GenerationResponse() }
+    createResponse() { return new TextGenerationResponse() }
 }
 export class ScaleVideo {
     /** @param {{video?:string,width?:number,height?:number,refId?:string,tag?:string}} [init] */
@@ -2958,7 +2984,7 @@ export class ScaleVideo {
     tag;
     getTypeName() { return 'ScaleVideo' }
     getMethod() { return 'POST' }
-    createResponse() { return new MediaTransformResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class WatermarkVideo {
     /** @param {{video?:string,watermark?:string,position?:WatermarkPosition,refId?:string,tag?:string}} [init] */
@@ -2985,7 +3011,7 @@ export class WatermarkVideo {
     tag;
     getTypeName() { return 'WatermarkVideo' }
     getMethod() { return 'POST' }
-    createResponse() { return new MediaTransformResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class ConvertVideo {
     /** @param {{outputFormat?:ConvertVideoOutputFormat,video?:string,refId?:string,tag?:string}} [init] */
@@ -3006,7 +3032,7 @@ export class ConvertVideo {
     tag;
     getTypeName() { return 'ConvertVideo' }
     getMethod() { return 'POST' }
-    createResponse() { return new MediaTransformResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class CropVideo {
     /** @param {{x?:number,y?:number,width?:number,height?:number,video?:string,refId?:string,tag?:string}} [init] */
@@ -3039,7 +3065,7 @@ export class CropVideo {
     tag;
     getTypeName() { return 'CropVideo' }
     getMethod() { return 'POST' }
-    createResponse() { return new MediaTransformResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class TrimVideo {
     /** @param {{startTime?:string,endTime?:string,video?:string,refId?:string,tag?:string}} [init] */
@@ -3064,7 +3090,7 @@ export class TrimVideo {
     tag;
     getTypeName() { return 'TrimVideo' }
     getMethod() { return 'POST' }
-    createResponse() { return new MediaTransformResponse() }
+    createResponse() { return new ArtifactGenerationResponse() }
 }
 export class QueueScaleVideo {
     /** @param {{video?:string,width?:number,height?:number,refId?:string,replyTo?:string,tag?:string}} [init] */
@@ -3243,7 +3269,7 @@ export class DeleteFiles {
     /** @param {{paths?:string[]}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string[]} */
-    paths;
+    paths = [];
     getTypeName() { return 'DeleteFiles' }
     getMethod() { return 'POST' }
     createResponse() { return new DeleteFilesResponse() }
@@ -3259,19 +3285,8 @@ export class GetVariant {
     getMethod() { return 'GET' }
     createResponse() { return new Blob() }
 }
-export class MigrateArtifact {
-    /** @param {{path?:string,date?:string}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {string} */
-    path;
-    /** @type {?string} */
-    date;
-    getTypeName() { return 'MigrateArtifact' }
-    getMethod() { return 'POST' }
-    createResponse() { return new MigrateArtifactResponse() }
-}
 export class Authenticate {
-    /** @param {{provider?:string,userName?:string,password?:string,rememberMe?:boolean,accessToken?:string,accessTokenSecret?:string,returnUrl?:string,errorView?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{provider?:string,userName?:string,password?:string,rememberMe?:boolean,accessToken?:string,accessTokenSecret?:string,returnUrl?:string,errorView?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
@@ -3291,7 +3306,7 @@ export class Authenticate {
     returnUrl;
     /** @type {string} */
     errorView;
-    /** @type {{ [index: string]: string; }} */
+    /** @type {{ [index:string]: string; }} */
     meta;
     getTypeName() { return 'Authenticate' }
     getMethod() { return 'POST' }
@@ -3319,7 +3334,7 @@ export class AdminQueryApiKeys {
     createResponse() { return new AdminApiKeysResponse() }
 }
 export class AdminCreateApiKey {
-    /** @param {{name?:string,userId?:string,userName?:string,scopes?:string[],features?:string[],restrictTo?:string[],expiryDate?:string,notes?:string,refId?:number,refIdStr?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{name?:string,userId?:string,userName?:string,scopes?:string[],features?:string[],restrictTo?:string[],expiryDate?:string,notes?:string,refId?:number,refIdStr?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string} */
     name;
@@ -3341,14 +3356,14 @@ export class AdminCreateApiKey {
     refId;
     /** @type {string} */
     refIdStr;
-    /** @type {{ [index: string]: string; }} */
+    /** @type {{ [index:string]: string; }} */
     meta;
     getTypeName() { return 'AdminCreateApiKey' }
     getMethod() { return 'POST' }
     createResponse() { return new AdminApiKeyResponse() }
 }
 export class AdminUpdateApiKey {
-    /** @param {{id?:number,name?:string,userId?:string,userName?:string,scopes?:string[],features?:string[],restrictTo?:string[],expiryDate?:string,cancelledDate?:string,notes?:string,refId?:number,refIdStr?:string,meta?:{ [index: string]: string; },reset?:string[]}} [init] */
+    /** @param {{id?:number,name?:string,userId?:string,userName?:string,scopes?:string[],features?:string[],restrictTo?:string[],expiryDate?:string,cancelledDate?:string,notes?:string,refId?:number,refIdStr?:string,meta?:{ [index:string]: string; },reset?:string[]}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {number} */
     id;
@@ -3374,7 +3389,7 @@ export class AdminUpdateApiKey {
     refId;
     /** @type {string} */
     refIdStr;
-    /** @type {{ [index: string]: string; }} */
+    /** @type {{ [index:string]: string; }} */
     meta;
     /** @type {string[]} */
     reset;
@@ -3434,7 +3449,7 @@ export class AdminGetJobProgress {
     createResponse() { return new AdminGetJobProgressResponse() }
 }
 export class AdminQueryBackgroundJobs extends QueryDb {
-    /** @param {{id?:number,refId?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{id?:number,refId?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     /** @type {?number} */
     id;
@@ -3445,7 +3460,7 @@ export class AdminQueryBackgroundJobs extends QueryDb {
     createResponse() { return new QueryResponse() }
 }
 export class AdminQueryJobSummary extends QueryDb {
-    /** @param {{id?:number,refId?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{id?:number,refId?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     /** @type {?number} */
     id;
@@ -3456,14 +3471,14 @@ export class AdminQueryJobSummary extends QueryDb {
     createResponse() { return new QueryResponse() }
 }
 export class AdminQueryScheduledTasks extends QueryDb {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     getTypeName() { return 'AdminQueryScheduledTasks' }
     getMethod() { return 'GET' }
     createResponse() { return new QueryResponse() }
 }
 export class AdminQueryCompletedJobs extends QueryDb {
-    /** @param {{month?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{month?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     /** @type {?string} */
     month;
@@ -3472,7 +3487,7 @@ export class AdminQueryCompletedJobs extends QueryDb {
     createResponse() { return new QueryResponse() }
 }
 export class AdminQueryFailedJobs extends QueryDb {
-    /** @param {{month?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
+    /** @param {{month?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
     /** @type {?string} */
     month;
@@ -3499,34 +3514,6 @@ export class AdminCancelJobs {
     getTypeName() { return 'AdminCancelJobs' }
     getMethod() { return 'GET' }
     createResponse() { return new AdminCancelJobsResponse() }
-}
-export class QueryMediaTypesData extends QueryData {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
-    constructor(init) { super(init); Object.assign(this, init) }
-    getTypeName() { return 'QueryMediaTypesData' }
-    getMethod() { return 'GET' }
-    createResponse() { return new QueryResponse() }
-}
-export class QueryTextToSpeechVoicesData extends QueryData {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
-    constructor(init) { super(init); Object.assign(this, init) }
-    getTypeName() { return 'QueryTextToSpeechVoicesData' }
-    getMethod() { return 'GET' }
-    createResponse() { return new QueryResponse() }
-}
-export class QueryAiModelsData extends QueryData {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
-    constructor(init) { super(init); Object.assign(this, init) }
-    getTypeName() { return 'QueryAiModelsData' }
-    getMethod() { return 'GET' }
-    createResponse() { return new QueryResponse() }
-}
-export class QueryAiTypesData extends QueryData {
-    /** @param {{skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index: string]: string; }}} [init] */
-    constructor(init) { super(init); Object.assign(this, init) }
-    getTypeName() { return 'QueryAiTypesData' }
-    getMethod() { return 'GET' }
-    createResponse() { return new QueryResponse() }
 }
 export class DeleteMediaProvider {
     /** @param {{id?:number,name?:string}} [init] */

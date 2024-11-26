@@ -1,7 +1,7 @@
 import { ref, onMounted, inject, watch } from "vue"
 import { useClient, useFiles } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
-import { SpeechToText } from "dtos"
+import { SpeechToText } from "../dtos.mjs"
 import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, acceptedAudios } from "../utils.mjs"
 import FileUpload from "./FileUpload.mjs"
 
@@ -65,7 +65,7 @@ export default {
                         </div>
                     </div>   
                     <div>
-                        <div v-for="output in result.response.textOutputs.filter(x => !x.text.startsWith('['))" class="relative border border-indigo-600/25 rounded-lg p-2 mb-4 overflow-hidden">
+                        <div v-for="output in result.response.results.filter(x => !x.text.startsWith('['))" class="relative border border-indigo-600/25 rounded-lg p-2 mb-4 overflow-hidden">
                             <div class="prose">{{output.text}}</div>
                         </div>
                     </div>                  
@@ -134,12 +134,12 @@ export default {
             const audio = formData.get('audio').name
 
             const api = await client.apiForm(request.value, formData, { jsconfig: 'eccn' })
-            /** @type {GenerationResponse} */
+            /** @type {TextGenerationResponse} */
             const r = api.response
             if (r) {
                 console.debug(`${storage.prefix}.response`, r)
 
-                if (!r.textOutputs?.length) {
+                if (!r.results?.length) {
                     error.value = createErrorStatus("no results were returned")
                 } else {
                     const id = parseInt(routes.id) || storage.createId()

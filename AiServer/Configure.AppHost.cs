@@ -156,7 +156,7 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
             feature.MetadataTypesConfig.DefaultNamespaces.Add(typeof(BackgroundJobBase).Namespace);
         });
         
-        #if DEBUG && FALSE
+        #if DEBUG && !FALSE
         Metadata.ForceInclude = [
             typeof(AdminQueryApiKeys),
             typeof(AdminCreateApiKey),
@@ -173,6 +173,7 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
             typeof(AdminJobDashboard),
             typeof(AdminRequeueFailedJobs),
             typeof(AdminGetJobProgress),
+            typeof(QueryPrompts),
         ];
 
         // Avoid having to re-renter AuthSecret and API Keys during Development

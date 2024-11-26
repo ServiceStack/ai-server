@@ -1,4 +1,4 @@
-import { ref, inject, watch, onMounted } from "vue"
+import { inject, onMounted } from "vue"
 import { langs, openAi } from "../langs.mjs"
 import { prefixes, icons, uiLabel } from "../utils.mjs"
 import ShellCommand from "./ShellCommand.mjs"

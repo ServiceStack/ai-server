@@ -355,7 +355,8 @@ export function groupThreads(threads) {
 }
 
 export function toArtifacts(result) {
-    return result.response?.outputs?.map(x => ({
+    const results = result.response?.results
+    return results?.map(x => ({
         width: result.request.width,
         height: result.request.height,
         url: x.url,

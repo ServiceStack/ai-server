@@ -1,6 +1,6 @@
 import { ref } from "vue"
 import { useClient, useAuth } from "@servicestack/vue"
-import { Authenticate } from "dtos"
+import { Authenticate } from "../dtos.mjs"
 import { Img } from "/mjs/utils.mjs"
 
 export default {

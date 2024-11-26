@@ -1,7 +1,7 @@
 import { ref, onMounted, inject, watch } from "vue"
 import { useClient, useFiles } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
-import { ImageUpscale } from "dtos"
+import { ImageUpscale } from "../dtos.mjs"
 import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, toArtifacts, acceptedImages } from "../utils.mjs"
 import { ArtifactGallery, ArtifactDownloads } from "./Artifacts.mjs"
 import FileUpload from "./FileUpload.mjs"
@@ -151,12 +151,12 @@ export default {
             const image = formData.get('image').name
 
             const api = await client.apiForm(request.value, formData, { jsconfig: 'eccn' })
-            /** @type {GenerationResponse} */
+            /** @type {ArtifactGenerationResponse} */
             const r = api.response
             if (r) {
                 console.debug(`${storage.prefix}.response`, r)
 
-                if (!r.outputs?.length) {
+                if (!r.results?.length) {
                     error.value = createErrorStatus("no results were returned")
                 } else {
                     const id = parseInt(routes.id) || storage.createId()
@@ -177,7 +177,7 @@ export default {
                         history.value.push({
                             id,
                             title: thread.value.title,
-                            icon: r.outputs[0].url
+                            icon: r.results[0].url
                         })
                     }
                     saveHistory()

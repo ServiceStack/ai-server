@@ -1,7 +1,7 @@
 import { ref, computed, onMounted, inject, watch } from "vue"
 import { useClient } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
-import { ImageToImage } from "dtos"
+import { ImageToImage } from "../dtos.mjs"
 import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, acceptedImages } from "../utils.mjs"
 import { ArtifactGallery, ArtifactDownloads } from "./Artifacts.mjs"
 import PromptGenerator from "./PromptGenerator.mjs"
@@ -188,12 +188,12 @@ export default {
 
             const api = await client.apiForm(request.value, formData, { jsconfig: 'eccn' })
 
-            /** @type {GenerationResponse} */
+            /** @type {ArtifactGenerationResponse} */
             const r = api.response
             if (r) {
                 console.debug(`${storage.prefix}.response`, r)
 
-                if (!r.outputs?.length) {
+                if (!r.results?.length) {
                     error.value = createErrorStatus("no results were returned")
                 } else {
                     const id = parseInt(routes.id) || storage.createId()
@@ -214,7 +214,7 @@ export default {
                         history.value.push({
                             id,
                             title: thread.value.title,
-                            icon: r.outputs[0].url
+                            icon: r.results[0].url
                         })
                     }
                     saveHistory()
@@ -237,7 +237,7 @@ export default {
         }
 
         function toArtifacts(result) {
-            return result.response?.outputs?.map(x => ({
+            return result.response?.results?.map(x => ({
                 width: result.request.width,
                 height: result.request.height,
                 url: x.url,

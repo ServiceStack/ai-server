@@ -1,7 +1,7 @@
 import { ref, computed, onMounted, watch, nextTick } from "vue"
 import { leftPart, rightPart } from "@servicestack/client"
 import { useClient } from "@servicestack/vue"
-import { QueryAiTypes, GetOllamaModels } from "dtos"
+import { QueryAiTypes, GetOllamaModels } from "../dtos.mjs"
 
 const SelectModels = {
     template:`

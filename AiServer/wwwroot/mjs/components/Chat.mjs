@@ -3,7 +3,7 @@ import { useClient } from "@servicestack/vue"
 import { marked } from "../markdown.mjs"
 import { addCopyButtonToCodeBlocks } from "../dom.mjs"
 import { useUiLayout, UiLayout, ThreadStorage, HistoryTitle, HistoryGroups } from "../utils.mjs"
-import { QueryPrompts, ActiveAiModels, OpenAiChatCompletion } from "dtos"
+import { QueryPrompts, ActiveAiModels, OpenAiChatCompletion } from "../dtos.mjs"
 
 export default {
     components: {

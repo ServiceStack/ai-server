@@ -1,7 +1,7 @@
 import { ref, computed, watch, onMounted } from "vue"
 import { useClient } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
-import { ActiveAiModels, QueryPrompts, OpenAiChatCompletion } from "dtos"
+import { ActiveAiModels, QueryPrompts, OpenAiChatCompletion } from "../dtos.mjs"
 
 export default {
     template:`

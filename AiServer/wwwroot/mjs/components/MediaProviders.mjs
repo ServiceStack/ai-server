@@ -1,8 +1,6 @@
-import {ref, computed, onMounted, watch, nextTick, toRef, watchEffect} from "vue"
-import {leftPart, rightPart} from "@servicestack/client"
-import {useClient} from "@servicestack/vue"
-import {QueryMediaTypes, GetComfyModels, GetComfyModelMappings} from "dtos"
-import {QueryMediaModels} from "../dtos.mjs";
+import {ref, computed, onMounted, watch } from "vue"
+import { useClient } from "@servicestack/vue"
+import { QueryMediaModels, QueryMediaTypes, GetComfyModels } from "../dtos.mjs"
 
 const SelectModels = {
     template: `

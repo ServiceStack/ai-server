@@ -5,7 +5,7 @@ In the ancient land of Eldoria, where the skies were painted with shades of myst
 import { ref, onMounted, inject, watch, nextTick } from "vue"
 import { createErrorStatus, lastRightPart, EventBus } from "@servicestack/client"
 import { useClient, useFormatters } from "@servicestack/vue"
-import { TextToSpeech, QueryTextToSpeechVoices } from "dtos"
+import { TextToSpeech, QueryTextToSpeechVoices } from "../dtos.mjs"
 import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, toArtifacts, acceptedImages } from "../utils.mjs"
 import { ArtifactGallery } from "./Artifacts.mjs"
 import FileUpload from "./FileUpload.mjs"
@@ -74,7 +74,7 @@ export default {
                     </div>   
                     
                     <div>
-                        <div v-for="output in result.response.outputs" class="flex items-center justify-between">
+                        <div v-for="output in result.response.results" class="flex items-center justify-between">
                             <ListenButton :src="output.url" :title="result.request.input" 
                                 @play="playAudio=$event" @pause="playAudio=null" :playing="playingAudio?.src==output.url" />
                             <a :href="output.url + '?download=1'" class="flex items-center text-indigo-600 hover:text-indigo-700">
@@ -160,12 +160,12 @@ export default {
             error.value = null
             
             const api = await client.api(request.value, { jsconfig: 'eccn' })
-            /** @type {GenerationResponse} */
+            /** @type {ArtifactGenerationResponse} */
             const r = api.response
             if (r) {
                 console.debug(`${storage.prefix}.response`, r)
 
-                if (!r.outputs?.length) {
+                if (!r.results?.length) {
                     error.value = createErrorStatus("no results were returned")
                 } else {
                     const id = parseInt(routes.id) || storage.createId()

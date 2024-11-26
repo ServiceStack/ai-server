@@ -1,7 +1,7 @@
 import { ref, computed, onMounted, inject, watch } from "vue"
 import { useClient } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
-import { TextToImage, ActiveMediaModels } from "dtos"
+import { TextToImage, ActiveMediaModels } from "../dtos.mjs"
 import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, toArtifacts } from "../utils.mjs"
 import { ArtifactGallery, ArtifactDownloads } from "./Artifacts.mjs"
 import PromptGenerator from "./PromptGenerator.mjs"
@@ -167,12 +167,12 @@ export default {
             
             error.value = null
             const api = await client.api(request.value)
-            /** @type {GenerationResponse} */
+            /** @type {ArtifactGenerationResponse} */
             const r = api.response
             if (r) {
                 console.debug(`${storage.prefix}.response`, r)
                 
-                if (!r.outputs?.length) {
+                if (!r.results?.length) {
                     error.value = createErrorStatus("no results were returned")
                 } else {
                     const id = parseInt(routes.id) || storage.createId()
@@ -193,7 +193,7 @@ export default {
                         history.value.push({
                             id,
                             title: thread.value.title,
-                            icon: r.outputs[0].url
+                            icon: r.results[0].url
                         })
                     }
                     saveHistory()
@@ -244,7 +244,7 @@ export default {
                 thread.value = storage.getThread(storage.getThreadId(id))
                 threadRef.value = history.value.find(x => x.id === parseInt(routes.id))
                 Object.keys(storage.defaults).forEach(k => 
-                    request.value[k] = thread.value[k] ?? storage.defaults[k])
+                    request.value[k] = thread.value?.[k] ?? storage.defaults[k])
             } else {
                 thread.value = null
                 Object.keys(storage.defaults).forEach(k => request.value[k] = storage.defaults[k])
