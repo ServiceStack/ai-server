@@ -3083,7 +3083,7 @@ const ti = { key: 0 }, si = { class: "md:p-4" }, lo = /* @__PURE__ */ de({
       ])) : zl.value ? (o(), i("div", uu, [
         ye(lo, { "invalid-access": zl.value }, null, 8, ["invalid-access"])
       ])) : (o(), i("div", du, [
-        C.value && we.value.Create ? (o(), i("div", cu, [
+        k("forms") && C.value && we.value.Create ? (o(), i("div", cu, [
           Nl.value ? (o(), ae(re, {
             key: 0,
             title: `Create ${Wt.value}`,
@@ -3125,7 +3125,7 @@ const ti = { key: 0 }, si = { class: "md:p-4" }, lo = /* @__PURE__ */ de({
             ]),
             _: 3
           }, 8, ["type", "configure"]))
-        ])) : X.value && we.value.AnyUpdate ? (o(), i("div", fu, [
+        ])) : k("forms") && X.value && we.value.AnyUpdate ? (o(), i("div", fu, [
           Ul.value ? (o(), ae(re, {
             key: 0,
             title: `Update ${Wt.value}`,
@@ -3177,7 +3177,7 @@ const ti = { key: 0 }, si = { class: "md:p-4" }, lo = /* @__PURE__ */ de({
             ]),
             _: 3
           }, 8, ["modelValue", "type", "deleteType", "configure"]))
-        ])) : X.value ? (o(), i("div", vu, [
+        ])) : k("forms") && X.value ? (o(), i("div", vu, [
           W(R).viewform ? U($.$slots, "viewform", {
             key: 0,
             model: X.value,
