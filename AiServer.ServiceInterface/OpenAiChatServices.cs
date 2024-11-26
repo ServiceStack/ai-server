@@ -326,7 +326,7 @@ public class OpenAiChatServices(
     
     public object Any(GetActiveProviders request) => new GetActiveProvidersResponse
     {
-        Results = appData.AiProviders
+        Results = appData.AiProviders.ToList()
     };
 
     public async Task<object> Any(ChatAiProvider request)
