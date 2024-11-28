@@ -18,7 +18,7 @@ export function uiLabel(id) {
 }
 
 export function iconDataUri(svg) {
-    return styleDataUri(Img.svgToDataUri(svg).replaceAll('"', "'"))
+    return !svg ? null : styleDataUri(Img.svgToDataUri(svg).replaceAll('"', "'"))
 }
 function styleDataUri(dataUri) {
     const fgColor = '%234f46e5'
