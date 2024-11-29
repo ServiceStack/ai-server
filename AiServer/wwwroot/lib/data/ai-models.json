@@ -760,6 +760,15 @@
     "icon": "/img/models/qwen.svg"
   },
   {
+    "id": "qwq",
+    "tags": [
+      "32b"
+    ],
+    "latest": "32b",
+    "website": "https://ollama.com/library/qwq",
+    "description": "QwQ is an experimental research model focused on advancing AI reasoning capabilities."
+  },
+  {
     "id": "samantha-mistral",
     "tags": [
       "7b"
