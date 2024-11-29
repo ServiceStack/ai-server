@@ -55,10 +55,10 @@ export default {
                 <div v-if="thread" class="flex flex-col">
                     <template v-for="message in thread.messages">
                         <div v-if="message.role === 'system'" data-message="system" class="rounded-lg py-2 px-4 mb-4 system bg-green-50 border-green-50">
-                          <div v-html="marked.parse(message?.content ?? '')" class="prose"></div>
+                          <div v-html="renderMarkdown(message?.content ?? '')" class="prose"></div>
                         </div>
                         <div v-else-if="message.role === 'assistant'" data-message="assistant" class="relative border border-indigo-600/25 rounded-lg p-2 mb-4 overflow-hidden">
-                          <div v-html="marked.parse(message?.content ?? '')" class="prose"></div>
+                          <div v-html="renderMarkdown(message?.content ?? '')" class="prose"></div>
                         </div>
                         <div v-else data-message="user" class="rounded-lg py-2 px-4 mb-4 user bg-gray-100 border border-gray-100 self-end">
                           <div v-html="message.content" class="prose"></div>
@@ -67,8 +67,8 @@ export default {
                     <div v-if="client.loading.value" class="mx-auto pt-4">
                         <Loading>Asking {{prefs.model}}...</Loading>
                     </div>
-                    <ErrorSummary :status="error" class="pt-4" />
                 </div>
+                <ErrorSummary :status="error" class="pt-4" />
             </div>
         </div>
         
@@ -331,6 +331,16 @@ export default {
             }
         }
         
+        function renderMarkdown(content) {
+            if (content) {
+                console.log(content)
+                content = content
+                    .replaceAll(`\\[ \\boxed{`,'\n<span class="inline-block text-xl text-blue-500 bg-blue-50 px-3 py-1 rounded">')
+                    .replaceAll('} \\]','</span>\n')
+            }
+            return marked.parse(content)
+        }
+        
         watch(() => routes.id, updated)
         watch(() => selectedPrompt.value, () => {
             prefs.value.prompt = selectedPrompt.value?.name
@@ -367,7 +377,7 @@ export default {
             storage, client, routes, refUi, showChatMenu, renameChatId, prefs, validPrompt, 
             thread, history, models, prompts, error, systemPrompt, showSystemPrompt, 
             selectedPrompt, refMessage,
-            marked, send, selectPrompt, saveHistoryItem, removeHistoryItem,
+            renderMarkdown, send, selectPrompt, saveHistoryItem, removeHistoryItem,
         }
     }
 }
