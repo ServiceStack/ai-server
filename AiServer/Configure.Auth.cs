@@ -1,9 +1,5 @@
-﻿using System.Collections.Concurrent;
-using ServiceStack.Auth;
+﻿using ServiceStack.Auth;
 using AiServer.ServiceInterface;
-using ServiceStack.Configuration;
-using ServiceStack.Html;
-using ServiceStack.Web;
 
 [assembly: HostingStartup(typeof(ConfigureAuth))]
 
