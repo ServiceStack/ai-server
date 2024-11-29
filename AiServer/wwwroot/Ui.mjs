@@ -69,7 +69,7 @@ export default {
               <button @click="showUserMenu=!showUserMenu" type="button" class="relative flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                 <span class="absolute -inset-1.5"></span>
                 <span class="sr-only">Open user menu</span>
-                <img class="h-8 w-8 rounded-full" :src="profileUrl" alt="">
+                <img class="h-8 w-8 rounded-full" :src="profileUrl ?? icons.user" alt="">
               </button>
             </div>
             <div v-if="showUserMenu" class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
@@ -184,6 +184,7 @@ export default {
         }
         watch(() => routes.admin, () => {
             activeSection.value = sections.find(x => x.id === routes.admin) || HomeSection
+            if (!profileUrl.value) profileUrl.value = localStorage.getItem('profileUrl') || user.value?.profileUrl
             refreshKey.value++
         })
         
