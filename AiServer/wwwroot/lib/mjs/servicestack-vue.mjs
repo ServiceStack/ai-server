@@ -2788,7 +2788,7 @@ const ti = { key: 0 }, si = { class: "md:p-4" }, lo = /* @__PURE__ */ de({
   },
   emits: ["headerSelected", "rowSelected", "nav"],
   setup(e, { expose: t, emit: s }) {
-    const { config: n, autoQueryGridDefaults: a } = It(), r = a, u = n.value.storage, d = e, c = s, f = Qe("client"), m = "filtering,queryString,queryFilters".split(","), _ = "copyApiUrl,downloadCsv,filtersView,newItem,pagingInfo,pagingNav,preferences,refresh,resetPreferences,toolbar".split(","), w = v(() => d.deny ? Vt(m, d.deny) : Vt(m, r.value.deny)), p = v(() => d.hide ? Vt(_, d.hide) : Vt(_, r.value.hide));
+    const { config: n, autoQueryGridDefaults: a } = It(), r = a, u = n.value.storage, d = e, c = s, f = Qe("client"), m = "filtering,queryString,queryFilters".split(","), _ = "copyApiUrl,downloadCsv,filtersView,newItem,pagingInfo,pagingNav,preferences,refresh,resetPreferences,toolbar,forms".split(","), w = v(() => d.deny ? Vt(m, d.deny) : Vt(m, r.value.deny)), p = v(() => d.hide ? Vt(_, d.hide) : Vt(_, r.value.hide));
     function y($) {
       return w.value[$];
     }
