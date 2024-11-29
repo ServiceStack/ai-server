@@ -1,5 +1,5 @@
 import { Marked } from "../lib/mjs/marked.mjs"
-import hljs from "../lib/mjs/highlight.mjs"
+import hljs from "highlight.mjs"
 
 export const marked = (() => {
     const ret = new Marked(
@@ -14,33 +14,6 @@ export const marked = (() => {
     //ret.use({ extensions: [divExtension()] })
     return ret
 })();
-
-// Custom extension to handle class-based div-like syntax
-function divExtension() {
-    const pattern = /^:::\{\.([^}]+)}\n([\s\S]*?):::$/;
-    return {
-        name: 'div',
-        level: 'block',
-        start(src) {
-            return src.match(pattern)?.index;
-        },
-        tokenizer(src) {
-            const match = src.match(pattern);
-            if (match) {
-                return {
-                    type: 'div',
-                    raw: match[0],
-                    classes: match[1].split('.').filter(Boolean),
-                    text: match[2]
-                };
-            }
-        },
-        renderer(token) {
-            const classes = token.classes.join(' ');
-            return `<div class="${classes}">${marked.parse(token.text)}</div>`;
-        }
-    };
-}
 
 // export async function renderMarkdown(body) {
 //     const rawHtml = marked.parse(body)

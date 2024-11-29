@@ -23,8 +23,8 @@ const files = {
       '@vue/shared.d.ts':                '/@vue/shared@3/dist/shared.d.ts',
       '@servicestack/client/index.d.ts': '/@servicestack/client/dist/index.d.ts',
       '@servicestack/vue/index.d.ts':    '/@servicestack/vue@3/dist/index.d.ts',
-      // 'marked/index.d.ts':               'https://cdn.jsdelivr.net/npm/marked/lib/marked.d.ts',
       'highlight/index.d.ts':            'https://raw.githubusercontent.com/highlightjs/highlight.js/main/types/index.d.ts',
+      // 'marked/index.d.ts':               'https://cdn.jsdelivr.net/npm/marked/lib/marked.d.ts',
   },
   data: {
       'prompts.md':                     'https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/README.md',

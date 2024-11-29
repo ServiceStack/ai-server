@@ -1,5 +1,5 @@
 import { inject, onMounted } from "vue"
-import { langs, openAi } from "../langs.mjs"
+import OpenAiChatLangs from "./OpenAiChatLangs.mjs"
 import { prefixes, icons, uiLabel } from "../utils.mjs"
 import ShellCommand from "./ShellCommand.mjs"
 import AsciiCinema from "./AsciiCinema.mjs"
@@ -8,6 +8,7 @@ export default {
     components: {
         ShellCommand,
         AsciiCinema,
+        OpenAiChatLangs,
     },
     template: `
 <div class="bg-white py-24 sm:py-32">
@@ -69,123 +70,55 @@ export default {
       </dl>
     </div>
     
-  <div class="mt-24">
+    <div class="mt-24">
         <lite-youtube class="mx-auto max-w-5xl aspect-video w-full" videoid="Ojo80oFQte8"
                       style="background-image: url('https://img.youtube.com/vi/Ojo80oFQte8/maxresdefault.jpg')"></lite-youtube>
-  </div>
+    </div>
     
-<div class="overflow-hidden bg-white py-24 sm:py-32">
-  <div class="mx-auto max-w-7xl px-6 lg:px-8">
-
-    <div class="mb-4">
-      <div class="sm:hidden">
-        <label for="tabs" class="sr-only">Select a tab</label>
-        <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
-        <select id="tabs" name="tabs" @change="routes.to({ lang:$event.target.value })" 
-            class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-          <option v-for="(label,lang) in langs" :value="lang">{{label}}</option>
-        </select>
-      </div>
-      <div class="hidden sm:block">
-        <div class="border-b border-gray-200">
-          <nav class="-mb-px flex" aria-label="Tabs">
-            <!-- Current: "border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
-            <div v-for="(label,lang) in langs" v-href="{ lang }" 
-                :class="['cursor-pointer w-1/4 border-b-2 px-1 py-2 text-center text-sm font-medium text-gray-500', lang == (routes.lang || 'csharp') ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700']">
-                <div class="flex flex-col justify-center items-center">
-                    <img :src="'/img/langs/' + lang + '.svg'" class="w-8 h-8">
-                    <span class="mt-3">{{label}}</span>
+    <div class="overflow-hidden bg-white py-24 sm:py-32">
+        <OpenAiChatLangs :routes="routes">
+            <div class="lg:max-w-lg">
+              <h2 class="text-base font-semibold leading-7 text-indigo-600">Developer APIs</h2>
+              <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Open AI Chat</p>
+              <p class="mt-6 text-lg leading-8 text-gray-600">
+                Example of calling an Open AI compatible Chat API. AI Server APIs are executed using 
+                the same generic JSON Service Client and the native Typed DTOs generated in each language.
+                Each feature supports multiple call styles for different use-cases.
+              </p>
+              <dl class="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
+                <div class="relative pl-9">
+                  <dt class="inline font-semibold text-gray-900">
+                    <img class="absolute left-1 top-1 h-5 w-5 text-indigo-600" :src="icons.sync">
+                    Synchronous API <span class="px-1" aria-hidden="true">·</span>
+                  </dt>
+                  <dd class="inline">
+                    Simplest API ideal for small workloads where the Response is returned
+                    in the same Request
+                  </dd>
                 </div>
-            </div>
-          </nav>
-        </div>
-      </div>
+                <div class="relative pl-9">
+                  <dt class="inline font-semibold text-gray-900">
+                    <img class="absolute left-1 top-1 h-5 w-5 text-indigo-600" :src="icons.queue">
+                    Queued API <span class="px-1" aria-hidden="true">·</span>
+                  </dt>
+                  <dd class="inline">
+                    Returns a reference to the queued job executing the AI Request which can be used to
+                    poll for the API Response
+                  </dd>
+                </div>
+                <div class="relative pl-9">
+                  <dt class="inline font-semibold text-gray-900">
+                    <img class="absolute left-1 top-1 h-5 w-5 text-indigo-600" :src="icons.reply">
+                    Reply to Web Callback <span class="px-1" aria-hidden="true">·</span>
+                  </dt>
+                  <dd class="inline">
+                    Ideal for reliable App integrations where responses are posted back to a custom URL Endpoint
+                  </dd>
+                </div>
+              </dl>
+            </div>    
+        </OpenAiChatLangs>    
     </div>
-
-    <div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
-      <div class="lg:pr-8 lg:pt-4">
-        <div class="lg:max-w-lg">
-          <h2 class="text-base font-semibold leading-7 text-indigo-600">Developer APIs</h2>
-          <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Open AI Chat</p>
-          <p class="mt-6 text-lg leading-8 text-gray-600">
-            Example of calling an Open AI compatible Chat API. AI Server APIs are executed using 
-            the same generic JSON Service Client and the native Typed DTOs generated in each language.
-            Each feature supports multiple call styles for different use-cases.
-          </p>
-          <dl class="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
-            <div class="relative pl-9">
-              <dt class="inline font-semibold text-gray-900">
-                <img class="absolute left-1 top-1 h-5 w-5 text-indigo-600" :src="icons.sync">
-                Synchronous API <span class="px-1" aria-hidden="true">·</span>
-              </dt>
-              <dd class="inline">
-                Simplest API ideal for small workloads where the Response is returned
-                in the same Request
-              </dd>
-            </div>
-            <div class="relative pl-9">
-              <dt class="inline font-semibold text-gray-900">
-                <img class="absolute left-1 top-1 h-5 w-5 text-indigo-600" :src="icons.queue">
-                Queued API <span class="px-1" aria-hidden="true">·</span>
-              </dt>
-              <dd class="inline">
-                Returns a reference to the queued job executing the AI Request which can be used to
-                poll for the API Response
-              </dd>
-            </div>
-            <div class="relative pl-9">
-              <dt class="inline font-semibold text-gray-900">
-                <img class="absolute left-1 top-1 h-5 w-5 text-indigo-600" :src="icons.reply">
-                Reply to Web Callback <span class="px-1" aria-hidden="true">·</span>
-              </dt>
-              <dd class="inline">
-                Ideal for reliable App integrations where responses are posted back to a custom URL Endpoint
-              </dd>
-            </div>
-          </dl>
-        </div>
-      </div>
-      <div>
-          <div class="flex items-center pt-20">
-            <div v-html="openAi.html[routes.lang || 'csharp']"></div>
-          </div>
-            
-            <nav class="flex" aria-label="Breadcrumb">
-              <ol role="list" class="flex items-center space-x-4">
-                <li>
-                  <div>
-                    <a :href="'/ui/OpenAiChatCompletion?tab=code&detailSrc=OpenAiChat&lang=' + (routes.lang || 'csharp')" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700" aria-current="page">
-                        Usage from {{langs[routes.lang || 'csharp']}}
-                    </a>
-                  </div>
-                </li>
-                <li>
-                  <div class="flex items-center">
-                    <svg class="h-5 w-5 flex-shrink-0 text-gray-300" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                      <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
-                    </svg>
-                    <a href="/ui/OpenAiChatCompletion?tab=details" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">
-                        API Explorer Docs
-                    </a>
-                  </div>
-                </li>
-                <li>
-                  <div class="flex items-center">
-                    <svg class="h-5 w-5 flex-shrink-0 text-gray-300" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                      <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
-                    </svg>
-                    <a href="https://docs.servicestack.net/ai-server/chat" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">
-                        About Open AI Chat API
-                    </a>
-                  </div>
-                </li>
-              </ol>
-            </nav>
-      </div>
-    </div>
-    
-  </div>
-</div>
 
     <div class="py-12 lg:pb-40">
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
@@ -508,6 +441,6 @@ export default {
         }
         const adminUiKeys = Object.keys(adminUis)
         
-        return { routes, langs, openAi, icons, uis, adminUis, adminUiKeys }
+        return { routes, icons, uis, adminUis, adminUiKeys }
     }
 }
