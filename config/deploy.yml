@@ -52,7 +52,8 @@ builder:
 
 volumes:
   - "/opt/docker/ai-server/App_Data:/app/App_Data"
-  - "/opt/docker/ai-server/files:/app/files"
+  - "/mnt/HC_Volume_101725579/ai-server/files:/app/files"
+  - "/mnt/HC_Volume_101725579/ai-server/artifacts:/app/artifacts"
 
 accessories:
   litestream:
