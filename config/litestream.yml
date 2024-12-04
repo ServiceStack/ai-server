@@ -1,0 +1,12 @@
+access-key-id: $R2_ACCESS_KEY_ID
+secret-access-key: $R2_SECRET_ACCESS_KEY
+
+dbs:
+  - path: /data/app.db
+    replicas:
+      - type: s3
+        bucket: ai-server
+        path: app.db
+        region: auto
+        endpoint: https://b95f38ca3a6ac31ea582cd624e6eb385.r2.cloudflarestorage.com
+

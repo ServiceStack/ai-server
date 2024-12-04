@@ -16,6 +16,8 @@ env:
   DOCKER_BUILDKIT: 1
   KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
   KAMAL_REGISTRY_USERNAME: ${{ github.actor }}
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
 jobs:
   release:
