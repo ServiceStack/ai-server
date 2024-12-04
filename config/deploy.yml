@@ -1,0 +1,64 @@
+# Name of your application. Used to uniquely configure containers.
+service: ai-server
+
+# Name of the container image.
+image: servicestack/aiserver
+
+# Required for use of ASP.NET Core with Kamal-Proxy.
+env:
+  clear:
+    ASPNETCORE_FORWARDEDHEADERS_ENABLED: true
+    HTTPS_METHOD: noredirect
+  secret:
+    - GOOGLE_API_KEY
+    - GROQ_API_KEY
+    - MISTRAL_API_KEY
+    - OPENAI_API_KEY
+    - OPENROUTER_API_KEY
+
+# Deploy to these servers.
+servers:
+  # IP address of server, optionally use env variable.
+  web:
+    - 5.78.128.205
+#   - <%= ENV['KAMAL_DEPLOY_IP'] %>
+
+
+# Enable SSL auto certification via Let's Encrypt (and allow for multiple apps on one server).
+# If using something like Cloudflare, it is recommended to set encryption mode
+# in Cloudflare's SSL/TLS setting to "Full" to enable end-to-end encryption.
+proxy:
+  ssl: true
+  host: openai.servicestack.net
+  # kamal-proxy connects to your container over port 80, use `app_port` to specify a different port.
+  app_port: 8080
+
+# Credentials for your image host.
+registry:
+  # Specify the registry server, if you're not using Docker Hub
+  server: ghcr.io
+  username:
+    - KAMAL_REGISTRY_USERNAME
+
+  # Always use an access token rather than real password (pulled from .kamal/secrets).
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Configure builder setup.
+builder:
+  arch: amd64
+
+volumes:
+  - "/opt/docker/MyApp/App_Data:/app/App_Data"
+
+accessories:
+  litestream:
+    roles: ["web"]
+    image: litestream/litestream
+    files: ["config/litestream.yml:/etc/litestream.yml"]
+    volumes: ["/opt/docker/ai-server/App_Data:/data"]
+    cmd: replicate
+    env:
+      secret:
+        - R2_ACCESS_KEY_ID
+        - R2_SECRET_ACCESS_KEY

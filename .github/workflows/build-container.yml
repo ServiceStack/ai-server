@@ -1,0 +1,97 @@
+name: Build Container
+permissions:
+  packages: write
+  contents: write
+on:
+  workflow_run:
+    workflows: ["Build"]
+    types:
+      - completed
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+env:
+  DOCKER_BUILDKIT: 1
+  KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+  KAMAL_REGISTRY_USERNAME: ${{ github.actor }}
+
+jobs:
+  build-container:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up environment variables
+        run: |
+          echo "image_repository_name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+          echo "repository_name=$(echo ${{ github.repository }} | cut -d '/' -f 2)" >> $GITHUB_ENV
+          echo "repository_name_lower=$(echo ${{ github.repository }} | cut -d '/' -f 2 | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+          echo "org_name=$(echo ${{ github.repository }} | cut -d '/' -f 1)" >> $GITHUB_ENV
+          if [ -n "${{ secrets.APPSETTINGS_PATCH }}" ]; then
+            echo "HAS_APPSETTINGS_PATCH=true" >> $GITHUB_ENV
+          else
+            echo "HAS_APPSETTINGS_PATCH=false" >> $GITHUB_ENV
+          fi
+          if [ -n "${{ secrets.KAMAL_DEPLOY_IP }}" ]; then
+            echo "HAS_DEPLOY_ACTION=true" >> $GITHUB_ENV
+          else
+            echo "HAS_DEPLOY_ACTION=false" >> $GITHUB_ENV
+          fi
+
+      # This step is for the deployment of the templates only, safe to delete
+      - name: Modify csproj for template deploy
+        if: env.HAS_DEPLOY_ACTION == 'true'
+        run: |
+          sed -i 's#<ContainerLabel Include="service" Value="my-app" />#<ContainerLabel Include="service" Value="${{ env.repository_name_lower }}" />#g' MyApp/MyApp.csproj
+
+      - name: Check for Client directory and package.json
+        id: check_client
+        run: |
+          if [ -d "MyApp.Client" ] && [ -f "MyApp.Client/package.json" ]; then
+            echo "client_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "client_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Node.js
+        if: steps.check_client.outputs.client_exists == 'true'
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - name: Install npm dependencies
+        if: steps.check_client.outputs.client_exists == 'true'
+        working-directory: ./MyApp.Client
+        run: npm install
+
+      - name: Install x tool
+        run: dotnet tool install -g x
+
+      - name: Apply Production AppSettings
+        if: env.HAS_APPSETTINGS_PATCH == 'true'
+        working-directory: ./MyApp
+        run: |
+          cat <<EOF >> appsettings.json.patch
+          ${{ secrets.APPSETTINGS_PATCH }}
+          EOF
+          x patch appsettings.json.patch
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ env.KAMAL_REGISTRY_USERNAME }}
+          password: ${{ env.KAMAL_REGISTRY_PASSWORD }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0'
+
+      - name: Build and push Docker image
+        run: |
+          dotnet publish --os linux --arch x64 -c Release -p:ContainerRepository=${{ env.image_repository_name }} -p:ContainerRegistry=ghcr.io -p:ContainerImageTags=latest -p:ContainerPort=80
