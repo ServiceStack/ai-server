@@ -49,7 +49,8 @@ builder:
   arch: amd64
 
 volumes:
-  - "/opt/docker/MyApp/App_Data:/app/App_Data"
+  - "/opt/docker/ai-server/App_Data:/app/App_Data"
+  - "/opt/docker/ai-server/files:/app/files"
 
 accessories:
   litestream:
