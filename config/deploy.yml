@@ -2,7 +2,7 @@
 service: ai-server
 
 # Name of the container image.
-image: servicestack/aiserver
+image: servicestack/ai-server
 
 # Required for use of ASP.NET Core with Kamal-Proxy.
 env:
