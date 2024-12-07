@@ -1120,5 +1120,26 @@
     "website": "https://openrouter.ai/models/01-ai/yi-large-turbo",
     "description": "The Yi Large Turbo model is a High Performance and Cost-Effectiveness model offering powerful capabilities at a competitive price.",
     "icon": "/img/models/yi.svg"
+  },
+  {
+    "id": "nova-micro",
+    "tags": [],
+    "website": "https://openrouter.ai/amazon/nova-micro-v1",
+    "description": "A text-only model that delivers the lowest latency responses in the Amazon Nova family of models at a very low cost. With a context length of 128K tokens and optimized for speed and cost, Amazon Nova Micro excels at tasks such as text summarization, translation, content classification, interactive chat, and brainstorming.",
+    "icon": "/img/models/aws.svg"
+  },
+  {
+    "id": "nova-lite",
+    "tags": [],
+    "website": "https://openrouter.ai/amazon/nova-lite-v1",
+    "description": "A very low-cost multimodal model from Amazon that focused on fast processing of image, video, and text inputs to generate text output. Amazon Nova Lite can handle real-time customer interactions, document analysis, and visual question-answering tasks with high accuracy.",
+    "icon": "/img/models/aws.svg"
+  },
+  {
+    "id": "nova-pro",
+    "tags": [],
+    "website": "https://openrouter.ai/amazon/nova-pro-v1",
+    "description": "A capable multimodal model from Amazon focused on providing a combination of accuracy, speed, and cost for a wide range of tasks. As of December 2024, it achieves state-of-the-art performance on key benchmarks including visual question answering (TextVQA) and video understanding (VATEX).",
+    "icon": "/img/models/aws.svg"
   }
 ]
