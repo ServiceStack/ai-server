@@ -404,6 +404,16 @@
     "icon": "/img/models/llama.svg"
   },
   {
+    "id": "llama3.3",
+    "tags": [
+      "70b"
+    ],
+    "latest": "70b",
+    "website": "https://ollama.com/library/llama3.3",
+    "description": "New state of the art 70B model. Llama 3.3 70B offers similar performance compared to Llama 3.1 405B model.",
+    "icon": "/img/models/llama.svg"
+  },
+  {
     "id": "llava",
     "tags": [
       "7b",

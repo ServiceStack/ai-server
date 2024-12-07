@@ -30,6 +30,7 @@
       "llama3.1:8b": "meta-llama/llama-3.1-8b-instruct",
       "llama3.1:70b": "meta-llama/llama-3.1-70b-instruct",
       "llama3.1:405b": "meta-llama/llama-3.1-405b-instruct",
+      "llama3.3:70b": "meta-llama/llama-3.3-70b-instruct",
       "llama3-groq-tool-use:8b": "llama3-groq-8b-8192-tool-use-preview",
       "llama3-groq-tool-use:70b": "llama3-groq-70b-8192-tool-use-preview",
       "mistral:7b": "mistralai/mistral-7b-instruct",
@@ -158,6 +159,7 @@
       "llama3.1:8b": "llama-3.1-8b-instant",
       "llama3.1:70b": "llama-3.1-70b-versatile",
       "llama3.1:405b": "llama-3.1-405b-reasoning",
+      "llama3.3:70b": "llama-3.3-70b-versatile",
       "mixtral:8x7b": "mixtral-8x7b-32768"
     }
   },
