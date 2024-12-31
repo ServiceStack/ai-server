@@ -174,6 +174,16 @@
     "icon": "/img/models/deepseek-coder.jpg"
   },
   {
+    "id": "deepseek-v3",
+    "tags": [
+      "671b"
+    ],
+    "latest": "671b",
+    "website": "https://openrouter.ai/deepseek/deepseek-chat",
+    "description": "DeepSeek-V3 is the latest model from the DeepSeek team, building upon the instruction following and coding abilities of the previous versions. Pre-trained on nearly 15 trillion tokens, the reported evaluations reveal that the model outperforms other open-source models and rivals leading closed-source models.",
+    "icon": "/img/models/deepseek-3.jpg"
+  },
+  {
     "id": "dolphin-llama3",
     "tags": [
       "8b",
