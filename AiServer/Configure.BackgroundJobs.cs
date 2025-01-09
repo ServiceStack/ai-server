@@ -20,7 +20,11 @@ public class ConfigureBackgroundJobs : IHostingStartup
                     () => [typeof(LogCommand)]
                 }
             });
-            services.AddPlugin(new BackgroundsJobFeature { EnableAdmin = true });
+            services.AddPlugin(new BackgroundsJobFeature
+            {
+                EnableAdmin = true,
+                DefaultTimeoutSecs = 20 * 60, // 20 mins
+            });
             services.AddHostedService<JobsHostedService>();
          }).ConfigureAppHost(afterAppHostInit: appHost => {
             var services = appHost.GetApplicationServices();
