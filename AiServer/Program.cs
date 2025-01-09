@@ -1,6 +1,6 @@
 using AiServer.ServiceInterface;
 
-Licensing.RegisterLicense("OSS GPL-3.0 2024 https://github.com/ServiceStack/ai-server sbKiw/DD/5tZyY2/b+l8sW1Sm8M14s0AMTN8aLxDahXoOx45yFGpmG9Hpoyk79MetXWGTjW2U7peGLjrB/k79YeL8vrxD4xgl2kNiBK+kSWNHkxBiUK+qkzXj6V1uEnQpdem5tY8+l4HkUO+oLo21/r51kKmx7wxhPLumy72uQc=");
+Licensing.RegisterLicense("OSS GPL-3.0 2025 https://github.com/ServiceStack/ai-server B2fSVlQ1mYLSxRYTSvsS1aORN0Og++8DTDsxY0+2lBt8Wj7VwLZYbHJY4/UnJFpaagxoQepeXXHMPfZcmP9eUjyhRaqWe3OJI4+3ct/2Wr+rfR5roBrUer8mzJhrQDj1t3L3x42dy/pZiOQKMccAShk4psGLS/TG86MTzuPk2XE=");
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
