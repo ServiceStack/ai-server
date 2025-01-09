@@ -1,5 +1,5 @@
 import { ref, computed, watch, onMounted, onUnmounted, provide, inject, nextTick } from "vue"
-import { humanize, queryString, setQueryString, toDate, leftPart, rightPart, pick, omit, EventBus } from "@servicestack/client"
+import { humanize,  toDate, timeFmt12, leftPart, rightPart, pick, omit, EventBus } from "@servicestack/client"
 import { useClient, useUtils, useFormatters } from "@servicestack/vue"
 import { AdminJobInfo, AdminGetJob, AdminGetJobProgress, AdminCancelJobs, AdminRequeueFailedJobs, AdminJobDashboard } from "dtos"
 import { Chart, registerables } from 'chart.js'
@@ -26,7 +26,8 @@ async function updateStats() {
     console.debug('updateStats', !!window.client)
     if (window.client) {
         const prefs = getPrefs()
-        swrApi(window.client, new AdminJobInfo({ month:prefs.monthDb }), r => {
+        const request = new AdminJobInfo({ month:prefs.monthDb }) //var needed by safari
+        swrApi(window.client, request, r => {
             if (lastStats?.pageStats == null ||
                 lastStats.pageStats.find(x => x.label === 'JobSummary').total !==
                 r.response.pageStats.find(x => x.label === 'JobSummary').total) {
@@ -333,14 +334,15 @@ const JobDialog = {
         const duration = ref(formatMs(props.job.durationMs))
         const errorStatus = ref()
         const loading = ref(false)
-        const isRunning = state => state === 'Queued' || state === 'Started'
+        const isRunning = state => state === 'Queued' || state === 'Started' || state === 'Executed'
         const logs = ref(props.job.logs || '')
         const state = ref(props.job.state)
         const { formatDate, time } = useFormatters()
         function formatArgs(args) {
             Object.keys(args).forEach(key => {
+                const val = args[key]
                 if (key.endsWith('Date')) {
-                    args[key] = formatDate(args[key]) + ' ' + time(args[key])
+                    args[key] = formatDate(val) + ' ' + timeFmt12(toDate(val))
                 } else if (key === 'durationMs') {
                     args['duration'] = duration.value
                 }
@@ -373,7 +375,7 @@ const JobDialog = {
                         const r = apiRefresh.response
                         const job = r.completed ?? r.failed ?? r.queued ?? r.result
                         console.debug('requeue', job?.state, r.result.state)
-                        if (job?.state === 'Queued' || job?.state === 'Started') {
+                        if (job?.state === 'Queued' || job?.state === 'Started' || job?.state === 'Executed') {
                             updated(job)
                             clearTimeout(updateTimer)
                             refresh()
@@ -433,12 +435,13 @@ const JobDialog = {
                         // console.log('apiRefresh',job)
                         if (job) {
                             updated(job)
-                            scrollToBottom()
+                            if (api.response.logs) {
+                                scrollToBottom()
+                            }
                             return
                         }
                     }
                 }
-                scrollToBottom()
             }
             updateTimer = setTimeout(refresh, 500)
         }
@@ -467,14 +470,14 @@ const Queue = {
     components,
     props:['info'],
     template: `
-        <AutoQueryGrid ref="grid" type="BackgroundJob" hide="downloadCsv,copyApiUrl"
+        <AutoQueryGrid ref="grid" type="BackgroundJob" hide="downloadCsv,copyApiUrl,forms"
             selectedColumns="progress,durationMs,worker,id,parentId,refId,tag,requestType,request,requestBody,command,userId,dependsOn,batchId,callback,replyTo,createdDate,state,status,lastActivityDate,attempts"
             :headerTitles="{parentId:'Parent',batchId:'Batch',requestType:'Type',createdDate:'Created',startedDate:'Started',completedDate:'Completed',notifiedDate:'Notified',lastActivityDate:'Last Activity',timeoutSecs:'Timeout'}"
             :visibleFrom="{durationMs:'never',requestBody:'never'}"
             @rowSelected="routes.edit = routes.edit == $event.id ? null : $event.id" :isSelected="(row) => routes.edit == row.id">
             <template #progress="job"><JobProgress :job="job" /></template>
             <template #id="{id}">{{id}}</template>
-            <template #parentId="{parentId}"><EditLink :id="parentId" @selected="editId = $event" /></template>
+            <template #parentId="{parentId}"><EditLink :id="parentId" @selected="routes.edit=$event" /></template>
             <template #refId="{ refId }"><Truncate class="w-16" :value="refId" /></template>
             <template #tag="{tag}">{{tag}}</template>
             <template #request="job"><Request :job="job" /></template>
@@ -510,8 +513,11 @@ const Queue = {
         let updateTimer = null
         async function updateGrid(){
             if (grid.value) {
-                const take = grid.value.apiPrefs?.take ?? 25
-                await grid.value.search({ include:'total', take })
+                const searchArgs = grid.value.createRequestArgs()
+                searchArgs.take = grid.value.apiPrefs?.take ?? 25
+                searchArgs.include = 'total'
+                delete searchArgs.fields
+                await grid.value.search(searchArgs)
             }
             updateTimer = setTimeout(updateGrid, 1000)
         }
@@ -526,7 +532,7 @@ const Queue = {
 const Summary = {
     components,
     template: `
-        <AutoQueryGrid ref="grid" type="JobSummary" hide="copyApiUrl" 
+        <AutoQueryGrid ref="grid" type="JobSummary" hide="copyApiUrl,forms" 
             selectedColumns="id,parentId,refId,tag,requestType,request,command,response,callback,createdDate,worker,state,durationMs,completedDate,attempts,errorCode,errorMessage"
             :visibleFrom="{requestType:'never',callback:'never',errorMessage:'never'}"
             :headerTitles="{parentId:'Parent',createdDate:'Created',completedDate:'Completed',durationMs:'Duration',errorCode:'Error'}"
@@ -580,12 +586,12 @@ const Completed = {
     components,
     props:['info','month'],
     template: `
-        <AutoQueryGrid ref="grid" type="CompletedJob" hide="copyApiUrl"
+        <AutoQueryGrid ref="grid" type="CompletedJob" hide="copyApiUrl,forms"
             selectedColumns="id,parentId,refId,tag,requestType,request,command,userId,dependsOn,batchId,response,callback,replyTo,createdDate,worker,startedDate,state,status,durationMs,completedDate,notifiedDate,attempts,lastActivityDate"
             :headerTitles="{parentId:'Parent',batchId:'Batch',requestType:'Type',createdDate:'Created',startedDate:'Started',completedDate:'Completed',notifiedDate:'Notified',lastActivityDate:'Last Activity',timeoutSecs:'Timeout'}"
             @rowSelected="routes.edit = routes.edit == $event.id ? null : $event.id" :isSelected="(row) => routes.edit == row.id"
             :filters="{month}">
-            <template #parentId="{parentId}"><EditLink :id="parentId" @selected="editId = $event" /></template>
+            <template #parentId="{parentId}"><EditLink :id="parentId" @selected="routes.edit = $event" /></template>
             <template #refId="{ refId }"><Truncate class="w-16" :value="refId" /></template>
             <template #tag="{tag}">{{tag}}</template>
             <template #request="job"><Request :job="job" /></template>
@@ -631,7 +637,7 @@ const Failed = {
     components,
     props:['info','month'],
     template: `
-        <AutoQueryGrid ref="grid" type="FailedJob" hide="copyApiUrl"
+        <AutoQueryGrid ref="grid" type="FailedJob" hide="copyApiUrl,forms"
             selectedColumns="id,parentId,refId,tag,dependsOn,batchId,requestType,request,command,userId,response,callback,replyTo,createdDate,worker,startedDate,state,status,durationMs,completedDate,notifiedDate,lastActivityDate,attempts,retryLimit,timeoutSecs,errorCode,error"
             :visibleFrom="{error:'never'}"
             :headerTitles="{parentId:'Parent',batchId:'Batch',requestType:'Type',createdDate:'Created',startedDate:'Started',completedDate:'Completed',notifiedDate:'Notified',lastActivityDate:'Last Activity',timeoutSecs:'Timeout'}"
@@ -717,7 +723,7 @@ const History = {
 const ScheduledTasks = {
     components,
     template: `
-        <AutoQueryGrid ref="grid" type="ScheduledTask" hide="copyApiUrl"
+        <AutoQueryGrid ref="grid" type="ScheduledTask" hide="copyApiUrl,forms"
             selectedColumns="id,name,lastJobId,lastRun,interval,cronExpression,requestType,command,request,requestBody,options"
             :headerTitles="{lastJobId:'Last Job'}"
             @rowSelected="routes.edit = routes.edit === $event.id ? null : $event.id" :isSelected="(row) => routes.edit === row.id">
@@ -774,7 +780,7 @@ const Dashboard = {
         <div v-if="isToday && results.today.length" class="mb-8">
             <h4 class="mt-4 font-semibold text-gray-500">24 hour activity</h4>
             <div style="max-width:1024px;max-height:512px">
-                <canvas ref="elChart"></canvas>            
+                <canvas ref="elChart"></canvas>
             </div>
         </div>
         <div v-if="results.commands.length">
