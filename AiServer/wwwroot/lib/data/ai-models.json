@@ -706,8 +706,18 @@
     ],
     "latest": "3.8b",
     "website": "https://ollama.ai/library/phi3",
-    "description": "A new small LLaVA model fine-tuned from Phi 3 Mini.",
+    "description": "Phi-3 is a family of lightweight 3B (Mini) and 14B (Medium) state-of-the-art open models by Microsoft.",
     "icon": "/img/models/phi3.svg"
+  },
+  {
+    "id": "phi4",
+    "tags": [
+      "14b"
+    ],
+    "latest": "14b",
+    "website": "https://ollama.ai/library/phi4",
+    "description": "Phi 4 is a 14B parameter, state-of-the-art open model from Microsoft.",
+    "icon": "/img/models/phi4.svg"
   },
   {
     "id": "phind-codellama",
