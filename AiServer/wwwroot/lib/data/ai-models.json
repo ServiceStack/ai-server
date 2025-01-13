@@ -1128,7 +1128,7 @@
     "tags": [],
     "website": "https://openrouter.ai/models/anthropic/claude-3.5-haiku",
     "description": "Claude 3 Haiku is Anthropic's fastest and most compact model for near-instant responsiveness. Quick and accurate targeted performance.",
-    "icon": "/img/models/claude-3-5-sonnet.svg"
+    "icon": "/img/models/claude-3-haiku.svg"
   },
   {
     "id": "claude-3-5-sonnet",
