@@ -1,5 +1,6 @@
 ﻿using ServiceStack.Auth;
 using AiServer.ServiceInterface;
+using ServiceStack.Html;
 
 [assembly: HostingStartup(typeof(ConfigureAuth))]
 
