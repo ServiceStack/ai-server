@@ -163,6 +163,22 @@
     "icon": "/img/models/deepseek-coder.jpg"
   },
   {
+    "id": "deepseek-r1",
+    "tags": [
+      "1.5b",
+      "7b",
+      "8b",
+      "14b",
+      "32b",
+      "70b",
+      "671b"
+    ],
+    "latest": "7b",
+    "website": "https://ollama.com/library/deepseek-r1",
+    "description": "DeepSeek's first-generation of reasoning models with comparable performance to OpenAI-o1, including six dense models distilled from DeepSeek-R1 based on Llama and Qwen.",
+    "icon": "/img/models/deepseek-coder.jpg"
+  },
+  {
     "id": "deepseek-v2",
     "tags": [
       "16b",
