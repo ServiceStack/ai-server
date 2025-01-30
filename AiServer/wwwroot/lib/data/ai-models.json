@@ -526,6 +526,17 @@
     "icon": "/img/models/mistral.svg"
   },
   {
+    "id": "mistral-small",
+    "tags": [
+      "22b",
+      "24b"
+    ],
+    "latest": "24b",
+    "website": "https://ollama.com/library/mistral-small",
+    "description": "Mistral Small 3 sets a new benchmark in the “small” Large Language Models category below 70B.",
+    "icon": "/img/models/mistral.svg"
+  },
+  {
     "id": "mistral-large",
     "tags": [
       "123b"
