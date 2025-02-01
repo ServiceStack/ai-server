@@ -21,9 +21,10 @@
       "dbrx:132b": "databricks/dbrx-instruct",
       "deepseek-coder-v2:236b": "deepseek/deepseek-coder",
       "deepseek-v3:671b": "deepseek/deepseek-chat",
-      "dolphin-llama3:70b": "cognitivecomputations/dolphin-llama-3-70b",
-      "dolphin-mixtral:8x7b": "cognitivecomputations/dolphin-mixtral-8x7b",
-      "dolphin-mixtral:8x22b": "cognitivecomputations/dolphin-mixtral-8x22b",
+      "deepseek-r1:14b": "deepseek/deepseek-r1-distill-qwen-14b",
+      "deepseek-r1:32b": "deepseek/deepseek-r1-distill-qwen-32b",
+      "deepseek-r1:70b": "deepseek/deepseek-r1-distill-llama-70b",
+      "deepseek-r1:671b": "deepseek/deepseek-r1",
       "gemma:7b": "google/gemma-7b-it",
       "gemma2:9b": "google/gemma-2-9b-it",
       "gemma2:27b": "google/gemma-2-27b-it",
@@ -35,6 +36,7 @@
       "llama3-groq-tool-use:70b": "llama3-groq-70b-8192-tool-use-preview",
       "mistral:7b": "mistralai/mistral-7b-instruct",
       "mistral-large:123b": "mistralai/mistral-large",
+      "mistral-small": "mistralai/mistral-small-24b-instruct-2501",
       "mistral-medium": "mistralai/mistral-medium",
       "mistral-nemo:12b": "mistralai/mistral-nemo",
       "mistral-openorca:7b": "open-orca/mistral-7b-openorca",
@@ -47,7 +49,7 @@
       "nous-hermes2-mixtral:8x7b": "nousresearch/nous-hermes-2-mixtral-8x7b-dpo",
       "phi3:3.8b": "microsoft/phi-3-mini-128k-instruct",
       "phi3:14b": "microsoft/phi-3-medium-128k-instruct",
-      "phind-codellama:34b": "phind/phind-codellama-34b",
+      "phi4:14b": "microsoft/phi-4",
       "qwen:4b": "qwen/qwen-4b-chat",
       "qwen:7b": "qwen/qwen-7b-chat",
       "qwen:14b": "qwen/qwen-14b-chat",
@@ -72,6 +74,8 @@
       "gpt-4o": "openai/gpt-4o",
       "gpt-4o-mini": "openai/gpt-4o-mini",
       "gpt-4-vision": "openai/gpt-4-vision-preview",
+      "o1-mini": "openai/o1-mini",
+      "o3-mini": "openai/o3-mini",
       "claude-3-haiku": "anthropic/claude-3-haiku",
       "claude-3-sonnet": "anthropic/claude-3-sonnet",
       "claude-3-opus": "anthropic/claude-3-opus",
@@ -92,7 +96,10 @@
       "mistral:7b": "mistralai/mistral-7b-instruct:free",
       "gemma:7b": "google/gemma-7b-it:free",
       "gemma2:9b": "google/gemma-2-9b-it:free",
+      "gemini-flash-2.0": "google/gemini-2.0-flash-exp:free",
+      "gemini-flash-thinking-2.0": "google/gemini-2.0-flash-thinking-exp:free",
       "qwen2:7b": "qwen/qwen-2-7b-instruct:free",
+      "deepseek-r1:671b": "deepseek/deepseek-r1:free",
       "phi3:3.8b": "microsoft/phi-3-mini-128k-instruct:free",
       "phi3:14b": "microsoft/phi-3-medium-128k-instruct:free",
       "zephyr:7b": "huggingfaceh4/zephyr-7b-beta:free"
@@ -127,7 +134,8 @@
       "mixtral:8x22b": "open-mixtral-8x22b",
       "codestral:22b": "codestral-latest",
       "mistral-nemo:12b": "open-mistral-nemo-2407",
-      "mistral-large:123b": "mistral-large-2407",
+      "mistral-large:123b": "mistral-large-latest",
+      "mistral-small:24b": "mistral-small-latest",
       "mistral-embed": "mistral-embed"
     }
   },
@@ -140,9 +148,12 @@
     "icon": "/img/providers/google-cloud.svg",
     "apiModels": {
       "gemini-pro": "gemini-1.0-pro-latest",
-      "gemini-pro-1.5": "gemini-1.5-pro-002",
       "gemini-pro-vision": "gemini-1.0-pro-vision-latest",
-      "gemini-flash": "gemini-1.5-flash-002"
+      "gemini-flash-2.0": "gemini-2.0-flash-exp",
+      "gemini-flash-1.5": "gemini-1.5-flash-002",
+      "gemini-flash-1.5-8b": "gemini-1.5-flash-8b",
+      "gemini-pro-1.5": "gemini-1.5-pro-002",
+      "gemini-flash-thinking-2.0": "gemini-2.0-flash-thinking-exp-01-21"
     }
   },
   {
@@ -153,7 +164,6 @@
     "heartbeatUrl": "https://api.groq.com",
     "icon": "/img/providers/groq.svg",
     "apiModels": {
-      "gemma:7b": "gemma-7b-it",
       "gemma2:9b": "gemma2-9b-it",
       "llama3:8b": "llama3-8b-8192",
       "llama3:70b": "llama3-70b-8192",
@@ -161,7 +171,8 @@
       "llama3.1:70b": "llama-3.1-70b-versatile",
       "llama3.1:405b": "llama-3.1-405b-reasoning",
       "llama3.3:70b": "llama-3.3-70b-versatile",
-      "mixtral:8x7b": "mixtral-8x7b-32768"
+      "mixtral:8x7b": "mixtral-8x7b-32768",
+      "deepseek-r1:70b": "deepseek-r1-distill-llama-70b"
     }
   },
   {

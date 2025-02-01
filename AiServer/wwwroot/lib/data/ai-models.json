@@ -1130,6 +1130,20 @@
     "icon": "/img/models/gpt-4.svg"
   },
   {
+    "id": "o1-mini",
+    "tags": [],
+    "website": "https://openrouter.ai/openai/o1-mini",
+    "description": "The latest and strongest model family from OpenAI, o1 is designed to spend more time thinking before responding. The o1 models are optimized for math, science, programming, and other STEM-related tasks. They consistently exhibit PhD-level accuracy on benchmarks in physics, chemistry, and biology.",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
+    "id": "o3-mini",
+    "tags": [],
+    "website": "https://openrouter.ai/openai/o3-mini",
+    "description": "OpenAI o3-mini is a cost-efficient language model optimized for STEM reasoning tasks, particularly excelling in science, mathematics, and coding. The model features three adjustable reasoning effort levels and supports key developer capabilities including function calling, structured outputs, and streaming, though it does not include vision processing capabilities.",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
     "id": "claude-3-haiku",
     "tags": [],
     "website": "https://openrouter.ai/models/anthropic/claude-3-haiku",
