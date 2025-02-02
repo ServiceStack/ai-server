@@ -827,6 +827,36 @@
     "icon": "/img/models/qwen.svg"
   },
   {
+    "id": "qwen-turbo",
+    "tags": [
+      "14b"
+    ],
+    "latest": "14b",
+    "website": "https://openrouter.ai/qwen/qwen-turbo",
+    "description": "Qwen-Turbo, based on Qwen2.5, is a 1M context model that provides fast speed and low cost, suitable for simple tasks.",
+    "icon": "/img/models/qwen.svg"
+  },
+  {
+    "id": "qwen-plus",
+    "tags": [
+      "72b"
+    ],
+    "latest": "72b",
+    "website": "https://openrouter.ai/qwen/qwen-plus",
+    "description": "Qwen-Plus, based on the Qwen2.5 foundation model, is a 131K context model with a balanced performance, speed, and cost combination.",
+    "icon": "/img/models/qwen.svg"
+  },
+  {
+    "id": "qwen-max",
+    "tags": [
+      "100b"
+    ],
+    "latest": "72b",
+    "website": "https://openrouter.ai/qwen/qwen-max",
+    "description": "Qwen-Max, based on Qwen2.5, provides the best inference performance among Qwen models, especially for complex multi-step tasks. It's a large-scale MoE model that has been pretrained on over 20 trillion tokens and further post-trained with curated Supervised Fine-Tuning (SFT) and Reinforcement Learning from Human Feedback (RLHF) methodologies.",
+    "icon": "/img/models/qwen.svg"
+  },
+  {
     "id": "samantha-mistral",
     "tags": [
       "7b"
