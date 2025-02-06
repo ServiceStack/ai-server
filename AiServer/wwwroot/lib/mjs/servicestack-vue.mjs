@@ -7360,15 +7360,15 @@ const R0 = { key: 0 }, E0 = { class: "text-red-700" }, z0 = /* @__PURE__ */ l("b
 }), Hm = { key: 0 }, Rm = {
   key: 1,
   class: "min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8"
-}, Em = { class: "sm:mx-auto sm:w-full sm:max-w-md" }, zm = { class: "mt-6 text-center text-3xl font-extrabold text-gray-900" }, Nm = {
+}, Em = { class: "sm:mx-auto sm:w-full sm:max-w-md" }, zm = { class: "mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-50" }, Nm = {
   key: 0,
-  class: "mt-4 text-center text-sm text-gray-600"
-}, Um = { class: "relative z-0 inline-flex shadow-sm rounded-md" }, qm = ["onClick"], Qm = { class: "mt-8 sm:mx-auto sm:w-full sm:max-w-md" }, Km = { class: "bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10" }, Zm = { class: "mt-8" }, Wm = {
+  class: "mt-4 text-center text-sm text-gray-600 dark:text-gray-300"
+}, Um = { class: "relative z-0 inline-flex shadow-sm rounded-md" }, qm = ["onClick"], Qm = { class: "mt-8 sm:mx-auto sm:w-full sm:max-w-md" }, Km = { class: "bg-white dark:bg-black py-8 px-4 shadow sm:rounded-lg sm:px-10" }, Zm = { class: "mt-8" }, Wm = {
   key: 1,
   class: "mt-6"
-}, Gm = /* @__PURE__ */ Is('<div class="relative"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-300"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-white text-gray-500"> Or continue with </span></div></div>', 1), Jm = { class: "mt-6 grid grid-cols-3 gap-3" }, Xm = ["href", "title"], Ym = {
+}, Gm = /* @__PURE__ */ Is('<div class="relative"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-300 dark:border-gray-600"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-white text-gray-500 dark:text-gray-400"> Or continue with </span></div></div>', 1), Jm = { class: "mt-6 grid grid-cols-3 gap-3" }, Xm = ["href", "title"], Ym = {
   key: 1,
-  class: "h-5 w-5 text-gray-700",
+  class: "h-5 w-5 text-gray-700 dark:text-gray-200",
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 32 32"
 }, e1 = /* @__PURE__ */ l("path", {
@@ -7442,7 +7442,7 @@ const R0 = { key: 0 }, E0 = { class: "text-red-700" }, z0 = /* @__PURE__ */ l("b
                 class: g([
                   N === "" || N === E.value.name ? "rounded-l-md" : N === re.value.name ? "rounded-r-md -ml-px" : "-ml-px",
                   k.value === N ? "z-10 outline-none ring-1 ring-indigo-500 border-indigo-500" : "",
-                  "cursor-pointer relative inline-flex items-center px-4 py-1 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  "cursor-pointer relative inline-flex items-center px-4 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-black text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-900"
                 ])
               }, [
                 ke(j(R), 1)
@@ -7487,12 +7487,12 @@ const R0 = { key: 0 }, E0 = { class: "text-red-700" }, z0 = /* @__PURE__ */ l("b
                   l("a", {
                     href: J(w) + N.navItem.href + "?continue=" + J(_),
                     title: F(N),
-                    class: "w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                    class: "w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-black text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900"
                   }, [
                     N.icon ? (o(), le(te, {
                       key: 0,
                       image: N.icon,
-                      class: "h-5 w-5 text-gray-700"
+                      class: "h-5 w-5 text-gray-700 dark:text-gray-200"
                     }, null, 8, ["image"])) : (o(), r("svg", Ym, s1))
                   ], 8, Xm)
                 ]))), 256))
