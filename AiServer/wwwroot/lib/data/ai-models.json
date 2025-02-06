@@ -841,6 +841,13 @@
     "icon": "/img/models/qwen.svg"
   },
   {
+    "id": "qwen-vl-plus",
+    "tags": [],
+    "website": "https://openrouter.ai/qwen/qwen-vl-plus",
+    "description": "Qwen's Enhanced Large Visual Language Model. Significantly upgraded for detailed recognition capabilities and text recognition abilities, supporting ultra-high pixel resolutions up to millions of pixels and extreme aspect ratios for image input. It delivers significant performance across a broad range of visual tasks.",
+    "icon": "/img/models/qwen.svg"
+  },
+  {
     "id": "qwen-max",
     "tags": [],
     "website": "https://openrouter.ai/qwen/qwen-max",
@@ -1081,6 +1088,13 @@
     "description": "Zephyr is a series of fine-tuned versions of the Mistral and Mixtral models that are trained to act as helpful assistants."
   },
   {
+    "id": "gemini-flash",
+    "tags": [],
+    "website": "https://openrouter.ai/models/google/gemini-flash-1.5",
+    "description": "Gemini 1.5 Flash is a foundation model that performs well at a variety of multimodal tasks such as visual understanding, classification, summarization, and creating content from image, audio and video. It's adept at processing visual and text inputs such as photographs, documents, infographics, and screenshots.",
+    "icon": "/img/models/gemini-pro.svg"
+  },
+  {
     "id": "gemini-pro",
     "tags": [],
     "website": "https://openrouter.ai/models/google/gemini-pro",
@@ -1102,10 +1116,31 @@
     "icon": "/img/models/gemini-pro.svg"
   },
   {
-    "id": "gemini-flash",
+    "id": "gemini-pro-2.0",
     "tags": [],
-    "website": "https://openrouter.ai/models/google/gemini-flash-1.5",
-    "description": "Gemini 1.5 Flash is a foundation model that performs well at a variety of multimodal tasks such as visual understanding, classification, summarization, and creating content from image, audio and video. It's adept at processing visual and text inputs such as photographs, documents, infographics, and screenshots.",
+    "website": "https://openrouter.ai/google/gemini-2.0-pro-exp-02-05:free",
+    "description": "Gemini 2.0 Pro Experimental is a bleeding-edge version of the Gemini 2.0 Pro model. Because it's currently experimental, it will be heavily rate-limited by Google",
+    "icon": "/img/models/gemini-pro.svg"
+  },
+  {
+    "id": "gemini-flash-2.0",
+    "tags": [],
+    "website": "https://openrouter.ai/google/gemini-2.0-flash-001",
+    "description": "Gemini Flash 2.0 offers a significantly faster time to first token (TTFT) compared to Gemini Flash 1.5, while maintaining quality on par with larger models like Gemini Pro 1.5. It introduces notable enhancements in multimodal understanding, coding capabilities, complex instruction following, and function calling. These advancements come together to deliver more seamless and robust agentic experiences.",
+    "icon": "/img/models/gemini-pro.svg"
+  },
+  {
+    "id": "gemini-flash-lite-2.0",
+    "tags": [],
+    "website": "https://openrouter.ai/google/gemini-2.0-flash-lite-preview-02-05:free",
+    "description": "Gemini Flash Lite 2.0 offers a significantly faster time to first token (TTFT) compared to Gemini Flash 1.5, while maintaining quality on par with larger models like Gemini Pro 1.5. Because it's currently in preview, it will be heavily rate-limited by Google. This model will move from free to paid pending a general rollout on February 24th, at $0.075 / $0.30 per million input / ouput tokens respectively.",
+    "icon": "/img/models/gemini-pro.svg"
+  },
+  {
+    "id": "gemini-flash-thinking-2.0",
+    "tags": [],
+    "website": "https://openrouter.ai/google/gemini-2.0-flash-thinking-exp:free",
+    "description": "Gemini 2.0 Flash Thinking Mode is an experimental model that's trained to generate the \"thinking process\" the model goes through as part of its response. As a result, Thinking Mode is capable of stronger reasoning capabilities in its responses than the base Gemini 2.0 Flash model.",
     "icon": "/img/models/gemini-pro.svg"
   },
   {
