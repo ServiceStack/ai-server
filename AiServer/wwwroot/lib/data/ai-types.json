@@ -159,13 +159,13 @@
     "apiModels": {
       "gemini-pro": "gemini-1.0-pro-latest",
       "gemini-pro-vision": "gemini-1.0-pro-vision-latest",
-      "gemini-flash-2.0": "gemini-2.0-flash",
-      "gemini-flash-lite-2.0": "gemini-2.0-flash-lite-preview-02-05",
-      "gemini-pro-2.0": "gemini-2.0-pro-exp-02-05",
-      "gemini-flash-thinking-2.0": "gemini-2.0-flash-thinking-exp-01-21",
       "gemini-flash-1.5": "gemini-1.5-flash",
       "gemini-flash-1.5-8b": "gemini-1.5-flash-8b",
       "gemini-pro-1.5": "gemini-1.5-pro-002",
+      "gemini-flash-2.0": "gemini-2.0-flash",
+      "gemini-flash-lite-2.0": "gemini-2.0-flash-lite-preview-02-05",
+      "gemini-flash-thinking-2.0": "gemini-2.0-flash-thinking-exp-01-21",
+      "gemini-pro-2.0": "gemini-2.0-pro-exp-02-05"
     }
   },
   {
