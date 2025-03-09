@@ -177,10 +177,10 @@ export default {
             nextTick(scrollBottom)
             
             const msgs = Array.from(thread.value?.messages ?? [])
-            msgs.push({ role: "user", content: prefs.value.userContent })
+            msgs.push({ role: "user", content: prefs.value.userContent?.trim() })
 
             if (!msgs.find(x => x.role === 'system') && systemPrompt.value) {
-                msgs.unshift({ role: "system", content: systemPrompt.value })
+                msgs.unshift({ role: "system", content: systemPrompt.value.trim() })
             }
             
             const request = new OpenAiChatCompletion({
