@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="FFMpegCore" Version="5.1.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.*" />
     <ProjectReference Include="..\AiServer.ServiceInterface\AiServer.ServiceInterface.csproj" />
     <ProjectReference Include="..\AiServer.ServiceModel\AiServer.ServiceModel.csproj" />
 

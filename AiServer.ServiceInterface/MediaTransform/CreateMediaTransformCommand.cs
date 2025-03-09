@@ -170,7 +170,7 @@ public class CreateMediaTransformCommand(ILogger<CreateMediaTransformCommand> lo
         inputImage.Mutate(x => x.Resize(width, height));
         
         var outputStream = new MemoryStream();
-        await inputImage.SaveAsync(outputStream, inputImage.Metadata.DecodedImageFormat ?? ImageFormats.Png, cancellationToken: token);
+        await inputImage.SaveAsync(outputStream, ImageFormats.Png, cancellationToken: token);
         outputStream.Position = 0;
         var response = new TransformResult
         {
@@ -206,7 +206,7 @@ public class CreateMediaTransformCommand(ILogger<CreateMediaTransformCommand> lo
             new Rectangle(x, y, width, height)));
 
         var outputStream = new MemoryStream();
-        await inputImage.SaveAsync(outputStream, inputImage.Metadata.DecodedImageFormat ?? ImageFormats.Png, cancellationToken: token);
+        await inputImage.SaveAsync(outputStream, ImageFormats.Png, cancellationToken: token);
         outputStream.Position = 0;
         var response = new TransformResult
         {
@@ -244,7 +244,7 @@ public class CreateMediaTransformCommand(ILogger<CreateMediaTransformCommand> lo
         ApplyImageWatermark(inputImage, watermarkImage, position, scale);
 
         var outputStream = new MemoryStream();
-        await inputImage.SaveAsync(outputStream, inputImage.Metadata.DecodedImageFormat ?? ImageFormats.Png, cancellationToken: token);
+        await inputImage.SaveAsync(outputStream, ImageFormats.Png, cancellationToken: token);
         outputStream.Position = 0;
         var response = new TransformResult
         {
