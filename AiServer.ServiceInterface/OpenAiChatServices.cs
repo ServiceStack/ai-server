@@ -465,8 +465,8 @@ public static class OpenAiChatServiceExtensions
             throw new Exception(job.Failed.Error!.Message);
         }
         
-        // Wait for the job to complete max 1 minute
-        var timeout = DateTime.UtcNow.AddMinutes(1);
+        // Wait for the job to complete max 2 minutes
+        var timeout = DateTime.UtcNow.AddMinutes(2);
         while (queuedJob?.Job?.State is not (BackgroundJobState.Completed or BackgroundJobState.Cancelled
                or BackgroundJobState.Failed) && DateTime.UtcNow < timeout)
         {
