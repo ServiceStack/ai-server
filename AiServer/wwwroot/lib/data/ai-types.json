@@ -64,7 +64,7 @@
       "qwen-turbo": "qwen/qwen-turbo",
       "qwen-plus": "qwen/qwen-plus",
       "qwen-max": "qwen/qwen-max",
-      "qwq:32b": "qwen/qwq-32b-preview",
+      "qwq:32b": "qwen/qwq-32b",
       "wizardlm2:7b": "microsoft/wizardlm-2-7b",
       "wizardlm2:8x22b": "microsoft/wizardlm-2-8x22b",
       "zephyr:7b": "huggingfaceh4/zephyr-7b-beta:free",
@@ -184,7 +184,11 @@
       "llama3.1:405b": "llama-3.1-405b-reasoning",
       "llama3.3:70b": "llama-3.3-70b-versatile",
       "mixtral:8x7b": "mixtral-8x7b-32768",
-      "deepseek-r1:70b": "deepseek-r1-distill-llama-70b"
+      "mistral-saba:24b": "mistral-saba-24b",
+      "deepseek-r1:70b": "deepseek-r1-distill-llama-70b",
+      "qwq:32b": "qwen-qwq-32b",
+      "qwen2.5:32b": "qwen-2.5-32b",
+      "qwen2.5-coder:32b": "qwen-2.5-coder-32b"
     }
   },
   {
