@@ -158,7 +158,6 @@
     "icon": "/img/providers/google-cloud.svg",
     "apiModels": {
       "gemini-pro": "gemini-1.0-pro-latest",
-      "gemini-pro-vision": "gemini-1.0-pro-vision-latest",
       "gemini-flash-1.5": "gemini-1.5-flash",
       "gemini-flash-1.5-8b": "gemini-1.5-flash-8b",
       "gemini-pro-1.5": "gemini-1.5-pro-002",
