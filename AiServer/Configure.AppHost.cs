@@ -1,13 +1,11 @@
 using System.Data;
 using AiServer.ServiceInterface;
-using AiServer.ServiceInterface.Comfy;
 using AiServer.ServiceInterface.Generation;
 using AiServer.ServiceModel;
 using ServiceStack.Configuration;
 using ServiceStack.Data;
 using ServiceStack.IO;
 using ServiceStack.Jobs;
-using ServiceStack.NativeTypes;
 using ServiceStack.OrmLite;
 
 [assembly: HostingStartup(typeof(AiServer.AppHost))]
