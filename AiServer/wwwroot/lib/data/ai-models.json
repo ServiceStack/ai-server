@@ -311,6 +311,19 @@
     "icon": "/img/models/gemma.svg"
   },
   {
+    "id": "gemma3",
+    "tags": [
+      "1b",
+      "4b",
+      "12b",
+      "27b"
+    ],
+    "latest": "4b",
+    "website": "https://ollama.com/library/gemma32",
+    "description": "Gemma is a lightweight, family of models from Google built on Gemini technology. The Gemma 3 models are multimodal—processing text and images—and feature a 128K context window with support for over 140 languages. Available in 1B, 4B, 12B, and 27B parameter sizes, they excel in tasks like question answering, summarization, and reasoning, while their compact design allows deployment on resource-limited devices.",
+    "icon": "/img/models/gemma.svg"
+  },
+  {
     "id": "glm4",
     "tags": [
       "9b"
