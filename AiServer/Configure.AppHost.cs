@@ -70,8 +70,6 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
             
             services.AddPlugin(new CorsFeature(["https://localhost:5001"]));
             
-            // services.AddPlugin(new RequestInfoFeature());
-            
             // If development, ignore SSL
             if (context.HostingEnvironment.IsDevelopment())
             {
