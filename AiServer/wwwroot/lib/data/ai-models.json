@@ -179,6 +179,16 @@
     "icon": "/img/models/deepseek-coder.jpg"
   },
   {
+    "id": "deepseek-r1-zero",
+    "tags": [
+      "671b"
+    ],
+    "latest": "671b",
+    "website": "https://openrouter.ai/deepseek/deepseek-r1-zero:free",
+    "description": "DeepSeek-R1-Zero is a model trained via large-scale reinforcement learning (RL) without supervised fine-tuning (SFT) as a preliminary step. It's 671B parameters in size, with 37B active in an inference pass.",
+    "icon": "/img/models/deepseek-coder.jpg"
+  },
+  {
     "id": "deepseek-v2",
     "tags": [
       "16b",

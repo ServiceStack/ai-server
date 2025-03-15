@@ -28,6 +28,7 @@
       "gemma:7b": "google/gemma-7b-it",
       "gemma2:9b": "google/gemma-2-9b-it",
       "gemma2:27b": "google/gemma-2-27b-it",
+      "gemma3:27b": "google/gemma-3-27b-it",
       "llama3.1:8b": "meta-llama/llama-3.1-8b-instruct",
       "llama3.1:70b": "meta-llama/llama-3.1-70b-instruct",
       "llama3.1:405b": "meta-llama/llama-3.1-405b-instruct",
@@ -100,15 +101,18 @@
       "mistral:7b": "mistralai/mistral-7b-instruct:free",
       "gemma:7b": "google/gemma-7b-it:free",
       "gemma2:9b": "google/gemma-2-9b-it:free",
+      "gemma3:27b": "google/gemma-3-27b-it:free",
       "gemini-flash-2.0": "google/gemini-2.0-flash-exp:free",
       "gemini-flash-lite-2.0": "google/gemini-2.0-flash-lite-preview-02-05:free",
       "gemini-flash-thinking-2.0": "google/gemini-2.0-flash-thinking-exp:free",
       "gemini-pro-2.0": "google/gemini-2.0-pro-exp-02-05:free",
       "qwen2:7b": "qwen/qwen-2-7b-instruct:free",
       "deepseek-r1:671b": "deepseek/deepseek-r1:free",
+      "deepseek-r1-zero:671b": "deepseek/deepseek-r1-zero:free",
       "phi3:3.8b": "microsoft/phi-3-mini-128k-instruct:free",
       "phi3:14b": "microsoft/phi-3-medium-128k-instruct:free",
-      "qwen-vl-plus": "qwen/qwen-vl-plus:free"
+      "qwen-vl-plus": "qwen/qwen-vl-plus:free",
+      "qwq:32b": "qwen/qwq-32b:free"
     }
   },
   {
@@ -157,14 +161,14 @@
     "openAiProvider": "GoogleOpenAiProvider",
     "icon": "/img/providers/google-cloud.svg",
     "apiModels": {
-      "gemini-pro": "gemini-1.0-pro-latest",
+      "gemma3:27b": "gemma-3-27b-it", 
+      "gemini-pro-1.5": "gemini-1.5-pro-002",
       "gemini-flash-1.5": "gemini-1.5-flash",
       "gemini-flash-1.5-8b": "gemini-1.5-flash-8b",
-      "gemini-pro-1.5": "gemini-1.5-pro-002",
+      "gemini-pro-2.0": "gemini-2.0-pro-exp-02-05",
       "gemini-flash-2.0": "gemini-2.0-flash",
-      "gemini-flash-lite-2.0": "gemini-2.0-flash-lite-preview-02-05",
-      "gemini-flash-thinking-2.0": "gemini-2.0-flash-thinking-exp-01-21",
-      "gemini-pro-2.0": "gemini-2.0-pro-exp-02-05"
+      "gemini-flash-lite-2.0": "gemini-2.0-flash-lite-001",
+      "gemini-flash-thinking-2.0": "gemini-2.0-flash-thinking-exp-01-21"
     }
   },
   {
