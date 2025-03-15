@@ -16,6 +16,7 @@ public class AiModel : IHasId<string>
     public string? Website { get; set; }
     public string? Description { get; set; }
     public string? Icon { get; set; }
+    public bool? Vision { get; set; }
 }
 
 [Icon(Svg = Icons.Stats)]
@@ -178,5 +179,6 @@ public enum TaskType
 {
     OpenAiChat = 1,
     Comfy = 2,
+    OllamaGenerate = 3,
 }
 

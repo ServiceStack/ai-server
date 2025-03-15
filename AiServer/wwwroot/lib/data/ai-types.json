@@ -1,7 +1,7 @@
 [
   {
     "id": "Ollama",
-    "provider": "OpenAiProvider",
+    "provider": "OllamaAiProvider",
     "website": "https://ollama.com",
     "heartbeatUrl": "/api/tags",
     "icon": "/img/providers/ollama.svg"

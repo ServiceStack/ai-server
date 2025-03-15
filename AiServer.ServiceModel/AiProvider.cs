@@ -103,6 +103,7 @@ public class AiProviderModel
 
 public enum AiProviderType
 {
+    OllamaAiProvider,
     OpenAiProvider,
     GoogleAiProvider,
     AnthropicAiProvider,

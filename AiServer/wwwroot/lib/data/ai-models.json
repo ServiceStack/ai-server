@@ -329,6 +329,7 @@
       "27b"
     ],
     "latest": "4b",
+    "vision": true,
     "website": "https://ollama.com/library/gemma32",
     "description": "Gemma is a lightweight, family of models from Google built on Gemini technology. The Gemma 3 models are multimodal—processing text and images—and feature a 128K context window with support for over 140 languages. Available in 1B, 4B, 12B, and 27B parameter sizes, they excel in tasks like question answering, summarization, and reasoning, while their compact design allows deployment on resource-limited devices.",
     "icon": "/img/models/gemma.svg"
@@ -470,6 +471,7 @@
       "34b"
     ],
     "latest": "7b",
+    "vision": true,
     "website": "https://ollama.ai/library/llava",
     "description": "🌋 LLaVA is a novel end-to-end trained large multimodal model that combines a vision encoder and Vicuna for general-purpose visual and language understanding. Updated to version 1.6."
   },
@@ -479,6 +481,7 @@
       "8b"
     ],
     "latest": "8b",
+    "vision": true,
     "website": "https://ollama.ai/library/llava-llama3",
     "description": "A LLaVA model fine-tuned from Llama 3 Instruct with better scores in several benchmarks."
   },
@@ -488,6 +491,7 @@
       "3.8b"
     ],
     "latest": "3.8b",
+    "vision": true,
     "website": "https://ollama.ai/library/llava-phi3",
     "description": "A new small LLaVA model fine-tuned from Phi 3 Mini."
   },
@@ -1136,16 +1140,18 @@
   {
     "id": "gemini-pro-1.5",
     "tags": [],
-    "website": "https://openrouter.ai/models/google/gemini-pro-vision",
+    "website": "https://openrouter.ai/google/gemini-pro-1.5",
     "description": "Google's latest multimodal model, supporting image and video in text or chat prompts.",
-    "icon": "/img/models/gemini-pro.svg"
+    "icon": "/img/models/gemini-pro.svg",
+    "vision": true
   },
   {
     "id": "gemini-pro-vision",
     "tags": [],
     "website": "https://openrouter.ai/models/google/gemini-pro-vision",
     "description": "Google's flagship multimodal model, supporting image and video in text or chat prompts for a text or code response.",
-    "icon": "/img/models/gemini-pro.svg"
+    "icon": "/img/models/gemini-pro.svg",
+    "vision": true
   },
   {
     "id": "gemini-pro-2.0",
@@ -1201,7 +1207,8 @@
     "tags": [],
     "website": "https://openrouter.ai/models/openai/gpt-4-vision",
     "description": "OpenAI's flagship model, GPT-4 is a large-scale multimodal language model capable of solving difficult problems with greater accuracy than previous models due to its broader general knowledge and advanced reasoning capabilities. Training data: up to Sep 2021.",
-    "icon": "/img/models/gpt-4.svg"
+    "icon": "/img/models/gpt-4.svg",
+    "vision": true
   },
   {
     "id": "gpt-4o",

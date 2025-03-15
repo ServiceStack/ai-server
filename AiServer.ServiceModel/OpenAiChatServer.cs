@@ -63,6 +63,55 @@ public class GetModelImage : IGet, IReturn<byte[]>
 }
 
 
+[Tag(Tags.AiInfo)]
+public class GetOllamaGenerationStatus : IGet, IReturn<GetOllamaGenerationStatusResponse>
+{
+    public long JobId { get; set; }
+    public string? RefId { get; set; }
+}
+public class GetOllamaGenerationStatusResponse
+{
+    [ApiMember(Description = "Unique identifier of the background job")]
+    public long JobId { get; set; }
+
+    [ApiMember(Description = "Client-provided identifier for the request")]
+    public string RefId { get; set; }
+
+    [ApiMember(Description = "Current state of the background job")]
+    public BackgroundJobState JobState { get; set; }
+
+    [ApiMember(Description = "Current status of the generation request")]
+    public string? Status { get; set; }
+    
+    [ApiMember(Description = "Detailed response status information")]
+    public ResponseStatus? ResponseStatus { get; set; }
+    
+    [ApiMember(Description = "Generation result")]
+    public OllamaGenerateResponse? Result { get; set; }
+}
+
+
+[Tag(Tags.AI)]
+[ValidateApiKey]
+[SystemJson(UseSystemJson.Response)]
+public class QueueOllamaGeneration : IReturn<QueueOllamaGenerationResponse>
+{
+    public string? RefId { get; set; }
+    public string? Provider { get; set; }
+    public string? ReplyTo { get; set; }
+    public string? Tag { get; set; }
+    public OllamaGenerate Request { get; set; }
+}
+public class QueueOllamaGenerationResponse
+{
+    public long Id { get; set; }
+    public string RefId { get; set; }
+    
+    public string StatusUrl { get; set; }
+    
+    public ResponseStatus? ResponseStatus { get; set; }
+}
+
 [Tag(Tags.AI)]
 [ValidateApiKey]
 [SystemJson(UseSystemJson.Response)]
@@ -82,6 +131,22 @@ public class QueueOpenAiChatResponse
     public string StatusUrl { get; set; }
     
     public ResponseStatus? ResponseStatus { get; set; }
+}
+
+[Tag(Tags.AI)]
+[ValidateApiKey]
+[Route("/api/generate", "POST")]
+[SystemJson(UseSystemJson.Response)]
+public class OllamaGeneration : OllamaGenerate, IPost, IReturn<OllamaGenerateResponse>
+{
+    [ApiMember(Description="Provide a unique identifier to track requests")]
+    public string? RefId { get; set; }
+    
+    [ApiMember(Description="Specify which AI Provider to use")]
+    public string? Provider { get; set; }
+    
+    [ApiMember(Description="Categorize like requests under a common group")]
+    public string? Tag { get; set; }
 }
 
 [Tag(Tags.AI)]

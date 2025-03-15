@@ -11,14 +11,22 @@ public interface IOpenAiProvider
     Task<OpenAiChatResult> ChatAsync(AiProvider provider, OpenAiChat request, CancellationToken token = default);
 }
 
-public class AiProviderFactory(OpenAiProvider openAiProvider, GoogleAiProvider googleProvider, AnthropicAiProvider anthropicAiProvider)
+public record OllamaGenerationResult(OllamaGenerateResponse Response, int DurationMs);
+public interface IOllamaAiProvider
+{
+    Task<OllamaGenerationResult> GenerateAsync(AiProvider provider, OllamaGenerate request, CancellationToken token = default);
+}
+
+public class AiProviderFactory(OpenAiProvider openAiProvider, OllamaAiProvider ollamaAiProvider, GoogleAiProvider googleProvider, AnthropicAiProvider anthropicAiProvider)
 {
     public IOpenAiProvider GetOpenAiProvider(AiProviderType aiProviderType=AiProviderType.OpenAiProvider)
     {
-        return aiProviderType == AiProviderType.GoogleAiProvider
-            ? googleProvider
-            : aiProviderType == AiProviderType.AnthropicAiProvider
-                ? anthropicAiProvider 
-                : openAiProvider;
+        return aiProviderType switch
+        {
+            AiProviderType.OllamaAiProvider => ollamaAiProvider,
+            AiProviderType.GoogleAiProvider => googleProvider,
+            AiProviderType.AnthropicAiProvider => anthropicAiProvider,
+            _ => openAiProvider
+        };
     }
 }

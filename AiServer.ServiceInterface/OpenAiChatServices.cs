@@ -108,6 +108,19 @@ public class OpenAiChatServices(
         return GetModelImage(request.Model);
     }
 
+    public async Task<object> Post(OllamaGeneration request)
+    {
+        var generateRequest = new QueueOllamaGeneration
+        {
+            Request = request,
+            RefId = request.RefId,
+            Tag = request.Tag,
+            Provider = request.Provider
+        };
+        
+        return await generateRequest.ProcessSync(jobs, this);
+    }
+
     public async Task<object> Post(OpenAiChatCompletion request)
     {
         var chatRequest = new QueueOpenAiChatCompletion
@@ -119,6 +132,70 @@ public class OpenAiChatServices(
         };
         
         return await chatRequest.ProcessSync(jobs, this);
+    }
+    
+    public QueueOllamaGenerationResponse Any(QueueOllamaGeneration request)
+    {
+        if (request.Request == null)
+            throw new ArgumentNullException(nameof(request.Request));
+        
+        if (request.Request.Prompt.IsNullOrEmpty())
+            throw new ArgumentNullException(nameof(request.Request.Prompt));
+    
+        var qualifiedModel = appData.GetQualifiedModel(request.Request.Model);
+        if (qualifiedModel == null)
+            throw HttpError.NotFound($"Model {request.Request.Model} not found");
+
+        var queueCounts = jobs.GetWorkerQueueCounts();
+        var providerQueueCount = int.MaxValue;
+        AiProvider? useProvider = null;
+        var candidates = appData.AiProviders
+            .Where(x => x is { Enabled: true, AiType.Provider: AiProviderType.OllamaAiProvider }
+                && x.Models.Any(m => m.Model == qualifiedModel)).ToList();
+        foreach (var candidate in candidates)
+        {
+            if (candidate.OfflineDate != null)
+                continue;
+            var pendingJobs = queueCounts.GetValueOrDefault(candidate.Name, 0);
+            if (useProvider == null)
+            {
+                useProvider = candidate;
+                providerQueueCount = pendingJobs;
+                continue;
+            }
+            if (pendingJobs < providerQueueCount || (pendingJobs == providerQueueCount && candidate.Priority > useProvider.Priority))
+            {
+                useProvider = candidate;
+                providerQueueCount = pendingJobs;
+            }
+        }
+
+        useProvider ??= candidates.FirstOrDefault(x => x.Name == qualifiedModel); // Allow selecting offline models
+        if (useProvider == null)
+            throw new NotSupportedException("No active AI Providers support this model");
+
+        var jobRef = jobs.EnqueueCommand<CreateOllamaGenerationCommand>(request, new()
+        {
+            RefId = request.RefId,
+            ReplyTo = request.ReplyTo,
+            Tag = request.Tag,
+            Args = request.Provider == null ? null : new() {
+                [nameof(request.Provider)] = request.Provider
+            },
+            Worker = useProvider.Name,
+        });
+        
+        var jobStatusUrl = AppConfig.Instance.ApplicationBaseUrl
+            .CombineWith($"/api/{nameof(GetOllamaGenerationStatus)}?RefId=" + jobRef.RefId);
+    
+        var response = new QueueOllamaGenerationResponse
+        {
+            Id = jobRef.Id,
+            RefId = jobRef.RefId,
+            StatusUrl = jobStatusUrl
+        };
+
+        return response;
     }
     
     public QueueOpenAiChatResponse Any(QueueOpenAiChatCompletion request)
@@ -292,6 +369,40 @@ public class OpenAiChatServices(
         return HttpError.NotFound("Job not found");
     }
 
+    public async Task<object> Get(GetOllamaGenerationStatus request)
+    {
+        var summary = GetJobSummary((int)request.JobId, request.RefId);
+        if (summary == null)
+            return HttpError.NotFound("JobSummary not found");
+
+        var response = GetOpenAiChat(summary);
+        if (response == null)
+            return HttpError.NotFound("Job not found");
+
+        var job = response.Result;
+
+        var generateResponse = response.Result?.ResponseBody.FromJson<OllamaGenerateResponse>();
+        if (generateResponse == null)
+        {
+            return new GetOllamaGenerationStatusResponse
+            {
+                JobId = request.JobId,
+                RefId = request.RefId,
+                JobState = job.State,
+                Status = job.State.ToString(),
+            };
+        }
+        
+        return new GetOllamaGenerationStatusResponse
+        {
+            JobId = request.JobId,
+            RefId = request.RefId,
+            JobState = job.State,
+            Status = job.State.ToString(),
+            Result = generateResponse,
+        };
+    }
+
     public async Task<object> Get(GetOpenAiChatStatus request)
     {
         var summary = GetJobSummary((int)request.JobId, request.RefId);
@@ -428,6 +539,81 @@ public class OpenAiChatServices(
 
 public static class OpenAiChatServiceExtensions
 {
+    public static async Task<OllamaGenerateResponse> ProcessSync(this QueueOllamaGeneration generateRequest,
+        IBackgroundJobs jobs, OpenAiChatServices chatService)
+    {
+        QueueOllamaGenerationResponse? generateResponse = null;
+        try
+        {
+            var response = chatService.Any(generateRequest);
+            generateResponse = response;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        
+        if (generateResponse == null)
+            throw new Exception("Failed to start chat request");
+        
+        var job = jobs.GetJob(generateResponse.Id);
+        // For all requests, wait for the job to be created
+        while (job == null)
+        {
+            await Task.Delay(1000);
+            job = jobs.GetJob(generateResponse.Id);
+        }
+        
+        // We know at this point, we definitely have a job
+        JobResult queuedJob = job;
+        
+        var completedResponse = new OllamaGenerateResponse();
+
+        // Handle failed jobs
+        if (job.Failed != null)
+        {
+            throw new Exception(job.Failed.Error!.Message);
+        }
+        
+        // Wait for the job to complete max 2 minutes
+        var timeout = DateTime.UtcNow.AddMinutes(2);
+        while (queuedJob?.Job?.State is not (BackgroundJobState.Completed or BackgroundJobState.Cancelled
+               or BackgroundJobState.Failed) && DateTime.UtcNow < timeout)
+        {
+            await Task.Delay(1000);
+            queuedJob = jobs.GetJob(generateResponse.Id);
+        }
+        
+        // Check if the job is still not completed
+        if (queuedJob?.Job?.State is not (BackgroundJobState.Completed or BackgroundJobState.Cancelled
+               or BackgroundJobState.Failed))
+        {
+            throw new Exception("Job did not complete within the specified timeout.");
+        }
+        
+        // Process successful job results
+        var jobResponseBody = queuedJob.Completed?.ResponseBody;
+        var jobRes = jobResponseBody.FromJson<OllamaGenerateResponse>();
+        if (jobRes != null)
+        {
+            completedResponse.Model = jobRes.Model;
+            completedResponse.CreatedAt = jobRes.CreatedAt;
+            completedResponse.Response = jobRes.Response;
+            completedResponse.Done = jobRes.Done;
+            completedResponse.Context = jobRes.Context;
+            completedResponse.DoneReason = jobRes.DoneReason;
+            completedResponse.TotalDuration = jobRes.TotalDuration;
+            completedResponse.LoadDuration = jobRes.LoadDuration;
+            completedResponse.PromptEvalCount = jobRes.PromptEvalCount;
+            completedResponse.EvalCount = jobRes.EvalCount;
+            completedResponse.PromptTokens = jobRes.PromptTokens;
+            completedResponse.ResponseStatus = jobRes.ResponseStatus;
+        }
+
+        return completedResponse;
+    }
+
     public static async Task<OpenAiChatResponse> ProcessSync(this QueueOpenAiChatCompletion chatRequest,
         IBackgroundJobs jobs, OpenAiChatServices chatService)
     {
@@ -443,7 +629,7 @@ public static class OpenAiChatServiceExtensions
             throw;
         }
         
-        if(chatResponse == null)
+        if (chatResponse == null)
             throw new Exception("Failed to start chat request");
         
         var job = jobs.GetJob(chatResponse.Id);

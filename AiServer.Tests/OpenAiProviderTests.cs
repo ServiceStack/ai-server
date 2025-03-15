@@ -12,6 +12,7 @@ public class OpenAiProviderTests
 {
     private readonly AiProviderFactory factory = new(
         new OpenAiProvider(new NullLogger<OpenAiProvider>()),
+        new OllamaAiProvider(new NullLogger<OllamaAiProvider>()),
         new GoogleAiProvider(new NullLogger<GoogleAiProvider>()),
         new AnthropicAiProvider(new NullLogger<AnthropicAiProvider>()));
 
