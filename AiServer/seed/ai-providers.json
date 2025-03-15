@@ -193,6 +193,9 @@
         "model": "mistral-large:123b"
       },
       {
+        "model": "mistral-small:24b"
+      },
+      {
         "model": "mistral-embed"
       }
     ]
