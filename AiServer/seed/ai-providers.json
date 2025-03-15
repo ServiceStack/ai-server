@@ -207,16 +207,28 @@
     "enabled": true,
     "models": [
       {
-        "model": "gemini-pro"
+        "model": "gemma3:27b"
       },
       {
         "model": "gemini-pro-1.5"
       },
       {
-        "model": "gemini-pro-vision"
+        "model": "gemini-flash-1.5"
       },
       {
-        "model": "gemini-flash"
+        "model": "gemini-flash-1.5-8b"
+      },
+      {
+        "model": "gemini-pro-2.0"
+      },
+      {
+        "model": "gemini-flash-2.0"
+      },
+      {
+        "model": "gemini-flash-lite-2.0"
+      },
+      {
+        "model": "gemini-flash-thinking-2.0"
       }
     ]
   },
@@ -230,7 +242,13 @@
     "enabled": true,
     "models": [
       {
-        "model": "gemma:7b"
+        "model": "qwen2.5:32b"
+      },
+      {
+        "model": "qwen2.5-coder:32b"
+      },
+      {
+        "model": "qwq:32b"
       },
       {
         "model": "gemma2:9b"
@@ -248,7 +266,7 @@
         "model": "llama3.1:70b"
       },
       {
-        "model": "llama3.1:405b"
+        "model": "llama3.3:70b"
       },
       {
         "model": "mixtral:8x7b"
