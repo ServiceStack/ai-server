@@ -239,12 +239,15 @@ export default {
                 if (thread.value) {
                     Object.keys(storage.defaults).forEach(k =>
                         request.value[k] = thread.value[k] ?? storage.defaults[k])
-                    prefs.value.model = thread.value.model ? thread.value.model : ''
-                    request.value.prompt = thread.value.prompt ? thread.value.prompt : ''
+                    prefs.value.model = thread.value.model || ''
+                    request.value.prompt = thread.value.prompt || ''
+                } else {
+                    prefs.value.model = request.value.prompt = ''
                 }
             } else {
                 thread.value = null
                 Object.keys(storage.defaults).forEach(k => request.value[k] = storage.defaults[k])
+                prefs.value.model = request.value.prompt = ''
             }
         }
 
