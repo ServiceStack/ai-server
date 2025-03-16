@@ -1,9 +1,10 @@
 import { ref, onMounted, inject, watch } from "vue"
 import { useClient, useFiles } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
-import { ImageToText } from "../dtos.mjs"
+import {ActiveAiModels, ImageToText} from "../dtos.mjs"
 import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, Img, acceptedImages } from "../utils.mjs"
 import FileUpload from "./FileUpload.mjs"
+import { renderMarkdown } from "../markdown.mjs"
 
 export default {
     components: {
@@ -38,6 +39,24 @@ export default {
                                 </div>
                             </fieldset>
                         </div>
+                        <div class="mt-2 grid grid-cols-6 gap-4">
+                            <div class="col-span-2">
+                                <Autocomplete id="model" :options="models" v-model="prefs.model" label="Vision Model"
+                                    :match="(x, value) => x.toLowerCase().includes(value.toLowerCase())"
+                                    placeholder="Select Vision Model..."
+                                    :disabled="!!routes.id" :readonly="!!routes.id">
+                                    <template #item="name">
+                                        <div class="flex items-center">
+                                            <Icon class="h-6 w-6 flex-shrink-0" :src="'/icons/models/' + name" loading="lazy" />
+                                            <span class="ml-3 truncate">{{name}}</span>
+                                        </div>
+                                    </template>
+                                </Autocomplete>
+                            </div>
+                            <div class="col-span-4">
+                                <TextInput id="prompt" v-model="request.prompt" required placeholder="Prompt" />
+                            </div>
+                        </div>
                         <div class="mt-4 mb-8 flex justify-center">
                             <PrimaryButton :key="renderKey" type="submit" :disabled="!validPrompt()">
                                 <svg class="-ml-0.5 h-6 w-6 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M11 16V7.85l-2.6 2.6L7 9l5-5l5 5l-1.4 1.45l-2.6-2.6V16zm-5 4q-.825 0-1.412-.587T4 18v-3h2v3h12v-3h2v3q0 .825-.587 1.413T18 20z"/></svg>
@@ -66,8 +85,8 @@ export default {
                         </div>
                     </div>   
                     <div>
-                        <div v-for="output in result.response.results" class="relative border border-indigo-600/25 rounded-lg p-2 mb-4 overflow-hidden">
-                            <div class="prose">{{output.text}}</div>
+                        <div v-for="output in result.response.results" class="relative border border-indigo-600/25 rounded-lg p-2 px-4 mb-4 overflow-hidden">
+                          <div v-html="renderMarkdown(output.text ?? '')" class="prose"></div>
                         </div>
                     </div>                  
                 </div>
@@ -89,6 +108,7 @@ export default {
         const refUi = ref()
         const refForm = ref()
         const refImage = ref()
+        const models = ref([])
         const ui = useUiLayout(refUi)
         const renderKey = ref(0)
         const { filePathUri, getExt, extSrc, svgToDataUri } = useFiles()
@@ -133,6 +153,10 @@ export default {
             error.value = null
             let formData = new FormData(refForm.value)
             const image = formData.get('image').name
+            
+            if (prefs.value.model) {
+                request.value.model = prefs.value.model
+            }
             
             const api = await client.apiForm(request.value, formData, { jsconfig: 'eccn' })
             /** @type {ArtifactGenerationResponse} */
@@ -215,6 +239,8 @@ export default {
                 if (thread.value) {
                     Object.keys(storage.defaults).forEach(k =>
                         request.value[k] = thread.value[k] ?? storage.defaults[k])
+                    prefs.value.model = thread.value.model ? thread.value.model : ''
+                    request.value.prompt = thread.value.prompt ? thread.value.prompt : ''
                 }
             } else {
                 thread.value = null
@@ -248,8 +274,20 @@ export default {
         
         
         watch(() => routes.id, updated)
+        
+        watch(() => [prefs.value.model], () => {
+            request.value.prompt = prefs.value.model
+                ? 'Describe this image'
+                : ''
+        })
 
         onMounted(async () => {
+            const api = await client.api(new ActiveAiModels({
+                provider: 'OllamaAiProvider',
+                vision: true,
+            }))
+            models.value = await api.response.results
+            models.value.sort((a,b) => a.localeCompare(b))
             updated()
         })
 
@@ -259,7 +297,9 @@ export default {
             storage,
             routes,
             client,
+            prefs,
             history,
+            models,
             request,
             visibleFields,
             validPrompt,
@@ -276,6 +316,7 @@ export default {
             getThreadResults,
             saveHistoryItem,
             removeHistoryItem,
+            renderMarkdown,
             acceptedImages,
             renderKey,
         }

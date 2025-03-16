@@ -159,7 +159,7 @@ public class MediaProviderServices(ILogger<MediaProviderServices> log,
         if (Request != null && Request.Files.Length > 0)
         {
             log.LogInformation("Saving {Count} uploaded files", Request.Files.Length);
-            var fileMap = HandleFileUploads(Request);
+            var fileMap = Request.HandleFileUploads(appConfig);
             args["Files"] = fileMap.ToJson();
         }
         
@@ -177,48 +177,6 @@ public class MediaProviderServices(ILogger<MediaProviderServices> log,
             RefId = jobRef.RefId,
         };
     }
-    
-    private Dictionary<string,string> HandleFileUploads(IRequest originalRequest)
-    {
-        var apiKeyId = (Request.GetApiKey() as ApiKeysFeature.ApiKey)?.Id ?? 0;
-        var now = DateTime.UtcNow;
-        var fileMap = new Dictionary<string, string>();
-        foreach (var file in originalRequest.Files.Where(x => 
-                     supportedUploadNames.Contains(x.Name.ToLower()))
-                 )
-        {
-            var ext = file.FileName.Contains(".") ? file.FileName.SplitOnLast(".").Last() : GetFileExtension(file.ContentType);
-            var memCpy = new MemoryStream();
-            file.InputStream.CopyTo(memCpy);
-            memCpy.Position = 0;
-            var bytes = memCpy.ReadFully();
-            var sha256 = bytes.ComputeSha256();
-            var uploadDir = "/input/" + now.ToString("yyyy/MM/dd/") + apiKeyId + "/";
-            Directory.CreateDirectory(appConfig.ArtifactsPath.CombineWith(uploadDir));
-            var uploadFile = appConfig.ArtifactsPath.CombineWith(uploadDir, sha256 + "." + ext);
-            using (var fs = File.OpenWrite(uploadFile))
-            {
-                fs.Write(bytes, 0, bytes.Length);
-                fs.Close();
-            }
-            file.InputStream.Position = 0; // Reset the stream position if needed for further processing
-            fileMap[file.Name] = uploadFile;
-        }
-        return fileMap;
-    }
-    
-    private string GetFileExtension(string contentType)
-    {
-        return contentType switch
-        {
-            "audio/mpeg" => "mp3",
-            "audio/x-wav" => "wav",
-            "audio/wav" => "wav",
-            _ => "webp"
-        };
-    }
-    
-    private static string[] supportedUploadNames = ["audio", "image", "mask"];
     
     public object Any(QueryMediaModels request)
     {
@@ -386,4 +344,50 @@ public static class BackgroundJobsFeatureExtensions
         var summary = db.Single(q);
         return summary;
     }
+}
+
+public static class MediaProviderExtensions
+{
+    public static Dictionary<string,string> HandleFileUploads(this IRequest request, AppConfig appConfig)
+    {
+        var apiKeyId = (request.GetApiKey() as ApiKeysFeature.ApiKey)?.Id ?? 0;
+        var now = DateTime.UtcNow;
+        var fileMap = new Dictionary<string, string>();
+        foreach (var file in request.Files.Where(x => 
+                     supportedUploadNames.Contains(x.Name.ToLower())))
+        {
+            var ext = file.FileName.Contains('.') 
+                ? file.FileName.SplitOnLast(".").Last() 
+                : GetFileExtension(file.ContentType);
+            var memCpy = new MemoryStream();
+            file.InputStream.CopyTo(memCpy);
+            memCpy.Position = 0;
+            var bytes = memCpy.ReadFully();
+            var sha256 = bytes.ComputeSha256();
+            var uploadDir = "/input/" + now.ToString("yyyy/MM/dd/") + apiKeyId + "/";
+            Directory.CreateDirectory(appConfig.ArtifactsPath.CombineWith(uploadDir));
+            var uploadFile = appConfig.ArtifactsPath.CombineWith(uploadDir, sha256 + "." + ext);
+            using (var fs = File.OpenWrite(uploadFile))
+            {
+                fs.Write(bytes, 0, bytes.Length);
+                fs.Close();
+            }
+            file.InputStream.Position = 0; // Reset the stream position if needed for further processing
+            fileMap[file.Name] = uploadFile;
+        }
+        return fileMap;
+    }
+    
+    private static string GetFileExtension(string contentType)
+    {
+        return contentType switch
+        {
+            "audio/mpeg" => "mp3",
+            "audio/x-wav" => "wav",
+            "audio/wav" => "wav",
+            _ => "webp"
+        };
+    }
+    
+    private static string[] supportedUploadNames = ["audio", "image", "mask"];    
 }

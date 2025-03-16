@@ -1,6 +1,6 @@
 /* Options:
-Date: 2024-11-26 19:06:34
-Version: 8.41
+Date: 2025-03-16 10:56:58
+Version: 8.61
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5005
 
@@ -365,7 +365,7 @@ export class MediaTransformArgs {
     audioSampleRate;
 }
 export class AiModel {
-    /** @param {{id?:string,tags?:string[],latest?:string,website?:string,description?:string,icon?:string}} [init] */
+    /** @param {{id?:string,tags?:string[],latest?:string,website?:string,description?:string,icon?:string,vision?:boolean}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string} */
     id;
@@ -379,10 +379,13 @@ export class AiModel {
     description;
     /** @type {?string} */
     icon;
+    /** @type {?boolean} */
+    vision;
 }
-/** @typedef {'OpenAiProvider'|'GoogleAiProvider'|'AnthropicAiProvider'} */
+/** @typedef {'OllamaAiProvider'|'OpenAiProvider'|'GoogleAiProvider'|'AnthropicAiProvider'} */
 export var AiProviderType;
 (function (AiProviderType) {
+    AiProviderType["OllamaAiProvider"] = "OllamaAiProvider"
     AiProviderType["OpenAiProvider"] = "OpenAiProvider"
     AiProviderType["GoogleAiProvider"] = "GoogleAiProvider"
     AiProviderType["AnthropicAiProvider"] = "AnthropicAiProvider"
@@ -449,6 +452,114 @@ export class AiProvider {
     /** @type {string[]} */
     selectedModels = [];
 }
+export class OllamaGenerateOptions {
+    /** @param {{mirostat?:number,mirostat_eta?:number,mirostat_tau?:number,num_ctx?:number,repeat_last_n?:number,repeat_penalty?:number,temperature?:number,seed?:number,stop?:string,num_predict?:number,top_k?:number,top_p?:number,min_p?:number}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /**
+     * @type {?number}
+     * @description Enable Mirostat sampling for controlling perplexity. (default: 0, 0 = disabled, 1 = Mirostat, 2 = Mirostat 2.0) */
+    mirostat;
+    /**
+     * @type {?number}
+     * @description Influences how quickly the algorithm responds to feedback from the generated text. A lower learning rate will result in slower adjustments, while a higher learning rate will make the algorithm more responsive. (Default: 0.1) */
+    mirostat_eta;
+    /**
+     * @type {?number}
+     * @description Controls the balance between coherence and diversity of the output. A lower value will result in more focused and coherent text. (Default: 5.0) */
+    mirostat_tau;
+    /**
+     * @type {?number}
+     * @description Sets the size of the context window used to generate the next token. (Default: 2048) */
+    num_ctx;
+    /**
+     * @type {?number}
+     * @description Sets how far back for the model to look back to prevent repetition. (Default: 64, 0 = disabled, -1 = num_ctx) */
+    repeat_last_n;
+    /**
+     * @type {?number}
+     * @description Sets how strongly to penalize repetitions. A higher value (e.g., 1.5) will penalize repetitions more strongly, while a lower value (e.g., 0.9) will be more lenient. (Default: 1.1) */
+    repeat_penalty;
+    /**
+     * @type {?number}
+     * @description The temperature of the model. Increasing the temperature will make the model answer more creatively. (Default: 0.8) */
+    temperature;
+    /**
+     * @type {?number}
+     * @description Sets the random number seed to use for generation. Setting this to a specific number will make the model generate the same text for the same prompt. (Default: 0) */
+    seed;
+    /**
+     * @type {?string}
+     * @description Sets the stop sequences to use. When this pattern is encountered the LLM will stop generating text and return. Multiple stop patterns may be set by specifying multiple separate stop parameters in a modelfile.	 */
+    stop;
+    /**
+     * @type {?number}
+     * @description Maximum number of tokens to predict when generating text. (Default: -1, infinite generation) */
+    num_predict;
+    /**
+     * @type {?number}
+     * @description Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative. (Default: 40) */
+    top_k;
+    /**
+     * @type {?number}
+     * @description Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (Default: 0.9) */
+    top_p;
+    /**
+     * @type {?number}
+     * @description Alternative to the top_p, and aims to ensure a balance of quality and variety. The parameter p represents the minimum probability for a token to be considered, relative to the probability of the most likely token. For example, with p=0.05 and the most likely token having a probability of 0.9, logits with a value less than 0.045 are filtered out. (Default: 0.0) */
+    min_p;
+}
+export class OllamaGenerate {
+    /** @param {{model?:string,prompt?:string,suffix?:string,images?:string[],format?:string,options?:OllamaGenerateOptions,system?:string,template?:string,stream?:boolean,raw?:boolean,keep_alive?:string,context?:number[]}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /**
+     * @type {string}
+     * @description ID of the model to use. See the model endpoint compatibility table for details on which models work with the Chat API */
+    model;
+    /**
+     * @type {string}
+     * @description The prompt to generate a response for */
+    prompt;
+    /**
+     * @type {string}
+     * @description The text after the model response */
+    suffix;
+    /**
+     * @type {?string[]}
+     * @description List of base64 images referenced in this request */
+    images;
+    /**
+     * @type {?string}
+     * @description The format to return a response in. Format can be `json` or a JSON schema */
+    format;
+    /**
+     * @type {?OllamaGenerateOptions}
+     * @description Additional model parameters */
+    options;
+    /**
+     * @type {?string}
+     * @description System message */
+    system;
+    /**
+     * @type {?string}
+     * @description The prompt template to use */
+    template;
+    /**
+     * @type {?boolean}
+     * @description If set, partial message deltas will be sent, like in ChatGPT. Tokens will be sent as data-only server-sent events as they become available, with the stream terminated by a `data: [DONE]` message */
+    stream;
+    /**
+     * @type {?boolean}
+     * @description If `true` no formatting will be applied to the prompt. You may choose to use the raw parameter if you are specifying a full templated prompt in your request to the API */
+    raw;
+    /**
+     * @type {?string}
+     * @description Controls how long the model will stay loaded into memory following the request (default: 5m) */
+    keep_alive;
+    /**
+     * @type {?number[]}
+     * @description The context parameter returned from a previous request to /generate, this can be used to keep a short conversational memory */
+    context;
+}
 export class ToolCall {
     /** @param {{id?:string,type?:string,function?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -466,12 +577,16 @@ export class ToolCall {
     function;
 }
 export class OpenAiMessage {
-    /** @param {{content?:string,role?:string,name?:string,tool_calls?:ToolCall[],tool_call_id?:string}} [init] */
+    /** @param {{content?:string,images?:string[],role?:string,name?:string,tool_calls?:ToolCall[],tool_call_id?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
      * @description The contents of the message. */
     content;
+    /**
+     * @type {string[]}
+     * @description The images for the message. */
+    images = [];
     /**
      * @type {string}
      * @description The role of the author of this message. Valid values are `system`, `user`, `assistant` and `tool`. */
@@ -593,6 +708,7 @@ export var TaskType;
 (function (TaskType) {
     TaskType[TaskType["OpenAiChat"] = 1] = "OpenAiChat"
     TaskType[TaskType["Comfy"] = 2] = "Comfy"
+    TaskType[TaskType["OllamaGenerate"] = 3] = "OllamaGenerate"
 })(TaskType || (TaskType = {}));
 /** @typedef T {any} */
 export class QueryData extends QueryBase {
@@ -850,6 +966,14 @@ export class FailedJob extends BackgroundJobBase {
     /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,batchId?:string,callback?:string,dependsOn?:number,runAfter?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,userId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,retryLimit?:number,attempts?:number,durationMs?:number,timeoutSecs?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index:string]: string; },meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
 }
+/** @typedef {'User'|'Day'|'ApiKey'|'IpAddress'} */
+export var AnalyticsType;
+(function (AnalyticsType) {
+    AnalyticsType["User"] = "User"
+    AnalyticsType["Day"] = "Day"
+    AnalyticsType["ApiKey"] = "ApiKey"
+    AnalyticsType["IpAddress"] = "IpAddress"
+})(AnalyticsType || (AnalyticsType = {}));
 export class PageStats {
     /** @param {{label?:string,total?:number}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -897,6 +1021,21 @@ export class TextOutput {
      * @type {?string}
      * @description The generated text */
     text;
+}
+/** @typedef T {any} */
+export class QueryResponse {
+    /** @param {{offset?:number,total?:number,results?:T[],meta?:{ [index:string]: string; },responseStatus?:ResponseStatus}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    offset;
+    /** @type {number} */
+    total;
+    /** @type {T[]} */
+    results;
+    /** @type {{ [index:string]: string; }} */
+    meta;
+    /** @type {ResponseStatus} */
+    responseStatus;
 }
 export class AiProviderTextOutput {
     /** @param {{text?:string}} [init] */
@@ -1092,6 +1231,20 @@ export class HourSummary {
     /** @type {number} */
     cancelled;
 }
+export class RequestSummary {
+    /** @param {{name?:string,requests?:number,requestLength?:number,duration?:number,status?:{ [index:number]: number; }}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    name;
+    /** @type {number} */
+    requests;
+    /** @type {number} */
+    requestLength;
+    /** @type {number} */
+    duration;
+    /** @type {{ [index:number]: number; }} */
+    status;
+}
 export class AdminDataResponse {
     /** @param {{pageStats?:PageStats[]}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -1268,21 +1421,6 @@ export class QueueGenerationResponse {
      * @description URL to check the status of the generation request */
     statusUrl;
 }
-/** @typedef T {any} */
-export class QueryResponse {
-    /** @param {{offset?:number,total?:number,results?:T[],meta?:{ [index:string]: string; },responseStatus?:ResponseStatus}} [init] */
-    constructor(init) { Object.assign(this, init) }
-    /** @type {number} */
-    offset;
-    /** @type {number} */
-    total;
-    /** @type {T[]} */
-    results;
-    /** @type {{ [index:string]: string; }} */
-    meta;
-    /** @type {ResponseStatus} */
-    responseStatus;
-}
 export class CreateGenerationResponse {
     /** @param {{id?:number,refId?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -1349,6 +1487,60 @@ export class EmptyResponse {
     /** @type {ResponseStatus} */
     responseStatus;
 }
+export class OllamaGenerateResponse {
+    /** @param {{model?:string,created_at?:number,response?:string,done?:boolean,done_reason?:string,total_duration?:number,load_duration?:number,prompt_eval_count?:number,prompt_eval_duration?:number,eval_count?:number,prompt_tokens?:number,context?:number[],responseStatus?:ResponseStatus}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /**
+     * @type {string}
+     * @description The model used */
+    model;
+    /**
+     * @type {number}
+     * @description The Unix timestamp (in seconds) of when the chat completion was created. */
+    created_at;
+    /**
+     * @type {string}
+     * @description The full response */
+    response;
+    /**
+     * @type {boolean}
+     * @description Whether the response is done */
+    done;
+    /**
+     * @type {string}
+     * @description The reason the response completed */
+    done_reason;
+    /**
+     * @type {number}
+     * @description Time spent generating the response */
+    total_duration;
+    /**
+     * @type {number}
+     * @description Time spent in nanoseconds loading the model */
+    load_duration;
+    /**
+     * @type {number}
+     * @description Time spent in nanoseconds evaluating the prompt */
+    prompt_eval_count;
+    /**
+     * @type {number}
+     * @description Time spent in nanoseconds evaluating the prompt */
+    prompt_eval_duration;
+    /**
+     * @type {number}
+     * @description Number of tokens in the response */
+    eval_count;
+    /**
+     * @type {number}
+     * @description Time in nanoseconds spent generating the response */
+    prompt_tokens;
+    /**
+     * @type {?number[]}
+     * @description An encoding of the conversation used in this response, this can be sent in the next request to keep a conversational memory */
+    context;
+    /** @type {?ResponseStatus} */
+    responseStatus;
+}
 export class OpenAiChatResponse {
     /** @param {{id?:string,choices?:Choice[],created?:number,model?:string,system_fingerprint?:string,object?:string,usage?:OpenAiUsage,responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -1383,6 +1575,18 @@ export class OpenAiChatResponse {
     /** @type {?ResponseStatus} */
     responseStatus;
 }
+export class QueueOllamaGenerationResponse {
+    /** @param {{id?:number,refId?:string,statusUrl?:string,responseStatus?:ResponseStatus}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {string} */
+    refId;
+    /** @type {string} */
+    statusUrl;
+    /** @type {?ResponseStatus} */
+    responseStatus;
+}
 export class QueueOpenAiChatResponse {
     /** @param {{id?:number,refId?:string,statusUrl?:string,responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -1402,6 +1606,34 @@ export class GetOpenAiChatResponse {
     result;
     /** @type {?ResponseStatus} */
     responseStatus;
+}
+export class GetOllamaGenerationStatusResponse {
+    /** @param {{jobId?:number,refId?:string,jobState?:BackgroundJobState,status?:string,responseStatus?:ResponseStatus,result?:OllamaGenerateResponse}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /**
+     * @type {number}
+     * @description Unique identifier of the background job */
+    jobId;
+    /**
+     * @type {string}
+     * @description Client-provided identifier for the request */
+    refId;
+    /**
+     * @type {BackgroundJobState}
+     * @description Current state of the background job */
+    jobState;
+    /**
+     * @type {?string}
+     * @description Current status of the generation request */
+    status;
+    /**
+     * @type {?ResponseStatus}
+     * @description Detailed response status information */
+    responseStatus;
+    /**
+     * @type {?OllamaGenerateResponse}
+     * @description Generation result */
+    result;
 }
 export class GetOpenAiChatStatusResponse {
     /** @param {{jobId?:number,refId?:string,jobState?:BackgroundJobState,status?:string,responseStatus?:ResponseStatus,result?:OpenAiChatResponse}} [init] */
@@ -1548,7 +1780,7 @@ export class AdminJobDashboardResponse {
     responseStatus;
 }
 export class AdminJobInfoResponse {
-    /** @param {{monthDbs?:string[],tableCounts?:{ [index:string]: number; },workerStats?:WorkerStats[],queueCounts?:{ [index:string]: number; },responseStatus?:ResponseStatus}} [init] */
+    /** @param {{monthDbs?:string[],tableCounts?:{ [index:string]: number; },workerStats?:WorkerStats[],queueCounts?:{ [index:string]: number; },workerCounts?:{ [index:string]: number; },stateCounts?:{ [index:string]: number; },responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string[]} */
     monthDbs = [];
@@ -1558,6 +1790,10 @@ export class AdminJobInfoResponse {
     workerStats = [];
     /** @type {{ [index:string]: number; }} */
     queueCounts = {};
+    /** @type {{ [index:string]: number; }} */
+    workerCounts = {};
+    /** @type {{ [index:string]: number; }} */
+    stateCounts = {};
     /** @type {?ResponseStatus} */
     responseStatus;
 }
@@ -1612,6 +1848,32 @@ export class AdminCancelJobsResponse {
     errors = {};
     /** @type {?ResponseStatus} */
     responseStatus;
+}
+export class AnalyticsReports {
+    /** @param {{apis?:{ [index:string]: RequestSummary; },users?:{ [index:string]: RequestSummary; },tags?:{ [index:string]: RequestSummary; },status?:{ [index:string]: RequestSummary; },days?:{ [index:string]: RequestSummary; },apiKeys?:{ [index:string]: RequestSummary; },ipAddresses?:{ [index:string]: RequestSummary; },durationRange?:{ [index:string]: number; }}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {{ [index:string]: RequestSummary; }} */
+    apis;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    users;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    tags;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    status;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    days;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    apiKeys;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    ipAddresses;
+    /** @type {{ [index:string]: number; }} */
+    durationRange;
+}
+export class GetApiAnalyticsResponse {
+    /** @param {{results?:{ [index:string]: number; }}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {{ [index:string]: number; }} */
+    results;
 }
 export class AdminData {
     constructor(init) { Object.assign(this, init) }
@@ -2545,7 +2807,12 @@ export class QueryAiTypes extends QueryDb {
     createResponse() { return new QueryResponse() }
 }
 export class ActiveAiModels {
+    /** @param {{provider?:AiProviderType,vision?:boolean}} [init] */
     constructor(init) { Object.assign(this, init) }
+    /** @type {?AiProviderType} */
+    provider;
+    /** @type {?boolean} */
+    vision;
     getTypeName() { return 'ActiveAiModels' }
     getMethod() { return 'GET' }
     createResponse() { return new StringsResponse() }
@@ -2583,6 +2850,25 @@ export class GetModelImage {
     getMethod() { return 'GET' }
     createResponse() { return new Blob() }
 }
+export class OllamaGeneration extends OllamaGenerate {
+    /** @param {{refId?:string,provider?:string,tag?:string,model?:string,prompt?:string,suffix?:string,images?:string[],format?:string,options?:OllamaGenerateOptions,system?:string,template?:string,stream?:boolean,raw?:boolean,keep_alive?:string,context?:number[]}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /**
+     * @type {?string}
+     * @description Provide a unique identifier to track requests */
+    refId;
+    /**
+     * @type {?string}
+     * @description Specify which AI Provider to use */
+    provider;
+    /**
+     * @type {?string}
+     * @description Categorize like requests under a common group */
+    tag;
+    getTypeName() { return 'OllamaGeneration' }
+    getMethod() { return 'POST' }
+    createResponse() { return new OllamaGenerateResponse() }
+}
 export class OpenAiChatCompletion extends OpenAiChat {
     /** @param {{refId?:string,provider?:string,tag?:string,messages?:OpenAiMessage[],model?:string,frequency_penalty?:number,logit_bias?:{ [index:number]: number; },logprobs?:boolean,top_logprobs?:number,max_tokens?:number,n?:number,presence_penalty?:number,response_format?:OpenAiResponseFormat,seed?:number,stop?:string[],stream?:boolean,temperature?:number,top_p?:number,tools?:OpenAiTools[],user?:string}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
@@ -2601,6 +2887,23 @@ export class OpenAiChatCompletion extends OpenAiChat {
     getTypeName() { return 'OpenAiChatCompletion' }
     getMethod() { return 'POST' }
     createResponse() { return new OpenAiChatResponse() }
+}
+export class QueueOllamaGeneration {
+    /** @param {{refId?:string,provider?:string,replyTo?:string,tag?:string,request?:OllamaGenerate}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?string} */
+    refId;
+    /** @type {?string} */
+    provider;
+    /** @type {?string} */
+    replyTo;
+    /** @type {?string} */
+    tag;
+    /** @type {OllamaGenerate} */
+    request;
+    getTypeName() { return 'QueueOllamaGeneration' }
+    getMethod() { return 'POST' }
+    createResponse() { return new QueueOllamaGenerationResponse() }
 }
 export class QueueOpenAiChatCompletion {
     /** @param {{refId?:string,provider?:string,replyTo?:string,tag?:string,request?:OpenAiChat}} [init] */
@@ -2640,6 +2943,17 @@ export class GetOpenAiChat {
     getTypeName() { return 'GetOpenAiChat' }
     getMethod() { return 'GET' }
     createResponse() { return new GetOpenAiChatResponse() }
+}
+export class GetOllamaGenerationStatus {
+    /** @param {{jobId?:number,refId?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    jobId;
+    /** @type {?string} */
+    refId;
+    getTypeName() { return 'GetOllamaGenerationStatus' }
+    getMethod() { return 'GET' }
+    createResponse() { return new GetOllamaGenerationStatusResponse() }
 }
 export class GetOpenAiChatStatus {
     /** @param {{jobId?:number,refId?:string}} [init] */
@@ -3505,12 +3819,16 @@ export class AdminRequeueFailedJobs {
     createResponse() { return new AdminRequeueFailedJobsJobsResponse() }
 }
 export class AdminCancelJobs {
-    /** @param {{ids?:number[],worker?:string}} [init] */
+    /** @param {{ids?:number[],worker?:string,state?:BackgroundJobState,cancelWorker?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {?number[]} */
     ids;
     /** @type {?string} */
     worker;
+    /** @type {?BackgroundJobState} */
+    state;
+    /** @type {?string} */
+    cancelWorker;
     getTypeName() { return 'AdminCancelJobs' }
     getMethod() { return 'GET' }
     createResponse() { return new AdminCancelJobsResponse() }
@@ -3525,5 +3843,27 @@ export class DeleteMediaProvider {
     getTypeName() { return 'DeleteMediaProvider' }
     getMethod() { return 'DELETE' }
     createResponse() { return new IdResponse() }
+}
+export class GetAnalyticsReports {
+    /** @param {{month?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?string} */
+    month;
+    getTypeName() { return 'GetAnalyticsReports' }
+    getMethod() { return 'GET' }
+    createResponse() { return new AnalyticsReports() }
+}
+export class GetApiAnalytics {
+    /** @param {{month?:string,type?:AnalyticsType,value?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?string} */
+    month;
+    /** @type {?AnalyticsType} */
+    type;
+    /** @type {string} */
+    value;
+    getTypeName() { return 'GetApiAnalytics' }
+    getMethod() { return 'GET' }
+    createResponse() { return new GetApiAnalyticsResponse() }
 }
 

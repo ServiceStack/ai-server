@@ -1,6 +1,6 @@
 import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
 import { useClient } from "@servicestack/vue"
-import { marked } from "../markdown.mjs"
+import { renderMarkdown } from "../markdown.mjs"
 import { addCopyButtonToCodeBlocks } from "../dom.mjs"
 import { useUiLayout, UiLayout, ThreadStorage, HistoryTitle, HistoryGroups } from "../utils.mjs"
 import { QueryPrompts, ActiveAiModels, OpenAiChatCompletion } from "../dtos.mjs"
@@ -329,16 +329,6 @@ export default {
                     routes.to({ id:undefined })
                 }
             }
-        }
-        
-        function renderMarkdown(content) {
-            if (content) {
-                console.log(content)
-                content = content
-                    .replaceAll(`\\[ \\boxed{`,'\n<span class="inline-block text-xl text-blue-500 bg-blue-50 px-3 py-1 rounded">')
-                    .replaceAll('} \\]','</span>\n')
-            }
-            return marked.parse(content)
         }
         
         watch(() => routes.id, updated)

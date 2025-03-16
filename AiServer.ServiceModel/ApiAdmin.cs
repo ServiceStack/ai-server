@@ -13,7 +13,11 @@ public class QueryAiTypes : QueryDb<AiType> {}
 
 [Tag(Tags.AiInfo)]
 [Api("Active AI Worker Models available in AI Server")]
-public class ActiveAiModels : IGet, IReturn<StringsResponse> {}
+public class ActiveAiModels : IGet, IReturn<StringsResponse>
+{
+    public AiProviderType? Provider { get; set; }
+    public bool? Vision { get; set; }
+}
 
 
 [Tag(Tags.AiInfo)]

@@ -7,7 +7,7 @@ using ServiceStack.Web;
 
 namespace AiServer.ServiceInterface;
 
-public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
+public class GenerationServices(IBackgroundJobs jobs, AppData appData, AppConfig appConfig) : Service
 {
     public GetTextGenerationStatusResponse Any(GetTextGenerationStatus request)
     {
@@ -169,6 +169,38 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData) : Service
 
     public async Task<TextGenerationResponse> Any(ImageToText request)
     {
+        if (request is { Model: not null, Prompt: not null })
+        {
+            var filesMap = Request!.HandleFileUploads(appConfig);
+            if (filesMap.Count == 0)
+                throw new ArgumentNullException(nameof(request.Image));
+
+            var file = Request!.Files.First(x => x.Name == filesMap.First().Key);
+            var fileBytes = file.InputStream.ReadFully();
+            var generateRequest = new QueueOllamaGeneration
+            {
+                Request = new()
+                {
+                    Model =  request.Model,
+                    Prompt =  request.Prompt,
+                    Images = [Convert.ToBase64String(fileBytes)],
+                },
+                RefId = request.RefId,
+                Tag = request.Tag,
+            };
+
+            await using var chatService = HostContext.ResolveService<OpenAiChatServices>(Request);
+            var response = await generateRequest.ProcessSync(jobs, chatService);
+
+            return new TextGenerationResponse
+            {
+                Results = response.Response != null ? [
+                    new() { Text = response.Response }
+                ] : null,
+                ResponseStatus = response.ResponseStatus
+            };
+        }
+        
         var diffRequest = new CreateGeneration
         {
             Request = new()

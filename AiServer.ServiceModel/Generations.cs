@@ -210,6 +210,12 @@ public class ImageToText : IGeneration, IReturn<TextGenerationResponse>
     [Input(Type = "file")]
     public string? Image { get; set; }
     
+    [ApiMember(Description = "Whether to use a Vision Model for the request")]
+    public string? Model { get; set; }
+    
+    [ApiMember(Description = "Prompt for the vision model")]
+    public string? Prompt { get; set; }
+    
     [ApiMember(Description = "Optional client-provided identifier for the request")]
     public string? RefId { get; set; }
 

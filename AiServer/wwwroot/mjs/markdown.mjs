@@ -16,6 +16,16 @@ export const marked = (() => {
     return ret
 })();
 
+export function renderMarkdown(content) {
+    if (content) {
+        console.log(content)
+        content = content
+            .replaceAll(`\\[ \\boxed{`,'\n<span class="inline-block text-xl text-blue-500 bg-blue-50 px-3 py-1 rounded">')
+            .replaceAll('} \\]','</span>\n')
+    }
+    return marked.parse(content)
+}
+
 // export async function renderMarkdown(body) {
 //     const rawHtml = marked.parse(body)
 //     return <main dangerouslySetInnerHTML={{ __html: rawHtml }} />

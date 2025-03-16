@@ -38,15 +38,27 @@ public class OpenAiChatServices(
     public object Any(ActiveAiModels request)
     {
         var activeModels = appData.AiProviders
+            .Where(x => request.Provider == null || x.AiType?.Provider == request.Provider)
             .SelectMany(x => x.Models.Select(m => appData.GetQualifiedModel(m.Model)))
             .Where(x => x != null)
             .Select(x => x!)  // Non-null assertion after filtering out null values
             .Distinct()
-            .OrderBy(x => x);
+            .OrderBy(x => x)
+            .ToList();
+
+        if (request.Vision == true)
+        {
+            var allVisionModels = appData.AiModels
+                .GetAll()
+                .Where(x => x.Vision == true)
+                .Select(x => x.Id)
+                .ToSet();
+            activeModels = activeModels.Where(x => allVisionModels.Contains(x.LeftPart(':'))).ToList();
+        }
         
         return new StringsResponse
         {
-            Results = activeModels.ToList() 
+            Results = activeModels 
         };
     }
     

@@ -107,7 +107,7 @@
 }
 
 /*
-! tailwindcss v3.4.15 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -1022,6 +1022,10 @@ select{
   grid-column: span 6 / span 6;
 }
 
+.col-span-4 {
+  grid-column: span 4 / span 4;
+}
+
 .row-span-2 {
   grid-row: span 2 / span 2;
 }
@@ -1447,6 +1451,10 @@ select{
 
 .max-h-60 {
   max-height: 15rem;
+}
+
+.max-h-64 {
+  max-height: 16rem;
 }
 
 .max-h-\[25dvh\] {
