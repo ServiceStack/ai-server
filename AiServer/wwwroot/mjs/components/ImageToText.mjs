@@ -276,7 +276,7 @@ export default {
         watch(() => routes.id, updated)
         
         watch(() => [prefs.value.model], () => {
-            request.value.prompt = prefs.value.model
+            request.value.prompt = prefs.value.model && !request.value.prompt
                 ? 'Describe this image'
                 : ''
         })
