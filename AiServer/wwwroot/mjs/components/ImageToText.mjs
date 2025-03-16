@@ -54,7 +54,7 @@ export default {
                                 </Autocomplete>
                             </div>
                             <div class="col-span-4">
-                                <TextInput id="prompt" v-model="request.prompt" required placeholder="Prompt" />
+                                <TextInput id="prompt" v-model="request.prompt" placeholder="Prompt" />
                             </div>
                         </div>
                         <div class="mt-4 mb-8 flex justify-center">
