@@ -18,7 +18,7 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
         .ConfigureServices((context,services) => {
             #if DEBUG
             // Fixes HttpClient hanging to groq.com and cloudflare workers
-            Environment.SetEnvironmentVariable("DOTNET_SYSTEM_NET_DISABLEIPV6", "1");
+            Environment.SetEnvironmentVariable("DOTNET_SYSTEM_NET_DISABLEIPV6","1");
             #endif
             
             // Configure ASP.NET Core IOC Dependencies
