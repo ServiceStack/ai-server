@@ -1198,7 +1198,7 @@ export function createErrorStatus(message, errorCode = 'Exception') {
 export function createFieldError(fieldName, message, errorCode = 'Exception') {
     return new ResponseStatus({ errors: [new ResponseError({ fieldName, errorCode, message })] });
 }
-export function isFormData(body) { return typeof window != "undefined" && body instanceof FormData; }
+export function isFormData(body) { return body instanceof FormData; }
 function createErrorResponse(errorCode, message, type = null) {
     const error = apply(new ErrorResponse(), e => {
         if (type != null)
@@ -1219,9 +1219,34 @@ export function createError(errorCode, message, fieldName) {
         })
     });
 }
-export function toCamelCase(s) { return !s ? s : s.charAt(0).toLowerCase() + s.substring(1); }
-export function toPascalCase(s) { return !s ? s : s.charAt(0).toUpperCase() + s.substring(1); }
-export function toKebabCase(s) { return (s || '').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase(); }
+export function toPascalCase(s) {
+    if (!s)
+        return '';
+    const isAllCaps = s.match(/^[A-Z0-9_]+$/);
+    if (isAllCaps) {
+        const words = s.split('_');
+        return words.map(x => x[0].toUpperCase() + x.substring(1).toLowerCase()).join('');
+    }
+    if (s.includes('_')) {
+        return s.split('_').filter(x => x[0]).map(x => x[0].toUpperCase() + x.substring(1)).join('');
+    }
+    return s.charAt(0).toUpperCase() + s.substring(1);
+}
+export function toCamelCase(s) {
+    s = toPascalCase(s);
+    if (!s)
+        return '';
+    return s.charAt(0).toLowerCase() + s.substring(1);
+}
+export function toKebabCase(s) {
+    if (!s || s.length <= 1)
+        return s.toLowerCase();
+    return s
+        .replace(/([A-Z0-9])/g, '-$1')
+        .toLowerCase()
+        .replace(/^-/, '')
+        .replace(/-+/g, '-');
+}
 export function map(o, f) { return o == null ? null : f(o); }
 export function camelCaseAny(o) {
     if (!o || !(o instanceof Object) || Array.isArray(o))
