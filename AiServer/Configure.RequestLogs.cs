@@ -12,7 +12,7 @@ public class ConfigureRequestLogs : IHostingStartup
             
             services.AddPlugin(new RequestLogsFeature {
                 RequestLogger = new SqliteRequestLogger(),
-                EnableResponseTracking = true,
+                // EnableResponseTracking = true,
                 EnableRequestBodyTracking = true,
                 EnableErrorTracking = true
             });
