@@ -95,7 +95,8 @@ jobs:
 
       - name: Ensure file permissions
         run: |
-          kamal server exec --no-interactive "mkdir -p /opt/docker/${{ env.repository_name }}/App_Data && chown -R 1654:1654 /opt/docker/${{ env.repository_name }}"
+          kamal server exec --no-interactive "mkdir -p /opt/docker/${{ env.repository_name }}/App_Data"
+          kamal server exec --no-interactive "chown -R 1654:1654 /opt/docker/${{ env.repository_name }}"
 
       - name: Migration
         if: env.HAS_MIGRATIONS == 'true'
