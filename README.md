@@ -21,9 +21,9 @@ flowchart TB
 
 ## Self Hosted AI Server API Gateway
 
-AI Server is a way to orchestrate your AI requests through a single self-hosted private gateway to control what AI Providers your Apps with only a single typed client integration. It can be used to process LLM, AI, Diffusion and image transformation requests which are dynamically delegated across multiple configured providers which
-can include any Ollama endpoint, OpenRouter / OpenAI / Mistral AI / Google Cloud / GroqCloud LLM APIs, 
-Replicate / Open AI/Dall-e-3 / Text to speech Media APIs, Diffusion / Whisper / Text to Speech from Comfy UI and FFmpeg Agents.
+AI Server is a way to orchestrate your AI requests through a single self-hosted private gateway to control what AI Providers your Apps with only a single typed client integration. It can be used to process LLM, AI, Diffusion and image transformation requests which are dynamically delegated across multiple configured providers which can include any 
+Ollama endpoint, OpenRouter / OpenAI / Mistral AI / Google Cloud / GroqCloud LLM APIs, Replicate / Open AI/Dall-e-3 / 
+Text to speech Media APIs, Diffusion / Whisper / Text to Speech from Comfy UI and FFmpeg Agents.
 
 ### Comfy UI FFmpeg Agents
 
