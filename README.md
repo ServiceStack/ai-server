@@ -2,7 +2,7 @@
 
 Website: [openai.servicestack.net](https://openai.servicestack.net)
 
-Self-hosted private gateway to manage access to multiple LLM APIs, Ollama endpoints, Media APIs, Comfy UI and FFmpeg Agents
+Self-hosted private gateway to manage access to multiple LLM APIs, Ollama endpoints, Media APIs, Comfy UI and FFmpeg Agents.
 
 ```mermaid
 flowchart TB
