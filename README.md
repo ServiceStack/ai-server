@@ -1,6 +1,6 @@
 # ai-server
 
-Website: [openai.servicestack.net](https://openai.servicestack.net).
+Website: [openai.servicestack.net](https://openai.servicestack.net)
 
 Self-hosted private gateway to manage access to multiple LLM APIs, Ollama endpoints, Media APIs, Comfy UI and FFmpeg Agents.
 
