@@ -1782,7 +1782,7 @@ const Is = {
     return et(e, "fullWidth") ? "inline-block min-w-full py-2 align-middle" : me.grid3Class;
   },
   getGrid4Class(e = "stripedRows") {
-    return et(e, "whiteBackground") ? "" : et(e, "fullWidth") ? "overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5" : me.grid4Class;
+    return et(e, "whiteBackground") ? "" : et(e, "fullWidth") ? "overflow-hidden shadow-sm ring-1 ring-black/5" : me.grid4Class;
   },
   getTableClass(e = "stripedRows") {
     return et(e, "fullWidth") || et(e, "verticalLines") ? "min-w-full divide-y divide-gray-300" : me.tableClass;
@@ -1808,7 +1808,7 @@ const Is = {
   grid2Class: "",
   //original: inline-block min-w-full py-2 align-middle md:px-6 lg:px-8
   grid3Class: "inline-block min-w-full py-2 align-middle",
-  grid4Class: "overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg",
+  grid4Class: "overflow-hidden shadow ring-1 ring-black/5 md:rounded-lg",
   tableClass: "min-w-full divide-y divide-gray-200 dark:divide-gray-700",
   theadClass: "bg-gray-50 dark:bg-gray-900",
   tableCellClass: "px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400",
@@ -3991,7 +3991,7 @@ const ni = { key: 0 }, oi = { class: "md:p-4" }, ro = /* @__PURE__ */ ue({
         ], 34),
         d.value && c.value.length ? (o(), r("ul", {
           key: 0,
-          class: "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-black py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm",
+          class: "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-black py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm",
           onKeydown: j,
           id: `${h.id}-options`,
           role: "listbox"
@@ -4383,7 +4383,7 @@ const ni = { key: 0 }, oi = { class: "md:p-4" }, ro = /* @__PURE__ */ ue({
         }, c0),
         n.value ? (o(), r("ul", {
           key: 0,
-          class: "absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-black py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm",
+          class: "absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-black py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm",
           onKeydown: w,
           id: `${A.id}-options`,
           role: "listbox"
@@ -6720,7 +6720,7 @@ const z0 = { key: 0 }, U0 = { class: "text-red-700" }, q0 = /* @__PURE__ */ l("b
         "aria-modal": "true"
       }, [
         l("div", {
-          class: y(["fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity", i.value])
+          class: y(["fixed inset-0 bg-gray-500/75 transition-opacity", i.value])
         }, null, 2),
         l("div", xp, [
           l("div", Lp, [
