@@ -138,6 +138,10 @@ export class MetadataPropertyType {
     allowableMin;
     allowableMax;
     attributes;
+    uploadTo;
+    input;
+    format;
+    ref;
     constructor(init) { Object.assign(this, init); }
 }
 export class MetadataType {
@@ -148,6 +152,8 @@ export class MetadataType {
     implements;
     displayType;
     description;
+    notes;
+    icon;
     isNested;
     isEnum;
     isEnumInt;
@@ -163,6 +169,63 @@ export class MetadataType {
     enumDescriptions;
     meta;
     constructor(init) { Object.assign(this, init); }
+}
+export class ImageInfo {
+    svg;
+    uri;
+    alt;
+    cls;
+}
+export class InputInfo {
+    id;
+    name;
+    type;
+    value;
+    placeholder;
+    help;
+    label;
+    title;
+    size;
+    pattern;
+    readOnly;
+    required;
+    disabled;
+    autocomplete;
+    autofocus;
+    min;
+    max;
+    step;
+    minLength;
+    maxLength;
+    accept;
+    capture;
+    multiple;
+    allowableValues;
+    allowableEntries;
+    options;
+    ignore;
+    css;
+    meta;
+}
+export class FormatInfo {
+    method;
+    options;
+    locale;
+}
+export class RefInfo {
+    model;
+    selfId;
+    refId;
+    refLabel;
+}
+export class KeyValuePair {
+    key;
+    value;
+}
+export class FieldCss {
+    field;
+    input;
+    label;
 }
 export class NewInstanceResolver {
     tryResolve(ctor) {
@@ -2868,9 +2931,10 @@ export class Inspect {
         if (!inspectVarsPath || !obj)
             return;
         // resolve dynamic path to prevent ng webpack static analysis
+        const I = (s) => import(/* @vite-ignore */ s);
         const nodeModule = (m) => 'no' + 'de:' + `${m}`;
-        await import(nodeModule('fs')).then(async (fs) => {
-            await import(nodeModule('path')).then(path => {
+        await I(nodeModule('fs')).then(async (fs) => {
+            await I(nodeModule('path')).then(path => {
                 let varsPath = inspectVarsPath.replace(/\\/g, '/');
                 if (varsPath.indexOf('/') >= 0) {
                     let dir = path.dirname(varsPath);
