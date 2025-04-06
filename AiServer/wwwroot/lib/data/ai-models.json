@@ -464,6 +464,23 @@
     "icon": "/img/models/llama.svg"
   },
   {
+    "id": "llama4",
+    "tags": [
+      "109b",
+      "400b"
+    ],
+    "latest": "109b",
+    "website": "https://openrouter.ai/meta-llama/llama-4-scout",
+    "description": "Llama 4 Scout 17B Instruct (16E) is a mixture-of-experts (MoE) language model developed by Meta, activating 17 billion parameters out of a total of 109B. It supports native multimodal input (text and image) and multilingual output (text and code) across 12 supported languages. Designed for assistant-style interaction and visual reasoning, Scout uses 16 experts per forward pass and features a context length of 10 million tokens, with a training corpus of ~40 trillion tokens.",
+    "icon": "/img/models/llama.svg"
+  },
+  {
+    "id": "quasar",
+    "website": "https://openrouter.ai/openrouter/quasar-alpha",
+    "description": "This is a cloaked model provided to the community to gather feedback. It’s a powerful, all-purpose model supporting long-context tasks, including code generation. All prompts and completions for this model are logged by the provider as well as OpenRouter.",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
     "id": "llava",
     "tags": [
       "7b",
