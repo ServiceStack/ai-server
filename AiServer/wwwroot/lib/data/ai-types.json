@@ -72,11 +72,12 @@
       "wizardlm2:7b": "microsoft/wizardlm-2-7b",
       "wizardlm2:8x22b": "microsoft/wizardlm-2-8x22b",
       "zephyr:7b": "huggingfaceh4/zephyr-7b-beta:free",
-      "gemini-pro": "google/gemini-pro",
+      "gemini-pro": "google/gemini-2.5-pro-exp-03-25:free",
       "gemini-pro-vision": "google/gemini-pro-vision",
       "gemini-pro-1.5": "google/gemini-pro-1.5",
       "gemini-flash": "google/gemini-flash-1.5",
       "gemini-flash-2.0": "google/gemini-2.0-flash-001",
+      "gemini-pro-2.5": "google/gemini-2.5-pro-preview-03-25",
       "gpt-3.5-turbo": "openai/gpt-3.5-turbo",
       "gpt-4": "openai/gpt-4",
       "gpt-4o": "openai/gpt-4o",
@@ -117,7 +118,8 @@
       "phi3:3.8b": "microsoft/phi-3-mini-128k-instruct:free",
       "phi3:14b": "microsoft/phi-3-medium-128k-instruct:free",
       "qwen-vl-plus": "qwen/qwen-vl-plus:free",
-      "qwq:32b": "qwen/qwq-32b:free"
+      "qwq:32b": "qwen/qwq-32b:free",
+      "gemini-pro": "google/gemini-2.5-pro-exp-03-25:free"
     }
   },
   {
@@ -166,11 +168,13 @@
     "openAiProvider": "GoogleOpenAiProvider",
     "icon": "/img/providers/google-cloud.svg",
     "apiModels": {
+      "gemini-pro": "gemini-2.5-pro-exp-03-25",
       "gemma3:27b": "gemma-3-27b-it", 
       "gemini-pro-1.5": "gemini-1.5-pro-002",
       "gemini-flash-1.5": "gemini-1.5-flash",
       "gemini-flash-1.5-8b": "gemini-1.5-flash-8b",
       "gemini-pro-2.0": "gemini-2.0-pro-exp-02-05",
+      "gemini-pro-2.5": "gemini-2.5-pro-preview-03-25",
       "gemini-flash-2.0": "gemini-2.0-flash",
       "gemini-flash-lite-2.0": "gemini-2.0-flash-lite-001",
       "gemini-flash-thinking-2.0": "gemini-2.0-flash-thinking-exp-01-21"
