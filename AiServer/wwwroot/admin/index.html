@@ -20,9 +20,11 @@
         "marked": "/lib/mjs/marked.mjs",
         "highlight.mjs": "/lib/mjs/highlight.mjs",
         "chart.js": "/lib/mjs/chart.js",
+        "charts": "/lib/mjs/charts.mjs",
         "color.js": "/lib/mjs/color.js",
         "dtos": "/mjs/dtos.mjs",
-        "core": "/js/core.mjs"
+        "core": "/js/core.mjs",
+        "app": "/lib/mjs/app.mjs"
     }
 }
 </script>
@@ -147,6 +149,9 @@ import AiProviders from "/mjs/components/AiProviders.mjs"
 import CopyIcon from "/js/components/CopyIcon.mjs"
 import SortableColumn from "/js/components/SortableColumn.mjs"
 import { BackgroundJobs } from "/modules/admin-ui/components/BackgroundJobs.mjs"
+import { Analytics } from "/modules/admin-ui/components/Analytics.mjs"
+import { Logging } from "/modules/admin-ui/components/Logging.mjs"
+import { LogLinks } from "/modules/admin-ui/components/LogLinks.mjs"
 import { ApiKeys } from "/modules/admin-ui/components/ApiKeys.mjs"
 import { CreateApiKeyForm, EditApiKeyForm } from "/modules/admin-ui/components/ManageUserApiKeys.mjs"
 import { ApiKeyDialog } from "/js/components/ApiKeyDialog.mjs"
@@ -170,12 +175,14 @@ const { pushState } = useUtils()
 const app = new App()
 app.use(ServiceStackVue)
 app.component('RouterLink', ServiceStackVue.component('RouterLink'))
-app.components({ CreateApiKeyForm, EditApiKeyForm, ApiKeyDialog, CopyIcon, SortableColumn, SignInForm })
+app.components({ CreateApiKeyForm, EditApiKeyForm, ApiKeyDialog, CopyIcon, SortableColumn, SignInForm, LogLinks })
 
 let routes = usePageRoutes(app, {
     page:'admin',
-    queryKeys: ('tab,provider,db,schema,table,q,page,sort,new,edit,op,skip,id,' +
-        'show,orderBy,pathInfo,tag,body,type,dialog,period').split(','),
+    queryKeys: ('id,' + 
+        'tab,provider,db,schema,table,q,page,sort,new,edit,op,skip,' +
+        'show,orderBy,operationName,userAuthId,sessionId,pathInfo,ipAddress,referer,forwardedFor,hasResponse,withErrors,' +
+        'source,threadId,eventType,traceId,userId,tag,body,type,dialog,period,year,month,ip,apiKey,apiKeyId').split(','),
     handlers: {
         init(state) { console.debug('init', state) }, /*debug*/
         nav(state) { console.debug('nav', state) } /*debug*/
@@ -373,16 +380,29 @@ const sections = {
             template:`<AutoQueryGrid :type="type" />`,
         },
     },
-    BackgroundJobs: {
+    
+    analytics: {
+        group: 'ADMIN',
+        type: 'Analytics',
+        component: Analytics,
+        icon: iconDataUri('<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path fill="currentColor" d="M13 5h2v14h-2zm-2 4H9v10h2zm-4 4H5v6h2zm12 0h-2v6h2z"></path></svg>'),
+    },
+    backgroundjobs: {
         group: 'ADMIN',
         type: 'BackgroundJob',
         component: BackgroundJobs,
         icon: icons.queue,
     },
-    ApiKeys: {
+    apikeys: {
         group: 'ADMIN',
         component: ApiKeys,
         icon: iconDataUri('<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path fill="currentColor" d="M10.32 2.013A4 4 0 0 0 6.162 7.13l-3.987 3.986a.6.6 0 0 0-.176.424v2.86a.6.6 0 0 0 .6.6h2.8a.6.6 0 0 0 .6-.6V13h1.9a.6.6 0 0 0 .6-.6v-1.693l.735-.735a5.5 5.5 0 0 1-.569-.846l-.99.991a.6.6 0 0 0-.176.424V12H5.6a.6.6 0 0 0-.6.6V14H3v-2.293l4.32-4.32l-.118-.303a3 3 0 0 1 1.96-3.965c.33-.423.72-.796 1.157-1.106M13.5 6.25a.75.75 0 1 0 0-1.5a.75.75 0 0 0 0 1.5M9 6.5a4.5 4.5 0 1 1 7 3.742v2.05l.783.784a.6.6 0 0 1 0 .848L15.707 15l1.068 1.067a.6.6 0 0 1-.05.893l-2.35 1.88a.6.6 0 0 1-.75 0l-2.4-1.92a.6.6 0 0 1-.225-.468v-6.21A4.5 4.5 0 0 1 9 6.5M13.5 3a3.5 3.5 0 0 0-1.75 6.532a.5.5 0 0 1 .25.433v6.295l2 1.6l1.751-1.401l-1.034-1.035a.6.6 0 0 1 0-.848l1.076-1.076l-.617-.617a.6.6 0 0 1-.176-.424V9.965a.5.5 0 0 1 .25-.433A3.5 3.5 0 0 0 13.5 3"></path></svg>'),
+    },
+    logging: {
+        group: 'ADMIN',
+        type: 'Logging',
+        component: Logging,
+        icon: iconDataUri('<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v13c0 1-.6 3-3 3m0 0H6c-1 0-3-.6-3-3v-2h12v2c0 2.4 2 3 3 3zM9 7h8m-8 4h4"></path></svg>'),
     },
 }
 function getIcon(id) {
@@ -409,7 +429,7 @@ const AppComponent = {
         const showUserMenu = ref(false)
         const init = ref(false)
         const apiKeyError = ref('')
-        console.log('AppComponent', routes.admin)
+        //console.log('AppComponent', routes.admin)
         const activeSection = shallowRef(sections[routes.admin] || sections.Dashboard)
 
         function navTo(section, args, pushState=true) {
@@ -472,7 +492,15 @@ const AppComponent = {
 
 const client = window.client = new JsonServiceClient()
 const events = app.events
-app.provides({ client, routes, server, store, events, })
+app.provides({ app, client, routes, server, store, events, })
+
+app.directive('highlightjs', (el, binding) => {
+    if (binding.value) {
+        //el.className = ''
+        el.innerHTML = enc(binding.value)
+        globalThis.hljs.highlightElement(el)
+    }
+})
 
 app.build(AppComponent).mount('#app')
 app.start()

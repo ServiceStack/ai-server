@@ -2,10 +2,12 @@ import { ref, computed, onMounted, inject } from "vue"
 import { ApiResult, toDate } from "@servicestack/client"
 import { useClient, useUtils, useFormatters, useMetadata, css } from "@servicestack/vue"
 import { AdminQueryApiKeys, AdminCreateApiKey, AdminUpdateApiKey, AdminDeleteApiKey } from "dtos"
+
 function arraysAreEqual(a, b) {
     if (!a || !b) return false
     return a.length === b.length && a.every((v, i) => v === b[i])
 }
+
  export const CreateApiKeyForm = {
     template:`
       <div>
@@ -143,6 +145,7 @@ function arraysAreEqual(a, b) {
             submit, done }
     }
 }
+
 export const EditApiKeyForm = {
     template:`
         <div>
@@ -184,12 +187,21 @@ export const EditApiKeyForm = {
                           <TextareaInput id="notes" v-model="request.notes" placeholder="Optional Notes about this API Key" class="h-24" />
                         </div>
                       </div>
-                      <div class="mt-2 col-span-6">
-                        <div v-if="request.cancelledDate" class="flex items-center">
+                      <div class="mt-2 flex justify-between">
+                        <div>
+                          <div v-if="request.cancelledDate" class="flex items-center">
                             <div class="text-red-500">Disabled on {{formatDate(request.cancelledDate)}}</div>
                             <SecondaryButton @click="submitEnable" class="ml-4">Enable API Key</SecondaryButton>
+                          </div>
+                          <PrimaryButton v-else @click="submitDisable" color="red" class="mr-2">Disable API Key</PrimaryButton>
                         </div>
-                        <PrimaryButton v-else @click="submitDisable" color="red" class="mr-2">Disable API Key</PrimaryButton>
+                        <div>
+                          <span class="mr-4 cursor-pointer flex font-medium text-indigo-600 hover:text-indigo-500"
+                                v-href="{ $page:'analytics', tab:'apiKeys', apiKeyId:id, $clear:true }">
+                            <svg class="mr-2 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path fill="currentColor" d="M13 5h2v14h-2zm-2 4H9v10h2zm-4 4H5v6h2zm12 0h-2v6h2z"></path></svg>
+                            View Analytics
+                          </span>
+                        </div>
                       </div>
                     </fieldset>
                   </div>
@@ -217,6 +229,7 @@ export const EditApiKeyForm = {
         const client = useClient()
         const { dateInputFormat } = useUtils()
         const { formatDate } = useFormatters()
+
         let origValues = {}
         const request = ref(new AdminUpdateApiKey())
         const scopes = ref({})
@@ -225,6 +238,7 @@ export const EditApiKeyForm = {
         const errorSummary = computed(() => api.value.summaryMessage())
         const apiKeyApis = computed(() =>
             server.api.operations.filter(x => x.requiresApiKey).map(x => x.request.name))
+
         async function submit(e) {
             e.preventDefault()
             
@@ -242,6 +256,7 @@ export const EditApiKeyForm = {
                     request.value.features.push(k)
                 }
             })
+
             ;['name','expiryDate','scopes','features','restrictTo','notes'].forEach(k => {
                 const value = request.value[k]
                 const origValue = origValues[k]
@@ -263,16 +278,20 @@ export const EditApiKeyForm = {
                     update.reset.push(k)
                 }
             })
+
             api.value = await client.api(update)
             done()
         }
+
         function done() {
             emit('done')
         }
+
         async function submitDelete() {
             const apiDelete = await client.api(new AdminDeleteApiKey({ id: props.id }))
             done()
         }
+
         async function submitDisable() {
             const apiDelete = await client.api(new AdminUpdateApiKey({
                 id: props.id,
@@ -280,6 +299,7 @@ export const EditApiKeyForm = {
             }))
             done()
         }
+
         async function submitEnable() {
             const apiDelete = await client.api(new AdminUpdateApiKey({
                 id: props.id,
@@ -310,6 +330,7 @@ export const EditApiKeyForm = {
             submit, submitDelete, submitDisable, submitEnable }
     }
 }
+
 export const ManageUserApiKeys = {
     components: {
         CreateApiKeyForm,
@@ -361,6 +382,7 @@ export const ManageUserApiKeys = {
         columns: Array,
     },
     setup(props) {
+
         const { formatDate, relativeTime } = useFormatters()
         const server = inject('server')
         const columns = props.columns ?? "name,visibleKey,createdDate,expiryDate".split(',')
@@ -415,6 +437,7 @@ export const ManageUserApiKeys = {
         return { css, renderKey, id, userName, columns, show, api, toggleDialog, done, formatDate, relativeTime, selected, rowSelected }
     }
 }
+
 export function install(app) {
     app.components({ CreateApiKeyForm, EditApiKeyForm })
 }

@@ -1,5 +1,5 @@
 /* Options:
-Date: 2025-03-16 10:56:58
+Date: 2025-04-14 14:19:34
 Version: 8.61
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5005
@@ -966,14 +966,6 @@ export class FailedJob extends BackgroundJobBase {
     /** @param {{id?:number,parentId?:number,refId?:string,worker?:string,tag?:string,batchId?:string,callback?:string,dependsOn?:number,runAfter?:string,createdDate?:string,createdBy?:string,requestId?:string,requestType?:string,command?:string,request?:string,requestBody?:string,userId?:string,response?:string,responseBody?:string,state?:BackgroundJobState,startedDate?:string,completedDate?:string,notifiedDate?:string,retryLimit?:number,attempts?:number,durationMs?:number,timeoutSecs?:number,progress?:number,status?:string,logs?:string,lastActivityDate?:string,replyTo?:string,errorCode?:string,error?:ResponseStatus,args?:{ [index:string]: string; },meta?:{ [index:string]: string; }}} [init] */
     constructor(init) { super(init); Object.assign(this, init) }
 }
-/** @typedef {'User'|'Day'|'ApiKey'|'IpAddress'} */
-export var AnalyticsType;
-(function (AnalyticsType) {
-    AnalyticsType["User"] = "User"
-    AnalyticsType["Day"] = "Day"
-    AnalyticsType["ApiKey"] = "ApiKey"
-    AnalyticsType["IpAddress"] = "IpAddress"
-})(AnalyticsType || (AnalyticsType = {}));
 export class PageStats {
     /** @param {{label?:string,total?:number}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -1231,19 +1223,327 @@ export class HourSummary {
     /** @type {number} */
     cancelled;
 }
+export class MetadataDataMember {
+    /** @param {{name?:string,order?:number,isRequired?:boolean,emitDefaultValue?:boolean}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    name;
+    /** @type {?number} */
+    order;
+    /** @type {?boolean} */
+    isRequired;
+    /** @type {?boolean} */
+    emitDefaultValue;
+}
+export class FieldCss {
+    /** @param {{field?:string,input?:string,label?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    field;
+    /** @type {string} */
+    input;
+    /** @type {string} */
+    label;
+}
+export class InputInfo {
+    /** @param {{id?:string,name?:string,type?:string,value?:string,placeholder?:string,help?:string,label?:string,title?:string,size?:string,pattern?:string,readOnly?:boolean,required?:boolean,disabled?:boolean,autocomplete?:string,autofocus?:string,min?:string,max?:string,step?:string,minLength?:number,maxLength?:number,accept?:string,capture?:string,multiple?:boolean,allowableValues?:string[],allowableEntries?:KeyValuePair<string, string>[],options?:string,ignore?:boolean,css?:FieldCss,meta?:{ [index:string]: string; }}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    id;
+    /** @type {string} */
+    name;
+    /** @type {string} */
+    type;
+    /** @type {string} */
+    value;
+    /** @type {string} */
+    placeholder;
+    /** @type {string} */
+    help;
+    /** @type {string} */
+    label;
+    /** @type {string} */
+    title;
+    /** @type {string} */
+    size;
+    /** @type {string} */
+    pattern;
+    /** @type {?boolean} */
+    readOnly;
+    /** @type {?boolean} */
+    required;
+    /** @type {?boolean} */
+    disabled;
+    /** @type {string} */
+    autocomplete;
+    /** @type {string} */
+    autofocus;
+    /** @type {string} */
+    min;
+    /** @type {string} */
+    max;
+    /** @type {string} */
+    step;
+    /** @type {?number} */
+    minLength;
+    /** @type {?number} */
+    maxLength;
+    /** @type {string} */
+    accept;
+    /** @type {string} */
+    capture;
+    /** @type {?boolean} */
+    multiple;
+    /** @type {string[]} */
+    allowableValues;
+    /** @type {KeyValuePair<string, string>[]} */
+    allowableEntries;
+    /** @type {string} */
+    options;
+    /** @type {?boolean} */
+    ignore;
+    /** @type {FieldCss} */
+    css;
+    /** @type {{ [index:string]: string; }} */
+    meta;
+}
+export class FormatInfo {
+    /** @param {{method?:string,options?:string,locale?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    method;
+    /** @type {string} */
+    options;
+    /** @type {string} */
+    locale;
+}
+export class RefInfo {
+    /** @param {{model?:string,selfId?:string,refId?:string,refLabel?:string,queryApi?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    model;
+    /** @type {string} */
+    selfId;
+    /** @type {string} */
+    refId;
+    /** @type {string} */
+    refLabel;
+    /** @type {string} */
+    queryApi;
+}
+export class MetadataPropertyType {
+    /** @param {{name?:string,type?:string,namespace?:string,isValueType?:boolean,isEnum?:boolean,isPrimaryKey?:boolean,genericArgs?:string[],value?:string,description?:string,dataMember?:MetadataDataMember,readOnly?:boolean,paramType?:string,displayType?:string,isRequired?:boolean,allowableValues?:string[],allowableMin?:number,allowableMax?:number,attributes?:MetadataAttribute[],uploadTo?:string,input?:InputInfo,format?:FormatInfo,ref?:RefInfo}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    name;
+    /** @type {string} */
+    type;
+    /** @type {string} */
+    namespace;
+    /** @type {?boolean} */
+    isValueType;
+    /** @type {?boolean} */
+    isEnum;
+    /** @type {?boolean} */
+    isPrimaryKey;
+    /** @type {string[]} */
+    genericArgs;
+    /** @type {string} */
+    value;
+    /** @type {string} */
+    description;
+    /** @type {MetadataDataMember} */
+    dataMember;
+    /** @type {?boolean} */
+    readOnly;
+    /** @type {string} */
+    paramType;
+    /** @type {string} */
+    displayType;
+    /** @type {?boolean} */
+    isRequired;
+    /** @type {string[]} */
+    allowableValues;
+    /** @type {?number} */
+    allowableMin;
+    /** @type {?number} */
+    allowableMax;
+    /** @type {MetadataAttribute[]} */
+    attributes;
+    /** @type {string} */
+    uploadTo;
+    /** @type {InputInfo} */
+    input;
+    /** @type {FormatInfo} */
+    format;
+    /** @type {RefInfo} */
+    ref;
+}
+export class MetadataAttribute {
+    /** @param {{name?:string,constructorArgs?:MetadataPropertyType[],args?:MetadataPropertyType[]}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    name;
+    /** @type {MetadataPropertyType[]} */
+    constructorArgs;
+    /** @type {MetadataPropertyType[]} */
+    args;
+}
+export class RequestLogEntry {
+    /** @param {{id?:number,traceId?:string,operationName?:string,dateTime?:string,statusCode?:number,statusDescription?:string,httpMethod?:string,absoluteUri?:string,pathInfo?:string,requestBody?:string,requestDto?:Object,userAuthId?:string,sessionId?:string,ipAddress?:string,forwardedFor?:string,referer?:string,headers?:{ [index:string]: string; },formData?:{ [index:string]: string; },items?:{ [index:string]: string; },responseHeaders?:{ [index:string]: string; },session?:Object,responseDto?:Object,errorResponse?:Object,exceptionSource?:string,exceptionData?:any,requestDuration?:string,meta?:{ [index:string]: string; }}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {string} */
+    traceId;
+    /** @type {string} */
+    operationName;
+    /** @type {string} */
+    dateTime;
+    /** @type {number} */
+    statusCode;
+    /** @type {string} */
+    statusDescription;
+    /** @type {string} */
+    httpMethod;
+    /** @type {string} */
+    absoluteUri;
+    /** @type {string} */
+    pathInfo;
+    /** @type {string} */
+    requestBody;
+    /** @type {Object} */
+    requestDto;
+    /** @type {string} */
+    userAuthId;
+    /** @type {string} */
+    sessionId;
+    /** @type {string} */
+    ipAddress;
+    /** @type {string} */
+    forwardedFor;
+    /** @type {string} */
+    referer;
+    /** @type {{ [index:string]: string; }} */
+    headers;
+    /** @type {{ [index:string]: string; }} */
+    formData;
+    /** @type {{ [index:string]: string; }} */
+    items;
+    /** @type {{ [index:string]: string; }} */
+    responseHeaders;
+    /** @type {Object} */
+    session;
+    /** @type {Object} */
+    responseDto;
+    /** @type {Object} */
+    errorResponse;
+    /** @type {string} */
+    exceptionSource;
+    /** @type {any} */
+    exceptionData;
+    /** @type {string} */
+    requestDuration;
+    /** @type {{ [index:string]: string; }} */
+    meta;
+}
+export class AnalyticsLogInfo {
+    /** @param {{id?:number,dateTime?:string,browser?:string,device?:string,bot?:string,op?:string,userId?:string,userName?:string,apiKey?:string,ip?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {string} */
+    dateTime;
+    /** @type {string} */
+    browser;
+    /** @type {string} */
+    device;
+    /** @type {string} */
+    bot;
+    /** @type {string} */
+    op;
+    /** @type {string} */
+    userId;
+    /** @type {string} */
+    userName;
+    /** @type {string} */
+    apiKey;
+    /** @type {string} */
+    ip;
+}
 export class RequestSummary {
-    /** @param {{name?:string,requests?:number,requestLength?:number,duration?:number,status?:{ [index:number]: number; }}} [init] */
+    /** @param {{name?:string,totalRequests?:number,totalRequestLength?:number,minRequestLength?:number,maxRequestLength?:number,totalDuration?:number,minDuration?:number,maxDuration?:number,status?:{ [index:number]: number; },durations?:{ [index:string]: number; },apis?:{ [index:string]: number; },users?:{ [index:string]: number; },ips?:{ [index:string]: number; },apiKeys?:{ [index:string]: number; }}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {string} */
     name;
     /** @type {number} */
-    requests;
+    totalRequests;
     /** @type {number} */
-    requestLength;
+    totalRequestLength;
     /** @type {number} */
-    duration;
+    minRequestLength;
+    /** @type {number} */
+    maxRequestLength;
+    /** @type {number} */
+    totalDuration;
+    /** @type {number} */
+    minDuration;
+    /** @type {number} */
+    maxDuration;
     /** @type {{ [index:number]: number; }} */
     status;
+    /** @type {{ [index:string]: number; }} */
+    durations;
+    /** @type {{ [index:string]: number; }} */
+    apis;
+    /** @type {{ [index:string]: number; }} */
+    users;
+    /** @type {{ [index:string]: number; }} */
+    ips;
+    /** @type {{ [index:string]: number; }} */
+    apiKeys;
+}
+export class AnalyticsReports {
+    /** @param {{id?:number,created?:string,version?:number,apis?:{ [index:string]: RequestSummary; },users?:{ [index:string]: RequestSummary; },tags?:{ [index:string]: RequestSummary; },status?:{ [index:string]: RequestSummary; },days?:{ [index:string]: RequestSummary; },apiKeys?:{ [index:string]: RequestSummary; },ips?:{ [index:string]: RequestSummary; },browsers?:{ [index:string]: RequestSummary; },devices?:{ [index:string]: RequestSummary; },bots?:{ [index:string]: RequestSummary; },durations?:{ [index:string]: number; }}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {number} */
+    id;
+    /** @type {string} */
+    created;
+    /** @type {number} */
+    version;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    apis;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    users;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    tags;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    status;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    days;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    apiKeys;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    ips;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    browsers;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    devices;
+    /** @type {{ [index:string]: RequestSummary; }} */
+    bots;
+    /** @type {{ [index:string]: number; }} */
+    durations;
+}
+/** @typedef TKey {any} */
+/** @typedef  TValue {any} */
+export class KeyValuePair {
+    /** @param {{key?:TKey,value?:TValue}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {TKey} */
+    key;
+    /** @type {TValue} */
+    value;
 }
 export class AdminDataResponse {
     /** @param {{pageStats?:PageStats[]}} [init] */
@@ -1849,31 +2149,47 @@ export class AdminCancelJobsResponse {
     /** @type {?ResponseStatus} */
     responseStatus;
 }
-export class AnalyticsReports {
-    /** @param {{apis?:{ [index:string]: RequestSummary; },users?:{ [index:string]: RequestSummary; },tags?:{ [index:string]: RequestSummary; },status?:{ [index:string]: RequestSummary; },days?:{ [index:string]: RequestSummary; },apiKeys?:{ [index:string]: RequestSummary; },ipAddresses?:{ [index:string]: RequestSummary; },durationRange?:{ [index:string]: number; }}} [init] */
+export class AdminDatabaseResponse {
+    /** @param {{results?:{ [index:string]: Object; }[],total?:number,columns?:MetadataPropertyType[],responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
-    /** @type {{ [index:string]: RequestSummary; }} */
-    apis;
-    /** @type {{ [index:string]: RequestSummary; }} */
-    users;
-    /** @type {{ [index:string]: RequestSummary; }} */
-    tags;
-    /** @type {{ [index:string]: RequestSummary; }} */
-    status;
-    /** @type {{ [index:string]: RequestSummary; }} */
-    days;
-    /** @type {{ [index:string]: RequestSummary; }} */
-    apiKeys;
-    /** @type {{ [index:string]: RequestSummary; }} */
-    ipAddresses;
-    /** @type {{ [index:string]: number; }} */
-    durationRange;
+    /** @type {{ [index:string]: Object; }[]} */
+    results = [];
+    /** @type {?number} */
+    total;
+    /** @type {?MetadataPropertyType[]} */
+    columns;
+    /** @type {?ResponseStatus} */
+    responseStatus;
 }
-export class GetApiAnalyticsResponse {
-    /** @param {{results?:{ [index:string]: number; }}} [init] */
+export class RequestLogsResponse {
+    /** @param {{results?:RequestLogEntry[],usage?:{ [index:string]: string; },total?:number,responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
-    /** @type {{ [index:string]: number; }} */
+    /** @type {RequestLogEntry[]} */
     results;
+    /** @type {{ [index:string]: string; }} */
+    usage;
+    /** @type {number} */
+    total;
+    /** @type {ResponseStatus} */
+    responseStatus;
+}
+export class GetAnalyticsInfoResponse {
+    /** @param {{months?:string[],result?:AnalyticsLogInfo,responseStatus?:ResponseStatus}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string[]} */
+    months;
+    /** @type {AnalyticsLogInfo} */
+    result;
+    /** @type {ResponseStatus} */
+    responseStatus;
+}
+export class GetAnalyticsReportsResponse {
+    /** @param {{result?:AnalyticsReports,responseStatus?:ResponseStatus}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {AnalyticsReports} */
+    result;
+    /** @type {ResponseStatus} */
+    responseStatus;
 }
 export class AdminData {
     constructor(init) { Object.assign(this, init) }
@@ -2140,12 +2456,20 @@ export class ImageWithMask {
     createResponse() { return new ArtifactGenerationResponse() }
 }
 export class ImageToText {
-    /** @param {{image?:string,refId?:string,tag?:string}} [init] */
+    /** @param {{image?:string,model?:string,prompt?:string,refId?:string,tag?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /**
      * @type {string}
      * @description The image to convert to text */
     image;
+    /**
+     * @type {?string}
+     * @description Whether to use a Vision Model for the request */
+    model;
+    /**
+     * @type {?string}
+     * @description Prompt for the vision model */
+    prompt;
     /**
      * @type {?string}
      * @description Optional client-provided identifier for the request */
@@ -3627,10 +3951,12 @@ export class Authenticate {
     createResponse() { return new AuthenticateResponse() }
 }
 export class AdminQueryApiKeys {
-    /** @param {{id?:number,search?:string,userId?:string,userName?:string,orderBy?:string,skip?:number,take?:number}} [init] */
+    /** @param {{id?:number,apiKey?:string,search?:string,userId?:string,userName?:string,orderBy?:string,skip?:number,take?:number}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {?number} */
     id;
+    /** @type {string} */
+    apiKey;
     /** @type {string} */
     search;
     /** @type {string} */
@@ -3833,6 +4159,29 @@ export class AdminCancelJobs {
     getMethod() { return 'GET' }
     createResponse() { return new AdminCancelJobsResponse() }
 }
+export class AdminDatabase {
+    /** @param {{db?:string,schema?:string,table?:string,fields?:string[],take?:number,skip?:number,orderBy?:string,include?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?string} */
+    db;
+    /** @type {?string} */
+    schema;
+    /** @type {?string} */
+    table;
+    /** @type {?string[]} */
+    fields;
+    /** @type {?number} */
+    take;
+    /** @type {?number} */
+    skip;
+    /** @type {?string} */
+    orderBy;
+    /** @type {?string} */
+    include;
+    getTypeName() { return 'AdminDatabase' }
+    getMethod() { return 'GET' }
+    createResponse() { return new AdminDatabaseResponse() }
+}
 export class DeleteMediaProvider {
     /** @param {{id?:number,name?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -3844,26 +4193,229 @@ export class DeleteMediaProvider {
     getMethod() { return 'DELETE' }
     createResponse() { return new IdResponse() }
 }
-export class GetAnalyticsReports {
-    /** @param {{month?:string}} [init] */
+export class RequestLogs {
+    /** @param {{beforeSecs?:number,afterSecs?:number,operationName?:string,ipAddress?:string,forwardedFor?:string,userAuthId?:string,sessionId?:string,referer?:string,pathInfo?:string,bearerToken?:string,ids?:number[],beforeId?:number,afterId?:number,hasResponse?:boolean,withErrors?:boolean,enableSessionTracking?:boolean,enableResponseTracking?:boolean,enableErrorTracking?:boolean,durationLongerThan?:string,durationLessThan?:string,skip?:number,take?:number,orderBy?:string,month?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
+    /** @type {?number} */
+    beforeSecs;
+    /** @type {?number} */
+    afterSecs;
+    /** @type {string} */
+    operationName;
+    /** @type {string} */
+    ipAddress;
+    /** @type {string} */
+    forwardedFor;
+    /** @type {string} */
+    userAuthId;
+    /** @type {string} */
+    sessionId;
+    /** @type {string} */
+    referer;
+    /** @type {string} */
+    pathInfo;
+    /** @type {string} */
+    bearerToken;
+    /** @type {number[]} */
+    ids;
+    /** @type {?number} */
+    beforeId;
+    /** @type {?number} */
+    afterId;
+    /** @type {?boolean} */
+    hasResponse;
+    /** @type {?boolean} */
+    withErrors;
+    /** @type {?boolean} */
+    enableSessionTracking;
+    /** @type {?boolean} */
+    enableResponseTracking;
+    /** @type {?boolean} */
+    enableErrorTracking;
+    /** @type {?string} */
+    durationLongerThan;
+    /** @type {?string} */
+    durationLessThan;
+    /** @type {number} */
+    skip;
+    /** @type {?number} */
+    take;
+    /** @type {string} */
+    orderBy;
     /** @type {?string} */
     month;
-    getTypeName() { return 'GetAnalyticsReports' }
+    getTypeName() { return 'RequestLogs' }
     getMethod() { return 'GET' }
-    createResponse() { return new AnalyticsReports() }
+    createResponse() { return new RequestLogsResponse() }
 }
-export class GetApiAnalytics {
-    /** @param {{month?:string,type?:AnalyticsType,value?:string}} [init] */
+export class GetAnalyticsInfo {
+    /** @param {{month?:string,type?:string,op?:string,apiKey?:string,userId?:string,ip?:string}} [init] */
     constructor(init) { Object.assign(this, init) }
     /** @type {?string} */
     month;
-    /** @type {?AnalyticsType} */
+    /** @type {string} */
     type;
     /** @type {string} */
-    value;
-    getTypeName() { return 'GetApiAnalytics' }
+    op;
+    /** @type {string} */
+    apiKey;
+    /** @type {string} */
+    userId;
+    /** @type {string} */
+    ip;
+    getTypeName() { return 'GetAnalyticsInfo' }
     getMethod() { return 'GET' }
-    createResponse() { return new GetApiAnalyticsResponse() }
+    createResponse() { return new GetAnalyticsInfoResponse() }
+}
+export class GetAnalyticsReports {
+    /** @param {{month?:string,filter?:string,value?:string,force?:boolean}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?string} */
+    month;
+    /** @type {string} */
+    filter;
+    /** @type {string} */
+    value;
+    /** @type {?boolean} */
+    force;
+    getTypeName() { return 'GetAnalyticsReports' }
+    getMethod() { return 'GET' }
+    createResponse() { return new GetAnalyticsReportsResponse() }
 }
 
+/* Manually included DTO classes - do not remove*/
+export class AdminUserBase {
+    /** @param {{userName?:string,firstName?:string,lastName?:string,displayName?:string,email?:string,password?:string,profileUrl?:string,phoneNumber?:string,userAuthProperties?:{ [index:string]: string; },meta?:{ [index:string]: string; }}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    userName;
+    /** @type {string} */
+    firstName;
+    /** @type {string} */
+    lastName;
+    /** @type {string} */
+    displayName;
+    /** @type {string} */
+    email;
+    /** @type {string} */
+    password;
+    /** @type {string} */
+    profileUrl;
+    /** @type {string} */
+    phoneNumber;
+    /** @type {{ [index:string]: string; }} */
+    userAuthProperties;
+    /** @type {{ [index:string]: string; }} */
+    meta;
+}
+export class AdminGetUser {
+    /** @param {{id?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    id;
+    getTypeName() { return 'AdminGetUser' }
+    getMethod() { return 'GET' }
+    createResponse() { return new AdminUserResponse() }
+}
+export class AdminQueryUsers {
+    /** @param {{query?:string,orderBy?:string,skip?:number,take?:number}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    query;
+    /** @type {string} */
+    orderBy;
+    /** @type {?number} */
+    skip;
+    /** @type {?number} */
+    take;
+    getTypeName() { return 'AdminQueryUsers' }
+    getMethod() { return 'GET' }
+    createResponse() { return new AdminUsersResponse() }
+}
+export class AdminCreateUser extends AdminUserBase {
+    /** @param {{roles?:string[],permissions?:string[],userName?:string,firstName?:string,lastName?:string,displayName?:string,email?:string,password?:string,profileUrl?:string,phoneNumber?:string,userAuthProperties?:{ [index:string]: string; },meta?:{ [index:string]: string; }}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /** @type {string[]} */
+    roles;
+    /** @type {string[]} */
+    permissions;
+    getTypeName() { return 'AdminCreateUser' }
+    getMethod() { return 'POST' }
+    createResponse() { return new AdminUserResponse() }
+}
+export class AdminUpdateUser extends AdminUserBase {
+    /** @param {{id?:string,lockUser?:boolean,unlockUser?:boolean,lockUserUntil?:string,addRoles?:string[],removeRoles?:string[],addPermissions?:string[],removePermissions?:string[],addClaims?:Property[],removeClaims?:Property[],userName?:string,firstName?:string,lastName?:string,displayName?:string,email?:string,password?:string,profileUrl?:string,phoneNumber?:string,userAuthProperties?:{ [index:string]: string; },meta?:{ [index:string]: string; }}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /** @type {string} */
+    id;
+    /** @type {?boolean} */
+    lockUser;
+    /** @type {?boolean} */
+    unlockUser;
+    /** @type {?string} */
+    lockUserUntil;
+    /** @type {string[]} */
+    addRoles;
+    /** @type {string[]} */
+    removeRoles;
+    /** @type {string[]} */
+    addPermissions;
+    /** @type {string[]} */
+    removePermissions;
+    /** @type {Property[]} */
+    addClaims;
+    /** @type {Property[]} */
+    removeClaims;
+    getTypeName() { return 'AdminUpdateUser' }
+    getMethod() { return 'PUT' }
+    createResponse() { return new AdminUserResponse() }
+}
+export class AdminDeleteUser {
+    /** @param {{id?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    id;
+    getTypeName() { return 'AdminDeleteUser' }
+    getMethod() { return 'DELETE' }
+    createResponse() { return new AdminDeleteUserResponse() }
+}
+export class AdminQueryRequestLogs extends QueryDb {
+    /** @param {{month?:string,skip?:number,take?:number,orderBy?:string,orderByDesc?:string,include?:string,fields?:string,meta?:{ [index:string]: string; }}} [init] */
+    constructor(init) { super(init); Object.assign(this, init) }
+    /** @type {?string} */
+    month;
+    getTypeName() { return 'AdminQueryRequestLogs' }
+    getMethod() { return 'GET' }
+    createResponse() { return new QueryResponse() }
+}
+export class AdminProfiling {
+    /** @param {{source?:string,eventType?:string,threadId?:number,traceId?:string,userAuthId?:string,sessionId?:string,tag?:string,skip?:number,take?:number,orderBy?:string,withErrors?:boolean,pending?:boolean}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {?string} */
+    source;
+    /** @type {?string} */
+    eventType;
+    /** @type {?number} */
+    threadId;
+    /** @type {?string} */
+    traceId;
+    /** @type {?string} */
+    userAuthId;
+    /** @type {?string} */
+    sessionId;
+    /** @type {?string} */
+    tag;
+    /** @type {number} */
+    skip;
+    /** @type {?number} */
+    take;
+    /** @type {?string} */
+    orderBy;
+    /** @type {?boolean} */
+    withErrors;
+    /** @type {?boolean} */
+    pending;
+    getTypeName() { return 'AdminProfiling' }
+    getMethod() { return 'POST' }
+    createResponse() { return new AdminProfilingResponse() }
+}

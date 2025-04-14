@@ -2,6 +2,7 @@ using System.Data;
 using AiServer.ServiceInterface;
 using AiServer.ServiceInterface.Generation;
 using AiServer.ServiceModel;
+using ServiceStack.Admin;
 using ServiceStack.Configuration;
 using ServiceStack.Data;
 using ServiceStack.IO;
@@ -175,7 +176,18 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
             typeof(AdminJobDashboard),
             typeof(AdminRequeueFailedJobs),
             typeof(AdminGetJobProgress),
-            typeof(QueryPrompts),
+            typeof(QueryPrompts),            
+            
+            typeof(Authenticate),typeof(AuthenticateResponse),
+            typeof(GetAccessToken),typeof(GetAccessTokenResponse),
+            typeof(AdminDatabase),typeof(AdminDatabaseResponse),
+            typeof(AdminCreateUser),typeof(AdminDeleteUser),typeof(AdminDeleteUserResponse),typeof(AdminGetUser),typeof(AdminUserResponse),
+            typeof(AdminQueryUsers),typeof(AdminUpdateUser),typeof(AdminUserBase),typeof(AdminUsersResponse),
+            typeof(AdminGetRoles),typeof(AdminGetRolesResponse),typeof(AdminGetRole),typeof(AdminGetRoleResponse),
+            typeof(AdminCreateRole),typeof(AdminUpdateRole),typeof(AdminDeleteRole),
+            typeof(RequestLogs),typeof(RequestLogsResponse),
+            typeof(GetValidationRules),typeof(ModifyValidationRules),typeof(ValidationRule),typeof(ValidateRule),
+            typeof(GetValidationRulesResponse),
         ];
 
         // Avoid having to re-renter AuthSecret and API Keys during Development

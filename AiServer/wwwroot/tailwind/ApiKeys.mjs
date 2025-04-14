@@ -2,6 +2,7 @@ import { computed, inject, onMounted, onUnmounted, ref, watch } from "vue"
 import { useClient, useFormatters, css } from "@servicestack/vue";
 import { ApiResult, apiValueFmt, humanify, mapGet } from "@servicestack/client"
 import { AdminQueryApiKeys } from "dtos"
+
 export const ApiKeys = {
     template:`
       <section id="apikeys">
@@ -54,6 +55,7 @@ export const ApiKeys = {
                     @row-selected="rowSelected" :is-selected="row => routes.edit === row.id"
                     :rowClass="(row,i) => !row.active ? 'cursor-pointer hover:bg-yellow-50 bg-red-100' : css.grid.getTableRowClass('stripedRows', i, routes.edit === row.id, true)"
                     :selectedColumns="columns">
+
             <template #id-header><SortableColumn name="id" /></template>
             <template #userName-header><SortableColumn name="userName" /></template>
             <template #name-header><SortableColumn name="name" /></template>
@@ -88,14 +90,17 @@ export const ApiKeys = {
     </section>
     `,
     setup(props) {
+
         const routes = inject('routes')
         const store = inject('store')
         const server = inject('server')
         const client = useClient()
         const { formatDate, relativeTime } = useFormatters()
         const renderKey = ref(1)
+
         const request = ref(new AdminQueryApiKeys())
         const api = ref(new ApiResult())
+
         const results = computed(() => api.value?.response?.results || [])
         const columns = 'id,userName,name,visibleKey,createdDate,expiryDate'.split(',')
         if (server.plugins.apiKey.scopes.length) {
@@ -105,18 +110,22 @@ export const ApiKeys = {
             columns.push('features')
         }
         columns.push('lastUsedDate')
+
         const pageSize = 25
         const page = computed(() => routes.page ? parseInt(routes.page) : 0)
         const link = computed(() => store.adminLink('apikeys'))
         const loading = computed(() => client.loading.value)
+
         function onKeyDown(e) {
             if (e.key === 'Escape' && (routes.new || routes.edit)) {
                 close()
             }
         }
+
         function close() {
             routes.to({ new:null, edit:null })
         }
+
         function toggle(row) {
             if (routes.edit !== row.Id)
                 routes.to({ new:null, edit:row.Id, $on:nav })
@@ -124,16 +133,20 @@ export const ApiKeys = {
                 routes.to({ new:null, edit:null })
         }
         function expanded(id) { return routes.edit === id }
+
         async function formSearch() {
             routes.to({ new:null, edit:null, page:0, q:request.value.search })
             await search()
         }
+
         async function search() {
             request.value.orderBy = routes.sort ? routes.sort : '-id'
             request.value.skip = routes.page > 0 ? pageSize * Number(routes.page || 1) : 0
             request.value.take = pageSize
+
             api.value = await client.api(request.value, { jsconfig: 'eccn' })
         }
+
         function sortBy(field) {
             return routes.sort === field
                 ? '-' + field
@@ -145,6 +158,7 @@ export const ApiKeys = {
         watch(() => routes.sort, () => {
             search()
         })
+
         async function update() {
             request.value = new AdminQueryApiKeys({ search:routes.q })
             await search()
@@ -156,17 +170,21 @@ export const ApiKeys = {
         onUnmounted(() => {
             document.removeEventListener('keydown', onKeyDown)
         })
+
         function nav() {
             renderKey.value++
         }
+
         async function done() {
             routes.to({ 'new':null, edit:null})
             await search()
         }
+
         function rowSelected(row) {
             routes.to({ 'new':null, edit: routes.edit === row.id ? null : row.id })
             renderKey.value++
         }
+
         return {
             css,
             client,
