@@ -222,7 +222,7 @@
         "model": "gemini-flash-1.5-8b"
       },
       {
-        "model": "gemini-pro-2.0"
+        "model": "gemini-pro-2.5"
       },
       {
         "model": "gemini-flash-2.0"

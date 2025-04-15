@@ -1176,13 +1176,6 @@
     "vision": true
   },
   {
-    "id": "gemini-pro-2.0",
-    "tags": [],
-    "website": "https://openrouter.ai/google/gemini-2.0-pro-exp-02-05:free",
-    "description": "Gemini 2.0 Pro Experimental is a bleeding-edge version of the Gemini 2.0 Pro model. Because it's currently experimental, it will be heavily rate-limited by Google",
-    "icon": "/img/models/gemini-pro.svg"
-  },
-  {
     "id": "gemini-flash-2.0",
     "tags": [],
     "website": "https://openrouter.ai/google/gemini-2.0-flash-001",
