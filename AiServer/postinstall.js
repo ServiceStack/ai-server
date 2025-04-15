@@ -63,7 +63,7 @@ Object.keys(files).forEach(dir => {
     let value = ''
     let i = 0;
     for await (const line of rl) {
-        if (line.trim() === '') continue
+        //if (line.trim() === '') continue
         if (!afterPrompts && !line.startsWith('# Prompts')) continue
         afterPrompts = true
         
@@ -76,7 +76,7 @@ Object.keys(files).forEach(dir => {
             if (line.startsWith('>')) {
                 let trimmed = line.substring(1).trim()
                 if (trimmed.endsWith('<br/>')) {
-                    trimmed = trimmed.substring(0, trimmed.length - 5)
+                    trimmed = trimmed.substring(0, trimmed.length - 5).trim()
                 }
                 value += trimmed + '\n'
             }
