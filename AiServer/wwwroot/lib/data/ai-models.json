@@ -475,12 +475,6 @@
     "icon": "/img/models/llama.svg"
   },
   {
-    "id": "quasar",
-    "website": "https://openrouter.ai/openrouter/quasar-alpha",
-    "description": "This is a cloaked model provided to the community to gather feedback. It’s a powerful, all-purpose model supporting long-context tasks, including code generation. All prompts and completions for this model are logged by the provider as well as OpenRouter.",
-    "icon": "/img/models/gpt-4.svg"
-  },
-  {
     "id": "llava",
     "tags": [
       "7b",
@@ -1257,6 +1251,27 @@
     "tags": [],
     "website": "https://openrouter.ai/models/openai/gpt-4o-mini",
     "description": "GPT-4o mini is OpenAI's newest model after GPT-4 Omni, supporting both text and image inputs with text outputs.",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
+    "id": "gpt-4.1",
+    "tags": [],
+    "website": "https://openrouter.ai/openai/gpt-4.1",
+    "description": "GPT-4.1 is a flagship large language model optimized for advanced instruction following, real-world software engineering, and long-context reasoning. It supports a 1 million token context window and outperforms GPT-4o and GPT-4.5 across coding (54.6% SWE-bench Verified), instruction compliance (87.4% IFEval), and multimodal understanding benchmarks. It is tuned for precise code diffs, agent reliability, and high recall in large document contexts, making it ideal for agents, IDE tooling, and enterprise knowledge retrieval.",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
+    "id": "gpt-4.1-mini",
+    "tags": [],
+    "website": "https://openrouter.ai/openai/gpt-4.1-mini",
+    "description": "GPT-4.1 Mini is a mid-sized model delivering performance competitive with GPT-4o at substantially lower latency and cost. It retains a 1 million token context window and scores 45.1% on hard instruction evals, 35.8% on MultiChallenge, and 84.1% on IFEval. Mini also shows strong coding ability (e.g., 31.6% on Aider’s polyglot diff benchmark) and vision understanding, making it suitable for interactive applications with tight performance constraints.",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
+    "id": "gpt-4.1-nano",
+    "tags": [],
+    "website": "https://openrouter.ai/openai/gpt-4.1-nano",
+    "description": "For tasks that demand low latency, GPT‑4.1 nano is the fastest and cheapest model in the GPT-4.1 series. It delivers exceptional performance at a small size with its 1 million token context window, and scores 80.1% on MMLU, 50.3% on GPQA, and 9.8% on Aider polyglot coding – even higher than GPT‑4o mini. It’s ideal for tasks like classification or autocompletion.",
     "icon": "/img/models/gpt-4.svg"
   },
   {
