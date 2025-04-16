@@ -222,5 +222,12 @@
       "claude-3-5-sonnet": "claude-3-5-sonnet-latest",
       "claude-3-5-haiku": "claude-3-5-haiku-latest"
     }
+  },
+  {
+    "id": "Custom",
+    "provider": "CustomOpenAiProvider",
+    "website": "https://platform.openai.com/docs/api-reference/chat",
+    "icon": "/img/providers/custom.svg",
+    "apiBaseUrl": "http://localhost:8080/v1/chat/completions"
   }
 ]

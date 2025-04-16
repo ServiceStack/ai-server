@@ -11,6 +11,14 @@ public class OpenAiProvider(ILogger<OpenAiProvider> log) : OpenAiProviderBase(lo
 {
 }
 
+public class CustomAiProvider(ILogger<OpenAiProvider> log) : OpenAiProviderBase(log)
+{
+    public override Task<OpenAiChatResult> ChatAsync(AiProvider provider, OpenAiChat request, CancellationToken token = default)
+    {
+        return base.ChatAsync(provider, request, token);
+    }
+}
+
 public class OllamaAiProvider(ILogger<OllamaAiProvider> log) : OpenAiProviderBase(log), IOllamaAiProvider
 {
     protected virtual async Task<OllamaGenerateResponse> SendOllamaGenerateRequestAsync(AiProvider provider, OllamaGenerate request, 
@@ -141,6 +149,8 @@ public class OpenAiProviderBase(ILogger log) : IOpenAiProvider
     {
         var apiBaseUrl = aiProvider.ApiBaseUrl ?? aiProvider.AiType?.ApiBaseUrl
             ?? throw new NotSupportedException($"[{aiProvider.Name}] No ApiBaseUrl found in AiProvider or AiType");
+        if (aiProvider.AiTypeId == "Custom")
+            return apiBaseUrl;
         if (taskType == TaskType.OllamaGenerate)
             return apiBaseUrl.CombineWith("/api/generate");
         if (taskType == TaskType.OpenAiChat)

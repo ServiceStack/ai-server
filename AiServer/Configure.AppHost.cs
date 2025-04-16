@@ -54,6 +54,7 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
             services.AddSingleton<OllamaAiProvider>();
             services.AddSingleton<GoogleAiProvider>();
             services.AddSingleton<AnthropicAiProvider>();
+            services.AddSingleton<CustomAiProvider>();
             services.AddSingleton<AiProviderFactory>();
 
             services.AddSingleton(new ComfyMediaProviderOptions

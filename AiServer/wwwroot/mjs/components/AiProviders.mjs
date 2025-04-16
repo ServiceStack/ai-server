@@ -148,7 +148,11 @@ export default {
             </template>
             <template #formfooter="{ form, formInstance, apis, type, model, id, updateModel }">
                 <div class="pl-6">
-                    <SelectModels v-if="model" :aiTypeId="model?.aiTypeId" :edit="model" @update:modelValue="updateModel(model)" />
+                    <div v-if="providerType=='Custom'" class="pr-6">
+                        <TagInput v-if="model" v-model="model.selectedModels" label="Custom Models" @update:modelValue="updateModel(model)"  />                         
+                        <TagInput v-else v-model="formModel.selectedModels" label="Custom Models" @update:modelValue="updateModel(model)"  />                         
+                    </div>
+                    <SelectModels v-else-if="model" :aiTypeId="model?.aiTypeId" :edit="model" @update:modelValue="updateModel(model)" />
                     <SelectModels v-else-if="formModel" :aiTypeId="providerType" :edit="formInstance.model" @update:modelValue="formInstance.setModel" />
                 </div>
             </template>

@@ -42,9 +42,7 @@ public class OpenAiChatServices(
             .SelectMany(x => x.Models.Select(m => appData.GetQualifiedModel(m.Model)))
             .Where(x => x != null)
             .Select(x => x!)  // Non-null assertion after filtering out null values
-            .Distinct()
-            .OrderBy(x => x)
-            .ToList();
+            .ToSet();
 
         if (request.Vision == true)
         {
@@ -53,12 +51,32 @@ public class OpenAiChatServices(
                 .Where(x => x.Vision == true)
                 .Select(x => x.Id)
                 .ToSet();
-            activeModels = activeModels.Where(x => allVisionModels.Contains(x.LeftPart(':'))).ToList();
+            activeModels = activeModels.Where(x => allVisionModels.Contains(x.LeftPart(':'))).ToSet();
+        }
+
+        var customModels = appData.AiProviders
+            .Where(x => x.AiTypeId == "Custom")
+            .SelectMany(x => x.SelectedModels);
+        foreach (var customModel in customModels)
+        {
+            activeModels.Add(customModel);
         }
         
         return new StringsResponse
         {
-            Results = activeModels 
+            Results = activeModels.OrderBy(x => x).ToList() 
+        };
+    }
+
+    public object Any(ActiveCustomAiModels request)
+    {
+        return new StringsResponse
+        {
+            Results = appData.AiProviders
+                .Where(x => x.AiTypeId == "Custom")
+                .SelectMany(x => x.SelectedModels)
+                .OrderBy(x => x)
+                .ToList() 
         };
     }
     
@@ -102,6 +120,23 @@ public class OpenAiChatServices(
                     return new HttpResult(file, MimeTypes.GetMimeType(file.Extension));
                 }
             }
+        }
+        
+        var customModels = appData.AiProviders
+            .Where(x => x.AiTypeId == "Custom")
+            .SelectMany(x => x.SelectedModels)
+            .ToSet(StringComparer.OrdinalIgnoreCase);
+
+        if (customModels.Contains(model))
+        {
+            return new HttpResult(
+                """
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <path fill="currentColor" d="M19 22v-2h1v-7h-1v-2h4v2h-1v7h1v2zm-3.5 0h2L14 11h-3L7.503 22h2l.601-2h4.778zm-4.794-4l1.628-5.411l.256-.003L14.264 18zM32 4h-4V0h-2v4h-4v2h4v4h2V6h4zm-2 8h2v2h-2zM18 0h2v2h-2z"/>
+                    <path fill="currentColor" d="M32 32H0V0h14v2H2v28h28V18h2z"/>
+                </svg>
+                """, 
+                MimeTypes.ImageSvg);
         }
         
         return new HttpResult(
@@ -217,11 +252,19 @@ public class OpenAiChatServices(
         
         if (request.Request.Messages.IsNullOrEmpty())
             throw new ArgumentNullException(nameof(request.Request.Messages));
-    
+
         var qualifiedModel = appData.GetQualifiedModel(request.Request.Model);
-        if (qualifiedModel == null)
+
+        var customModel = appData.AiProviders
+            .Where(x => x.AiTypeId == "Custom")
+            .SelectMany(x => x.SelectedModels)
+            .FirstOrDefault(x => x == request.Request.Model);
+        
+        if (qualifiedModel == null && customModel == null)
             throw HttpError.NotFound($"Model {request.Request.Model} not found");
 
+        qualifiedModel ??= customModel;
+        
         var queueCounts = jobs.GetWorkerQueueCounts();
         var providerQueueCount = int.MaxValue;
         AiProvider? useProvider = null;
@@ -497,13 +540,23 @@ public class OpenAiChatServices(
             request.Models ??= [];
             foreach (var selectedModel in request.SelectedModels)
             {
-                var qualifiedModel = appData.GetQualifiedModel(selectedModel);
-                if (qualifiedModel == null)
-                    continue;
-                request.Models.Add(new()
+                if (request.AiTypeId == "Custom")
                 {
-                    Model = qualifiedModel
-                });
+                    request.Models.Add(new()
+                    {
+                        Model = selectedModel
+                    });
+                }
+                else
+                {
+                    var qualifiedModel = appData.GetQualifiedModel(selectedModel);
+                    if (qualifiedModel == null)
+                        continue;
+                    request.Models.Add(new()
+                    {
+                        Model = qualifiedModel
+                    });
+                }
             }
         }
         
@@ -515,6 +568,10 @@ public class OpenAiChatServices(
     public object Any(UpdateAiProvider request)
     {
         var ignore = new[] { nameof(request.Id), nameof(request.SelectedModels) };
+        var provider = Db.SingleById<AiProvider>(request.Id);
+        if (provider == null)
+            throw HttpError.NotFound("Provider not found");
+        
         // Only call AutoQuery Update if there's something to update
         IdResponse? response = null;
         if (request.SelectedModels is { Count: > 0 })
@@ -522,13 +579,23 @@ public class OpenAiChatServices(
             request.Models ??= [];
             foreach (var selectedModel in request.SelectedModels)
             {
-                var qualifiedModel = appData.GetQualifiedModel(selectedModel);
-                if (qualifiedModel == null)
-                    continue;
-                request.Models.Add(new()
+                if (provider.AiTypeId == "Custom")
                 {
-                    Model = qualifiedModel
-                });
+                    request.Models.Add(new()
+                    {
+                        Model = selectedModel
+                    });
+                }
+                else
+                {
+                    var qualifiedModel = appData.GetQualifiedModel(selectedModel);
+                    if (qualifiedModel == null)
+                        continue;
+                    request.Models.Add(new()
+                    {
+                        Model = qualifiedModel
+                    });
+                }
             }
         }
         if (request.ToObjectDictionary().HasNonDefaultValues(ignoreKeys:ignore) || Request!.QueryString[Keywords.Reset] != null)

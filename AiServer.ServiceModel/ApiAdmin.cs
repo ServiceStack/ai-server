@@ -19,6 +19,11 @@ public class ActiveAiModels : IGet, IReturn<StringsResponse>
     public bool? Vision { get; set; }
 }
 
+[Tag(Tags.AiInfo)]
+[Api("Active Custom AI Worker Models available in AI Server")]
+public class ActiveCustomAiModels : IGet, IReturn<StringsResponse>
+{
+}
 
 [Tag(Tags.AiInfo)]
 [ValidateApiKey]

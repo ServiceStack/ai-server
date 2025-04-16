@@ -17,7 +17,12 @@ public interface IOllamaAiProvider
     Task<OllamaGenerationResult> GenerateAsync(AiProvider provider, OllamaGenerate request, CancellationToken token = default);
 }
 
-public class AiProviderFactory(OpenAiProvider openAiProvider, OllamaAiProvider ollamaAiProvider, GoogleAiProvider googleProvider, AnthropicAiProvider anthropicAiProvider)
+public class AiProviderFactory(
+    OpenAiProvider openAiProvider, 
+    OllamaAiProvider ollamaAiProvider, 
+    GoogleAiProvider googleProvider, 
+    AnthropicAiProvider anthropicAiProvider,
+    CustomAiProvider customAiProvider)
 {
     public IOpenAiProvider GetOpenAiProvider(AiProviderType aiProviderType=AiProviderType.OpenAiProvider)
     {
@@ -26,6 +31,7 @@ public class AiProviderFactory(OpenAiProvider openAiProvider, OllamaAiProvider o
             AiProviderType.OllamaAiProvider => ollamaAiProvider,
             AiProviderType.GoogleAiProvider => googleProvider,
             AiProviderType.AnthropicAiProvider => anthropicAiProvider,
+            AiProviderType.CustomOpenAiProvider => customAiProvider,
             _ => openAiProvider
         };
     }
