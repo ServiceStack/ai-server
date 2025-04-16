@@ -1,6 +1,6 @@
 /* Options:
-Date: 2025-04-14 14:19:34
-Version: 8.61
+Date: 2025-04-16 20:58:49
+Version: 8.71
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5005
 
@@ -3138,6 +3138,12 @@ export class ActiveAiModels {
     /** @type {?boolean} */
     vision;
     getTypeName() { return 'ActiveAiModels' }
+    getMethod() { return 'GET' }
+    createResponse() { return new StringsResponse() }
+}
+export class ActiveCustomAiModels {
+    constructor(init) { Object.assign(this, init) }
+    getTypeName() { return 'ActiveCustomAiModels' }
     getMethod() { return 'GET' }
     createResponse() { return new StringsResponse() }
 }
