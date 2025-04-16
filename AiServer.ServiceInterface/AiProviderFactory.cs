@@ -22,7 +22,7 @@ public class AiProviderFactory(
     OllamaAiProvider ollamaAiProvider, 
     GoogleAiProvider googleProvider, 
     AnthropicAiProvider anthropicAiProvider,
-    CustomAiProvider customAiProvider)
+    CustomOpenAiProvider customOpenAiProvider)
 {
     public IOpenAiProvider GetOpenAiProvider(AiProviderType aiProviderType=AiProviderType.OpenAiProvider)
     {
@@ -31,7 +31,7 @@ public class AiProviderFactory(
             AiProviderType.OllamaAiProvider => ollamaAiProvider,
             AiProviderType.GoogleAiProvider => googleProvider,
             AiProviderType.AnthropicAiProvider => anthropicAiProvider,
-            AiProviderType.CustomOpenAiProvider => customAiProvider,
+            AiProviderType.CustomOpenAiProvider => customOpenAiProvider,
             _ => openAiProvider
         };
     }

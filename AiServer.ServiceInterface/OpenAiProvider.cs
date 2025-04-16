@@ -11,7 +11,7 @@ public class OpenAiProvider(ILogger<OpenAiProvider> log) : OpenAiProviderBase(lo
 {
 }
 
-public class CustomAiProvider(ILogger<OpenAiProvider> log) : OpenAiProviderBase(log)
+public class CustomOpenAiProvider(ILogger<CustomOpenAiProvider> log) : OpenAiProviderBase(log)
 {
     public override Task<OpenAiChatResult> ChatAsync(AiProvider provider, OpenAiChat request, CancellationToken token = default)
     {

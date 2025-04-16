@@ -14,7 +14,8 @@ public class OpenAiProviderTests
         new OpenAiProvider(new NullLogger<OpenAiProvider>()),
         new OllamaAiProvider(new NullLogger<OllamaAiProvider>()),
         new GoogleAiProvider(new NullLogger<GoogleAiProvider>()),
-        new AnthropicAiProvider(new NullLogger<AnthropicAiProvider>()));
+        new AnthropicAiProvider(new NullLogger<AnthropicAiProvider>()),
+        new CustomOpenAiProvider(new NullLogger<CustomOpenAiProvider>());
 
     [Test]
     public async Task Can_Send_Ollama_Phi3_Request()
