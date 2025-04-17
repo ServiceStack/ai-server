@@ -1282,6 +1282,27 @@
     "icon": "/img/models/gpt-4.svg"
   },
   {
+    "id": "o4-mini",
+    "tags": [],
+    "website": "https://openrouter.ai/openai/o4-mini",
+    "description": "OpenAI o4-mini is a compact reasoning model in the o-series, optimized for fast, cost-efficient performance while retaining strong multimodal and agentic capabilities. It supports tool use and demonstrates competitive reasoning and coding performance across benchmarks like AIME (99.5% with Python) and SWE-bench, outperforming its predecessor o3-mini and even approaching o3 in some domains.",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
+    "id": "o4-mini-high",
+    "tags": [],
+    "website": "https://openrouter.ai/openai/o4-mini-high",
+    "description": "o3 is a well-rounded and powerful model across domains. It sets a new standard for math, science, coding, and visual reasoning tasks. It also excels at technical writing and instruction-following. Use it to think through multi-step problems that involve analysis across text, code, and images.",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
+    "id": "o3",
+    "tags": [],
+    "website": "https://openrouter.ai/openai/o3",
+    "description": "OpenAI o4-mini is a compact reasoning model in the o-series, optimized for fast, cost-efficient performance while retaining strong multimodal and agentic capabilities. It supports tool use and demonstrates competitive reasoning and coding performance across benchmarks like AIME (99.5% with Python) and SWE-bench, outperforming its predecessor o3-mini and even approaching o3 in some domains.",
+    "icon": "/img/models/gpt-4.svg"
+  },
+  {
     "id": "claude-3-haiku",
     "tags": [],
     "website": "https://openrouter.ai/models/anthropic/claude-3-haiku",
