@@ -1148,8 +1148,8 @@
   {
     "id": "gemini-flash",
     "tags": [],
-    "website": "https://openrouter.ai/models/google/gemini-flash-1.5",
-    "description": "Gemini 1.5 Flash is a foundation model that performs well at a variety of multimodal tasks such as visual understanding, classification, summarization, and creating content from image, audio and video. It's adept at processing visual and text inputs such as photographs, documents, infographics, and screenshots.",
+    "website": "https://openrouter.ai/google/gemini-2.5-flash-preview",
+    "description": "Gemini 2.5 Flash is Google's state-of-the-art workhorse model, specifically designed for advanced reasoning, coding, mathematics, and scientific tasks. It includes built-in \"thinking\" capabilities, enabling it to provide responses with greater accuracy and nuanced context handling.",
     "icon": "/img/models/gemini-pro.svg"
   },
   {
@@ -1176,10 +1176,10 @@
     "vision": true
   },
   {
-    "id": "gemini-flash-2.0",
+    "id": "gemini-flash-2.5",
     "tags": [],
-    "website": "https://openrouter.ai/google/gemini-2.0-flash-001",
-    "description": "Gemini Flash 2.0 offers a significantly faster time to first token (TTFT) compared to Gemini Flash 1.5, while maintaining quality on par with larger models like Gemini Pro 1.5. It introduces notable enhancements in multimodal understanding, coding capabilities, complex instruction following, and function calling. These advancements come together to deliver more seamless and robust agentic experiences.",
+    "website": "https://openrouter.ai/google/gemini-2.5-flash-preview",
+    "description": "Gemini 2.5 Flash is Google's state-of-the-art workhorse model, specifically designed for advanced reasoning, coding, mathematics, and scientific tasks. It includes built-in \"thinking\" capabilities, enabling it to provide responses with greater accuracy and nuanced context handling.",
     "icon": "/img/models/gemini-pro.svg"
   },
   {
@@ -1190,10 +1190,10 @@
     "icon": "/img/models/gemini-pro.svg"
   },
   {
-    "id": "gemini-flash-thinking-2.0",
+    "id": "gemini-flash-thinking-2.5",
     "tags": [],
-    "website": "https://openrouter.ai/google/gemini-2.0-flash-thinking-exp:free",
-    "description": "Gemini 2.0 Flash Thinking Mode is an experimental model that's trained to generate the \"thinking process\" the model goes through as part of its response. As a result, Thinking Mode is capable of stronger reasoning capabilities in its responses than the base Gemini 2.0 Flash model.",
+    "website": "https://openrouter.ai/google/gemini-2.5-flash-preview:thinking",
+    "description": "Gemini 2.5 Flash is Google's state-of-the-art workhorse model, specifically designed for advanced reasoning, coding, mathematics, and scientific tasks. It includes built-in \"thinking\" capabilities, enabling it to provide responses with greater accuracy and nuanced context handling.",
     "icon": "/img/models/gemini-pro.svg"
   },
   {
