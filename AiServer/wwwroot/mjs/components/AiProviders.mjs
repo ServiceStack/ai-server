@@ -1,7 +1,7 @@
 import { ref, computed, onMounted, watch, nextTick } from "vue"
 import { leftPart, rightPart } from "@servicestack/client"
-import { useClient } from "@servicestack/vue"
-import { QueryAiTypes, GetOllamaModels } from "../dtos.mjs"
+import { useClient, useFormatters } from "@servicestack/vue"
+import { QueryAiTypes, GetOllamaModels, CheckAiProviderStatus } from "../dtos.mjs"
 
 const SelectModels = {
     template:`
@@ -104,12 +104,13 @@ export default {
         SelectModels,  
     },
     template:`
-        <AutoQueryGrid ref="grid" :type="type" selectedColumns="id,enabled,name,aiTypeId,apiKey,models"
-            :visibleFrom="{ id:'never', enabled:'never'}" modelTitle="Provider" @nav="onNav">
-            <template #name="{ id, name, enabled }">
+        <AutoQueryGrid ref="grid" :type="type" selectedColumns="id,enabled,offlineDate,name,aiTypeId,apiKey,models"
+            :visibleFrom="{ id:'never', enabled:'never', offlineDate:'never'}" modelTitle="Provider" @nav="onNav">
+            <template #name="{ id, name, enabled, offlineDate }">
                 <div class="flex">
                     <svg v-if="enabled" class="w-6 h-6 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M17 7H7a5 5 0 0 0-5 5a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5a5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3a3 3 0 0 1 3-3a3 3 0 0 1 3 3a3 3 0 0 1-3 3"/></svg>
                     <svg v-else class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3s3-1.34 3-3s-1.34-3-3-3"/></svg>
+                    <span :title="!enabled ? 'disabled' : offlineDate ? 'offline ' + relativeTime(offlineDate) : 'online'"><svg :class="['h-6 w-6', !enabled ? 'text-grey-500' : offlineDate ? 'text-red-500' : 'text-green-500']" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="8" fill="currentColor"/></svg></span>
                     <div class="ml-1">{{name}}</div>
                 </div>
             </template>
@@ -147,6 +148,13 @@ export default {
               </div>
             </template>
             <template #formfooter="{ form, formInstance, apis, type, model, id, updateModel }">
+                <div v-if="form=='edit'" class="pl-6 mb-2 text-gray-500">
+                    <div class="flex">
+                        <svg :class="['h-6 w-6', !model.enabled ? 'text-grey-500' : model.offlineDate ? 'text-red-500' : 'text-green-500']" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="8" fill="currentColor"/></svg>
+                        <span>{{!model.enabled ? 'disabled' : model.offlineDate ? 'offline ' + relativeTime(model.offlineDate) : 'online'}}</span>
+                        <button type="button" @click="checkStatus(model.name)" class="ml-2 rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" :disabled="checking">{{checking ? 'checking...' : 'check status'}}</button>
+                    </div>
+                </div>
                 <div class="pl-6">
                     <div v-if="providerType=='Custom'" class="pr-6">
                         <TagInput v-if="model" v-model="model.selectedModels" label="Custom Models" @update:modelValue="updateModel(model)"  />                         
@@ -164,11 +172,12 @@ export default {
         const providerType = ref()
         const aiTypes = ref([])
         const providerModels = ref([])
-        const ollamaModels = ref([])
         const selectedModels = ref([])
         const providerBaseUrls = {}
         const formModel = computed(() => (grid.value?.createForm ?? grid.value?.editForm)?.model)
+        const checking = ref(false)
         let isEdit = false
+        const { formatDate, relativeTime } = useFormatters()
 
         onMounted(async () => {
             const api = await client.api(new QueryAiTypes())
@@ -195,6 +204,18 @@ export default {
                 },1000)
             }
         }
+        
+        async function checkStatus(provider) {
+            checking.value = true
+            const api = await client.api(new CheckAiProviderStatus({ provider }))
+            if (api.response) {
+                grid.value?.setEdit({
+                    offlineDate: api.response.result ? null : new Date(),
+                })
+                grid.value?.update()
+            }
+            checking.value = false
+        }
     
         watch(() => providerType.value, () => {
             if (formModel.value?.selectedModels) return
@@ -210,6 +231,9 @@ export default {
             })
         })
     
-        return { grid, aiTypes, providerType, formModel, selectedModels, onNav }
+        return { 
+            grid, aiTypes, providerType, formModel, selectedModels, onNav, relativeTime, 
+            checkStatus, checking,
+        }
     }
 }
