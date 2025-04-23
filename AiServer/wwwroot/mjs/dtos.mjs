@@ -1,5 +1,5 @@
 /* Options:
-Date: 2025-04-16 20:58:49
+Date: 2025-04-23 17:16:56
 Version: 8.71
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5005
@@ -382,13 +382,14 @@ export class AiModel {
     /** @type {?boolean} */
     vision;
 }
-/** @typedef {'OllamaAiProvider'|'OpenAiProvider'|'GoogleAiProvider'|'AnthropicAiProvider'} */
+/** @typedef {'OllamaAiProvider'|'OpenAiProvider'|'GoogleAiProvider'|'AnthropicAiProvider'|'CustomOpenAiProvider'} */
 export var AiProviderType;
 (function (AiProviderType) {
     AiProviderType["OllamaAiProvider"] = "OllamaAiProvider"
     AiProviderType["OpenAiProvider"] = "OpenAiProvider"
     AiProviderType["GoogleAiProvider"] = "GoogleAiProvider"
     AiProviderType["AnthropicAiProvider"] = "AnthropicAiProvider"
+    AiProviderType["CustomOpenAiProvider"] = "CustomOpenAiProvider"
 })(AiProviderType || (AiProviderType = {}));
 export class AiType {
     /** @param {{id?:string,provider?:AiProviderType,website?:string,apiBaseUrl?:string,heartbeatUrl?:string,icon?:string,apiModels?:{ [index:string]: string; }}} [init] */
@@ -2005,6 +2006,16 @@ export class StringResponse {
     /** @type {ResponseStatus} */
     responseStatus;
 }
+export class BoolResponse {
+    /** @param {{result?:boolean,meta?:{ [index:string]: string; },responseStatus?:ResponseStatus}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {boolean} */
+    result;
+    /** @type {{ [index:string]: string; }} */
+    meta;
+    /** @type {ResponseStatus} */
+    responseStatus;
+}
 export class DeleteFilesResponse {
     /** @param {{deleted?:string[],missing?:string[],failed?:string[],responseStatus?:ResponseStatus}} [init] */
     constructor(init) { Object.assign(this, init) }
@@ -3494,6 +3505,24 @@ export class ChangeAiProviderStatus {
     getTypeName() { return 'ChangeAiProviderStatus' }
     getMethod() { return 'POST' }
     createResponse() { return new StringResponse() }
+}
+export class CheckAiProviderStatus {
+    /** @param {{provider?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    provider;
+    getTypeName() { return 'CheckAiProviderStatus' }
+    getMethod() { return 'POST' }
+    createResponse() { return new BoolResponse() }
+}
+export class CheckMediaProviderStatus {
+    /** @param {{provider?:string}} [init] */
+    constructor(init) { Object.assign(this, init) }
+    /** @type {string} */
+    provider;
+    getTypeName() { return 'CheckMediaProviderStatus' }
+    getMethod() { return 'POST' }
+    createResponse() { return new BoolResponse() }
 }
 export class QueueTextToSpeech {
     /** @param {{text?:string,seed?:number,model?:string,refId?:string,replyTo?:string,tag?:string,state?:string}} [init] */
