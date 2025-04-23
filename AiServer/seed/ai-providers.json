@@ -248,16 +248,10 @@
     "enabled": true,
     "models": [
       {
-        "model": "qwen2.5:32b"
-      },
-      {
-        "model": "qwen2.5-coder:32b"
+        "model": "gemma2:9b"
       },
       {
         "model": "qwq:32b"
-      },
-      {
-        "model": "gemma2:9b"
       },
       {
         "model": "llama3:8b"
@@ -269,13 +263,7 @@
         "model": "llama3.1:8b"
       },
       {
-        "model": "llama3.1:70b"
-      },
-      {
         "model": "llama3.3:70b"
-      },
-      {
-        "model": "mixtral:8x7b"
       }
     ]
   },
