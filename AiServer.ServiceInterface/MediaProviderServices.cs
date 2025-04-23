@@ -35,8 +35,12 @@ public class MediaProviderServices(ILogger<MediaProviderServices> log,
         using var db = autoQuery.GetDb(request, base.Request);
         var q = autoQuery.CreateQuery(request, base.Request, db);
         var r = autoQuery.Execute(request, q, base.Request, db);
-        r.Results.ForEach(x => x.MediaType = appData.MediaTypes.GetAll()
-            .FirstOrDefault(t => t.Id == x.MediaTypeId));
+        var providers = appData.MediaProviders.ToDictionary(x => x.Id);
+        r.Results.ForEach(x =>
+        {
+            x.OfflineDate = providers.GetValueOrDefault(x.Id)?.OfflineDate;
+            x.MediaType = appData.MediaTypes.GetAll().FirstOrDefault(t => t.Id == x.MediaTypeId);
+        });
         return r;
     }
     

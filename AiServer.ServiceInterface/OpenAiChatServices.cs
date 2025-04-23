@@ -86,10 +86,10 @@ public class OpenAiChatServices(
         var q = autoQuery.CreateQuery(query, base.Request, db);
         var r = autoQuery.Execute(query, q, base.Request, db);
         var aiTypes = appData.AiTypes.GetAll().ToDictionary(x => x.Id);
-        var aiProviders = appData.AiProviders.ToDictionary(x => x.Id);
+        var providers = appData.AiProviders.ToDictionary(x => x.Id);
         r.Results.ForEach(x =>
         {
-            x.OfflineDate = aiProviders.GetValueOrDefault(x.Id)?.OfflineDate;
+            x.OfflineDate = providers.GetValueOrDefault(x.Id)?.OfflineDate;
             x.AiType = aiTypes.GetValueOrDefault(x.AiTypeId);
         });
         return r;
