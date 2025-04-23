@@ -232,6 +232,9 @@
       },
       {
         "model": "gemini-flash-thinking-2.0"
+      },
+      {
+        "model": "gemini-flash-2.5"
       }
     ]
   },

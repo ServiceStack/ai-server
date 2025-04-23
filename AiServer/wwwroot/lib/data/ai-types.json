@@ -181,14 +181,14 @@
     "openAiProvider": "GoogleOpenAiProvider",
     "icon": "/img/providers/google-cloud.svg",
     "apiModels": {
+      "gemma3:27b": "gemma-3-27b-it",
       "gemini-pro": "gemini-2.5-pro-exp-03-25",
-      "gemma3:27b": "gemma-3-27b-it", 
-      "gemini-pro-1.5": "gemini-1.5-pro-002",
+      "gemini-pro-1.5": "gemini-1.5-pro",
       "gemini-flash-1.5": "gemini-1.5-flash",
       "gemini-flash-1.5-8b": "gemini-1.5-flash-8b",
       "gemini-pro-2.5": "gemini-2.5-pro-preview-03-25",
       "gemini-flash-2.0": "gemini-2.0-flash",
-      "gemini-flash-lite-2.0": "gemini-2.0-flash-lite-001",
+      "gemini-flash-lite-2.0": "gemini-2.0-flash-lite",
       "gemini-flash-thinking-2.0": "gemini-2.0-flash-thinking-exp-01-21",
       "gemini-flash": "gemini-2.5-flash-preview-04-17",
       "gemini-flash-2.5": "gemini-2.5-flash-preview-04-17"

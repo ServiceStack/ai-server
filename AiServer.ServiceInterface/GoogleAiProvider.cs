@@ -212,11 +212,16 @@ public class GoogleAiProvider(ILogger<GoogleAiProvider> log) : IOpenAiProvider
         throw firstEx ?? new Exception($"[{provider.Name}] Failed to complete Google Chat request after {retries} retries");
     }
 
-    public async Task<bool> IsOnlineAsync(AiProvider provider, CancellationToken token = default)
+    public Task<bool> IsOnlineAsync(AiProvider provider, CancellationToken token = default)
+    {
+        var aiModel = provider.GetPreferredAiModel();
+        return IsOnlineAsync(provider, aiModel, token);
+    }
+
+    public async Task<bool> IsOnlineAsync(AiProvider provider, string aiModel, CancellationToken token = default)
     {
         try
         {
-            var aiModel = provider.GetPreferredAiModel();
             var request = new OpenAiChat
             {
                 Model = aiModel,

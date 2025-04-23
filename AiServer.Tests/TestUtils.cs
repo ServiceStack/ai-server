@@ -192,10 +192,17 @@ public static class TestUtils
         Provider = AiProviderType.GoogleAiProvider,
         ApiModels = new()
         {
-            ["gemini-pro"] = "gemini-1.0-pro-latest",
-            ["gemini-pro-1.5"] = "gemini-1.5-pro-001",
-            ["gemini-pro-vision"] = "gemini-1.0-pro-vision-latest",
-            ["gemini-flash"] = "gemini-1.5-flash-001",
+            ["gemma3:27b"] = "gemma-3-27b-it",
+            ["gemini-pro"] = "gemini-2.5-pro-exp-03-25",
+            ["gemini-pro-1.5"] = "gemini-1.5-pro",
+            ["gemini-flash-1.5"] = "gemini-1.5-flash",
+            ["gemini-flash-1.5-8b"] = "gemini-1.5-flash-8b",
+            ["gemini-pro-2.5"] = "gemini-2.5-pro-preview-03-25",
+            ["gemini-flash-2.0"] = "gemini-2.0-flash",
+            ["gemini-flash-lite-2.0"] = "gemini-2.0-flash-lite",
+            ["gemini-flash-thinking-2.0"] = "gemini-2.0-flash-thinking-exp-01-21",
+            ["gemini-flash"] = "gemini-2.0-flash",
+            ["gemini-flash-2.5"] = "gemini-2.5-flash-preview-04-17",
         }
     };
 
@@ -292,10 +299,13 @@ public static class TestUtils
         Enabled = true,
         Models =
         [
-            new() { Model = "gemini-pro", },
-            new() { Model = "gemini-pro-1.5", },
-            new() { Model = "gemini-pro-vision", },
+            new() { Model = "gemma3:27b", },
             new() { Model = "gemini-flash", },
+            new() { Model = "gemini-pro", },
+            new() { Model = "gemini-flash-lite-2.0", },
+            new() { Model = "gemini-2.0-flash-thinking-exp-01-21", },
+            new() { Model = "gemini-1.5-flash", },
+            new() { Model = "gemini-1.5-flash-8b", },
         ],
         AiType = GoogleAiType
     };
