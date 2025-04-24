@@ -98,6 +98,10 @@ Glossary of different Media Provider Types that AI Server supports
 
 ![](https://raw.githubusercontent.com/ServiceStack/ai-server/refs/heads/main/AiServer/wwwroot/img/uis/admin/media-types.webp)
 
+View built-in and interactive API Analytics
+
+![](https://raw.githubusercontent.com/ServiceStack/ai-server/refs/heads/main/AiServer/wwwroot/img/uis/admin/analytics.webp)
+
 View completed and failed Background Jobs from Jobs Dashboard
 
 ![](https://raw.githubusercontent.com/ServiceStack/ai-server/refs/heads/main/AiServer/wwwroot/img/uis/admin/background-jobs.webp)
@@ -117,3 +121,7 @@ Use Admin UI to manage API Keys that can access AI Server APIs and Features
 Edit API Keys for fine grain control over API Keys access and scope
 
 ![](https://raw.githubusercontent.com/ServiceStack/ai-server/refs/heads/main/AiServer/wwwroot/img/uis/admin/api-keys-edit.webp)
+
+View detailed API Request logging
+
+![](https://raw.githubusercontent.com/ServiceStack/ai-server/refs/heads/main/AiServer/wwwroot/img/uis/admin/logging.webp)
