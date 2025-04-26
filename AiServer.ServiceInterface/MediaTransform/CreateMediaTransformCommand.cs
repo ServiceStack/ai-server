@@ -135,18 +135,20 @@ public class CreateMediaTransformCommand(ILogger<CreateMediaTransformCommand> lo
         using var inputImage = await Image.LoadAsync(inputFile, token);
 
         var format = (ImageOutputFormat)args.ImageOutputFormat;
+        var ext = format.ToString().ToLower();
         var outputFormat = GetImageFormat(format);
         var outputStream = new MemoryStream();
         await inputImage.SaveAsync(outputStream, outputFormat, cancellationToken: token);
+
+        var name = args.ImageFileName?.LastLeftPart('.') ?? outputStream.ComputeSha256();
+        var fileName = $"{name}.{ext}";
+        
         outputStream.Position = 0;
-        var response = new TransformResult
-        {
-            Outputs =
-            [
-                new()
-                {
-                    FileName = $"{keyId}.png",
-                    Url = $"/artifacts/{keyId}.png"
+        var response = new TransformResult {
+            Outputs = [
+                new() {
+                    FileName = fileName,
+                    Url = $"/artifacts/{fileName}"
                 }
             ]
         };
@@ -384,6 +386,40 @@ public class CreateMediaTransformCommand(ILogger<CreateMediaTransformCommand> lo
         if (fileUploads == null)
             return;
 
+        static HashSet<string> ToSet(string[] keys) => new(keys, StringComparer.OrdinalIgnoreCase);
+
+        static string? GetStringValue(Dictionary<string, object>? obj, HashSet<string> keys)
+        {
+            if (obj != null)
+            {
+                foreach (var entry in obj)
+                {
+                    if (entry.Value is Dictionary<string, object> childObj)
+                        return GetStringValue(childObj, keys);
+                    if (entry.Value is string value)
+                    {
+                        if (keys.Contains(entry.Key))
+                            return value;
+                    }
+                }
+            }
+            return null;
+        }
+        
+        string GetFileName(KeyValuePair<string,string> file, HashSet<string> keys)
+        {
+            try
+            {
+                var obj = JSON.parse(job.RequestBody);
+                return GetStringValue(obj as Dictionary<string, object>, keys)
+                    ?? Path.GetFileName(file.Value);
+            }
+            catch (Exception e)
+            {
+                return Path.GetFileName(file.Value);
+            }
+        }
+            
         foreach (var file in fileUploads)
         {
             if (!supportedFiles.Contains(file.Key))
@@ -394,23 +430,24 @@ public class CreateMediaTransformCommand(ILogger<CreateMediaTransformCommand> lo
             await fs.CopyToAsync(ms, token);
             ms.Position = 0;
             fs.Close();
+
             switch (file.Key)
             {
                 case "image":
                     argInstance.ImageInput = ms;
-                    argInstance.ImageFileName = Path.GetFileName(file.Value);
+                    argInstance.ImageFileName = GetFileName(file, ToSet([nameof(MediaTransformArgs.ImageFileName)]));
                     break;
                 case "video":
                     argInstance.VideoInput = ms;
-                    argInstance.VideoFileName = Path.GetFileName(file.Value);
+                    argInstance.VideoFileName = GetFileName(file, ToSet([nameof(MediaTransformArgs.VideoFileName)]));
                     break;
                 case "watermark":
                     argInstance.WatermarkInput = ms;
-                    argInstance.WatermarkFileName = Path.GetFileName(file.Value);
+                    argInstance.WatermarkFileName = GetFileName(file, ToSet([nameof(MediaTransformArgs.WatermarkFileName)]));
                     break;
                 case "audio":
                     argInstance.AudioInput = ms;
-                    argInstance.AudioFileName = Path.GetFileName(file.Value);
+                    argInstance.AudioFileName = GetFileName(file, ToSet([nameof(MediaTransformArgs.AudioFileName)]));
                     break;
             }
         }

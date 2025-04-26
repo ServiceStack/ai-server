@@ -376,8 +376,9 @@ public static class TransformServiceExtensions
 
         // Wait for the job to complete max 1 minute
         var timeout = DateTime.UtcNow.AddMinutes(1);
-        while (queuedJob?.Job?.State is not (BackgroundJobState.Completed or BackgroundJobState.Cancelled
-                   or BackgroundJobState.Failed) && DateTime.UtcNow < timeout)
+        while (queuedJob?.Job?.State is not (
+                   BackgroundJobState.Completed or BackgroundJobState.Cancelled or BackgroundJobState.Failed) 
+               && DateTime.UtcNow < timeout)
         {
             await Task.Delay(1000);
             queuedJob = jobs.GetJob(transformResponse.Id);

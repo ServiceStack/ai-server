@@ -85,4 +85,12 @@ public static class AppExtensions
         byte[] hashBytes = sha256.ComputeHash(data);
         return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
     }
+    
+    public static string ComputeSha256(this Stream stream)
+    {
+        stream.Position = 0;
+        using var sha256Hash = SHA256.Create();
+        byte[] hashBytes = sha256Hash.ComputeHash(stream);
+        return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+    }    
 }

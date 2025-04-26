@@ -7,7 +7,7 @@ import ImageToImage from "./ImageToImage.mjs"
 import ImageUpscale from "./ImageUpscale.mjs"
 import SpeechToText from "./SpeechToText.mjs"
 import TextToSpeech from "./TextToSpeech.mjs"
-import Transform from "./Transform.mjs"
+import ConvertImage from "./ConvertImage.mjs"
 
 export const Components = {
     Chat,
@@ -17,7 +17,7 @@ export const Components = {
     ImageUpscale,
     SpeechToText,
     TextToSpeech,
-    // Transform,
+    ConvertImage,
 }
 
 const F = args => {
@@ -46,6 +46,9 @@ export const Features = (() => {
        },
        txt2spch: {
            ...F({ TextToSpeech }),
+       },
+       imgconv: {
+           ...F({ ConvertImage }),
        },
        //Transform: 'ffmpeg',
    }
@@ -85,11 +88,13 @@ export const FeatureGroups = [
             Features.txt2spch,
         ]
     },
-    // {
-    //     label:'Transform Image',
-    //     icon:icons.imgtransform,
-    //     features:[],
-    // },
+    {
+        label:'Transform Image',
+        icon:icons.imgtransform,
+        features:[
+            Features.imgconv,
+        ],
+    },
     // {
     //     label:'Transform Video',
     //     icon:icons.vidtransform,

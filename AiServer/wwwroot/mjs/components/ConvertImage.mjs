@@ -1,7 +1,7 @@
 import { ref, onMounted, inject, watch } from "vue"
 import { useClient, useFiles } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
-import { ImageUpscale } from "../dtos.mjs"
+import { ConvertImage, ImageOutputFormat } from "../dtos.mjs"
 import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, toArtifacts, acceptedImages } from "../utils.mjs"
 import { ArtifactGallery, ArtifactDownloads } from "./Artifacts.mjs"
 import FileUpload from "./FileUpload.mjs"
@@ -39,7 +39,7 @@ export default {
                                         </FileUpload>
                                     </div>
                                     <div class="col-span-6 sm:col-span-3">
-                                        <TextInput type="number" id="seed" v-model="request.seed" min="0" />
+                                        <SelectInput id="outputFormat" v-model="request.outputFormat" :options="ImageOutputFormat" />
                                     </div>
                                     <div class="col-span-6 sm:col-span-3">
                                         <TextInput id="tag" v-model="request.tag" placeholder="Tag" />
@@ -66,7 +66,7 @@ export default {
                 <div v-for="result in getThreadResults()" class="w-full ">
                     <div class="flex items-center justify-between">
                         <span class="my-4 flex justify-center items-center text-xl underline-offset-4">
-                            <span>{{ result.request.image }}</span>
+                            <span>{{ result.response?.results?.[0]?.fileName || result.request.image }}</span>
                         </span>
                         <div class="group flex cursor-pointer" @click="discardResult(result)">
                             <div class="ml-1 invisible group-hover:visible">discard</div>
@@ -107,9 +107,9 @@ export default {
         const renderKey = ref(0)
         const { filePathUri, getExt, extSrc, svgToDataUri } = useFiles()
 
-        const storage = new ThreadStorage(`upscale`, {
+        const storage = new ThreadStorage(`imgconv`, {
             tag: '',
-            seed: '',
+            outputFormat: '',
         })
         const error = ref()
 
@@ -120,8 +120,8 @@ export default {
 
         const validPrompt = () => refForm.value?.image?.files?.length
         const refMessage = ref()
-        const visibleFields = 'image,seed'.split(',')
-        const request = ref(new ImageUpscale())
+        const visibleFields = 'image,outputFormat'.split(',')
+        const request = ref(new ConvertImage())
         const activeModels = ref([])
 
         function savePrefs() {
@@ -257,7 +257,6 @@ export default {
             }
         }
 
-
         watch(() => routes.id, updated)
         watch(() => [
             request.value.seed,
@@ -300,6 +299,7 @@ export default {
             toArtifacts,
             acceptedImages,
             renderKey,
+            ImageOutputFormat,
         }
     }
 }
