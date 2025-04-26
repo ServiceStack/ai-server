@@ -26,6 +26,12 @@ function styleDataUri(dataUri) {
         .replaceAll("stroke='currentColor'",`stroke='${fgColor}'`)
         .replaceAll("fill='currentColor'",`fill='${fgColor}'`)
 }
+function unstyleDataUri(dataUri) {
+    const fgColor = '%234f46e5'
+    return dataUri
+        .replaceAll(`stroke='${fgColor}'`,`stroke='currentColor'`)
+        .replaceAll(`fill='${fgColor}'`,`fill='currentColor'`)
+}
 
 export const icons = (() => {
     const prefix = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' "
@@ -51,6 +57,11 @@ export const icons = (() => {
         spch2txt: "viewBox='0 0 14 14'%3E%3Cpath fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' d='M3 5.18v4.14m4-4.14v4.14M5 6.07v2.36m6-3.25v4.14M9 6.07v2.36m4.5 2.07v2a1 1 0 0 1-1 1h-2m0-13h2a1 1 0 0 1 1 1v2m-13 0v-2a1 1 0 0 1 1-1h2m0 13h-2a1 1 0 0 1-1-1v-2'/%3E%3C/svg%3E",
         txt2spch: "viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M6 11h1.5V9H6zm2.5 2H10V7H8.5zm2.75 2h1.5V5h-1.5zM14 13h1.5V7H14zm2.5-2H18V9h-1.5zM2 22V4q0-.825.588-1.412T4 2h16q.825 0 1.413.588T22 4v12q0 .825-.587 1.413T20 18H6zm3.15-6H20V4H4v13.125zM4 16V4z'/%3E%3C/svg%3E",
         ffmpeg: "viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 6a3 3 0 1 0 6 0a3 3 0 0 0-6 0m18 5V8a2 2 0 0 0-2-2h-6l3 3m0-6l-3 3M3 13v3a2 2 0 0 0 2 2h6l-3-3m0 6l3-3m4 0a3 3 0 1 0 6 0a3 3 0 0 0-6 0'/%3E%3C/svg%3E",
+        
+        imgtransform:"viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M13.18 19c.17.72.46 1.39.85 2H5a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h14a2 2 0 0 1 2 2v6.18c-.5-.11-1-.18-1.5-.18c-.17 0-.33 0-.5.03V5H5v14zm-1.97-3.17l-1.96-2.36L6.5 17h6.53c.11-1.46.7-2.78 1.61-3.81l-.68-.9zM19 13.5V12l-2.25 2.25L19 16.5V15a2.5 2.5 0 0 1 2.5 2.5c0 .4-.09.78-.26 1.12l1.09 1.09c.42-.63.67-1.39.67-2.21c0-2.21-1.79-4-4-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5c0-.4.09-.78.26-1.12l-1.09-1.09c-.42.63-.67 1.39-.67 2.21c0 2.21 1.79 4 4 4V23l2.25-2.25L19 18.5z'/%3E%3C/svg%3E",
+        vidtransform:"viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M3 6h18v5h2V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h9v-2H3z'/%3E%3Cpath fill='currentColor' d='M15 12L9 8v8zm7.71 6.43c.03-.29.04-.58.01-.86l1.07-.85c.1-.08.12-.21.06-.32l-1.03-1.79c-.06-.11-.19-.15-.31-.11l-1.28.5a3.4 3.4 0 0 0-.75-.42l-.2-1.36a.25.25 0 0 0-.25-.22h-2.07c-.12 0-.23.09-.25.21l-.2 1.36c-.26.11-.51.26-.74.42l-1.28-.5c-.12-.05-.25 0-.31.11l-1.03 1.79c-.06.11-.04.24.06.32l1.07.86c-.03.29-.04.58-.01.86l-1.07.85c-.1.08-.12.21-.06.32l1.03 1.79c.06.11.19.15.31.11l1.27-.5q.345.255.75.42l.2 1.36c.02.12.12.21.25.21h2.07c.12 0 .23-.09.25-.21l.2-1.36c.26-.11.51-.26.74-.42l1.28.5c.12.05.25 0 .31-.11l1.03-1.79c.06-.11.04-.24-.06-.32zM19 19.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5s-.67 1.5-1.5 1.5'/%3E%3C/svg%3E",
+        
+        apiexplorer:"viewBox='0 0 14 14'%3E%3Cpath fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' d='M4.34 4.814L.72 6.134m.88 2.412l3.619-1.319M4.12 4.211l1.318 3.62L13.5 5.575L11.741.75zm1.377 9.039l2.5-6.135l2.5 6.135M.5 5.53l1.319 3.62'%3E%3C/path%3E%3C/svg%3E",
     }
     const ret = {}
     Object.keys(svgs).forEach(k => {
@@ -60,6 +71,18 @@ export const icons = (() => {
     return ret
 })()
 
+export function dataUriToSvg(dataUri, opt) {
+    if (opt?.unstyle) {
+        dataUri = unstyleDataUri(dataUri)
+    }
+    if (dataUri?.startsWith('data:image/svg+xml,')) {
+        return dataUri.substring('data:image/svg+xml,'.length)
+            .replaceAll('%3E', '>')
+            .replaceAll('%3C','<')
+            .replaceAll('%23', '#')
+    }
+    return dataUri
+}
 
 export const bus = new EventBus()
 

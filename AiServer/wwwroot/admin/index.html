@@ -136,14 +136,7 @@ import { JsonServiceClient, leftPart, humanize, humanify } from "@servicestack/c
 import ServiceStackVue, { useClient, useAuth, useMetadata, useFormatters, useUtils, useConfig, useFiles } from "@servicestack/vue"
 import { Authenticate, AdminData, GetWorkerStats, GetSummaryStats } from "dtos"
 import { icons, iconDataUri } from "/mjs/utils.mjs"
-import Chat from "/mjs/components/Chat.mjs"
-import TextToImage from "/mjs/components/TextToImage.mjs"
-import ImageToText from "/mjs/components/ImageToText.mjs"
-import ImageToImage from "/mjs/components/ImageToImage.mjs"
-import ImageUpscale from "/mjs/components/ImageUpscale.mjs"
-import SpeechToText from "/mjs/components/SpeechToText.mjs"
-import TextToSpeech from "/mjs/components/TextToSpeech.mjs"
-import Transform from "/mjs/components/Transform.mjs"
+import { App, usePageRoutes, useBreakpoints, setBodyClass, sortOps } from "core"
 
 import AiProviders from "/mjs/components/AiProviders.mjs"
 import CopyIcon from "/js/components/CopyIcon.mjs"
@@ -155,10 +148,10 @@ import { LogLinks } from "/modules/admin-ui/components/LogLinks.mjs"
 import { ApiKeys } from "/modules/admin-ui/components/ApiKeys.mjs"
 import { CreateApiKeyForm, EditApiKeyForm } from "/modules/admin-ui/components/ManageUserApiKeys.mjs"
 import { ApiKeyDialog } from "/js/components/ApiKeyDialog.mjs"
-import { App, usePageRoutes, useBreakpoints, setBodyClass, sortOps } from "core"
 import metadata from "/modules/admin-ui/lib/metadata.mjs"
 import MediaProviders from "/mjs/components/MediaProviders.mjs"
 import SignInForm from "/mjs/components/SignInForm.mjs"
+import { Features } from "/mjs/components/Features.mjs"
 
 if (location.search.includes('clear=metadata')) {
     localStorage.removeItem('/metadata/app.json')
@@ -209,6 +202,16 @@ const sections = {
                       <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{{formatNumber(stat.total)}}</dd>
                     </div>
                 </dl>
+                <div class="mt-8 text-sm font-semibold leading-6">
+                    <div class="flex gap-x-2">
+                        <div class="mr-2">Go to <span aria-hidden="true">&rarr;</span></div>
+                        <a href="/" class="text-indigo-600 dark:text-indigo-300">Home</a>
+                        <svg class="h-5 w-5 flex-shrink-0 text-gray-300" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z"></path></svg>
+                        <a href="/ui/" class="text-indigo-600 dark:text-indigo-300">API Explorer</a>
+                        <svg class="h-5 w-5 flex-shrink-0 text-gray-300" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z"></path></svg>
+                        <a href="/admin-ui/" class="text-indigo-600 dark:text-indigo-300">Admin UI</a>
+                    </div>
+                </div>                
                 <div class="pt-4">
                     <h2 class="lg:block pt-4 mb-2 text-3xl font-bold leading-tight tracking-tight text-gray-900">Workers</h2>
                     <div v-if="workerStats.length">
@@ -267,53 +270,14 @@ const sections = {
             }
         },
     },
-    Chat: {
-        title: '',
-        component: Chat,
-        icon: icons.chat,
-    },
-    TextToImage: {
-        title: '',
-        label: 'Text to Image',
-        component: TextToImage,
-        icon: icons.txt2img,
-    },
-    ImageToText: {
-        title: '',
-        label: 'Image to Text',
-        component: ImageToText,
-        icon: icons.img2txt,
-    },
-    ImageToImage: {
-        title: '',
-        label: 'Image to Image',
-        component: ImageToImage,
-        icon: icons.img2img,
-    },
-    ImageUpscale: {
-        title: '',
-        label: 'Image Upscale',
-        component: ImageUpscale,
-        icon: icons.upscale,
-    },
-    SpeechToText: {
-        title: '',
-        label: 'Speech to Text',
-        component: SpeechToText,
-        icon: icons.spch2txt,
-    },
-    TextToSpeech: {
-        title: '',
-        label: 'Text to Speech',
-        component: TextToSpeech,
-        icon: icons.txt2spch,
-    },
-    // Transform: {
-    //     title: '',
-    //     label: 'Media Transform',
-    //     component: Transform,
-    //     icon: icons.ffmpeg,
-    // },
+    ...(() => {
+       const ret = {}
+        Object.values(Features).forEach(x => {
+            ret[x.id] = x
+            ret[x.id].title = ''
+        })
+       return ret 
+    })(),
     AiProvider: {
         group: 'AI',
         label: 'AI Providers',
