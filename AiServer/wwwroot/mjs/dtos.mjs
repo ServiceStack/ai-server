@@ -1,5 +1,5 @@
 /* Options:
-Date: 2025-04-23 17:16:56
+Date: 2025-04-27 11:41:59
 Version: 8.71
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5005
@@ -726,12 +726,16 @@ export class Prompt {
     /** @type {string} */
     value;
 }
-/** @typedef {'mp4'|'avi'|'mov'} */
+/** @typedef {'mp4'|'mov'|'webm'|'mkv'|'avi'|'wmv'|'ogg'} */
 export var ConvertVideoOutputFormat;
 (function (ConvertVideoOutputFormat) {
     ConvertVideoOutputFormat["MP4"] = "mp4"
-    ConvertVideoOutputFormat["AVI"] = "avi"
     ConvertVideoOutputFormat["MOV"] = "mov"
+    ConvertVideoOutputFormat["WebM"] = "webm"
+    ConvertVideoOutputFormat["MVK"] = "mkv"
+    ConvertVideoOutputFormat["AVI"] = "avi"
+    ConvertVideoOutputFormat["WMV"] = "wmv"
+    ConvertVideoOutputFormat["Ogg"] = "ogg"
 })(ConvertVideoOutputFormat || (ConvertVideoOutputFormat = {}));
 /** @typedef {'Queued'|'Started'|'Executed'|'Completed'|'Failed'|'Cancelled'} */
 export var BackgroundJobState;
