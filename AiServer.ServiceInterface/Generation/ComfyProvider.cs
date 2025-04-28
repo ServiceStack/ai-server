@@ -217,7 +217,7 @@ public class ComfyProvider(
         var inputKwargs = new Dictionary<string, object>();
         if (args.CutStart.HasValue)
             inputKwargs["ss"] = args.CutStart.Value.ToString(CultureInfo.InvariantCulture);
-        if (args.CutEnd.HasValue && args.CutEnd.Value > 0)
+        if (args.CutEnd is > 0)
             inputKwargs["t"] = (args.CutEnd.Value - (args.CutStart ?? 0)).ToString(CultureInfo.InvariantCulture);
 
         // Prepare output_kwargs
@@ -270,7 +270,11 @@ public class ComfyProvider(
 
         var httpClient = GetHttpClient(provider);
 
-        var response = await httpClient.PostAsync($"{provider.ApiBaseUrl}/transform", content, token);
+        var url = $"{provider.ApiBaseUrl}/transform";
+        logger.LogDebug("POST {Url}", url);
+        await content.LogContentAsync(logger);
+        
+        var response = await httpClient.PostAsync(url, content, token);
         // Log the response
         var contentString = await response.Content.ReadAsStringAsync(token);
         logger.LogInformation($"Response: {response.StatusCode} - {contentString}");

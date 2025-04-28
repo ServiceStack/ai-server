@@ -38,10 +38,10 @@ public class CreateMediaTransformCommand(ILogger<CreateMediaTransformCommand> lo
             
             // Short circuit if is an image operation and process locally.
             // If the request task type is image crop, image scale or image convert, we can process locally
-            if (request.Request.TaskType == MediaTransformTaskType.ImageCrop ||
-                request.Request.TaskType == MediaTransformTaskType.ImageScale ||
-                request.Request.TaskType == MediaTransformTaskType.ImageConvert ||
-                request.Request.TaskType == MediaTransformTaskType.WatermarkImage)
+            if (request.Request.TaskType is MediaTransformTaskType.ImageCrop 
+                or MediaTransformTaskType.ImageScale 
+                or MediaTransformTaskType.ImageConvert 
+                or MediaTransformTaskType.WatermarkImage)
             {
                 switch (request.Request.TaskType)
                 {
@@ -61,7 +61,7 @@ public class CreateMediaTransformCommand(ILogger<CreateMediaTransformCommand> lo
             var (response, durationMs) = await transformProvider.RunAsync(apiProviderInstance, request.Request, token);
             log.LogInformation("Finished {TaskType} generation request {RefId} with {Provider} in {DurationMs}ms",
                 request.Request.TaskType, request.RefId, apiProviderInstance.Name, durationMs);
-            if (response.Outputs != null && response.Outputs.Count > 0)
+            if (response.Outputs is { Count: > 0 })
                 await DownloadOutputsAsync(transformProvider, apiProviderInstance, response.Outputs, keyId, token);
 
             ResponseStatus? error = null;

@@ -309,10 +309,20 @@ public enum ConvertVideoOutputFormat
 {
     [EnumMember(Value = "mp4")]
     MP4,
+    [EnumMember(Value = "mov")]
+    MOV,
+    [EnumMember(Value = "webm")]
+    WebM,
+    [EnumMember(Value = "mkv")]
+    MVK,
     [EnumMember(Value = "avi")]
     AVI,
-    [EnumMember(Value = "mov")]
-    MOV
+    [EnumMember(Value = "wmv")]
+    WMV,
+    [EnumMember(Value = "mpeg")]
+    MPEG,
+    [EnumMember(Value = "ogg")]
+    Ogg,
 }
 
 [DataContract]
@@ -322,8 +332,14 @@ public enum AudioFormat
     MP3,
     [EnumMember(Value = "wav")]
     WAV,
+    [EnumMember(Value = "aac")]
+    AAC,
     [EnumMember(Value = "flac")]
     FLAC,
     [EnumMember(Value = "ogg")]
     OGG,
+    [EnumMember(Value = "m4a")]
+    M4A,
+    [EnumMember(Value = "wma")]
+    WMA,
 }

@@ -1,8 +1,8 @@
 import { ref, onMounted, inject, watch } from "vue"
 import { useClient, useFiles } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
-import { ConvertImage, ImageOutputFormat } from "../dtos.mjs"
-import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, toArtifacts, acceptedImages } from "../utils.mjs"
+import { ConvertVideo, ConvertVideoOutputFormat } from "../dtos.mjs"
+import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, toArtifacts, acceptedVideos } from "../utils.mjs"
 import { ArtifactGallery, ArtifactDownloads } from "./Artifacts.mjs"
 import FileUpload from "./FileUpload.mjs"
 
@@ -26,20 +26,24 @@ export default {
                                 <ErrorSummary :except="visibleFields" class="mb-4" />
                                 <div class="grid grid-cols-6 gap-4">
                                     <div class="col-span-6">
-                                        <FileUpload ref="refImage" id="image" v-model="request.image" required
-                                            accept=".webp,.jpg,.jpeg,.png,.gif,.bmp,.tiff" :acceptLabel="acceptedImages" @change="renderKey++">
+                                        <FileUpload ref="refUpload" id="video" v-model="request.video" required
+                                            accept=".mp4,.mov,.webm,.mkv,.avi,.wmv,.ogg" :acceptLabel="acceptedVideos" @change="renderKey++">
                                             <template #title>
                                                 <span class="font-semibold text-green-600">Click to upload</span> or drag and drop
                                             </template>
                                             <template #icon>
-                                                <svg class="mb-2 h-12 w-12 text-green-500 inline" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true" data-phx-id="m9-phx-F_34be7KYfTF66Xh">
-                                                  <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                <svg class="mb-2 h-12 w-12 text-green-500 inline" viewBox="0 0 24 24">
+                                                    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1">
+                                                        <path stroke-miterlimit="10" d="M9.047 9.5v5"/>
+                                                        <path stroke-linejoin="round" d="M11.34 11.605L9.373 9.638a.46.46 0 0 0-.651 0l-1.968 1.967"/>
+                                                        <path stroke-linejoin="round" d="M12 5.32H6.095A3.595 3.595 0 0 0 2.5 8.923v6.162a3.595 3.595 0 0 0 3.595 3.595H12a3.595 3.595 0 0 0 3.595-3.595V8.924A3.594 3.594 0 0 0 12 5.32m9.5 4.118v5.135c0 .25-.071.496-.205.708a1.36 1.36 0 0 1-.555.493a1.27 1.27 0 0 1-.73.124a1.37 1.37 0 0 1-.677-.278l-3.225-2.588a1.38 1.38 0 0 1-.503-1.047c0-.2.045-.396.133-.575c.092-.168.218-.315.37-.432l3.225-2.567a1.36 1.36 0 0 1 .678-.278c.25-.032.504.011.729.124a1.33 1.33 0 0 1 .76 1.181"/>
+                                                    </g>
                                                 </svg>
                                             </template>
                                         </FileUpload>
                                     </div>
                                     <div class="col-span-6 sm:col-span-3">
-                                        <SelectInput id="outputFormat" v-model="request.outputFormat" :options="ImageOutputFormat" />
+                                        <SelectInput id="outputFormat" v-model="request.outputFormat" :options="ConvertVideoOutputFormat" />
                                     </div>
                                     <div class="col-span-6 sm:col-span-3">
                                         <TextInput id="tag" v-model="request.tag" placeholder="Tag" />
@@ -50,7 +54,7 @@ export default {
                         <div class="mt-4 mb-8 flex justify-center">
                             <PrimaryButton :key="renderKey" type="submit" :disabled="!validPrompt()">
                                 <svg class="-ml-0.5 h-6 w-6 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M11 16V7.85l-2.6 2.6L7 9l5-5l5 5l-1.4 1.45l-2.6-2.6V16zm-5 4q-.825 0-1.412-.587T4 18v-3h2v3h12v-3h2v3q0 .825-.587 1.413T18 20z"/></svg>
-                                <span class="text-base font-semibold">{{ request.outputFormat ? ('Convert to .' + ImageOutputFormat[request.outputFormat]) : 'Upload' }}</span>
+                                <span class="text-base font-semibold">{{ request.outputFormat ? ('Convert to .' + ConvertVideoOutputFormat[request.outputFormat]) : 'Upload' }}</span>
                             </PrimaryButton>
                         </div>
                     </div>
@@ -60,38 +64,37 @@ export default {
             <div  class="pb-20">
                 
                 <div v-if="client.loading.value" class="mt-8 mb-20 flex justify-center items-center">
-                    <Loading class="text-gray-300 font-normal" imageClass="w-7 h-7 mt-1.5">processing image...</Loading>
+                    <Loading class="text-gray-300 font-normal" imageClass="w-7 h-7 mt-1.5">processing video...</Loading>
                 </div>                                
 
                 <div v-for="result in getThreadResults()" class="w-full ">
                     <div class="flex items-center justify-between">
                         <span class="my-4 flex justify-center items-center text-xl underline-offset-4">
-                            <span>{{ result.response?.results?.[0]?.fileName || result.request.image }}</span>
+                            <span class="max-w-10 text-ellipsis">{{ result.response?.results?.[0]?.fileName || result.request.video }}</span>
                         </span>
                         <div class="group flex cursor-pointer" @click="discardResult(result)">
                             <div class="ml-1 invisible group-hover:visible">discard</div>
                             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z"></path><path fill="currentColor" d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z"></path></svg>
                         </div>
                     </div>   
-                    
-                    <ArtifactGallery :results="toArtifacts(result)">
-                        <template #bottom="{ selected }">
-                            <ArtifactDownloads :url="selected.url">
-                                <div @click.stop.prevent="toggleIcon(selected)" class="flex cursor-pointer text-sm text-gray-300 hover:text-gray-100 hover:drop-shadow">
-                                    <svg :class="['w-5 h-5 mr-0.5',selected.url == threadRef.icon ? '-rotate-45' : '']" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14 18l-8 8M20.667 4L28 11.333l-6.38 6.076a2 2 0 0 0-.62 1.448v3.729c0 .89-1.077 1.337-1.707.707L8.707 12.707c-.63-.63-.184-1.707.707-1.707h3.729a2 2 0 0 0 1.448-.62z"/></svg>
-                                    {{selected.url == threadRef.icon ? 'unpin icon' : 'pin icon' }}
-                                </div>
-                            </ArtifactDownloads>
-                        </template>
-                    </ArtifactGallery>
+                    <video v-if="result.response?.results?.[0]?.url" controls>
+                        <source :src="result.response.results[0].url" type="video/mp4" />
+                    </video>
+                    <div v-if="result.response?.results?.[0]?.url" class="mt-2 flex justify-between">
+                        <span></span>
+                        <a :href="result.response.results[0].url + '?download=1'" class="flex items-center text-indigo-600 hover:text-indigo-700">
+                            <svg class="w-5 h-5 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 20h12M12 4v12m0 0l3.5-3.5M12 16l-3.5-3.5"></path></svg>
+                            <div class="">download</div>
+                        </a>
+                    </div>
                 </div>
-            </div>        
+            </div>
         </template>
         
         <template #sidebar>
             <HistoryTitle :prefix="storage.prefix" />
             <HistoryGroups :history="history" v-slot="{ item }" @save="saveHistoryItem($event)" @remove="removeHistoryItem($event)">
-                <Icon class="h-5 w-5 rounded-full flex-shrink-0 mr-1" :src="item.icon ?? icons.image" loading="lazy" :alt="item.model" />
+                <Icon class="h-5 w-5 rounded-full flex-shrink-0 mr-1" :src="item.icon ?? icons.video" loading="lazy" :alt="item.model" />
                 <span :title="item.title">{{item.title}}</span>
             </HistoryGroups>
         </template>
@@ -102,12 +105,12 @@ export default {
         const routes = inject('routes')
         const refUi = ref()
         const refForm = ref()
-        const refImage = ref()
+        const refUpload = ref()
         const ui = useUiLayout(refUi)
         const renderKey = ref(0)
         const { filePathUri, getExt, extSrc, svgToDataUri } = useFiles()
 
-        const storage = new ThreadStorage(`imgconv`, {
+        const storage = new ThreadStorage(`vidconv`, {
             tag: '',
             outputFormat: '',
         })
@@ -118,10 +121,10 @@ export default {
         const thread = ref()
         const threadRef = ref()
 
-        const validPrompt = () => refForm.value?.image?.files?.length
+        const validPrompt = () => refForm.value?.video?.files?.length
         const refMessage = ref()
-        const visibleFields = 'image,outputFormat'.split(',')
-        const request = ref(new ConvertImage())
+        const visibleFields = 'video,outputFormat'.split(',')
+        const request = ref(new ConvertVideo())
         const activeModels = ref([])
 
         function savePrefs() {
@@ -148,7 +151,7 @@ export default {
 
             error.value = null
             let formData = new FormData(refForm.value)
-            const image = formData.get('image').name
+            const video = formData.get('video').name
 
             const api = await client.apiForm(request.value, formData, { jsconfig: 'eccn' })
             /** @type {ArtifactGenerationResponse} */
@@ -162,12 +165,12 @@ export default {
                     const id = parseInt(routes.id) || storage.createId()
                     thread.value = thread.value ?? storage.createThread(Object.assign({
                         id: storage.getThreadId(id),
-                        title: image,
+                        title: video,
                     }, request.value))
 
                     const result = {
                         id: storage.createId(),
-                        request: Object.assign({}, request.value, { image }),
+                        request: Object.assign({}, request.value, { video }),
                         response: r,
                     }
                     thread.value.results.push(result)
@@ -216,7 +219,7 @@ export default {
 
         function onRouteChange() {
             // console.log('onRouteChange', routes.id)
-            refImage.value?.clear()
+            refUpload.value?.clear()
             loadHistory()
             if (routes.id) {
                 const id = parseInt(routes.id)
@@ -274,7 +277,7 @@ export default {
 
         return {
             refForm,
-            refImage,
+            refUpload,
             storage,
             routes,
             client,
@@ -297,9 +300,9 @@ export default {
             saveHistoryItem,
             removeHistoryItem,
             toArtifacts,
-            acceptedImages,
+            acceptedVideos,
             renderKey,
-            ImageOutputFormat,
+            ConvertVideoOutputFormat,
         }
     }
 }
