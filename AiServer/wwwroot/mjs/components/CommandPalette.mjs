@@ -112,6 +112,20 @@ export default {
                         icon:icons.home,
                     })
                 }
+                if ('admin'.includes(pattern) || 'ai providers'.includes(pattern)) {
+                    clone.features.push({
+                        id:'/admin/AiProvider',
+                        label:'AI Providers',
+                        icon:icons.aiproviders,
+                    })
+                }
+                if ('admin'.includes(pattern) || 'media providers'.includes(pattern)) {
+                    clone.features.push({
+                        id:'/admin/MediaProvider',
+                        label:'Media Providers',
+                        icon:icons.mediaproviders,
+                    })
+                }
                 if ('api explorer'.includes(pattern)) {
                     clone.features.push({
                         id:'/ui',

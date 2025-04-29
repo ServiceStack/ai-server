@@ -8,7 +8,7 @@ namespace AiServer.ServiceModel.Types;
 public class QueryMediaTypes : QueryDb<MediaType> { }
 
 
-[Icon(Svg = Icons.Work)]
+[Icon(Svg = Icons.MediaProvider)]
 public class MediaProvider
 {
     [AutoIncrement] public int Id { get; set; }
