@@ -800,6 +800,7 @@
       "14b"
     ],
     "latest": "14b",
+    "vision": true,
     "website": "https://ollama.ai/library/phi4",
     "description": "Phi 4 is a 14B parameter, state-of-the-art open model from Microsoft.",
     "icon": "/img/models/phi4.svg"
@@ -872,6 +873,23 @@
     "latest": "7b",
     "website": "https://ollama.com/library/qwen2.5-coder",
     "description": "The latest series of Code-Specific Qwen models, with significant improvements in code generation, code reasoning, and code fixing",
+    "icon": "/img/models/qwen.svg"
+  },
+  {
+    "id": "qwen3",
+    "tags": [
+      "0.6b",
+      "1.7b",
+      "4b",
+      "8b",
+      "14b",
+      "30b",
+      "32b",
+      "235b"
+    ],
+    "latest": "8b",
+    "website": "https://ollama.com/library/qwen3",
+    "description": "Qwen3 is the latest generation of large language models in Qwen series, offering a comprehensive suite of dense and mixture-of-experts (MoE) models.",
     "icon": "/img/models/qwen.svg"
   },
   {
