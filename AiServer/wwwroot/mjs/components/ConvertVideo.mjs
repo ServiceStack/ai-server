@@ -1,6 +1,6 @@
 import { ref, onMounted, inject, watch } from "vue"
 import { useClient, useFiles } from "@servicestack/vue"
-import { createErrorStatus } from "@servicestack/client"
+import { createErrorStatus, lastLeftPart, lastRightPart } from "@servicestack/client"
 import { ConvertVideo, ConvertVideoOutputFormat } from "../dtos.mjs"
 import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, toArtifacts, acceptedVideos } from "../utils.mjs"
 import { ArtifactGallery, ArtifactDownloads } from "./Artifacts.mjs"
@@ -70,7 +70,7 @@ export default {
                 <div v-for="result in getThreadResults()" class="w-full ">
                     <div class="flex items-center justify-between">
                         <span class="my-4 flex justify-center items-center text-xl underline-offset-4">
-                            <span class="max-w-10 text-ellipsis">{{ result.response?.results?.[0]?.fileName || result.request.video }}</span>
+                            <span>{{ resultFileName(result) }}</span>
                         </span>
                         <div class="group flex cursor-pointer" @click="discardResult(result)">
                             <div class="ml-1 invisible group-hover:visible">discard</div>
@@ -259,6 +259,16 @@ export default {
                 }
             }
         }
+        
+        function resultFileName(result) {
+            const outFileName = result.response?.results?.[0]?.fileName
+            const srcName = lastLeftPart(result.request.video, '.')
+            if (outFileName) {
+                const outExt = lastRightPart(outFileName, '.')
+                return srcName + '.' + outExt
+            }
+            return result.request.video
+        }
 
         watch(() => routes.id, updated)
         watch(() => [
@@ -303,6 +313,7 @@ export default {
             acceptedVideos,
             renderKey,
             ConvertVideoOutputFormat,
+            resultFileName,
         }
     }
 }

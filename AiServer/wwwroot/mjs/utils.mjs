@@ -273,7 +273,7 @@ export const HistoryGroups = {
             <h4 class="w-full pl-2 text-gray-500 uppercase pt-2 text-sm leading-6 font-semibold">{{group.title}}</h4>
             <div v-for="item in group.results">
                 <div v-href="{id:item.id}" :class="['pl-4 hover:text-indigo-600 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6 justify-between', 
-                    item.id == routes.id ? 'bg-gray-50 text-indigo-600 font-semibold' : 'cursor-pointer text-gray-700']">
+                    item.id == routes.id ? 'bg-gray-50 text-indigo-600 font-semibold' : 'cursor-pointer text-gray-700']" @dblclick="renameThread(item)">
                     <div class="md:w-64 overflow-hidden whitespace-nowrap text-ellipsis" 
                         @contextmenu.prevent.stop="showThreadMenu=showThreadMenu==item.id ? null : item.id">
                         <input v-if="renameThreadId === item.id" id="txtItemTitle" type="text" v-model="item.title" class="text-sm py-1 px-2 font-normal text-gray-700" 
