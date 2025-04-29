@@ -399,8 +399,8 @@
     "modelType": "VAE",
     "filename": "ae.safetensors",
     "path": "/data/models/VAE",
-    "downloadUrl": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors?download=true",
-    "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell"
+    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/blob/main/split_files/vae/ae.safetensors?download=true",
+    "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/tree/main/split_files/vae"
   },
   {
     "id": "stable-audio-open-1.0",
