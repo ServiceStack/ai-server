@@ -314,15 +314,6 @@
     "url": "https://github.com/rhasspy/piper/blob/master/VOICES.md"
   },
   {
-    "id": "t5xxl_fp8_e4m3fn",
-    "name": "FLUX Text Encoder (T5-XXL-FP8)",
-    "modelType": "TextEncoder",
-    "filename": "t5xxl_fp8_e4m3fn.safetensors",
-    "path": "/data/models/clip",
-    "downloadUrl": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors?download=true",
-    "url": "https://huggingface.co/comfyanonymous/flux_text_encoders"
-  },
-  {
     "id": "clip-g",
     "name": "Stable Diffusion Text Encoder (CLIP-G)",
     "modelType": "TextEncoder",
