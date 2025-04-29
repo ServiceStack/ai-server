@@ -208,9 +208,11 @@ export default {
             refreshKey.value++
         })
         
+        const inputTags = ['TEXTAREA','INPUT','SELECT']
         function handleKeyDown(e) {
-            //console.log('handleKeyDown', e)
-            if (e.code === 'Slash') {
+            //console.log('handleKeyDown', e, e.target?.tagName)
+            if (inputTags.includes(e.target?.tagName)) return
+            if (e.key === '/') {
                 showPalette.value = true
                 e.preventDefault()
             }
