@@ -69,7 +69,7 @@
     "height": 1024,
     "type": "flux1",
     "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell",
-    "downloadUrl": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors",
+    "downloadUrl": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors?download=true",
     "vae": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors?download=true"
   },
   {
@@ -323,6 +323,15 @@
     "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/tree/main/text_encoders"
   },
   {
+    "id": "clip_g_hidream",
+    "name": "HiDream Text Encoder (CLIP-G)",
+    "modelType": "TextEncoder",
+    "filename": "clip_g_hidream.safetensors",
+    "path": "/data/models/clip",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/clip_g_hidream.safetensors?download=true",
+    "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/tree/main/split_files/text_encoders"
+  },
+  {
     "id": "clip-l",
     "name": "Stable Diffusion Text Encoder (CLIP-L)",
     "modelType": "TextEncoder",
@@ -330,6 +339,15 @@
     "path": "/data/models/clip",
     "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/blob/main/text_encoders/clip_l.safetensors?download=true",
     "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/tree/main/text_encoders"
+  },
+  {
+    "id": "clip_l_hidream",
+    "name": "HiDream Text Encoder (CLIP-L)",
+    "modelType": "TextEncoder",
+    "filename": "clip_l_hidream.safetensors",
+    "path": "/data/models/clip",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/clip_l_hidream.safetensors?download=true",
+    "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/tree/main/split_files/text_encoders"
   },
   {
     "id": "t5xxl_fp16",
