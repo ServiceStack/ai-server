@@ -60,7 +60,7 @@
     "modelType": "TextToImage",
     "filename": "flux1-schnell.safetensors",
     "path": "/data/models/unet",
-    "dependsOn": ["flux_vae","flux-text-encoder-clip-l","flux-text-encoder-t5xxl-fp8-e4m3fn"],
+    "dependsOn": ["flux_vae","clip-l","t5xxl_fp8_e4m3fn"],
     "cfgScale": 3.5,
     "steps": 4,
     "scheduler": "simple",
@@ -70,6 +70,31 @@
     "type": "flux1",
     "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell",
     "downloadUrl": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors",
+    "vae": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors?download=true"
+  },
+  {
+    "id": "hidream-i1-dev",
+    "name": "HiDream I1 Dev",
+    "apiModels": {
+      "ComfyUI": "hidream_i1_dev_fp8.safetensors"
+    },
+    "installer": {
+      "name": "Text to Image (HiDream I1 Dev)",
+      "value": "hidream-i1-dev"
+    },
+    "modelType": "TextToImage",
+    "filename": "hidream_i1_dev_fp8.safetensors",
+    "path": "/data/models/unet",
+    "dependsOn": ["clip-l","clip-g","t5xxl_fp8_e4m3fn","llama_3.1_8b_instruct_fp8_scaled","flux_vae"],
+    "cfgScale": 5,
+    "steps": 50,
+    "scheduler": "normal",
+    "sampler": "lcm",
+    "width": 1024,
+    "height": 1024,
+    "type": "sd3",
+    "url": "https://comfyanonymous.github.io/ComfyUI_examples/hidream/",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/diffusion_models/hidream_i1_dev_fp8.safetensors?download=true",
     "vae": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors?download=true"
   },
   {
@@ -83,7 +108,7 @@
     "modelType": "TextToImage",
     "filename": "sd3.5_large.safetensors",
     "path": "/data/models/checkpoints",
-    "dependsOn": ["stable-diffusion-clip-g","stable-diffusion-clip-l","stable-diffusion-encoder-t5xxl_fp16"],
+    "dependsOn": ["clip-g","clip-l","t5xxl_fp16"],
     "cfgScale": 1.0,
     "steps": 40,
     "scheduler": "sgm_uniform",
@@ -105,7 +130,7 @@
     "modelType": "TextToImage",
     "filename": "sd3.5_large_turbo.safetensors",
     "path": "/data/models/checkpoints",
-    "dependsOn": ["stable-diffusion-clip-g","stable-diffusion-clip-l","stable-diffusion-encoder-t5xxl_fp16"],
+    "dependsOn": ["clip-g","clip-l","t5xxl_fp16"],
     "cfgScale": 1.0,
     "steps": 4,
     "scheduler": "sgm_uniform",
@@ -289,16 +314,7 @@
     "url": "https://github.com/rhasspy/piper/blob/master/VOICES.md"
   },
   {
-    "id": "flux-text-encoder-clip-l",
-    "name": "FLUX Text Encoder (CLIP-L)",
-    "modelType": "TextEncoder",
-    "filename": "clip_l.safetensors",
-    "path": "/data/models/clip",
-    "downloadUrl": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors?download=true",
-    "url": "https://huggingface.co/comfyanonymous/flux_text_encoders"
-  },
-  {
-    "id": "flux-text-encoder-t5xxl-fp8-e4m3fn",
+    "id": "t5xxl_fp8_e4m3fn",
     "name": "FLUX Text Encoder (T5-XXL-FP8)",
     "modelType": "TextEncoder",
     "filename": "t5xxl_fp8_e4m3fn.safetensors",
@@ -307,7 +323,7 @@
     "url": "https://huggingface.co/comfyanonymous/flux_text_encoders"
   },
   {
-    "id": "stable-diffusion-clip-g",
+    "id": "clip-g",
     "name": "Stable Diffusion Text Encoder (CLIP-G)",
     "modelType": "TextEncoder",
     "filename": "clip_g.safetensors",
@@ -316,7 +332,7 @@
     "url": "https://huggingface.co/stabilityai/stable-diffusion-3-medium/tree/main/text_encoders"
   },
   {
-    "id": "stable-diffusion-clip-l",
+    "id": "clip-l",
     "name": "Stable Diffusion Text Encoder (CLIP-L)",
     "modelType": "TextEncoder",
     "filename": "clip_l.safetensors",
@@ -325,7 +341,7 @@
     "url": "https://huggingface.co/stabilityai/stable-diffusion-3-medium/tree/main/text_encoders"
   },
   {
-    "id": "stable-diffusion-encoder-t5xxl_fp16",
+    "id": "t5xxl_fp16",
     "name": "Stable Diffusion Text Encoder (T5-XXL-FP16)",
     "modelType": "TextEncoder",
     "filename": "t5xxl_fp16.safetensors",
@@ -334,31 +350,22 @@
     "url": "https://huggingface.co/stabilityai/stable-diffusion-3-medium/tree/main/text_encoders"
   },
   {
-    "id": "sd-fp8-clip-g",
-    "name": "Stable Diffusion FP8 Text Encoder (CLIP-G)",
-    "modelType": "TextEncoder",
-    "filename": "fp8_clip_g.safetensors",
-    "path": "/data/models/clip",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/clip_g.safetensors?download=true",
-    "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/tree/main/text_encoders"
-  },
-  {
-    "id": "sd-fp8-clip-l",
-    "name": "Stable Diffusion FP8 Text Encoder (CLIP-L)",
-    "modelType": "TextEncoder",
-    "filename": "fp8_clip_l.safetensors",
-    "path": "/data/models/clip",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/clip_l.safetensors?download=true",
-    "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/tree/main/text_encoders"
-  },
-  {
-    "id": "sd-fp8-encoder-t5xxl_fp16",
+    "id": "t5xxl_fp8_e4m3fn",
     "name": "Stable Diffusion FP8 Text Encoder (T5-XXL-FP8)",
     "modelType": "TextEncoder",
     "filename": "t5xxl_fp8_e4m3fn.safetensors",
     "path": "/data/models/clip",
     "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/t5xxl_fp8_e4m3fn.safetensors?download=true",
     "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/tree/main/text_encoders"
+  },
+  {
+    "id": "llama_3.1_8b_instruct_fp8_scaled",
+    "name": "LLama 3.1:8b FP8 Scaled Text Encoder",
+    "modelType": "TextEncoder",
+    "filename": "llama_3.1_8b_instruct_fp8_scaled.safetensors",
+    "path": "/data/models/clip",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/llama_3.1_8b_instruct_fp8_scaled.safetensors?download=true",
+    "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/tree/main/split_files/text_encoders"
   },
   {
     "id": "clip-t5-base",
