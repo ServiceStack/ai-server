@@ -45,7 +45,7 @@
     "height": 1024,
     "type": "sd3",
     "url": "https://civitai.com/models/194768?modelVersionId=1031794",
-    "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+    "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16"
   },
   {
     "id": "flux-schnell",
