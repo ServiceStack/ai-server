@@ -35,10 +35,10 @@
     "modelType": "TextToImage",
     "filename": "jibMixRealisticXL_v160Aphrodite.safetensors",
     "path": "/data/models/checkpoints",
-    "downloadApiKeyVar": "HF_TOKEN",
+    "downloadApiKeyVar": "CIVITAI_TOKEN",
     "dependsOn": ["clip-l","clip-g","t5xxl_fp16","sdxl_vae"],
-    "cfgScale": 3,
-    "steps": 4,
+    "cfgScale": 2.7,
+    "steps": 25,
     "scheduler": "karras",
     "sampler": "dpmpp_2m_sde_gpu",
     "width": 1024,
@@ -169,7 +169,7 @@
     "id": "flux-dev",
     "name": "FLUX Dev",
     "apiModels": {
-      "Replicate": "black-forest-labs/flux-dev"      
+      "Replicate": "black-forest-labs/flux-dev"
     },
     "modelType": "TextToImage"
   },
