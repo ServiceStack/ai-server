@@ -252,7 +252,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "Download all of the text_encoders models [here](https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/tree/main/split_files/text_encoders)\n\nPut them in the **ComfyUI/models/text_encoders** directory"
+        "Download all of the text_encoders models [here](https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/tree/main/split_files/text_encoders)\n\nPut them in the **ComfyUI/models/clip** directory"
       ],
       "color": "#432",
       "bgcolor": "#653"
@@ -469,22 +469,22 @@
           {
             "name": "clip_l_hidream.safetensors",
             "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/clip_l_hidream.safetensors?download=true",
-            "directory": "text_encoders"
+            "directory": "clip"
           },
           {
             "name": "clip_g_hidream.safetensors",
             "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/clip_g_hidream.safetensors?download=true",
-            "directory": "text_encoders"
+            "directory": "clip"
           },
           {
             "name": "t5xxl_fp8_e4m3fn_scaled.safetensors",
             "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/t5xxl_fp8_e4m3fn_scaled.safetensors?download=true",
-            "directory": "text_encoders"
+            "directory": "clip"
           },
           {
             "name": "llama_3.1_8b_instruct_fp8_scaled.safetensors",
             "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/llama_3.1_8b_instruct_fp8_scaled.safetensors?download=true",
-            "directory": "text_encoders"
+            "directory": "clip"
           }
         ],
         "enableTabs": false,
