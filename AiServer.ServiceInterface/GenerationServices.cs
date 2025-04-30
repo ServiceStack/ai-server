@@ -298,10 +298,10 @@ public static class GenerationServiceExtensions
 
         var completedResponse = new GenerationResponse { };
         
-        // Wait for the job to complete max 1 minute
-        var timeout = DateTime.UtcNow.AddMinutes(1);
+        // Wait for the job to complete max 20 minutes
+        var timeout = DateTime.UtcNow.AddSeconds(job.Job?.TimeoutSecs ?? 20 * 60);
         while (queuedJob?.Job?.State is not (BackgroundJobState.Completed or BackgroundJobState.Cancelled
-               or BackgroundJobState.Failed) && DateTime.UtcNow < timeout)
+                   or BackgroundJobState.Failed) && DateTime.UtcNow < timeout)
         {
             await Task.Delay(1000);
             queuedJob = jobs.GetJob(diffResponse.Id);

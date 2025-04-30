@@ -1,4 +1,5 @@
 using AiServer.ServiceInterface;
+using AiServer.ServiceInterface.Generation;
 using AiServer.ServiceInterface.Recurring;
 using ServiceStack.Data;
 using ServiceStack.Jobs;
@@ -31,6 +32,12 @@ public class ConfigureBackgroundJobs : IHostingStartup
             AppData.Instance = services.GetRequiredService<AppData>();
             using var db = services.GetRequiredService<IDbConnectionFactory>().OpenDbConnection();
             AppData.Instance.Reload(db);
+            
+            var mediaOptions = services.GetRequiredService<ComfyMediaProviderOptions>();
+            foreach (var model in AppData.Instance.MediaModels.Where(x => x.Filename != null && x.Workflow != null))
+            {
+                mediaOptions.TextToImageModelOverrides[model.Filename!] = model.Workflow!;
+            }
             
             var jobs = services.GetRequiredService<IBackgroundJobs>();
             // #if DEBUG

@@ -43,7 +43,6 @@
     "sampler": "dpmpp_2m_sde_gpu",
     "width": 1024,
     "height": 1024,
-    "type": "sd3",
     "url": "https://civitai.com/models/194768?modelVersionId=1031794",
     "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16"
   },
@@ -68,7 +67,7 @@
     "sampler": "euler",
     "width": 1024,
     "height": 1024,
-    "type": "flux1",
+    "workflow": "flux1/text_to_image.json",
     "downloadApiKeyVar": "HF_TOKEN",
     "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell",
     "downloadUrl": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors?download=true",
@@ -94,7 +93,7 @@
     "sampler": "lcm",
     "width": 1024,
     "height": 1024,
-    "type": "hidream",
+    "workflow": "hidream/text_to_image.json",
     "url": "https://comfyanonymous.github.io/ComfyUI_examples/hidream/",
     "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/diffusion_models/hidream_i1_dev_fp8.safetensors?download=true"
   },
@@ -116,7 +115,6 @@
     "sampler": "dpmpp_2m",
     "width": 1024,
     "height": 1024,
-    "type": "sd3",
     "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large",
     "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large/resolve/main/sd3.5_large.safetensors?download=true"
   },
@@ -138,7 +136,7 @@
     "sampler": "dpmpp_2m",
     "width": 1024,
     "height": 1024,
-    "type": "sd3",
+    "workflow": "sd35/text_to_image.json",
     "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo",
     "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo/resolve/main/sd3.5_large_turbo.safetensors?download=true"
   },
@@ -161,7 +159,6 @@
     "sampler": "euler",
     "width": 1024,
     "height": 1024,
-    "type": "sd3",
     "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8",
     "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/sd3.5_large_fp8_scaled.safetensors?download=true"
   },

@@ -57,14 +57,8 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
             services.AddSingleton<CustomOpenAiProvider>();
             services.AddSingleton<AiProviderFactory>();
 
-            services.AddSingleton(new ComfyMediaProviderOptions
-            {
-                TextToImageModelOverrides = new Dictionary<string, string>
-                {
-                    ["flux1-schnell.safetensors"] = "flux1/text_to_image.json",
-                    ["sd3.5_large_fp8_scaled.safetensors"] = "sd35/text_to_image.json"
-                }
-            });
+            services.AddSingleton(new ComfyMediaProviderOptions());
+            
             services.AddSingleton<ComfyProvider>();
             services.AddSingleton<ReplicateAiProvider>();
             services.AddSingleton<OpenAiMediaProvider>();

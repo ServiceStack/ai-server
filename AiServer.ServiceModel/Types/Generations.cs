@@ -144,6 +144,8 @@ public class MediaModel : IHasId<string>
     public int? Steps { get; set; }
     public string? NegativePrompt { get; set; }
     public ModelType? ModelType { get; set; }
+    public string? Filename { get; set; }
+    public string? Workflow { get; set; }
     /// <summary>
     /// Flag for models that are pulled down when run for the first time
     /// Keys are the ProviderId strings
