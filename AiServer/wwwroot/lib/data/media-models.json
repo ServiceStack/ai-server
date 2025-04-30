@@ -28,23 +28,24 @@
   },
   {
     "id": "jib-mix-realistic",
-    "name": "Jib Mix Realistic v14",
+    "name": "Jib Mix Realistic v16",
     "apiModels": {
-      "ComfyUI": "jibMixRealisticXL_v140CrystalClarity.safetensors"
+      "ComfyUI": "jibMixRealisticXL_v160Aphrodite.safetensors"
     },
     "modelType": "TextToImage",
-    "filename": "jibMixRealisticXL_v140CrystalClarity.safetensors",
+    "filename": "jibMixRealisticXL_v160Aphrodite.safetensors",
     "path": "/data/models/checkpoints",
     "downloadApiKeyVar": "HF_TOKEN",
-    "dependsOn": ["sdxl_vae"],
-    "cfgScale": 2.7,
-    "steps": 20,
+    "dependsOn": ["clip-l","clip-g","t5xxl_fp16","sdxl_vae"],
+    "cfgScale": 3,
+    "steps": 4,
     "scheduler": "karras",
     "sampler": "dpmpp_2m_sde_gpu",
     "width": 1024,
     "height": 1024,
-    "url": "https://huggingface.co/CompVis/jib-mix-realistic-xl-v140-crystal-clarity",
-    "downloadUrl": "https://civitai.com/api/download/models/839642?type=Model&format=SafeTensor&size=pruned&fp=fp16"
+    "type": "sd3",
+    "url": "https://civitai.com/models/194768?modelVersionId=1031794",
+    "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16",
   },
   {
     "id": "flux-schnell",
