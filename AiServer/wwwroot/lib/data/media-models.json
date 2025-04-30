@@ -69,6 +69,7 @@
     "width": 1024,
     "height": 1024,
     "type": "flux1",
+    "downloadApiKeyVar": "HF_TOKEN",
     "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell",
     "downloadUrl": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors?download=true",
     "vae": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors?download=true"
@@ -95,8 +96,7 @@
     "height": 1024,
     "type": "sd3",
     "url": "https://comfyanonymous.github.io/ComfyUI_examples/hidream/",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/diffusion_models/hidream_i1_dev_fp8.safetensors?download=true",
-    "vae": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors?download=true"
+    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/diffusion_models/hidream_i1_dev_fp8.safetensors?download=true"
   },
   {
     "id": "sd-3.5-large",
