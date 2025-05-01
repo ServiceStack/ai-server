@@ -5,7 +5,18 @@ namespace AiServer.ServiceModel;
 
 [Tag(Tags.AiInfo)]
 [Api("Active Media Worker Models available in AI Server")]
-public class ActiveMediaModels : IGet, IReturn<StringsResponse> {}
+public class ActiveMediaModels : IGet, IReturn<ActiveMediaModelsResponse> {}
+public class ActiveMediaModelsResponse
+{
+    public List<Entry> Results { get; set; } = [];
+    public ResponseStatus? ResponseStatus { get; set; }
+}
+
+public class Entry
+{
+    public string Key { get; set; }
+    public string Value { get; set; }
+}
 
 
 [ValidateApiKey]

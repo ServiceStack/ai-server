@@ -1,224 +1,276 @@
 [
   {
-    "id": "sdxl-lightning",
+    "id": "sdxl_lightning_4step",
     "name": "SDXL Lightning 4 Step",
+    "type": "TextToImage",
     "apiModels": {
       "ComfyUI": "sdxl_lightning_4step.safetensors",
       "Replicate": "bytedance/sdxl-lightning-4step"
     },
-    "installer": {
-      "name": "Text to Image (6.9G SDXL Lightning)",
-      "value": "sdxl-lightning"
-    },
     "supportedTasks": {
       "ComfyUI": ["TextToImage","ImageToImage","ImageWithMask"]
     },
-    "modelType": "TextToImage",
-    "filename": "sdxl_lightning_4step.safetensors",
-    "path": "/data/models/checkpoints",
-    "dependsOn": ["sdxl_vae"],
-    "cfgScale": 1.0,
-    "steps": 4,
-    "scheduler": "sgm_uniform",
-    "sampler": "euler_ancestral",
-    "width": 1024,
-    "height": 1024,
-    "url": "https://huggingface.co/ByteDance/SDXL-Lightning",
-    "downloadUrl": "https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step.safetensors?download=true"
+    "dependencies": [
+      "sdxl_vae.safetensors"
+    ],
+    "installer": "Text to Image (6.9G SDXL Lightning)",
+    "path": "/data/models/checkpoints/sdxl_lightning_4step.safetensors",
+    "workflow": "text-to-image/sdxl-lightning.json",
+    "workflowVars": {
+      "cfgScale": 1.0,
+      "steps": 4,
+      "scheduler": "sgm_uniform",
+      "sampler": "euler_ancestral",
+      "width": 1024,
+      "height": 1024,
+      "batchSize": 1
+    },
+    "downloadUrl": "https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step.safetensors",
+    "url": "https://huggingface.co/ByteDance/SDXL-Lightning"
   },
   {
-    "id": "jib-mix-realistic",
+    "id": "realvisxl",
+    "name": "RealVisXL V5.0",
+    "type": "TextToImage",
+    "apiModels": {
+      "ComfyUI": "realvisxlV50_v50LightningBakedvae.safetensors"
+    },
+    "installer": "Text to Image (6.9G RealVisXL V5.0)",
+    "path": "/data/models/checkpoints/realvisxlV50_v50LightningBakedvae.safetensors",
+    "workflow": "text-to-image/sdxl.json",
+    "workflowVars": {
+      "cfgScale": 2,
+      "steps": 5,
+      "scheduler": "normal",
+      "sampler": "dpmpp_sde",
+      "width": 1024,
+      "height": 1024,
+      "batchSize": 1
+    },
+    "downloadUrl": "$CIVITAI_TOKEN@https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+    "url": "https://civitai.com/models/194768?modelVersionId=1031794"
+  },
+  {
+    "id": "dreamshaperXL",
+    "name": "DreamShaper XL",
+    "type": "TextToImage",
+    "apiModels": {
+      "ComfyUI": "dreamshaperXL_v21TurboDPMSDE.safetensors"
+    },
+    "dependencies": [
+      "aesthetic_anime_v1s.safetensors"
+    ],
+    "installer": "Text to Image (6.4 DreamShaper XL)",
+    "path": "/data/models/checkpoints/dreamshaperXL_v21TurboDPMSDE.safetensors",
+    "workflow": "text-to-image/sdxl.json",
+    "workflowVars": {
+      "cfgScale": 2,
+      "steps": 8,
+      "scheduler": "karras",
+      "sampler": "dpmpp_sde",
+      "width": 1024,
+      "height": 1024,
+      "batchSize": 1
+    },
+    "downloadToken": "$CIVITAI_TOKEN",
+    "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+    "url": "https://civitai.com/models/194768?modelVersionId=1031794"
+  },
+  {
+    "id": "jibMixRealisticXL",
     "name": "Jib Mix Realistic v16",
+    "type": "TextToImage",
     "apiModels": {
       "ComfyUI": "jibMixRealisticXL_v160Aphrodite.safetensors"
     },
-    "installer": {
-      "name": "Text to Image (7.1G Jib Mix Realistic v16)",
-      "value": "jib-mix-realistic"
+    "dependencies": [
+      "clip_l.safetensors",
+      "clip_g.safetensors",
+      "t5xxl_fp16.safetensors",
+      "sdxl_vae.safetensors"
+    ],
+    "installer": "Text to Image (7.1G Jib Mix Realistic v16)",
+    "path": "/data/models/checkpoints/jibMixRealisticXL_v160Aphrodite.safetensors",
+    "workflow": "text-to-image/sdxl.json",
+    "workflowVars": {
+      "cfgScale": 2.7,
+      "steps": 25,
+      "scheduler": "karras",
+      "sampler": "dpmpp_2m_sde_gpu",
+      "width": 1024,
+      "height": 1024,
+      "batchSize": 1
     },
-    "modelType": "TextToImage",
-    "filename": "jibMixRealisticXL_v160Aphrodite.safetensors",
-    "path": "/data/models/checkpoints",
-    "dependsOn": ["clip-l","clip-g","t5xxl_fp16","sdxl_vae"],
-    "cfgScale": 2.7,
-    "steps": 25,
-    "scheduler": "karras",
-    "sampler": "dpmpp_2m_sde_gpu",
-    "width": 1024,
-    "height": 1024,
-    "downloadApiKeyVar": "CIVITAI_TOKEN",
-    "url": "https://civitai.com/models/194768?modelVersionId=1031794",
-    "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16"
+    "downloadToken": "$CIVITAI_TOKEN",
+    "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+    "url": "https://civitai.com/models/194768?modelVersionId=1031794"
   },
   {
-    "id": "sd-3.5-fp8",
+    "id": "sd3.5_large_fp8_scaled",
     "name": "Stable Diffusion 3.5 FP8",
+    "type": "TextToImage",
     "apiModels": {
       "ComfyUI": "sd3.5_large_fp8_scaled.safetensors"
     },
-    "installer": {
-      "name": "Text to Image (15G Stable Diffusion 3.5 FP8)",
-      "value": "sd-3.5-fp8"
+    "installer": "Text to Image (15G Stable Diffusion 3.5 FP8)",
+    "path": "/data/models/checkpoints/sd3.5_large_fp8_scaled.safetensors",
+    "workflow": "text-to-image/sd35-large.json",
+    "workflowVars": {
+      "cfgScale": 4,
+      "steps": 20,
+      "scheduler": "sgm_uniform",
+      "sampler": "euler",
+      "width": 1024,
+      "height": 1024,
+      "batchSize": 1
     },
-    "modelType": "TextToImage",
-    "filename": "sd3.5_large_fp8_scaled.safetensors",
-    "path": "/data/models/checkpoints",
-    "cfgScale": 4,
-    "steps": 20,
-    "scheduler": "sgm_uniform",
-    "sampler": "euler",
-    "width": 1024,
-    "height": 1024,
-    "workflow": "sd35-large/text_to_image.json",
-    "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/sd3.5_large_fp8_scaled.safetensors?download=true"
+    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/sd3.5_large_fp8_scaled.safetensors",
+    "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8"
   },
   {
-    "id": "hidream-i1-dev",
+    "id": "hidream_i1_dev",
     "name": "HiDream I1 Dev",
+    "type": "TextToImage",
     "apiModels": {
       "ComfyUI": "hidream_i1_dev_fp8.safetensors"
     },
-    "installer": {
-      "name": "Text to Image (17G HiDream I1 Dev)",
-      "value": "hidream-i1-dev"
+    "installer": "Text to Image (17G HiDream I1 Dev)",
+    "path": "/data/models/checkpoints/hidream_i1_dev_fp8.safetensors",
+    "dependencies": [
+      "clip_l_hidream.safetensors",
+      "clip_g_hidream.safetensors",
+      "t5xxl_fp8_e4m3fn.safetensors",
+      "llama_3.1_8b_instruct_fp8_scaled",
+      "ae.safetensors"
+    ],
+    "workflow": "text-to-image/hidream.json",
+    "workflowVars": {
+      "cfgScale": 1,
+      "steps": 28,
+      "scheduler": "normal",
+      "sampler": "lcm",
+      "width": 1024,
+      "height": 1024,
+      "batchSize": 1
     },
-    "modelType": "TextToImage",
-    "filename": "hidream_i1_dev_fp8.safetensors",
-    "path": "/data/models/checkpoints",
-    "dependsOn": ["clip_l_hidream","clip_g_hidream","t5xxl_fp8_e4m3fn","llama_3.1_8b_instruct_fp8_scaled","flux_vae"],
-    "cfgScale": 1,
-    "steps": 28,
-    "scheduler": "normal",
-    "sampler": "lcm",
-    "width": 1024,
-    "height": 1024,
-    "workflow": "hidream/text_to_image.json",
-    "url": "https://comfyanonymous.github.io/ComfyUI_examples/hidream/",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/diffusion_models/hidream_i1_dev_fp8.safetensors?download=true"
+    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/diffusion_models/hidream_i1_dev_fp8.safetensors",
+    "url": "https://comfyanonymous.github.io/ComfyUI_examples/hidream/"
   },
   {
-    "id": "sd-3.5-large-turbo",
+    "id": "sd3.5_large_turbo",
     "name": "Stable Diffusion 3.5 Large Turbo",
+    "type": "TextToImage",
     "apiModels": {
       "ComfyUI": "sd3.5_large_turbo.safetensors",
       "Replicate": "stability-ai/stable-diffusion-3.5-large-turbo"
     },
-    "installer": {
-      "name": "Text to Image (16G Stable Diffusion 3.5 Large Turbo)",
-      "value": "sd-3.5-large-turbo"
+    "dependencies": [
+      "clip_g.safetensors",
+      "clip_l.safetensors",
+      "t5xxl_fp16.safetensors"
+    ],
+    "installer": "Text to Image (16G Stable Diffusion 3.5 Large Turbo)",
+    "path": "/data/models/checkpoints/sd3.5_large_turbo.safetensors",
+    "workflow": "text-to-image/sd35-turbo.json",
+    "workflowVars": {
+      "cfgScale": 1.0,
+      "steps": 4,
+      "scheduler": "sgm_uniform",
+      "sampler": "dpmpp_2m",
+      "width": 1024,
+      "height": 1024,
+      "batchSize": 1
     },
-    "modelType": "TextToImage",
-    "filename": "sd3.5_large_turbo.safetensors",
-    "path": "/data/models/checkpoints",
-    "dependsOn": ["clip-g","clip-l","t5xxl_fp16"],
-    "cfgScale": 1.0,
-    "steps": 4,
-    "scheduler": "sgm_uniform",
-    "sampler": "dpmpp_2m",
-    "width": 1024,
-    "height": 1024,
-    "workflow": "sd35-turbo/text_to_image.json",
-    "downloadApiKeyVar": "HF_TOKEN",
-    "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo",
-    "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo/resolve/main/sd3.5_large_turbo.safetensors?download=true"
+    "downloadToken": "$HF_TOKEN",
+    "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo/resolve/main/sd3.5_large_turbo.safetensors",
+    "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo"
   },
   {
-    "id": "sd-3.5-large",
+    "id": "sd3.5_large",
     "name": "Stable Diffusion 3.5 Large",
+    "type": "TextToImage",
     "apiModels": {
       "ComfyUI": "sd3.5_large.safetensors",
       "Replicate": "stability-ai/stable-diffusion-3.5-large"
     },
-    "installer": {
-      "name": "Text to Image (16G Stable Diffusion 3.5 Large)",
-      "value": "sd-3.5-large"
+    "dependencies": [
+      "clip_g.safetensors",
+      "clip_l.safetensors",
+      "t5xxl_fp16.safetensors"
+    ],
+    "installer": "Text to Image (16G Stable Diffusion 3.5 Large)",
+    "path": "/data/models/checkpoints/sd3.5_large.safetensors",
+    "workflow": "text-to-image/sd35-large.json",
+    "workflowVars": {
+      "cfgScale": 4.5,
+      "steps": 40,
+      "scheduler": "sgm_uniform",
+      "sampler": "dpmpp_2m",
+      "width": 1024,
+      "height": 1024,
+      "batchSize": 1
     },
-    "modelType": "TextToImage",
-    "filename": "sd3.5_large.safetensors",
-    "path": "/data/models/checkpoints",
-    "dependsOn": ["clip-g","clip-l","t5xxl_fp16"],
-    "cfgScale": 4.5,
-    "steps": 40,
-    "scheduler": "sgm_uniform",
-    "sampler": "dpmpp_2m",
-    "width": 1024,
-    "height": 1024,
-    "workflow": "sd35-large/text_to_image.json",
-    "downloadApiKeyVar": "HF_TOKEN",
-    "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large",
-    "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large/resolve/main/sd3.5_large.safetensors?download=true"
+    "downloadToken": "$HF_TOKEN",
+    "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large/resolve/main/sd3.5_large.safetensors",
+    "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large"
   },
   {
-    "id": "flux-schnell",
-    "name": "FLUX Schnell",
+    "id": "flux1-schnell",
+    "name": "FLUX.1 Schnell",
+    "type": "TextToImage",
     "apiModels": {
       "ComfyUI": "flux1-schnell.safetensors",
       "Replicate": "black-forest-labs/flux-schnell"
     },
-    "installer": {
-      "name": "Text to Image (24G FLUX Schnell)",
-      "value": "flux-schnell"
+    "dependencies": [
+      "ae.safetensors",
+      "clip_l.safetensors",
+      "t5xxl_fp8_e4m3fn.safetensors"
+    ],
+    "installer": "Text to Image (24G FLUX Schnell)",
+    "path": "/data/models/checkpoints/flux1-schnell.safetensors",
+    "workflow": "text-to-image/flux1.json",
+    "workflowVars": {
+      "cfgScale": 3.5,
+      "steps": 4,
+      "scheduler": "simple",
+      "sampler": "euler",
+      "width": 1024,
+      "height": 1024,
+      "batchSize": 1
     },
-    "modelType": "TextToImage",
-    "filename": "flux1-schnell.safetensors",
-    "path": "/data/models/checkpoints",
-    "dependsOn": ["flux_vae","clip-l","t5xxl_fp8_e4m3fn"],
-    "cfgScale": 3.5,
-    "steps": 4,
-    "scheduler": "simple",
-    "sampler": "euler",
-    "width": 1024,
-    "height": 1024,
-    "workflow": "flux1/text_to_image.json",
-    "downloadApiKeyVar": "HF_TOKEN",
-    "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell",
-    "downloadUrl": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors?download=true",
-    "vae": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors?download=true"
+    "downloadToken": "$HF_TOKEN",
+    "downloadUrl": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors",
+    "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell"
   },
   {
     "id": "flux-dev",
     "name": "FLUX Dev",
+    "type": "TextToImage",
     "apiModels": {
       "Replicate": "black-forest-labs/flux-dev"
-    },
-    "modelType": "TextToImage"
+    }
   },
   {
     "id": "flux-pro",
     "name": "FLUX Pro",
+    "type": "TextToImage",
     "apiModels": {
       "Replicate": "black-forest-labs/flux-pro"
-    },
-    "modelType": "TextToImage"
+    }
   },
   {
     "id": "dall-e-3",
+    "name": "Dall-E 3",
+    "type": "TextToImage",
     "apiModels": {
       "OpenAI": "dall-e-3"
-    },
-    "modelType": "TextToImage"
-  },
-  {
-    "id": "stable-diffusion-3.5-large",
-    "name": "Stable Diffusion 3.5 Large",
-    "apiModels": {
-      "Replicate": "stability-ai/stable-diffusion-3.5-large"
-    },
-    "modelType": "TextToImage"
-  },
-  {
-    "id": "stable-diffusion-3.5-large-turbo",
-    "name": "Stable Diffusion 3.5 Large Turbo",
-    "apiModels": {
-      "Replicate": "stability-ai/stable-diffusion-3.5-large-turbo"
-    },
-    "modelType": "TextToImage"
+    }
   },
   {
     "id": "image-to-image",
     "name": "Image to Image Default",
-    "modelType": "ImageToImage",
+    "type": "ImageToImage",
     "apiModels": {
       "ComfyUI": "sdxl_lightning_4step.safetensors"
     }
@@ -226,7 +278,7 @@
   {
     "id": "image-with-mask",
     "name": "Image with Mask Default",
-    "modelType": "ImageWithMask",
+    "type": "ImageWithMask",
     "apiModels": {
       "ComfyUI": "sdxl_lightning_4step.safetensors"
     }
@@ -234,7 +286,7 @@
   {
     "id": "lessac",
     "name": "Lassac",
-    "modelType": "TextToSpeech",
+    "type": "TextToSpeech",
     "apiModels": {
       "ComfyUI": "high:en_US-lessac"
     }
@@ -242,7 +294,7 @@
   {
     "id": "tts-echo",
     "name": "TTS Echo",
-    "modelType": "TextToSpeech",
+    "type": "TextToSpeech",
     "apiModels": {
       "OpenAI": "tts-1:echo"
     }
@@ -250,7 +302,7 @@
   {
     "id": "tts-fable",
     "name": "TTS Fable",
-    "modelType": "TextToSpeech",
+    "type": "TextToSpeech",
     "apiModels": {
       "OpenAI": "tts-1:fable"
     }
@@ -258,7 +310,7 @@
   {
     "id": "tts-onyx",
     "name": "TTS Onyx",
-    "modelType": "TextToSpeech",
+    "type": "TextToSpeech",
     "apiModels": {
       "OpenAI": "tts-1:onyx"
     }
@@ -266,7 +318,7 @@
   {
     "id": "tts-nova",
     "name": "TTS Nova",
-    "modelType": "TextToSpeech",
+    "type": "TextToSpeech",
     "apiModels": {
       "OpenAI": "tts-1:nova"
     }
@@ -274,7 +326,7 @@
   {
     "id": "tts-shimmer",
     "name": "TTS Shimmer",
-    "modelType": "TextToSpeech",
+    "type": "TextToSpeech",
     "apiModels": {
       "OpenAI": "tts-1:shimmer"
     }
@@ -282,177 +334,167 @@
   {
     "id": "text-to-speech",
     "name": "Text to Speech",
-    "dependsOn": ["piper-tts-lessac-high","piper-tts-lessac-high-config"],
-    "modelType": "TextToSpeech",
-    "installer": {
-      "name": "Text to Speech (Piper)",
-      "value": "text-to-speech"
-    },
+    "type": "TextToSpeech",
     "apiModels": {
       "ComfyUI": "high:en_US-lessac",
       "OpenAI": "tts-1:alloy"
-    }
+    },
+    "dependencies": [
+      "en_US-lessac-high.onnx",
+      "en_US-lessac-high.onnx.json"
+    ],
+    "installer": "Text to Speech (Piper)"
   },
   {
     "id": "speech-to-text",
     "name": "Speech to Text",
-    "modelType": "SpeechToText",
-    "onDemand": {
-      "ComfyUI": true
-    },
-    "installer": {
-      "name": "Speech to Text (Whisper)",
-      "value": "speech-to-text"
-    },
+    "type": "SpeechToText",
     "apiModels": {
       "ComfyUI": "base",
       "OpenAI": "whisper-1"
-    }
+    },
+    "installer": "Speech to Text (Whisper)"
   },
   {
-    "id": "piper-tts-lessac-high",
+    "id": "en_US-lessac-high.onnx",
     "name": "Piper TTS Lessac High Quality",
-    "filename": "en_US-lessac-high.onnx",
-    "path": "/data/models/piper_tts",
-    "downloadUrl": "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/high/en_US-lessac-high.onnx?download=true",
+    "path": "/data/models/piper_tts/en_US-lessac-high.onnx",
+    "downloadUrl": "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/high/en_US-lessac-high.onnx",
     "url": "https://github.com/rhasspy/piper/blob/master/VOICES.md"
   },
   {
-    "id": "piper-tts-lessac-high-config",
+    "id": "en_US-lessac-high.onnx.json",
     "name": "Piper TTS Lessac High Quality (Config)",
-    "filename": "en_US-lessac-high.onnx.json",
-    "path": "/data/models/piper_tts",
+    "path": "/data/models/piper_tts/en_US-lessac-high.onnx.json",
     "downloadUrl": "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/high/en_US-lessac-high.onnx.json?download=true.json",
     "url": "https://github.com/rhasspy/piper/blob/master/VOICES.md"
   },
   {
-    "id": "clip-g",
-    "name": "Stable Diffusion Text Encoder (CLIP-G)",
-    "modelType": "TextEncoder",
-    "filename": "clip_g.safetensors",
-    "path": "/data/models/clip",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/clip_g.safetensors?download=true",
+    "id": "clip_g.safetensors",
+    "name": "Text Encoder (Stable DiffusionCLIP-G)",
+    "type": "TextEncoder",
+    "path": "/data/models/clip/clip_g.safetensors",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/clip_g.safetensors",
     "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/tree/main/text_encoders"
   },
   {
-    "id": "clip_g_hidream",
-    "name": "HiDream Text Encoder (CLIP-G)",
-    "modelType": "TextEncoder",
-    "filename": "clip_g_hidream.safetensors",
-    "path": "/data/models/clip",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/clip_g_hidream.safetensors?download=true",
+    "id": "clip_g_hidream.safetensors",
+    "name": "Text Encoder (HiDream CLIP-G)",
+    "type": "TextEncoder",
+    "path": "/data/models/clip/clip_g_hidream.safetensors",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/clip_g_hidream.safetensors",
     "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/tree/main/split_files/text_encoders"
   },
   {
-    "id": "clip-l",
-    "name": "Stable Diffusion Text Encoder (CLIP-L)",
-    "modelType": "TextEncoder",
-    "filename": "clip_l.safetensors",
-    "path": "/data/models/clip",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/blob/main/text_encoders/clip_l.safetensors?download=true",
+    "id": "clip_l.safetensors",
+    "name": "Text Encoder (Stable Diffusion CLIP-L)",
+    "type": "TextEncoder",
+    "path": "/data/models/clip/clip_l.safetensors",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/blob/main/text_encoders/clip_l.safetensors",
     "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/tree/main/text_encoders"
   },
   {
-    "id": "clip_l_hidream",
+    "id": "clip_l_hidream.safetensors",
     "name": "HiDream Text Encoder (CLIP-L)",
-    "modelType": "TextEncoder",
-    "filename": "clip_l_hidream.safetensors",
-    "path": "/data/models/clip",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/clip_l_hidream.safetensors?download=true",
+    "type": "TextEncoder",
+    "path": "/data/models/clip/clip_l_hidream.safetensors",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/clip_l_hidream.safetensors",
     "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/tree/main/split_files/text_encoders"
   },
   {
-    "id": "t5xxl_fp16",
+    "id": "t5xxl_fp16.safetensors",
     "name": "Stable Diffusion Text Encoder (T5-XXL-FP16)",
-    "modelType": "TextEncoder",
-    "filename": "t5xxl_fp16.safetensors",
-    "path": "/data/models/clip",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/t5xxl_fp16.safetensors?download=true",
+    "type": "TextEncoder",
+    "path": "/data/models/clip/t5xxl_fp16.safetensors",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/t5xxl_fp16.safetensors",
     "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/tree/main/text_encoders"
   },
   {
-    "id": "t5xxl_fp8_e4m3fn",
-    "name": "Stable Diffusion FP8 Text Encoder (T5-XXL-FP8)",
-    "modelType": "TextEncoder",
-    "filename": "t5xxl_fp8_e4m3fn.safetensors",
-    "path": "/data/models/clip",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/t5xxl_fp8_e4m3fn.safetensors?download=true",
+    "id": "t5xxl_fp8_e4m3fn.safetensors",
+    "name": "Text Encoder (T5-XXL-FP8)",
+    "type": "TextEncoder",
+    "path": "/data/models/clip/t5xxl_fp8_e4m3fn.safetensors",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/t5xxl_fp8_e4m3fn.safetensors",
     "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/tree/main/text_encoders"
   },
   {
-    "id": "llama_3.1_8b_instruct_fp8_scaled",
-    "name": "LLama 3.1:8b FP8 Scaled Text Encoder",
-    "modelType": "TextEncoder",
-    "filename": "llama_3.1_8b_instruct_fp8_scaled.safetensors",
-    "path": "/data/models/clip",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/llama_3.1_8b_instruct_fp8_scaled.safetensors?download=true",
+    "id": "llama_3.1_8b_instruct_fp8_scaled.safetensors",
+    "name": "Text Encoder (LLama 3.1:8b FP8 Scaled)",
+    "type": "TextEncoder",
+    "path": "/data/models/clip/llama_3.1_8b_instruct_fp8_scaled.safetensors",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/llama_3.1_8b_instruct_fp8_scaled.safetensors",
     "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/tree/main/split_files/text_encoders"
   },
   {
-    "id": "clip-t5-base",
+    "id": "t5_base.safetensors",
     "name": "T5 Base",
-    "modelType": "TextEncoder",
-    "filename": "t5_base.safetensors",
-    "path": "/data/models/clip",
-    "downloadUrl": "https://huggingface.co/t5-base/resolve/main/model.safetensors?download=true",
+    "type": "TextEncoder",
+    "path": "/data/models/clip/t5_base.safetensors",
+    "downloadUrl": "https://huggingface.co/t5-base/resolve/main/model.safetensors",
     "url": "https://huggingface.co/t5-base"
   },
   {
-    "id": "image-upscale-2x",
-    "filename": "RealESRGAN_x2.pth",
-    "installer": {
-      "name": "Image Upscale (RealESRGAN_x2)",
-      "value": "image-upscale-2x"
-    },
+    "id": "RealESRGAN_x2.pth",
     "name": "RealESRGAN 2x",
-    "modelType": "ImageUpscale",
-    "path": "/data/models/RealESRGAN",
-    "downloadUrl": "https://huggingface.co/sberbank-ai/Real-ESRGAN/resolve/main/RealESRGAN_x2.pth",
-    "downloadApiKeyVar": "HF_TOKEN",
-    "url": "https://huggingface.co/sberbank-ai/Real-ESRGAN",
-    "apiModels": {
-      "ComfyUI": "RealESRGAN_x2.pth"
-    }
+    "type": "ImageUpscale",
+    "path": "/data/models/RealESRGAN/RealESRGAN_x2.pth",
+    "downloadToken": "$HF_TOKEN",
+    "downloadUrl": "https://huggingface.co/sberbank-ai/Real-ESRGAN/resolve/main/RealESRGAN_x2.pth"
   },
   {
-    "id": "sdxl_vae",
+    "id": "4x_NMKD-Superscale-SP_178000_G.pth",
+    "name": "NMKD Superscale 4x",
+    "type": "ImageUpscale",
+    "path": "/data/models/upscale_models/4x_NMKD-Superscale-SP_178000_G.pth",
+    "downloadToken": "$HF_TOKEN",
+    "downloadUrl": "https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/4x_NMKD-Superscale-SP_178000_G.pth"
+  },
+  {
+    "id": "8x_NMKD-Superscale_150000_G.pth",
+    "name": "NMKD Superscale 8x",
+    "type": "ImageUpscale",
+    "path": "/data/models/upscale_models/8x_NMKD-Superscale_150000_G.pth",
+    "downloadToken": "$HF_TOKEN",
+    "downloadUrl": "https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/8x_NMKD-Superscale_150000_G.pth"
+  },
+  {
+    "id": "aesthetic_anime_v1s.safetensors",
+    "name": "Aesthetic Anime LoRA",
+    "type": "Lora",
+    "path": "/data/models/loras/aesthetic_anime_v1s.safetensors",
+    "downloadToken": "$CIVITAI_TOKEN",
+    "downloadUrl": "https://civitai.com/api/download/models/331598?type=Model&format=SafeTensor",
+    "url": "https://civitai.com/models/295100"
+  },
+  {
+    "id": "sdxl_vae.safetensors",
     "name": "SDXL VAE",
-    "modelType": "VAE",
-    "filename": "sdxl_vae.safetensors",
-    "path": "/data/models/VAE",
-    "downloadUrl": "https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors?download=true",
+    "type": "VAE",
+    "path": "/data/models/VAE/sdxl_vae.safetensors",
+    "downloadUrl": "https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors",
     "url": "https://huggingface.co/stabilityai/sdxl-vae"
   },
   {
-    "id": "flux_vae",
+    "id": "ae.safetensors",
     "name": "FLUX VAE",
-    "modelType": "VAE",
-    "filename": "ae.safetensors",
-    "path": "/data/models/VAE",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/vae/ae.safetensors?download=true",
+    "type": "VAE",
+    "path": "/data/models/VAE/ae.safetensors",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/vae/ae.safetensors",
     "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/tree/main/split_files/vae"
   },
   {
-    "id": "stable-audio-open-1.0",
+    "id": "stable_audio_open_1.0.safetensors",
     "name": "Stable Audio Open 1.0",
-    "modelType": "TextToAudio",
-    "filename": "stable_audio_open_1.0.safetensors",
-    "path": "/data/models/checkpoints",
-    "downloadUrl": "https://huggingface.co/stabilityai/stable-audio-open-1.0/resolve/main/model.safetensors?download=true",
-    "downloadApiKeyVar": "HF_TOKEN",
+    "type": "TextToAudio",
+    "path": "/data/models/checkpoints/stable_audio_open_1.0.safetensors",
+    "downloadToken": "$HF_TOKEN",
+    "downloadUrl": "https://huggingface.co/stabilityai/stable-audio-open-1.0/resolve/main/model.safetensors",
     "url": "https://huggingface.co/stabilityai/stable-audio-open-1.0"
   },
   {
     "id": "image-to-text",
     "name": "Image to Text",
-    "modelType": "ImageToText",
-    "onDemand": {
-      "ComfyUI": true
-    },
-    "installer": {
-      "name": "Image to Text (Florence2)",
-      "value": "image-to-text"
-    },
+    "type": "ImageToText",
     "apiModels": {
       "ComfyUI": "Florence-2-base"
     },

@@ -1,4 +1,4 @@
-import { ref, computed, onMounted, inject, watch } from "vue"
+import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
 import { useClient } from "@servicestack/vue"
 import { createErrorStatus } from "@servicestack/client"
 import { TextToImage, ActiveMediaModels } from "../dtos.mjs"
@@ -26,7 +26,7 @@ export default {
                                 <ErrorSummary :except="visibleFields" class="mb-4" />
                                 <div class="grid grid-cols-6 gap-4">
                                     <div class="col-span-6 sm:col-span-2">
-                                        <SelectInput id="model" v-model="request.model" :values="activeModels" label="Active Models" required />
+                                        <SelectInput id="model" v-model="request.model" :entries="activeModels" label="Active Models" required />
                                     </div>
                                     <div class="col-span-6 sm:col-span-4">
                                         <TextInput id="negativePrompt" v-model="request.negativePrompt" required placeholder="Negative Prompt" />
@@ -81,8 +81,8 @@ export default {
 
                 <div v-for="result in getThreadResults()" class="w-full ">
                     <div class="flex items-center justify-between">
-                        <span @click="selectRequest(result.request)" class="cursor-pointer my-4 flex justify-center items-center text-xl hover:underline underline-offset-4" title="New from this">
-                            {{ result.request.positivePrompt }}
+                        <span @click="selectRequest(result.request)" class="cursor-pointer my-4 flex justify-center items-center text-xl hover:underline underline-offset-4" :title="result.request.positivePrompt">
+                            <div class="overflow-hidden text-ellipsis whitespace-nowrap max-w-3xl">{{ result.request.positivePrompt }}</div>
                         </span>
                         <div class="group flex cursor-pointer" @click="discardResult(result)">
                             <div class="ml-1 invisible group-hover:visible">discard</div>
@@ -90,8 +90,10 @@ export default {
                         </div>
                     </div>
                     <div v-if="result.request.model" class="float-right">                    
-                        <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">{{result.request.model}}</span>
-                    </div>                     
+                        <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                            {{activeModels.find(x => x.key == result.request.model)?.value || result.request.model}}
+                        </span>
+                    </div>
 
                     <ArtifactGallery :results="toArtifacts(result)">
                         <template #bottom="{ selected }">
@@ -253,7 +255,7 @@ export default {
                 Object.keys(storage.defaults).forEach(k => request.value[k] = storage.defaults[k])
             }
             if (!request.value.model && activeModels.value) {
-                request.value.model = activeModels.value[0]
+                request.value.model = activeModels.value[0].key
             }
         }
 

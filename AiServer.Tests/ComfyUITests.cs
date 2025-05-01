@@ -644,7 +644,7 @@ public class ComfyUITests
         };
         
         // Convert template to JSON
-        var jsonTemplate = await client.PopulateWorkflowAsync(testDto,client.DefaultImageToImageUpscaleTemplate,cts.Token);
+        var jsonTemplate = await client.PopulateWorkflowAsync(testDto.ToObjectDictionary(),client.DefaultImageToImageUpscaleTemplate,cts.Token);
         
         // Assert that the JSON template is not null
         Assert.That(jsonTemplate, Is.Not.Null);
@@ -684,7 +684,7 @@ public class ComfyUITests
         };
         
         // Convert template to JSON
-        var jsonTemplate = await client.PopulateWorkflowAsync(testDto,client.DefaultImageToImageTemplate, cts.Token);
+        var jsonTemplate = await client.PopulateWorkflowAsync(testDto.ToObjectDictionary(),client.DefaultImageToImageTemplate, cts.Token);
         
         // Assert that the JSON template is not null
         Assert.That(jsonTemplate, Is.Not.Null);
@@ -721,7 +721,7 @@ public class ComfyUITests
         };
         
         // Convert template to JSON
-        var jsonTemplate = await client.PopulateWorkflowAsync(testDto,client.DefaultTextToImageTemplate, cts.Token);
+        var jsonTemplate = await client.PopulateWorkflowAsync(testDto.ToObjectDictionary(),client.DefaultTextToImageTemplate, cts.Token);
         
         // Assert that the JSON template is not null
         Assert.That(jsonTemplate, Is.Not.Null);

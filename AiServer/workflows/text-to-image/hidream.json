@@ -42,9 +42,9 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        {{Width}},
-        {{Height}},
-        {{BatchSize}}
+        {{width}},
+        {{height}},
+        {{batchSize}}
       ]
     },
     {
@@ -144,7 +144,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "{{NegativePrompt}}"
+        "{{negativePrompt}}"
       ],
       "color": "#322",
       "bgcolor": "#533"
@@ -292,12 +292,12 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        {{Seed}},
+        {{seed}},
         "randomize",
-        {{Steps}},
+        {{steps}},
         {{CfgScale}},
-        "{{Sampler}}",
-        "{{Scheduler}}",
+        "{{sampler}}",
+        "{{scheduler}}",
         1
       ]
     },
@@ -505,7 +505,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "{{PositivePrompt}}"
+        "{{positivePrompt}}"
       ],
       "color": "#232",
       "bgcolor": "#353"

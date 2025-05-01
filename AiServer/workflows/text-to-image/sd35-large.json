@@ -154,7 +154,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "{{NegativePrompt}}"
+        "{{negativePrompt}}"
       ],
       "color": "#322",
       "bgcolor": "#533"
@@ -209,12 +209,12 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        {{Seed}},
+        {{seed}},
         "randomize",
-        {{Steps}},
+        {{steps}},
         {{CfgScale}},
-        "{{Sampler}}",
-        "{{Scheduler}}",
+        "{{sampler}}",
+        "{{scheduler}}",
         1
       ]
     },
@@ -396,9 +396,9 @@
         "Node name for S&R": "EmptySD3LatentImage"
       },
       "widgets_values": [
-        1024,
-        1024,
-        1
+        {{width}},
+        {{height}},
+        {{batchSize}}
       ]
     },
     {
@@ -516,7 +516,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "{{PositivePrompt}}"
+        "{{positivePrompt}}"
       ],
       "color": "#232",
       "bgcolor": "#353"

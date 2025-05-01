@@ -127,7 +127,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         return result.FromJson<ComfyFileInput>();
     }
     
-    public async Task<string> PopulateWorkflowAsync(ComfyWorkflowRequest request, string templatePath, CancellationToken token)
+    public async Task<string> PopulateWorkflowAsync(Dictionary<string,object> args, string templatePath, CancellationToken token)
     {
         var buildInTemplatePath = Path.Combine(WorkflowTemplatePath, templatePath);
         var overrideTemplatePath = Path.Combine("App_Data","overrides", templatePath);
@@ -138,10 +138,10 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
             throw new Exception($"Template file not found: {useTemplatePath}");
         // Read template from file for Text to Image
         var template = await File.ReadAllTextAsync(useTemplatePath, token);
+        
         // Populate template with request
-        var workflowPageResult = new PageResult(context.OneTimePage(template))
-        {
-            Args = request.ToObjectDictionary(),
+        var workflowPageResult = new PageResult(context.OneTimePage(template)) {
+            Args = args,
         };
 
         // Render template to JSON
@@ -181,7 +181,23 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         await HandleAssetUploadsAsync(comfyRequest, promptId, token);
         
         // Read template from file for Text to Image
-        var workflowJson = await PopulateWorkflowAsync(comfyRequest, templatePath, token);
+        var workflowArgs = comfyRequest.ToObjectDictionary();
+        foreach (var key in workflowArgs.Keys.ToList())
+        {
+            workflowArgs[key.ToCamelCase()] = workflowArgs[key];
+        }
+
+        var mediaModel = AppData.Instance.MediaModels.FirstOrDefault(x =>
+            x.ApiModels?.TryGetValue("ComfyUI", out var comfyModel) == true && comfyModel == comfyRequest.Model);
+        if (mediaModel?.WorkflowVars != null)
+        {
+            foreach (var entry in mediaModel.WorkflowVars)
+            {
+                workflowArgs[entry.Key] = entry.Value;
+            }
+        }
+        
+        var workflowJson = await PopulateWorkflowAsync(workflowArgs, templatePath, token);
         // Convert to ComfyUI API JSON format
         var apiJson = await ConvertWorkflowToApiAsync(workflowJson, token);
 

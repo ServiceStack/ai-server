@@ -77,13 +77,14 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData, AppConfig
             .ThenBy(x => x.Name)
             .SelectMany(x => 
                 x.Models.Select(m => appData.GetQualifiedMediaModel(ModelType.TextToImage, m)))
+            .Select(x => x == null ? null : appData.MediaModels.FirstOrDefault(m => m.Id == x)) 
             .Where(x => x != null)
-            .Select(x => x!)  // Non-null assertion after filtering out null values
+            .Select(x => x!)
             .Distinct();
-        
-        return new StringsResponse
+
+        return new ActiveMediaModelsResponse
         {
-            Results = activeModels.ToList() 
+            Results = activeModels.Map(x => new Entry { Key = x.Id, Value = x.Name ?? x.Id })
         };
     }
     

@@ -119,7 +119,7 @@ public class AppData(ILogger<AppData> log,
     private void LoadModelDefaults()
     {
         MediaModels = LoadModels<MediaModel>("media-models.json")
-            .Where(x => x is { ApiModels.Keys.Count: > 0, ModelType: 
+            .Where(x => x is { ApiModels.Keys.Count: > 0, Type: 
                 ModelType.TextToImage or 
                 ModelType.TextToSpeech or 
                 ModelType.SpeechToText or 
@@ -159,7 +159,7 @@ public class AppData(ILogger<AppData> log,
     public string? GetQualifiedMediaModel(ModelType modelType, string apiModel)
     {
         foreach (var mediaModel in MediaModels
-            .Where(x => x.ModelType == modelType))
+            .Where(x => x.Type == modelType))
         {
             foreach (var entry in mediaModel.ApiModels)
             {
@@ -174,7 +174,7 @@ public class AppData(ILogger<AppData> log,
     {
         ArgumentNullException.ThrowIfNull(provider);
         var supportedTaskModels = MediaModelsMap.Values
-            .Where(x => x.ModelType == GetModelTypeByAiTaskType(taskType))
+            .Where(x => x.Type == GetModelTypeByAiTaskType(taskType))
             .Where(x => x.ApiModels.ContainsKey(provider.MediaType!.Id) && 
                 provider.Models != null &&
                 provider.Models.Contains(x.ApiModels[provider.MediaType!.Id]));
@@ -187,7 +187,7 @@ public class AppData(ILogger<AppData> log,
     public List<string> GetSupportedModels(AiTaskType taskType)
     {
         return MediaModelsMap
-            .Where(x => x.Value.ModelType == GetModelTypeByAiTaskType(taskType))
+            .Where(x => x.Value.Type == GetModelTypeByAiTaskType(taskType))
             .Select(x => x.Key)
             .ToList();
     }
@@ -196,7 +196,7 @@ public class AppData(ILogger<AppData> log,
     {
         ArgumentNullException.ThrowIfNull(provider);
         return MediaModelsMap.Values
-            .Any(x => x.ModelType == GetModelTypeByAiTaskType(taskType) &&
+            .Any(x => x.Type == GetModelTypeByAiTaskType(taskType) &&
                 x.ApiModels.ContainsKey(provider.MediaType!.Id) &&
                 provider.Models != null &&
                 provider.Models.Contains(x.ApiModels[provider.MediaType!.Id]));
@@ -205,7 +205,7 @@ public class AppData(ILogger<AppData> log,
     public bool ModelSupportsTask(string modelId, AiTaskType taskType)
     {
         return MediaModelsMap.TryGetValue(modelId, out var modelSettings) &&
-            modelSettings.ModelType == GetModelTypeByAiTaskType(taskType);
+            modelSettings.Type == GetModelTypeByAiTaskType(taskType);
     }
     
     private ModelType GetModelTypeByAiTaskType(AiTaskType taskType)

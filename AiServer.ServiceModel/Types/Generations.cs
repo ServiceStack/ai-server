@@ -132,26 +132,18 @@ public enum AiServiceProvider
 public class MediaModel : IHasId<string>
 {
     public string Id { get; set; }
+    public string? Name { get; set; }
+    public ModelType? Type { get; set; }
     public Dictionary<string, string> ApiModels { get; set; } = new();
-    public string? Url { get; set; }
-    public double? Quality { get; set; }
-    public string? AspectRatio { get; set; }
-    public double? CfgScale { get; set; }
-    public string? Scheduler { get; set; }
-    public ComfySampler? Sampler { get; set; }
-    public int? Width { get; set; }
-    public int? Height { get; set; }
-    public int? Steps { get; set; }
-    public string? NegativePrompt { get; set; }
-    public ModelType? ModelType { get; set; }
-    public string? Filename { get; set; }
-    public string? Workflow { get; set; }
-    /// <summary>
-    /// Flag for models that are pulled down when run for the first time
-    /// Keys are the ProviderId strings
-    /// </summary>
-    public Dictionary<string,bool>? OnDemand { get; set; }
     public Dictionary<string,List<string>>? SupportedTasks { get; set; }
+    public List<string>? Dependencies { get; set; }
+    public string? Installer { get; set; }
+    public string? Path { get; set; }
+    public string? Workflow { get; set; }
+    public Dictionary<string, object> WorkflowVars { get; set; } = new();
+    public string? DownloadToken { get; set; }
+    public string? DownloadUrl { get; set; }
+    public string? Url { get; set; }
 }
 
 public enum ModelType
@@ -165,7 +157,8 @@ public enum ModelType
     ImageToText,
     ImageToImage,
     ImageWithMask,
-    VAE
+    Lora,
+    VAE,
 }
 
 public class TextToSpeechVoice : IHasId<string>

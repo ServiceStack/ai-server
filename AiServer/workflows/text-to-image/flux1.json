@@ -74,9 +74,9 @@
         "Node name for S&R": "EmptyLatentImage"
       },
       "widgets_values": [
-        1024,
-        1024,
-        1
+        {{width}},
+        {{height}},
+        {{batchSize}}
       ],
       "color": "#323",
       "bgcolor": "#535"
@@ -109,7 +109,7 @@
         "Node name for S&R": "RandomNoise"
       },
       "widgets_values": [
-        {{Seed}},
+        {{seed}},
         "randomize"
       ],
       "color": "#2a363b",
@@ -143,7 +143,7 @@
         "Node name for S&R": "KSamplerSelect"
       },
       "widgets_values": [
-        "{{Sampler}}"
+        "{{sampler}}"
       ]
     },
     {
@@ -180,8 +180,8 @@
         "Node name for S&R": "BasicScheduler"
       },
       "widgets_values": [
-        "{{Scheduler}}",
-        {{Steps}},
+        "{{scheduler}}",
+        {{steps}},
         1
       ]
     },
@@ -356,7 +356,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "{{PositivePrompt}}"
+        "{{positivePrompt}}"
       ],
       "color": "#232",
       "bgcolor": "#353"

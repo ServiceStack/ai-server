@@ -34,9 +34,12 @@ public class ConfigureBackgroundJobs : IHostingStartup
             AppData.Instance.Reload(db);
             
             var mediaOptions = services.GetRequiredService<ComfyMediaProviderOptions>();
-            foreach (var model in AppData.Instance.MediaModels.Where(x => x.Filename != null && x.Workflow != null))
+            foreach (var model in AppData.Instance.MediaModels.Where(x => x.Path != null && x.Workflow != null))
             {
-                mediaOptions.TextToImageModelOverrides[model.Filename!] = model.Workflow!;
+                if (model.ApiModels.TryGetValue("ComfyUI", out var comfyModel))
+                {
+                    mediaOptions.TextToImageModelOverrides[comfyModel] = model.Workflow!;
+                }
             }
             
             var jobs = services.GetRequiredService<IBackgroundJobs>();
