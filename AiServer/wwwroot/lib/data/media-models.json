@@ -9,7 +9,7 @@
       "ComfyUI": ["TextToImage","ImageToImage","ImageWithMask"]
     },
     "installer": {
-      "name": "Text & Image to Image (SDXL)",
+      "name": "Text & Image (6.9G SDXL Lightning)",
       "value": "sdxl-lightning"
     },
     "modelType": "TextToImage",
@@ -32,6 +32,10 @@
     "apiModels": {
       "ComfyUI": "jibMixRealisticXL_v160Aphrodite.safetensors"
     },
+    "installer": {
+      "name": "Text & Image (7.1G Jib Mix Realistic v16)",
+      "value": "jib-mix-realistic"
+    },
     "modelType": "TextToImage",
     "filename": "jibMixRealisticXL_v160Aphrodite.safetensors",
     "path": "/data/models/checkpoints",
@@ -47,31 +51,27 @@
     "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16"
   },
   {
-    "id": "flux-schnell",
-    "name": "FLUX Schnell",
+    "id": "sd-3.5-fp8",
+    "name": "Stable Diffusion 3.5 FP8",
     "apiModels": {
-      "ComfyUI": "flux1-schnell.safetensors",
-      "Replicate": "black-forest-labs/flux-schnell"
+      "ComfyUI": "sd3.5_large_fp8_scaled.safetensors"
     },
     "installer": {
-      "name": "Text to Image (Flux.Schnell)",
-      "value": "flux-schnell"
+      "name": "Text to Image (15G Stable Diffusion 3.5 FP8)",
+      "value": "sd-3.5-fp8"
     },
     "modelType": "TextToImage",
-    "filename": "flux1-schnell.safetensors",
+    "filename": "sd3.5_large_fp8_scaled.safetensors",
     "path": "/data/models/checkpoints",
-    "dependsOn": ["flux_vae","clip-l","t5xxl_fp8_e4m3fn"],
-    "cfgScale": 3.5,
-    "steps": 4,
-    "scheduler": "simple",
+    "cfgScale": 4,
+    "steps": 20,
+    "scheduler": "sgm_uniform",
     "sampler": "euler",
     "width": 1024,
     "height": 1024,
-    "workflow": "flux1/text_to_image.json",
-    "downloadApiKeyVar": "HF_TOKEN",
-    "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell",
-    "downloadUrl": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors?download=true",
-    "vae": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors?download=true"
+    "workflow": "sd35-large/text_to_image.json",
+    "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/sd3.5_large_fp8_scaled.safetensors?download=true"
   },
   {
     "id": "hidream-i1-dev",
@@ -80,7 +80,7 @@
       "ComfyUI": "hidream_i1_dev_fp8.safetensors"
     },
     "installer": {
-      "name": "Text to Image (HiDream I1 Dev)",
+      "name": "Text to Image (17G HiDream I1 Dev)",
       "value": "hidream-i1-dev"
     },
     "modelType": "TextToImage",
@@ -98,35 +98,16 @@
     "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/diffusion_models/hidream_i1_dev_fp8.safetensors?download=true"
   },
   {
-    "id": "sd-3.5-large",
-    "name": "Stable Diffusion 3.5 Large",
-    "apiModels": {
-      "ComfyUI": "sd3.5_large.safetensors",
-      "Replicate": "stability-ai/stable-diffusion-3.5-large"
-    },
-    "downloadApiKeyVar": "HF_TOKEN",
-    "modelType": "TextToImage",
-    "filename": "sd3.5_large.safetensors",
-    "path": "/data/models/checkpoints",
-    "dependsOn": ["clip-g","clip-l","t5xxl_fp16"],
-    "cfgScale": 4.5,
-    "steps": 40,
-    "scheduler": "sgm_uniform",
-    "sampler": "dpmpp_2m",
-    "width": 1024,
-    "height": 1024,
-    "workflow": "sd35-large/text_to_image.json",
-    "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large",
-    "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large/resolve/main/sd3.5_large.safetensors?download=true"
-  },
-  {
     "id": "sd-3.5-large-turbo",
     "name": "Stable Diffusion 3.5 Large Turbo",
     "apiModels": {
       "ComfyUI": "sd3.5_large_turbo.safetensors",
       "Replicate": "stability-ai/stable-diffusion-3.5-large-turbo"
     },
-    "downloadApiKeyVar": "HF_TOKEN",
+    "installer": {
+      "name": "Text to Image (16G Stable Diffusion 3.5 Large Turbo)",
+      "value": "sd-3.5-large-turbo"
+    },
     "modelType": "TextToImage",
     "filename": "sd3.5_large_turbo.safetensors",
     "path": "/data/models/checkpoints",
@@ -138,31 +119,62 @@
     "width": 1024,
     "height": 1024,
     "workflow": "sd35-turbo/text_to_image.json",
+    "downloadApiKeyVar": "HF_TOKEN",
     "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo",
     "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo/resolve/main/sd3.5_large_turbo.safetensors?download=true"
   },
   {
-    "id": "sd-3.5-fp8",
-    "name": "Stable Diffusion 3.5 FP8",
+    "id": "sd-3.5-large",
+    "name": "Stable Diffusion 3.5 Large",
     "apiModels": {
-      "ComfyUI": "sd3.5_large_fp8_scaled.safetensors"
+      "ComfyUI": "sd3.5_large.safetensors",
+      "Replicate": "stability-ai/stable-diffusion-3.5-large"
     },
     "installer": {
-      "name": "Text to Image (SD 3.5)",
-      "value": "sd-3.5-fp8"
+      "name": "Text to Image (16G Stable Diffusion 3.5 Large)",
+      "value": "sd-3.5-large"
     },
     "modelType": "TextToImage",
-    "filename": "sd3.5_large_fp8_scaled.safetensors",
+    "filename": "sd3.5_large.safetensors",
     "path": "/data/models/checkpoints",
-    "cfgScale": 4,
-    "steps": 20,
+    "dependsOn": ["clip-g","clip-l","t5xxl_fp16"],
+    "cfgScale": 4.5,
+    "steps": 40,
     "scheduler": "sgm_uniform",
-    "sampler": "euler",
+    "sampler": "dpmpp_2m",
     "width": 1024,
     "height": 1024,
     "workflow": "sd35-large/text_to_image.json",
-    "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/sd3.5_large_fp8_scaled.safetensors?download=true"
+    "downloadApiKeyVar": "HF_TOKEN",
+    "url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large",
+    "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large/resolve/main/sd3.5_large.safetensors?download=true"
+  },
+  {
+    "id": "flux-schnell",
+    "name": "FLUX Schnell",
+    "apiModels": {
+      "ComfyUI": "flux1-schnell.safetensors",
+      "Replicate": "black-forest-labs/flux-schnell"
+    },
+    "installer": {
+      "name": "Text to Image (24G FLUX Schnell)",
+      "value": "flux-schnell"
+    },
+    "modelType": "TextToImage",
+    "filename": "flux1-schnell.safetensors",
+    "path": "/data/models/checkpoints",
+    "dependsOn": ["flux_vae","clip-l","t5xxl_fp8_e4m3fn"],
+    "cfgScale": 3.5,
+    "steps": 4,
+    "scheduler": "simple",
+    "sampler": "euler",
+    "width": 1024,
+    "height": 1024,
+    "workflow": "flux1/text_to_image.json",
+    "downloadApiKeyVar": "HF_TOKEN",
+    "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell",
+    "downloadUrl": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors?download=true",
+    "vae": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors?download=true"
   },
   {
     "id": "flux-dev",
