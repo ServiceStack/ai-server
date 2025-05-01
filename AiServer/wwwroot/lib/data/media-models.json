@@ -39,7 +39,6 @@
     "modelType": "TextToImage",
     "filename": "jibMixRealisticXL_v160Aphrodite.safetensors",
     "path": "/data/models/checkpoints",
-    "downloadApiKeyVar": "CIVITAI_TOKEN",
     "dependsOn": ["clip-l","clip-g","t5xxl_fp16","sdxl_vae"],
     "cfgScale": 2.7,
     "steps": 25,
@@ -47,6 +46,7 @@
     "sampler": "dpmpp_2m_sde_gpu",
     "width": 1024,
     "height": 1024,
+    "downloadApiKeyVar": "CIVITAI_TOKEN",
     "url": "https://civitai.com/models/194768?modelVersionId=1031794",
     "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16"
   },
