@@ -2,6 +2,10 @@
 
 Website: [openai.servicestack.net](https://openai.servicestack.net).
 
+## News
+
+ - [May 2025 Update](https://servicestack.net/posts/ai-server-2025-05)
+
 Self-hosted private gateway to manage access to multiple LLM APIs, Ollama endpoints, Media APIs, Comfy UI and FFmpeg Agents.
 
 ```mermaid
