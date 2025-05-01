@@ -33,9 +33,5 @@
   <ItemGroup>
     <Folder Include="wwwroot\img\langs\" />
   </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="wwwroot\modules\admin-ui\components\Analytics2.mjs" />
-  </ItemGroup>
   
 </Project>
