@@ -1,21 +1,21 @@
 [
   {
     "id": "sdxl-lightning",
+    "name": "SDXL Lightning 4 Step",
     "apiModels": {
       "ComfyUI": "sdxl_lightning_4step.safetensors",
       "Replicate": "bytedance/sdxl-lightning-4step"
     },
+    "installer": {
+      "name": "Text to Image (6.9G SDXL Lightning)",
+      "value": "sdxl-lightning"
+    },
     "supportedTasks": {
       "ComfyUI": ["TextToImage","ImageToImage","ImageWithMask"]
-    },
-    "installer": {
-      "name": "Text & Image (6.9G SDXL Lightning)",
-      "value": "sdxl-lightning"
     },
     "modelType": "TextToImage",
     "filename": "sdxl_lightning_4step.safetensors",
     "path": "/data/models/checkpoints",
-    "name": "SDXL Lightning 4 Step",
     "dependsOn": ["sdxl_vae"],
     "cfgScale": 1.0,
     "steps": 4,
@@ -33,7 +33,7 @@
       "ComfyUI": "jibMixRealisticXL_v160Aphrodite.safetensors"
     },
     "installer": {
-      "name": "Text & Image (7.1G Jib Mix Realistic v16)",
+      "name": "Text to Image (7.1G Jib Mix Realistic v16)",
       "value": "jib-mix-realistic"
     },
     "modelType": "TextToImage",
