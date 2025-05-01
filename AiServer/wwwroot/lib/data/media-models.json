@@ -445,7 +445,7 @@
     "id": "4x_NMKD-Superscale-SP_178000_G.pth",
     "name": "NMKD Superscale 4x",
     "type": "ImageUpscale",
-    "path": "/data/models/upscale_models/4x_NMKD-Superscale-SP_178000_G.pth",
+    "path": "/data/models/RealESRGAN/4x_NMKD-Superscale-SP_178000_G.pth",
     "downloadToken": "$HF_TOKEN",
     "downloadUrl": "https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/4x_NMKD-Superscale-SP_178000_G.pth"
   },
@@ -453,7 +453,7 @@
     "id": "8x_NMKD-Superscale_150000_G.pth",
     "name": "NMKD Superscale 8x",
     "type": "ImageUpscale",
-    "path": "/data/models/upscale_models/8x_NMKD-Superscale_150000_G.pth",
+    "path": "/data/models/RealESRGAN/8x_NMKD-Superscale_150000_G.pth",
     "downloadToken": "$HF_TOKEN",
     "downloadUrl": "https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/8x_NMKD-Superscale_150000_G.pth"
   },
