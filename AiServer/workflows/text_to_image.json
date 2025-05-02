@@ -213,7 +213,7 @@
         "Node name for S&R": "CheckpointLoaderSimple"
       },
       "widgets_values": [
-        "{{Model}}"
+        "{{model}}"
       ]
     },
     {

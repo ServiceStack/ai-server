@@ -180,21 +180,17 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         // Handle any file uploads required before processing the workflow
         await HandleAssetUploadsAsync(comfyRequest, promptId, token);
         
-        // Read template from file for Text to Image
-        var workflowArgs = comfyRequest.ToObjectDictionary();
-        foreach (var key in workflowArgs.Keys.ToList())
-        {
-            workflowArgs[key.ToCamelCase()] = workflowArgs[key];
-        }
-
         var mediaModel = AppData.Instance.MediaModels.FirstOrDefault(x =>
             x.ApiModels?.TryGetValue("ComfyUI", out var comfyModel) == true && comfyModel == comfyRequest.Model);
-        if (mediaModel?.WorkflowVars != null)
+        var workflowArgs = mediaModel?.WorkflowVars != null
+            ? new(mediaModel.WorkflowVars)
+            : new Dictionary<string, object>();
+
+        // Read template from file for Text to Image
+        var requestArgs = comfyRequest.ToObjectDictionary();
+        foreach (var entry in requestArgs)
         {
-            foreach (var entry in mediaModel.WorkflowVars)
-            {
-                workflowArgs[entry.Key] = entry.Value;
-            }
+            workflowArgs[entry.Key.ToCamelCase()] = entry.Value;
         }
         
         var workflowJson = await PopulateWorkflowAsync(workflowArgs, templatePath, token);

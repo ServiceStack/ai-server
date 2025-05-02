@@ -251,7 +251,7 @@
         "Node name for S&R": "CheckpointLoaderSimple"
       },
       "widgets_values": [
-        "flux1-schnell.safetensors"
+        "{{model}}"
       ]
     },
     {
