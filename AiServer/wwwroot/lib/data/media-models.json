@@ -113,12 +113,17 @@
     "apiModels": {
       "ComfyUI": "sd3.5_large_fp8_scaled.safetensors"
     },
+    "dependencies": [
+      "clip_l.safetensors",
+      "clip_g.safetensors",
+      "t5xxl_fp8_e4m3fn_scaled.safetensors"
+    ],
     "installer": "Text to Image (15G Stable Diffusion 3.5 FP8)",
     "path": "/data/models/checkpoints/sd3.5_large_fp8_scaled.safetensors",
-    "workflow": "text-to-image/sd35-large.json",
+    "workflow": "text-to-image/sd3.5-fp8-scaled.json",
     "workflowVars": {
-      "cfgScale": 4,
-      "steps": 20,
+      "cfgScale": 5.45,
+      "steps": 30,
       "scheduler": "sgm_uniform",
       "sampler": "euler",
       "width": 1024,
@@ -415,6 +420,14 @@
     "type": "TextEncoder",
     "path": "/data/models/clip/t5xxl_fp8_e4m3fn.safetensors",
     "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/t5xxl_fp8_e4m3fn.safetensors",
+    "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/tree/main/text_encoders"
+  },
+  {
+    "id": "t5xxl_fp8_e4m3fn_scaled.safetensors",
+    "name": "Text Encoder (T5-XXL-FP8 Scaled)",
+    "type": "TextEncoder",
+    "path": "/data/models/clip/t5xxl_fp8_e4m3fn_scaled.safetensors",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/t5xxl_fp8_e4m3fn_scaled.safetensors?download=true",
     "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/tree/main/text_encoders"
   },
   {
