@@ -333,7 +333,7 @@ export default {
         const providerTypes = ref({})
         const formModel = computed(() => (grid.value?.createForm ?? grid.value?.editForm)?.model)
         const checking = ref(false)
-        const { formatDate, relativeTime } = useFormatters()
+        const { relativeTime } = useFormatters()
 
         onMounted(async () => {
             const api = await client.api(new QueryMediaTypes())
@@ -401,6 +401,7 @@ export default {
             grid, apiTypes, providerTypes, providerType, providerModels, formModel, selectedModels,
             allProviderModels, updateSelected, onNav,
             checkStatus, checking,
+            relativeTime,
         }
     }
 }
