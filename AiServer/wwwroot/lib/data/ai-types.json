@@ -53,6 +53,8 @@
       "phi3:3.8b": "microsoft/phi-3-mini-128k-instruct",
       "phi3:14b": "microsoft/phi-3-medium-128k-instruct",
       "phi4:14b": "microsoft/phi-4",
+      "phi-4-reasoning:14b": "microsoft/phi-4-reasoning",
+      "phi-4-reasoning-plus:14b": "microsoft/phi-4-reasoning-plus",
       "qwen2:7b": "qwen/qwen-2-7b-instruct",
       "qwen2:72b": "qwen/qwen-2-72b-instruct",
       "qwen2-5:7b": "qwen/qwen-2.5-7b-instruct",
@@ -93,7 +95,8 @@
       "claude-3-sonnet": "anthropic/claude-3-sonnet",
       "claude-3-opus": "anthropic/claude-3-opus",
       "claude-3-5-sonnet": "anthropic/claude-3.5-sonnet",
-      "yi-large": "01-ai/yi-large"
+      "yi-large": "01-ai/yi-large",
+      "glm-4-32b": "thudm/glm-4-32b"
     }
   },
   {
@@ -119,6 +122,8 @@
       "deepseek-r1-zero:671b": "deepseek/deepseek-r1-zero:free",
       "phi3:3.8b": "microsoft/phi-3-mini-128k-instruct:free",
       "phi3:14b": "microsoft/phi-3-medium-128k-instruct:free",
+      "phi-4-reasoning:14b": "microsoft/phi-4-reasoning:free",
+      "phi-4-reasoning-plus:14b": "microsoft/phi-4-reasoning-plus:free",
       "qwen-vl-plus": "qwen/qwen-vl-plus:free",
       "qwq:32b": "qwen/qwq-32b:free",
       "qwen3:8b": "qwen/qwen3-8b:free",
@@ -126,7 +131,8 @@
       "qwen3:32b": "qwen/qwen3-32b:free",
       "qwen3:235b": "qwen/qwen3-235b-a22b:free",
       "gemini-pro": "google/gemini-2.5-pro-exp-03-25:free",
-      "gemini-pro-2.5": "google/gemini-2.5-pro-exp-03-25:free"
+      "gemini-pro-2.5": "google/gemini-2.5-pro-exp-03-25:free",
+      "glm-4-32b": "thudm/glm-4-32b:free"
     }
   },
   {

@@ -806,6 +806,26 @@
     "icon": "/img/models/phi4.svg"
   },
   {
+    "id": "phi-4-reasoning",
+    "tags": [
+      "14b"
+    ],
+    "latest": "14b",
+    "website": "https://ollama.ai/library/phi4",
+    "description": "Phi-4-reasoning is a 14B parameter dense decoder-only transformer developed by Microsoft, fine-tuned from Phi-4 to enhance complex reasoning capabilities. It uses a combination of supervised fine-tuning on chain-of-thought traces and reinforcement learning, targeting math, science, and code reasoning tasks. With a 32k context window and high inference efficiency, it is optimized for structured responses in a two-part format: reasoning trace followed by a final solution.",
+    "icon": "/img/models/phi4.svg"
+  },
+  {
+    "id": "phi-4-reasoning-plus",
+    "tags": [
+      "14b"
+    ],
+    "latest": "14b",
+    "website": "https://openrouter.ai/microsoft/phi-4-reasoning-plus",
+    "description": "Phi-4-reasoning-plus is an enhanced 14B parameter model from Microsoft, fine-tuned from Phi-4 with additional reinforcement learning to boost accuracy on math, science, and code reasoning tasks. It uses the same dense decoder-only transformer architecture as Phi-4, but generates longer, more comprehensive outputs structured into a step-by-step reasoning trace and final answer.",
+    "icon": "/img/models/phi4.svg"
+  },
+  {
     "id": "phind-codellama",
     "tags": [
       "34b"
@@ -1389,5 +1409,12 @@
     "website": "https://openrouter.ai/amazon/nova-pro-v1",
     "description": "A capable multimodal model from Amazon focused on providing a combination of accuracy, speed, and cost for a wide range of tasks. As of December 2024, it achieves state-of-the-art performance on key benchmarks including visual question answering (TextVQA) and video understanding (VATEX).",
     "icon": "/img/models/aws.svg"
+  },
+  {
+    "id": "glm-4-32b",
+    "tags": [],
+    "website": "https://openrouter.ai/thudm/glm-4-32b",
+    "description": "GLM-4-32B-0414 is a 32B bilingual (Chinese-English) open-weight language model optimized for code generation, function calling, and agent-style tasks. Pretrained on 15T of high-quality and reasoning-heavy data, it was further refined using human preference alignment, rejection sampling, and reinforcement learning. The model excels in complex reasoning, artifact generation, and structured output tasks, achieving performance comparable to GPT-4o and DeepSeek-V3-0324 across several benchmarks.",
+    "icon": "/img/models/thudm.webp"
   }
 ]

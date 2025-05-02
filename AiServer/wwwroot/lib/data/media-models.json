@@ -116,7 +116,7 @@
     "dependencies": [
       "clip_l.safetensors",
       "clip_g.safetensors",
-      "t5xxl_fp8_e4m3fn_scaled.safetensors"
+      "t5xxl_fp8_e4m3fn.safetensors"
     ],
     "installer": "Text to Image (15G Stable Diffusion 3.5 FP8)",
     "path": "/data/models/checkpoints/sd3.5_large_fp8_scaled.safetensors",
@@ -134,8 +134,37 @@
     "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8"
   },
   {
-    "id": "hidream_i1_dev",
-    "name": "HiDream I1 Dev",
+    "id": "hidream_i1_fast_fp8",
+    "name": "HiDream I1 Fast FP8",
+    "type": "TextToImage",
+    "apiModels": {
+      "ComfyUI": "hidream_i1_fast_fp8.safetensors"
+    },
+    "installer": "Text to Image (17G HiDream I1 Fast FP8)",
+    "path": "/data/models/checkpoints/hidream_i1_fast_fp8.safetensors",
+    "dependencies": [
+      "clip_l_hidream.safetensors",
+      "clip_g_hidream.safetensors",
+      "t5xxl_fp8_e4m3fn.safetensors",
+      "llama_3.1_8b_instruct_fp8_scaled.safetensors",
+      "ae.safetensors"
+    ],
+    "workflow": "text-to-image/hidream.json",
+    "workflowVars": {
+      "cfgScale": 1,
+      "steps": 28,
+      "scheduler": "normal",
+      "sampler": "lcm",
+      "width": 1024,
+      "height": 1024,
+      "batchSize": 1
+    },
+    "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/diffusion_models/hidream_i1_fast_fp8.safetensors",
+    "url": "https://comfyanonymous.github.io/ComfyUI_examples/hidream/"
+  },
+  {
+    "id": "hidream_i1_dev_fp8",
+    "name": "HiDream I1 Dev FP8",
     "type": "TextToImage",
     "apiModels": {
       "ComfyUI": "hidream_i1_dev_fp8.safetensors"
