@@ -427,7 +427,7 @@
     "name": "Text Encoder (T5-XXL-FP8 Scaled)",
     "type": "TextEncoder",
     "path": "/data/models/clip/t5xxl_fp8_e4m3fn_scaled.safetensors",
-    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/t5xxl_fp8_e4m3fn_scaled.safetensors?download=true",
+    "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/t5xxl_fp8_e4m3fn_scaled.safetensors",
     "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/tree/main/text_encoders"
   },
   {
