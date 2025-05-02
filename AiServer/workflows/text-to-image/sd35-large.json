@@ -212,7 +212,7 @@
         {{seed}},
         "randomize",
         {{steps}},
-        {{CfgScale}},
+        {{cfgScale}},
         "{{sampler}}",
         "{{scheduler}}",
         1
