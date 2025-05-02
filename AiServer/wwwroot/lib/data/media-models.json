@@ -353,8 +353,7 @@
     "apiModels": {
       "ComfyUI": "base",
       "OpenAI": "whisper-1"
-    },
-    "installer": "Speech to Text (Whisper)"
+    }
   },
   {
     "id": "en_US-lessac-high.onnx",
