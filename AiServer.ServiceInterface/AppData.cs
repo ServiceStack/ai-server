@@ -47,12 +47,19 @@ public class AppData(ILogger<AppData> log,
         .Where(x => x.MediaType.Provider == AiServiceProvider.Comfy)
         .ToArray();
 
-    string? ReadTextFile(string path)
+    public string? ReadTextFile(string path)
     {
         var fullPath  = Path.Combine(env.ContentRootPath, path);
         return File.Exists(fullPath)
             ? File.ReadAllText(fullPath)
             : null;
+    }
+
+    public void WriteTextFile(string path, string contents)
+    { 
+        var fullPath  = Path.Combine(env.ContentRootPath, path);
+        Path.GetDirectoryName(fullPath).AssertDir();
+        File.WriteAllText(fullPath, contents);
     }
     
     T[] LoadModels<T>(string name) where T : IHasId<string>

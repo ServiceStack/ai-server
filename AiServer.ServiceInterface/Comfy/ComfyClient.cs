@@ -198,6 +198,12 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         }
         
         var workflowJson = await PopulateWorkflowAsync(workflowArgs, templatePath, token);
+
+        if (mediaModel != null)
+        {
+            AppData.Instance.WriteTextFile($"App_Data/workflows/{mediaModel.Id}.json", workflowJson);
+        }
+        
         // Convert to ComfyUI API JSON format
         var apiJson = await ConvertWorkflowToApiAsync(workflowJson, token);
 
