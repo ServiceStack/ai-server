@@ -142,6 +142,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         // Populate template with request
         var workflowPageResult = new PageResult(context.OneTimePage(template)) {
             Args = args,
+            Model = args.GetValueOrDefault("model"),
         };
 
         // Render template to JSON
