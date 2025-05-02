@@ -151,10 +151,11 @@
     ],
     "workflow": "text-to-image/hidream.json",
     "workflowVars": {
-      "cfgScale": 1,
-      "steps": 28,
-      "scheduler": "normal",
+      "shift": 3,
+      "steps": 16,
       "sampler": "lcm",
+      "scheduler": "normal",
+      "cfgScale": 1,
       "width": 1024,
       "height": 1024,
       "batchSize": 1
@@ -169,7 +170,7 @@
     "apiModels": {
       "ComfyUI": "hidream_i1_dev_fp8.safetensors"
     },
-    "installer": "Text to Image (17G HiDream I1 Dev)",
+    "installer": "Text to Image (17G HiDream I1 Dev FP8)",
     "path": "/data/models/checkpoints/hidream_i1_dev_fp8.safetensors",
     "dependencies": [
       "clip_l_hidream.safetensors",
@@ -180,10 +181,11 @@
     ],
     "workflow": "text-to-image/hidream.json",
     "workflowVars": {
-      "cfgScale": 1,
+      "shift": 6,
       "steps": 28,
-      "scheduler": "normal",
       "sampler": "lcm",
+      "scheduler": "normal",
+      "cfgScale": 1,
       "width": 1024,
       "height": 1024,
       "batchSize": 1

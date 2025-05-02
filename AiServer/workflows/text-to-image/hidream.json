@@ -144,7 +144,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "{{negativePrompt}}"
+        ""
       ],
       "color": "#322",
       "bgcolor": "#533"
@@ -230,7 +230,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        6.000000000000001
+        {{shift}}
       ]
     },
     {
