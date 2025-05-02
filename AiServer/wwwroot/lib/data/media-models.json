@@ -47,7 +47,8 @@
       "height": 1024,
       "batchSize": 1
     },
-    "downloadUrl": "$CIVITAI_TOKEN@https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+    "downloadToken": "$CIVITAI_TOKEN",
+    "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16",
     "url": "https://civitai.com/models/194768?modelVersionId=1031794"
   },
   {
