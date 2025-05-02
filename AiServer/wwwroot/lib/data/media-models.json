@@ -140,7 +140,7 @@
       "clip_l_hidream.safetensors",
       "clip_g_hidream.safetensors",
       "t5xxl_fp8_e4m3fn.safetensors",
-      "llama_3.1_8b_instruct_fp8_scaled",
+      "llama_3.1_8b_instruct_fp8_scaled.safetensors",
       "ae.safetensors"
     ],
     "workflow": "text-to-image/hidream.json",
@@ -437,7 +437,7 @@
     "id": "RealESRGAN_x2.pth",
     "name": "RealESRGAN 2x",
     "type": "ImageUpscale",
-    "path": "/data/models/RealESRGAN/RealESRGAN_x2.pth",
+    "path": "/data/models/upscale_models/RealESRGAN_x2.pth",
     "downloadToken": "$HF_TOKEN",
     "downloadUrl": "https://huggingface.co/sberbank-ai/Real-ESRGAN/resolve/main/RealESRGAN_x2.pth"
   },
@@ -445,7 +445,7 @@
     "id": "4x_NMKD-Superscale-SP_178000_G.pth",
     "name": "NMKD Superscale 4x",
     "type": "ImageUpscale",
-    "path": "/data/models/RealESRGAN/4x_NMKD-Superscale-SP_178000_G.pth",
+    "path": "/data/models/upscale_models/4x_NMKD-Superscale-SP_178000_G.pth",
     "downloadToken": "$HF_TOKEN",
     "downloadUrl": "https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/4x_NMKD-Superscale-SP_178000_G.pth"
   },
@@ -453,7 +453,7 @@
     "id": "8x_NMKD-Superscale_150000_G.pth",
     "name": "NMKD Superscale 8x",
     "type": "ImageUpscale",
-    "path": "/data/models/RealESRGAN/8x_NMKD-Superscale_150000_G.pth",
+    "path": "/data/models/upscale_models/8x_NMKD-Superscale_150000_G.pth",
     "downloadToken": "$HF_TOKEN",
     "downloadUrl": "https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/8x_NMKD-Superscale_150000_G.pth"
   },
