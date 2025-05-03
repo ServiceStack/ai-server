@@ -38,19 +38,17 @@ public class ComfyWorkflowRequest
     public Stream? MaskInput { get; set; }
 
     public ComfySampler? Sampler { get; set; }
-    public string? Scheduler { get; set; } = "normal";
+    public string? Scheduler { get; set; }
     public double? CfgScale { get; set; }
     public double? Denoise { get; set; }
 
-    public string? UpscaleModel { get; set; } = "RealESRGAN_x2.pth";
+    public string? UpscaleModel { get; set; }
 
     public int? Width { get; set; }
     public int? Height { get; set; }
 
     public ComfyTaskType TaskType { get; set; }
     public string? Clip { get; set; }
-    
-    public string? Vae { get; set; }
     public double? SampleLength { get; set; }
     public ComfyMaskSource MaskChannel { get; set; }
 }

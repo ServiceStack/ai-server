@@ -112,8 +112,7 @@ public class ComfyProvider(
             AiTaskType.SpeechToText => ComfyTaskType.SpeechToText,
             _ => throw new ArgumentOutOfRangeException()
         };
-        comfyWorkflowReq =
-            comfyWorkflowReq.ApplyModelDefaults(AppConfig.Instance, modelSettings.ConvertTo<ComfyApiModelSettings>());
+        comfyWorkflowReq = comfyWorkflowReq.ApplyModelDefaults(AppConfig.Instance, modelSettings.ConvertTo<ComfyApiModelSettings>());
         var response = await comfyClient.PromptGenerationAsync(comfyWorkflowReq, token, waitResult: true);
         var status = await comfyClient.GetWorkflowStatusAsync(response.PromptId, token);
         var previewQ = GetPreviewQueryStringByTaskType(request.TaskType ?? AiTaskType.TextToImage);
