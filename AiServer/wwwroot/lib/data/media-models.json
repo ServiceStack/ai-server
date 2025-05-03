@@ -542,6 +542,8 @@
     "apiModels": {
       "ComfyUI": "Florence-2-base"
     },
+    "downloadToken": "$HF_TOKEN",
+    "downloadUrl": "https://huggingface.co/stabilityai/stable-audio-open-1.0/resolve/main/model.safetensors",
     "url": "https://huggingface.co/microsoft/Florence-2-base"
   }
 ]

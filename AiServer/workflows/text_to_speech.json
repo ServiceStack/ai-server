@@ -29,9 +29,9 @@
         "Node name for S&R": "PiperTTS"
       },
       "widgets_values": [
-        "{{PositivePrompt}}",
-        "{{Model.split(':')[1]}}",
-        "{{Model.split(':')[0]}}",
+        "{{positivePrompt}}",
+        "{{model.split(':')[1]}}",
+        "{{model.split(':')[0]}}",
         {
           "hidden": false,
           "paused": false,

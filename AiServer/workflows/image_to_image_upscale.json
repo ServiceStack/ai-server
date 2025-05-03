@@ -37,7 +37,7 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "{{Image.Name}}",
+        "{{image.Name}}",
         "image"
       ]
     },
@@ -69,7 +69,7 @@
         "Node name for S&R": "UpscaleModelLoader"
       },
       "widgets_values": [
-        "{{UpscaleModel}}"
+        "{{upscaleModel}}"
       ]
     },
     {

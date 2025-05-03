@@ -1,8 +1,8 @@
 {
   "id": "01d66ae9-78be-4a8d-b737-24eee5e1d447",
   "revision": 0,
-  "last_node_id": 81,
-  "last_link_id": 167,
+  "last_node_id": 80,
+  "last_link_id": 166,
   "nodes": [
     {
       "id": 53,
@@ -59,7 +59,7 @@
         46
       ],
       "flags": {},
-      "order": 12,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -111,7 +111,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 10,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -144,7 +144,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        ""
+        "{{negativePrompt}}"
       ],
       "color": "#322",
       "bgcolor": "#533"
@@ -161,7 +161,7 @@
         420
       ],
       "flags": {},
-      "order": 13,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -188,6 +188,55 @@
       ]
     },
     {
+      "id": 55,
+      "type": "VAELoader",
+      "pos": [
+        150,
+        230
+      ],
+      "size": [
+        310,
+        60
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            107
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.28",
+        "models": [
+          {
+            "name": "ae.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/vae/ae.safetensors?download=true",
+            "directory": "vae"
+          }
+        ],
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        "ae.safetensors"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
       "id": 70,
       "type": "ModelSamplingSD3",
       "pos": [
@@ -199,13 +248,13 @@
         58
       ],
       "flags": {},
-      "order": 8,
+      "order": 4,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 167
+          "link": 166
         }
       ],
       "outputs": [
@@ -245,7 +294,7 @@
         262
       ],
       "flags": {},
-      "order": 11,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -302,18 +351,18 @@
       ]
     },
     {
-      "id": 81,
-      "type": "CheckpointLoaderSimple",
+      "id": 76,
+      "type": "UNETLoader",
       "pos": [
-        165.2067413330078,
-        -123.96723175048828
+        180,
+        -100
       ],
       "size": [
-        315,
-        98
+        280,
+        82
       ],
       "flags": {},
-      "order": 5,
+      "order": 2,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -321,26 +370,26 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            167
+            166
           ]
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": null
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": null
         }
       ],
       "properties": {
-        "Node name for S&R": "CheckpointLoaderSimple"
+        "Node name for S&R": "UNETLoader",
+        "models": [
+          {
+            "name": "hidream_i1_dev_fp8.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/diffusion_models/hidream_i1_dev_fp8.safetensors?download=true",
+            "directory": "diffusion_models"
+          }
+        ]
       },
       "widgets_values": [
-        "{{model}}"
-      ]
+        "hidream_i1_dev_fp8.safetensors",
+        "default"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
     },
     {
       "id": 54,
@@ -354,7 +403,7 @@
         130
       ],
       "flags": {},
-      "order": 6,
+      "order": 3,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -376,22 +425,22 @@
           {
             "name": "clip_l_hidream.safetensors",
             "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/clip_l_hidream.safetensors?download=true",
-            "directory": "clip"
+            "directory": "text_encoders"
           },
           {
             "name": "clip_g_hidream.safetensors",
             "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/clip_g_hidream.safetensors?download=true",
-            "directory": "clip"
+            "directory": "text_encoders"
           },
           {
             "name": "t5xxl_fp8_e4m3fn_scaled.safetensors",
             "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/t5xxl_fp8_e4m3fn_scaled.safetensors?download=true",
-            "directory": "clip"
+            "directory": "text_encoders"
           },
           {
             "name": "llama_3.1_8b_instruct_fp8_scaled.safetensors",
             "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/text_encoders/llama_3.1_8b_instruct_fp8_scaled.safetensors?download=true",
-            "directory": "clip"
+            "directory": "text_encoders"
           }
         ],
         "enableTabs": false,
@@ -405,57 +454,8 @@
       "widgets_values": [
         "clip_l_hidream.safetensors",
         "clip_g_hidream.safetensors",
-        "t5xxl_fp8_e4m3fn.safetensors",
+        "t5xxl_fp8_e4m3fn_scaled.safetensors",
         "llama_3.1_8b_instruct_fp8_scaled.safetensors"
-      ],
-      "color": "#322",
-      "bgcolor": "#533"
-    },
-    {
-      "id": 55,
-      "type": "VAELoader",
-      "pos": [
-        150,
-        230
-      ],
-      "size": [
-        310,
-        60
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            107
-          ]
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAELoader",
-        "cnr_id": "comfy-core",
-        "ver": "0.3.28",
-        "models": [
-          {
-            "name": "ae.safetensors",
-            "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/vae/ae.safetensors?download=true",
-            "directory": "vae"
-          }
-        ],
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "ae.safetensors"
       ],
       "color": "#322",
       "bgcolor": "#533"
@@ -472,7 +472,7 @@
         170
       ],
       "flags": {},
-      "order": 9,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
@@ -585,8 +585,8 @@
       "MODEL"
     ],
     [
-      167,
-      81,
+      166,
+      76,
       0,
       70,
       0,
@@ -594,19 +594,6 @@
     ]
   ],
   "groups": [
-    {
-      "id": 1,
-      "title": "Load Models Here",
-      "bounding": [
-        -120,
-        -180,
-        600,
-        520
-      ],
-      "color": "#3f789e",
-      "font_size": 24,
-      "flags": {}
-    },
     {
       "id": 2,
       "title": "Size",
@@ -626,10 +613,11 @@
     "ds": {
       "scale": 0.7972024500000114,
       "offset": [
-        210.60749434499235,
-        469.9270163189992
+        222.64957422813518,
+        506.0533325301052
       ]
     },
+    "frontendVersion": "1.17.11",
     "ue_links": [],
     "VHS_latentpreview": false,
     "VHS_latentpreviewrate": 0,
@@ -637,8 +625,7 @@
     "VHS_KeepIntermediate": true,
     "node_versions": {
       "comfy-core": "0.3.28"
-    },
-    "frontendVersion": "1.17.11"
+    }
   },
   "version": 0.4
 }

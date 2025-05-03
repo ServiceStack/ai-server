@@ -37,7 +37,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "{{NegativePrompt}}"
+        "{{negativePrompt}}"
       ]
     },
     {
@@ -76,7 +76,7 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "{{Mask.Name}}",
+        "{{mask.Name}}",
         "image"
       ]
     },
@@ -170,13 +170,13 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        {{Seed}},
+        {{seed}},
         "randomize",
-        {{Steps}},
-        {{CfgScale}},
-        "{{Sampler}}",
-        "{{Scheduler}}",
-        {{Denoise}}
+        {{steps}},
+        {{cfgScale}},
+        "{{sampler}}",
+        "{{scheduler}}",
+        {{denoise}}
       ]
     },
     {
@@ -214,7 +214,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "{{PositivePrompt}}"
+        "{{positivePrompt}}"
       ]
     },
     {
@@ -359,7 +359,7 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "{{Image.Name}}",
+        "{{image.Name}}",
         "image"
       ]
     },
@@ -408,7 +408,7 @@
         "Node name for S&R": "CheckpointLoaderSimple"
       },
       "widgets_values": [
-        "{{Model}}"
+        "{{model}}"
       ]
     },
     {
@@ -447,7 +447,7 @@
         "Node name for S&R": "ImageToMask"
       },
       "widgets_values": [
-        "{{MaskChannel}}"
+        "{{maskChannel}}"
       ]
     },
     {

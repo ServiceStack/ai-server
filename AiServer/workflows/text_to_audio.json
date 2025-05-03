@@ -44,7 +44,7 @@
         "Node name for S&R": "CheckpointLoaderSimple"
       },
       "widgets_values": [
-        "{{Model}}"
+        "{{model}}"
       ]
     },
     {
@@ -77,7 +77,7 @@
         "Node name for S&R": "CLIPLoader"
       },
       "widgets_values": [
-        "{{Clip}}",
+        "{{clip}}",
         "stable_audio"
       ]
     },
@@ -109,7 +109,7 @@
         "Node name for S&R": "EmptyLatentAudio"
       },
       "widgets_values": [
-        {{SampleLength}}
+        {{sampleLength}}
       ]
     },
     {
@@ -163,12 +163,12 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        {{Seed}},
+        {{seed}},
         "randomize",
-        {{Steps}},
-        {{CfgScale}},
-        "{{Sampler}}",
-        "{{Scheduler}}",
+        {{steps}},
+        {{cfgScale}},
+        "{{sampler}}",
+        "{{scheduler}}",
         1
       ]
     },
@@ -277,7 +277,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "{{PositivePrompt}}"
+        "{{positivePrompt}}"
       ],
       "color": "#232",
       "bgcolor": "#353"
@@ -317,7 +317,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "{{NegativePrompt}}"
+        "{{negativePrompt}}"
       ],
       "color": "#322",
       "bgcolor": "#533"
