@@ -191,6 +191,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
         var requestArgs = comfyRequest.ToObjectDictionary();
         foreach (var entry in requestArgs)
         {
+            if (entry.Value is null or "") continue;
             workflowArgs[entry.Key.ToCamelCase()] = entry.Value;
         }
         
