@@ -374,8 +374,8 @@ public static class TransformServiceExtensions
         
         var completedResponse = new ArtifactGenerationResponse();
 
-        // Wait for the job to complete max 20 minutes
-        var timeout = DateTime.UtcNow.AddSeconds(job.Job?.TimeoutSecs ?? 20 * 60);
+        // Wait for the job to synchronously complete, default: 5 minutes
+        var timeout = DateTime.UtcNow.AddSeconds(job.Job?.TimeoutSecs ?? 5 * 60);
         while (queuedJob?.Job?.State is not (
                    BackgroundJobState.Completed or BackgroundJobState.Cancelled or BackgroundJobState.Failed) 
                && DateTime.UtcNow < timeout)
