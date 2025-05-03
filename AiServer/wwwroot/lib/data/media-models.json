@@ -265,15 +265,16 @@
       "t5xxl_fp8_e4m3fn.safetensors"
     ],
     "installer": "Text to Image (24G FLUX Schnell)",
-    "path": "/data/models/checkpoints/flux1-schnell.safetensors",
+    "path": "/data/models/diffusion_models/flux1-schnell.safetensors",
     "workflow": "text-to-image/flux1.json",
     "workflowVars": {
       "cfgScale": 3.5,
-      "steps": 4,
-      "scheduler": "simple",
+      "steps": 20,
+      "scheduler": "normal",
       "sampler": "euler",
       "width": 1024,
       "height": 1024,
+      "denoise": 1,
       "batchSize": 1
     },
     "downloadToken": "$HF_TOKEN",
