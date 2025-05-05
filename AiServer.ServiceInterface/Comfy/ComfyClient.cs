@@ -35,7 +35,10 @@ public interface IComfyClient : IDisposable
 public partial class ComfyClient(HttpClient httpClient) : IComfyClient
 {
     private readonly Dictionary<string, JsonObject> metadataMapping = new();
-    private readonly List<string> excludedNodeTypes = ["PrimitiveNode"];
+    private readonly List<string> excludedNodeTypes = [
+        "PrimitiveNode",
+        "Note",
+    ];
     private static ScriptContext context = new ScriptContext().Init();
 
     public string WorkflowTemplatePath { get; set; } = "workflows";
@@ -398,7 +401,7 @@ public partial class ComfyClient(HttpClient httpClient) : IComfyClient
             {
                 if (!string.IsNullOrEmpty(comfyPromptId) && missedGenerationCompleteMapping.ContainsKey(comfyPromptId))
                 {
-                    Console.WriteLine("Missed AddOnGenerationComplete");
+                    Logger.LogInformation("Missed AddOnGenerationComplete");
                     missedGenerationCompleteMapping[comfyPromptId] = innerPromptId;
                     missedPromptId = innerPromptId;
                     fireMissed = true;

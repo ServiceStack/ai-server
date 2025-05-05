@@ -17,13 +17,15 @@
     "path": "/data/models/checkpoints/sdxl_lightning_4step.safetensors",
     "workflow": "text-to-image/sdxl-lightning.json",
     "workflowVars": {
-      "cfgScale": 1.0,
-      "steps": 4,
-      "scheduler": "sgm_uniform",
-      "sampler": "euler_ancestral",
       "width": 1024,
       "height": 1024,
-      "batchSize": 1
+      "batchSize": 1,
+      "seed": 1,
+      "steps": 4,
+      "cfgScale": 1.0,
+      "sampler": "euler_ancestral",
+      "scheduler": "sgm_uniform",
+      "denoise": 1.0
     },
     "downloadUrl": "https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step.safetensors",
     "url": "https://huggingface.co/ByteDance/SDXL-Lightning"
@@ -39,13 +41,15 @@
     "path": "/data/models/checkpoints/realvisxlV50_v50LightningBakedvae.safetensors",
     "workflow": "text-to-image/sdxl.json",
     "workflowVars": {
-      "cfgScale": 2,
-      "steps": 5,
-      "scheduler": "normal",
-      "sampler": "dpmpp_sde",
       "width": 1024,
       "height": 1024,
-      "batchSize": 1
+      "batchSize": 1,
+      "seed": 1,
+      "steps": 5,
+      "cfgScale": 2.0,
+      "sampler": "dpmpp_sde",
+      "scheduler": "normal",
+      "denoise": 1.0
     },
     "downloadToken": "$CIVITAI_TOKEN",
     "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16",
@@ -65,13 +69,15 @@
     "path": "/data/models/checkpoints/dreamshaperXL_v21TurboDPMSDE.safetensors",
     "workflow": "text-to-image/sdxl.json",
     "workflowVars": {
-      "cfgScale": 2,
-      "steps": 8,
-      "scheduler": "karras",
-      "sampler": "dpmpp_sde",
       "width": 1024,
       "height": 1024,
-      "batchSize": 1
+      "batchSize": 1,
+      "seed": 1,
+      "steps": 8,
+      "cfgScale": 2,
+      "sampler": "dpmpp_sde",
+      "scheduler": "karras",
+      "denoise": 1.0
     },
     "downloadToken": "$CIVITAI_TOKEN",
     "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16",
@@ -94,13 +100,42 @@
     "path": "/data/models/checkpoints/jibMixRealisticXL_v160Aphrodite.safetensors",
     "workflow": "text-to-image/sdxl.json",
     "workflowVars": {
-      "cfgScale": 2.7,
-      "steps": 25,
-      "scheduler": "karras",
-      "sampler": "dpmpp_2m_sde_gpu",
       "width": 1024,
       "height": 1024,
-      "batchSize": 1
+      "batchSize": 1,
+      "seed": 1,
+      "steps": 25,
+      "cfgScale": 2.7,
+      "sampler": "dpmpp_2m_sde_gpu",
+      "scheduler": "karras",
+      "denoise": 1.0
+    },
+    "downloadToken": "$CIVITAI_TOKEN",
+    "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16",
+    "url": "https://civitai.com/models/194768?modelVersionId=1031794"
+  },
+  {
+    "id": "juggernautXL",
+    "name": "Juggernaut XL v11",
+    "type": "TextToImage",
+    "apiModels": {
+      "ComfyUI": "JuggernautXL.safetensors"
+    },
+    "dependencies": [
+    ],
+    "installer": "Text to Image (7.1G Juggernaut XL v11)",
+    "path": "/data/models/checkpoints/JuggernautXL.safetensors",
+    "workflow": "text-to-image/sdxl.json",
+    "workflowVars": {
+      "width": 1024,
+      "height": 1024,
+      "batchSize": 1,
+      "seed": 1,
+      "steps": 30,
+      "cfgScale": 5,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1.0
     },
     "downloadToken": "$CIVITAI_TOKEN",
     "downloadUrl": "https://civitai.com/api/download/models/1031794?type=Model&format=SafeTensor&size=pruned&fp=fp16",
@@ -122,13 +157,15 @@
     "path": "/data/models/checkpoints/sd3.5_large_fp8_scaled.safetensors",
     "workflow": "text-to-image/sd3.5-fp8-scaled.json",
     "workflowVars": {
-      "cfgScale": 5.45,
-      "steps": 30,
-      "scheduler": "sgm_uniform",
-      "sampler": "euler",
       "width": 1024,
       "height": 1024,
-      "batchSize": 1
+      "batchSize": 1,
+      "seed": 1,
+      "steps": 30,
+      "cfgScale": 5.45,
+      "sampler": "euler",
+      "scheduler": "sgm_uniform",
+      "denoise": 1.0
     },
     "downloadUrl": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/sd3.5_large_fp8_scaled.safetensors",
     "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8"
@@ -151,14 +188,16 @@
     ],
     "workflow": "text-to-image/hidream.json",
     "workflowVars": {
-      "shift": 3,
-      "steps": 16,
-      "sampler": "lcm",
-      "scheduler": "normal",
-      "cfgScale": 1,
       "width": 1024,
       "height": 1024,
-      "batchSize": 1
+      "batchSize": 1,
+      "seed": 1,
+      "steps": 16,
+      "cfgScale": 1.0,
+      "sampler": "lcm",
+      "scheduler": "normal",
+      "denoise": 1.0,
+      "shift": 3
     },
     "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/diffusion_models/hidream_i1_fast_fp8.safetensors",
     "url": "https://comfyanonymous.github.io/ComfyUI_examples/hidream/"
@@ -181,14 +220,16 @@
     ],
     "workflow": "text-to-image/hidream.json",
     "workflowVars": {
-      "shift": 6,
-      "steps": 28,
-      "sampler": "lcm",
-      "scheduler": "normal",
-      "cfgScale": 1,
       "width": 1024,
       "height": 1024,
-      "batchSize": 1
+      "batchSize": 1,
+      "seed": 1,
+      "steps": 28,
+      "cfgScale": 1.0,
+      "sampler": "lcm",
+      "scheduler": "normal",
+      "denoise": 1.0,
+      "shift": 6
     },
     "downloadUrl": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/resolve/main/split_files/diffusion_models/hidream_i1_dev_fp8.safetensors",
     "url": "https://comfyanonymous.github.io/ComfyUI_examples/hidream/"
@@ -210,13 +251,15 @@
     "path": "/data/models/checkpoints/sd3.5_large_turbo.safetensors",
     "workflow": "text-to-image/sd35-turbo.json",
     "workflowVars": {
-      "cfgScale": 1.0,
-      "steps": 4,
-      "scheduler": "sgm_uniform",
-      "sampler": "dpmpp_2m",
       "width": 1024,
       "height": 1024,
-      "batchSize": 1
+      "batchSize": 1,
+      "seed": 1,
+      "cfgScale": 1.0,
+      "steps": 4,
+      "sampler": "dpmpp_2m",
+      "scheduler": "sgm_uniform",
+      "denoise": 1.0
     },
     "downloadToken": "$HF_TOKEN",
     "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large-turbo/resolve/main/sd3.5_large_turbo.safetensors",
@@ -239,13 +282,15 @@
     "path": "/data/models/checkpoints/sd3.5_large.safetensors",
     "workflow": "text-to-image/sd35-large.json",
     "workflowVars": {
-      "cfgScale": 4.5,
-      "steps": 40,
-      "scheduler": "sgm_uniform",
-      "sampler": "dpmpp_2m",
       "width": 1024,
       "height": 1024,
-      "batchSize": 1
+      "batchSize": 1,
+      "seed": 1,
+      "cfgScale": 4.5,
+      "steps": 40,
+      "sampler": "dpmpp_2m",
+      "scheduler": "sgm_uniform",
+      "denoise": 1.0
     },
     "downloadToken": "$HF_TOKEN",
     "downloadUrl": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large/resolve/main/sd3.5_large.safetensors",
@@ -268,14 +313,15 @@
     "path": "/data/models/diffusion_models/flux1-schnell.safetensors",
     "workflow": "text-to-image/flux1.json",
     "workflowVars": {
-      "cfgScale": 3.5,
-      "steps": 20,
-      "scheduler": "normal",
-      "sampler": "euler",
       "width": 1024,
       "height": 1024,
-      "denoise": 1,
-      "batchSize": 1
+      "batchSize": 1,
+      "seed": 1,
+      "cfgScale": 3.5,
+      "steps": 20,
+      "sampler": "euler",
+      "scheduler": "normal",
+      "denoise": 1.0
     },
     "downloadToken": "$HF_TOKEN",
     "downloadUrl": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors",
@@ -528,10 +574,10 @@
     "url": "https://huggingface.co/Comfy-Org/HiDream-I1_ComfyUI/tree/main/split_files/vae"
   },
   {
-    "id": "stable_audio_open_1.0.safetensors",
+    "id": "stable_audio",
     "name": "Stable Audio Open 1.0",
     "type": "TextToAudio",
-    "path": "/data/models/checkpoints/stable_audio_open_1.0.safetensors",
+    "path": "/data/models/checkpoints/model.safetensors",
     "downloadToken": "$HF_TOKEN",
     "downloadUrl": "https://huggingface.co/stabilityai/stable-audio-open-1.0/resolve/main/model.safetensors",
     "url": "https://huggingface.co/stabilityai/stable-audio-open-1.0"

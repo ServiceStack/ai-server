@@ -136,7 +136,8 @@ public class CreateGenerationCommand(ILogger<CreateGenerationCommand> logger,
                 request.Request.TaskType, request.RefId, apiProviderInstance.Name, durationMs);
             if (response.Outputs is { Count: > 0 })
                 await DownloadOutputsAsync(generationProvider, apiProviderInstance, response.Outputs, keyId, token);
-
+            response.Duration = durationMs;
+            
             ResponseStatus? error = null;
             var outputs = new List<AiProviderFileOutput>();
             var textOutputs = new List<AiProviderTextOutput>();

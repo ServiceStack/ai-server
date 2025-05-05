@@ -5,7 +5,6 @@ namespace AiServer.ServiceInterface.Comfy;
 
 public partial class ComfyClient
 {
-    
     public async Task<string> ConvertWorkflowToApiAsync(string rawWorkflow, CancellationToken token)
     {
         JsonObject workflow;
@@ -93,8 +92,9 @@ public partial class ComfyClient
             var classType = node["type"].ToString();
             await AddToMappingAsync(classType, token);
 
-            var apiNode = new JsonObject();
-            apiNode["inputs"] = new JsonObject();
+            var apiNode = new JsonObject {
+                ["inputs"] = new JsonObject()
+            };
 
             if (metadataMapping.TryGetValue(classType, out var currentClass))
             {
@@ -131,14 +131,22 @@ public partial class ComfyClient
                             widgetIndex++;
                         }
                         if (propName == "seed")
+                        {
                             widgetIndex++;
+                        }
                     }
                 }
             }
             apiNode["class_type"] = classType;
             apiNodes[nodeId] = apiNode;
         }
-        return new JsonObject { ["prompt"] = apiNodes, ["client_id"] = clientId }.ToJsonString();
+        
+        var ret = new JsonObject
+        {
+            ["prompt"] = apiNodes, 
+            ["client_id"] = clientId,
+        }.ToJsonString();
+        return ret;
     }
     
     private async Task AddToMappingAsync(string classType, CancellationToken token)
@@ -262,5 +270,4 @@ public partial class ComfyClient
         
         return result;
     }
-
 }

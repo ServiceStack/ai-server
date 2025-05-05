@@ -292,6 +292,9 @@ public class GetArtifactGenerationStatusResponse
     [ApiMember(Description = "List of generated outputs")]
     public List<ArtifactOutput>? Results { get; set; }
 
+    [ApiMember(Description = "Execution time of generation")]
+    public TimeSpan? Duration { get; set; }
+
     [ApiMember(Description = "Detailed response status information")]
     public ResponseStatus? ResponseStatus { get; set; }
 }
@@ -321,6 +324,9 @@ public class GetTextGenerationStatusResponse
     
     [ApiMember(Description = "Generated text")]
     public List<TextOutput>? Results { get; set; }
+
+    [ApiMember(Description = "Execution time of generation")]
+    public TimeSpan? Duration { get; set; }
 
     [ApiMember(Description = "Detailed response status information")]
     public ResponseStatus? ResponseStatus { get; set; }

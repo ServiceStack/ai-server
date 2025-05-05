@@ -36,6 +36,7 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData, AppConfig
         
         var outputs = job.GetOutputs();
         ret.Results = outputs.Item2; // Get TextOutputs
+        ret.Duration = outputs.Item3;
         return ret;
     }
     
@@ -66,6 +67,7 @@ public class GenerationServices(IBackgroundJobs jobs, AppData appData, AppConfig
         
         var outputs = job.GetOutputs();
         ret.Results = outputs.Item1; // Get ArtifactOutputs
+        ret.Duration = outputs.Item3;
         return ret;
     }
     
@@ -297,7 +299,7 @@ public static class GenerationServiceExtensions
         // We know at this point, we definitely have a job
         JobResult? queuedJob = job;
 
-        var completedResponse = new GenerationResponse { };
+        var ret = new GenerationResponse { };
         
         // Wait for the job to synchronously complete, default: 5 minutes
         var timeout = DateTime.UtcNow.AddSeconds(job.Job?.TimeoutSecs ?? 5 * 60);
@@ -325,12 +327,13 @@ public static class GenerationServiceExtensions
         var jobReqRes = queuedJob.Job!.ExtractRequestResponse<CreateGeneration, GenerationResult>();
         var jobRes = jobReqRes.Item2;
         if (jobRes == null) 
-            return completedResponse;
+            return ret;
         var outputs = queuedJob.GetOutputs();
-        completedResponse.Outputs = outputs.Item1;
-        completedResponse.TextOutputs = outputs.Item2;
+        ret.Outputs = outputs.Item1;
+        ret.TextOutputs = outputs.Item2;
+        ret.Duration = outputs.Item3;
 
-        return completedResponse;
+        return ret;
     }
     
     public static string GetStatusUrl(this CreateGeneration request, CreateGenerationResponse response)
@@ -354,20 +357,19 @@ public static class GenerationServiceExtensions
         }
     }
 
-    public static Tuple<List<ArtifactOutput>?,List<TextOutput>?> GetOutputs(this JobResult? job)
+    public static (List<ArtifactOutput>?,List<TextOutput>?,TimeSpan?) GetOutputs(this JobResult? job)
     {
         var outputs = new List<ArtifactOutput>();
         var textOutputs = new List<TextOutput>();
         if(job.Completed == null)
-            return new Tuple<List<ArtifactOutput>?, List<TextOutput>?>(null, null);
-        var jobReqRes = new Tuple<CommandReqWithProvider?, CommandResultWithOutputs?>(
-            job.Completed.RequestBody.FromJson<CommandReqWithProvider>(),
-            job.Completed.ResponseBody.FromJson<CommandResultWithOutputs>()
-        );
-        var jobReq = jobReqRes.Item1;
-        var jobRes = jobReqRes.Item2;
+            return (null, null, null);
+
+        var jobReq = job.Completed.RequestBody.FromJson<CommandReqWithProvider>();
+        var jobRes = job.Completed.ResponseBody.FromJson<CommandResultWithOutputs>(); 
+        TimeSpan? duration = null;
         if (jobRes != null)
         {
+            duration = jobRes.Duration;
             var baseUrl = AppConfig.Instance.AssetsBaseUrl;
             // Map job outputs to ArtifactOutputs
             foreach (var output in jobRes.Outputs ?? [])
@@ -388,14 +390,15 @@ public static class GenerationServiceExtensions
                 });
             }
         }
-        
-        return new Tuple<List<ArtifactOutput>?, List<TextOutput>?>(outputs, textOutputs);
+        return (outputs, textOutputs, duration);
     }
     
     private class CommandResultWithOutputs
     {
         public List<ArtifactOutput> Outputs { get; set; }
         public List<TextOutput> TextOutputs { get; set; }
+        
+        public TimeSpan? Duration { get; set; }
     }
 
     private class CommandReqWithProvider

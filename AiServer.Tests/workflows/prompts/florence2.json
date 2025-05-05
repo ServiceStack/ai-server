@@ -1,0 +1,306 @@
+{
+  "client_id": "74397459521643f1a8bc731cc2a61a39",
+  "prompt": {
+    "20": {
+      "inputs": {
+        "image": "image_e0ce324b-30fd-4684-a145-a8bb21702550.png"
+      },
+      "class_type": "LoadImage",
+      "_meta": {
+        "title": "Load Image"
+      }
+    },
+    "30": {
+      "inputs": {
+        "text_input": "",
+        "task": "more_detailed_caption",
+        "fill_mask": true,
+        "keep_model_loaded": false,
+        "max_new_tokens": 1024,
+        "num_beams": 3,
+        "do_sample": true,
+        "output_mask_select": "",
+        "seed": 305896095971344,
+        "image": [
+          "20",
+          0
+        ],
+        "florence2_model": [
+          "31",
+          0
+        ]
+      },
+      "class_type": "Florence2Run",
+      "_meta": {
+        "title": "Florence2Run"
+      }
+    },
+    "31": {
+      "inputs": {
+        "model": "microsoft/Florence-2-base",
+        "precision": "bf16",
+        "attention": "sdpa"
+      },
+      "class_type": "DownloadAndLoadFlorence2Model",
+      "_meta": {
+        "title": "DownloadAndLoadFlorence2Model"
+      }
+    },
+    "42": {
+      "inputs": {
+        "text_0": "This is an animated image. In this image we can see a woman.",
+        "text_1": "The image is a digital illustration of a young woman with long, dark hair. She is wearing a black dress with a high neckline and long sleeves. The dress has a ruffled hemline and is cinched at the waist with a thin strap. The woman is also wearing black thigh-high stockings and high heels. She has a serious expression on her face and is looking directly at the camera. The background is a plain beige color. The overall mood of the image is dark and mysterious.",
+        "text": [
+          "30",
+          2
+        ]
+      },
+      "class_type": "ShowText|pysssss",
+      "_meta": {
+        "title": "Show Text 🐍"
+      }
+    }
+  },
+  "extra_data": {
+    "extra_pnginfo": {
+      "workflow": {
+        "id": "6fe68860-ec72-4f11-9474-6ea1f38f51a9",
+        "revision": 0,
+        "last_node_id": 42,
+        "last_link_id": 33,
+        "nodes": [
+          {
+            "id": 31,
+            "type": "DownloadAndLoadFlorence2Model",
+            "pos": [
+              489,
+              266
+            ],
+            "size": [
+              315,
+              106
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "lora",
+                "shape": 7,
+                "type": "PEFTLORA",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "florence2_model",
+                "type": "FL2MODEL",
+                "links": [
+                  22
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfyui-florence2",
+              "ver": "ea0cc52627a68ab66e6252bc8d2987bb87c4f5f5",
+              "Node name for S&R": "DownloadAndLoadFlorence2Model"
+            },
+            "widgets_values": [
+              "microsoft/Florence-2-base",
+              "bf16",
+              "sdpa"
+            ]
+          },
+          {
+            "id": 20,
+            "type": "LoadImage",
+            "pos": [
+              483,
+              -114
+            ],
+            "size": [
+              315,
+              314
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "IMAGE",
+                "type": "IMAGE",
+                "slot_index": 0,
+                "links": [
+                  21
+                ]
+              },
+              {
+                "name": "MASK",
+                "type": "MASK",
+                "links": null
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.3.30",
+              "Node name for S&R": "LoadImage"
+            },
+            "widgets_values": [
+              "image_e0ce324b-30fd-4684-a145-a8bb21702550.png",
+              "image"
+            ]
+          },
+          {
+            "id": 42,
+            "type": "ShowText|pysssss",
+            "pos": [
+              1487.1260986328125,
+              128.6239013671875
+            ],
+            "size": [
+              358,
+              448.4000244140625
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "text",
+                "type": "STRING",
+                "link": 33
+              }
+            ],
+            "outputs": [
+              {
+                "name": "STRING",
+                "shape": 6,
+                "type": "STRING",
+                "links": null
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfyui-custom-scripts",
+              "ver": "b0f21a3c13bac21068d1dcceb7c2d466167054b3",
+              "Node name for S&R": "ShowText|pysssss"
+            },
+            "widgets_values": [
+              "This is an animated image. In this image we can see a woman.",
+              "The image is a digital illustration of a young woman with long, dark hair. She is wearing a black dress with a high neckline and long sleeves. The dress has a ruffled hemline and is cinched at the waist with a thin strap. The woman is also wearing black thigh-high stockings and high heels. She has a serious expression on her face and is looking directly at the camera. The background is a plain beige color. The overall mood of the image is dark and mysterious."
+            ]
+          },
+          {
+            "id": 30,
+            "type": "Florence2Run",
+            "pos": [
+              887,
+              117
+            ],
+            "size": [
+              400,
+              364
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "link": 21
+              },
+              {
+                "name": "florence2_model",
+                "type": "FL2MODEL",
+                "link": 22
+              }
+            ],
+            "outputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "slot_index": 0,
+                "links": []
+              },
+              {
+                "name": "mask",
+                "type": "MASK",
+                "links": null
+              },
+              {
+                "name": "caption",
+                "type": "STRING",
+                "slot_index": 2,
+                "links": [
+                  33
+                ]
+              },
+              {
+                "name": "data",
+                "type": "JSON",
+                "links": null
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfyui-florence2",
+              "ver": "ea0cc52627a68ab66e6252bc8d2987bb87c4f5f5",
+              "Node name for S&R": "Florence2Run"
+            },
+            "widgets_values": [
+              "",
+              "more_detailed_caption",
+              true,
+              false,
+              1024,
+              3,
+              true,
+              "",
+              305896095971344,
+              "randomize"
+            ]
+          }
+        ],
+        "links": [
+          [
+            21,
+            20,
+            0,
+            30,
+            0,
+            "IMAGE"
+          ],
+          [
+            22,
+            31,
+            0,
+            30,
+            1,
+            "FL2MODEL"
+          ],
+          [
+            33,
+            30,
+            2,
+            42,
+            0,
+            "STRING"
+          ]
+        ],
+        "groups": [],
+        "config": {},
+        "extra": {
+          "ds": {
+            "scale": 1,
+            "offset": [
+              -439.5260925292969,
+              307.1760787963867
+            ]
+          },
+          "frontendVersion": "1.17.11"
+        },
+        "version": 0.4
+      }
+    }
+  }
+}

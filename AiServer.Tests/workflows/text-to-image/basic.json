@@ -1,6 +1,8 @@
 {
-  "last_node_id": 11,
-  "last_link_id": 11,
+  "id": "6488e870-c8ae-4c21-9bd7-ba0e56d8651f",
+  "revision": 0,
+  "last_node_id": 9,
+  "last_link_id": 9,
   "nodes": [
     {
       "id": 7,
@@ -9,12 +11,12 @@
         413,
         389
       ],
-      "size": {
-        "0": 425.27801513671875,
-        "1": 180.6060791015625
-      },
+      "size": [
+        425.27801513671875,
+        180.6060791015625
+      ],
       "flags": {},
-      "order": 4,
+      "order": 3,
       "mode": 0,
       "inputs": [
         {
@@ -27,17 +29,19 @@
         {
           "name": "CONDITIONING",
           "type": "CONDITIONING",
+          "slot_index": 0,
           "links": [
             6
-          ],
-          "slot_index": 0
+          ]
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "{{negativePrompt}}"
+        "text, watermark"
       ]
     },
     {
@@ -47,12 +51,12 @@
         415,
         186
       ],
-      "size": {
-        "0": 422.84503173828125,
-        "1": 164.31304931640625
-      },
+      "size": [
+        422.84503173828125,
+        164.31304931640625
+      ],
       "flags": {},
-      "order": 3,
+      "order": 2,
       "mode": 0,
       "inputs": [
         {
@@ -65,17 +69,19 @@
         {
           "name": "CONDITIONING",
           "type": "CONDITIONING",
+          "slot_index": 0,
           "links": [
             4
-          ],
-          "slot_index": 0
+          ]
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "{{positivePrompt}}"
+        "beautiful scenery nature glass bottle landscape, , purple galaxy bottle,"
       ]
     },
     {
@@ -85,30 +91,33 @@
         473,
         609
       ],
-      "size": {
-        "0": 315,
-        "1": 106
-      },
+      "size": [
+        315,
+        106
+      ],
       "flags": {},
       "order": 0,
       "mode": 0,
+      "inputs": [],
       "outputs": [
         {
           "name": "LATENT",
           "type": "LATENT",
+          "slot_index": 0,
           "links": [
             2
-          ],
-          "slot_index": 0
+          ]
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
         "Node name for S&R": "EmptyLatentImage"
       },
       "widgets_values": [
-        {{width}},
-        {{height}},
-        {{batchSize}}
+        512,
+        512,
+        1
       ]
     },
     {
@@ -118,12 +127,12 @@
         863,
         186
       ],
-      "size": {
-        "0": 315,
-        "1": 262
-      },
+      "size": [
+        315,
+        262
+      ],
       "flags": {},
-      "order": 5,
+      "order": 4,
       "mode": 0,
       "inputs": [
         {
@@ -151,69 +160,25 @@
         {
           "name": "LATENT",
           "type": "LATENT",
+          "slot_index": 0,
           "links": [
             7
-          ],
-          "slot_index": 0
+          ]
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        {{seed}},
+        381764798468854,
         "randomize",
-        {{steps}},
-        {{cfgScale}},
-        "{{sampler}}",
-        "{{scheduler}}",
-        {{denoise}}
-      ]
-    },
-    {
-      "id": 4,
-      "type": "CheckpointLoaderSimple",
-      "pos": [
-        26,
-        474
-      ],
-      "size": {
-        "0": 315,
-        "1": 98
-      },
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            1
-          ],
-          "slot_index": 0
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            3,
-            5
-          ],
-          "slot_index": 1
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [],
-          "slot_index": 2
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CheckpointLoaderSimple"
-      },
-      "widgets_values": [
-        "{{model}}"
+        20,
+        8,
+        "euler",
+        "normal",
+        1
       ]
     },
     {
@@ -223,12 +188,12 @@
         1209,
         188
       ],
-      "size": {
-        "0": 210,
-        "1": 46
-      },
+      "size": [
+        210,
+        46
+      ],
       "flags": {},
-      "order": 6,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
@@ -239,78 +204,105 @@
         {
           "name": "vae",
           "type": "VAE",
-          "link": 11
+          "link": 8
         }
       ],
       "outputs": [
         {
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
-            10
-          ],
-          "slot_index": 0
+            9
+          ]
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
         "Node name for S&R": "VAEDecode"
-      }
+      },
+      "widgets_values": []
     },
     {
-      "id": 10,
-      "type": "PreviewImage",
+      "id": 9,
+      "type": "SaveImage",
       "pos": [
-        1454,
-        194
+        1451,
+        189
       ],
-      "size": {
-        "0": 210,
-        "1": 26
-      },
+      "size": [
+        210,
+        270
+      ],
       "flags": {},
-      "order": 7,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 10
+          "link": 9
         }
       ],
+      "outputs": [],
       "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30"
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
     },
     {
-      "id": 11,
-      "type": "VAELoader",
+      "id": 4,
+      "type": "CheckpointLoaderSimple",
       "pos": [
-        872,
-        502
+        26,
+        474
       ],
-      "size": {
-        "0": 315,
-        "1": 58
-      },
+      "size": [
+        315,
+        98
+      ],
       "flags": {},
-      "order": 2,
+      "order": 1,
       "mode": 0,
+      "inputs": [],
       "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "slot_index": 0,
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "slot_index": 1,
+          "links": [
+            3,
+            5
+          ]
+        },
         {
           "name": "VAE",
           "type": "VAE",
+          "slot_index": 2,
           "links": [
-            11
-          ],
-          "shape": 3,
-          "slot_index": 0
+            8
+          ]
         }
       ],
       "properties": {
-        "Node name for S&R": "VAELoader"
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
+        "Node name for S&R": "CheckpointLoaderSimple"
       },
       "widgets_values": [
-        "sdxl_vae.safetensors"
+        "v1-5-pruned-emaonly-fp16.safetensors"
       ]
     }
   ],
@@ -372,32 +364,33 @@
       "LATENT"
     ],
     [
-      10,
       8,
-      0,
-      10,
-      0,
-      "IMAGE"
-    ],
-    [
-      11,
-      11,
-      0,
+      4,
+      2,
       8,
       1,
       "VAE"
+    ],
+    [
+      9,
+      8,
+      0,
+      9,
+      0,
+      "IMAGE"
     ]
   ],
   "groups": [],
   "config": {},
   "extra": {
     "ds": {
-      "scale": 1,
-      "offset": {
-        "0": -10.849609375,
-        "1": -22.595718383789062
-      }
-    }
+      "scale": 0.84,
+      "offset": [
+        383.15827677408856,
+        -16.734043666294482
+      ]
+    },
+    "frontendVersion": "1.17.11"
   },
   "version": 0.4
 }

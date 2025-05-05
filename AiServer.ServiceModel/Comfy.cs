@@ -27,3 +27,17 @@ public class GetComfyModelMappings : IReturn<GetComfyModelMappingsResponse>
 {
 }
 
+public class ComfyAgentDownloadStatus
+{
+    public string? Name { get; set; }
+    public int? Progress { get; set; }
+}
+
+[Route("/comfy/{Year}/{Month}/{Day}/{Filename}")]
+public class DownloadComfyFile : IReturn<Stream>
+{
+    public int? Year { get; set; }
+    public int? Month { get; set; }
+    public int? Day { get; set; }
+    public string? FileName { get; set; }
+}

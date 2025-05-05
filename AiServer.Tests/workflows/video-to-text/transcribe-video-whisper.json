@@ -1,0 +1,219 @@
+{
+  "id": "417d8c71-b8d5-4b91-87fa-d01815b9b6eb",
+  "revision": 0,
+  "last_node_id": 7,
+  "last_link_id": 5,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "TT-LoadWhisperModel",
+      "pos": [
+        100,
+        100
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "pipeline",
+          "type": "TRANSCRIPTION_PIPELINE",
+          "slot_index": 0,
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "ComfyUI-TranscriptionTools",
+        "ver": "24aa05c54943de783e2de62feb2f394242b51ba6",
+        "Node name for S&R": "TT-LoadWhisperModel"
+      },
+      "widgets_values": [
+        "openai/whisper-large-v3",
+        "en"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "TT-LoadVideoAudio",
+      "pos": [
+        100,
+        325
+      ],
+      "size": [
+        315,
+        237.9375
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "wav_bytes",
+          "type": "WAV_BYTES",
+          "slot_index": 0,
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "ComfyUI-TranscriptionTools",
+        "ver": "24aa05c54943de783e2de62feb2f394242b51ba6",
+        "Node name for S&R": "TT-LoadVideoAudio"
+      },
+      "widgets_values": [
+        "videos_litdb4.mp4",
+        {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "filename": "videos_litdb4.mp4",
+            "type": "input",
+            "format": "video/mp4"
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "TT-WhisperTranscription",
+      "pos": [
+        475,
+        100
+      ],
+      "size": [
+        371.20001220703125,
+        174
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pipeline",
+          "type": "TRANSCRIPTION_PIPELINE",
+          "link": 1
+        },
+        {
+          "name": "wav_bytes",
+          "type": "WAV_BYTES",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "transcription",
+          "type": "STRING",
+          "slot_index": 0,
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "chunks",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "ComfyUI-TranscriptionTools",
+        "ver": "24aa05c54943de783e2de62feb2f394242b51ba6",
+        "Node name for S&R": "TT-WhisperTranscription"
+      },
+      "widgets_values": [
+        true,
+        false,
+        false,
+        "transcription",
+        true
+      ]
+    },
+    {
+      "id": 7,
+      "type": "ShowText|pysssss",
+      "pos": [
+        935.9437866210938,
+        135.27362060546875
+      ],
+      "size": [
+        416.7431335449219,
+        334.63787841796875
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-custom-scripts",
+        "ver": "b0f21a3c13bac21068d1dcceb7c2d466167054b3",
+        "Node name for S&R": "ShowText|pysssss"
+      },
+      "widgets_values": []
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      3,
+      0,
+      "TRANSCRIPTION_PIPELINE"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      1,
+      "WAV_BYTES"
+    ],
+    [
+      5,
+      3,
+      0,
+      7,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.0834705943388394,
+      "offset": [
+        -28.85865313507718,
+        28.45949389894207
+      ]
+    },
+    "frontendVersion": "1.17.11",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}

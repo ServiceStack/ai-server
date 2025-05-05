@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Security.Cryptography;
+using System.Text.Json;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using ServiceStack;
@@ -92,5 +93,47 @@ public static class AppExtensions
         using var sha256Hash = SHA256.Create();
         byte[] hashBytes = sha256Hash.ComputeHash(stream);
         return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
-    }    
+    }
+    
+    public static object? AsObject(this JsonElement element)
+    {
+        switch (element.ValueKind)
+        {
+            case JsonValueKind.String:
+                return element.GetString();
+            case JsonValueKind.Number:
+                // For numbers, try to parse as different numeric types
+                if (element.TryGetInt32(out int intValue))
+                    return intValue;
+                if (element.TryGetInt64(out long longValue))
+                    return longValue;
+                if (element.TryGetDouble(out double doubleValue))
+                    return doubleValue;
+                return element.GetRawText(); // Fallback
+            case JsonValueKind.True:
+                return true;
+            case JsonValueKind.False:
+                return false;
+            case JsonValueKind.Null:
+                return null;
+            case JsonValueKind.Object:
+                // For objects, create a Dictionary
+                var obj = new Dictionary<string, object?>();
+                foreach (var property in element.EnumerateObject())
+                {
+                    obj[property.Name] = AsObject(property.Value);
+                }
+                return obj;
+            case JsonValueKind.Array:
+                // For arrays, create a List
+                var array = new List<object?>();
+                foreach (var item in element.EnumerateArray())
+                {
+                    array.Add(AsObject(item));
+                }
+                return array;
+            default:
+                return element.GetRawText();
+        }
+    }
 }

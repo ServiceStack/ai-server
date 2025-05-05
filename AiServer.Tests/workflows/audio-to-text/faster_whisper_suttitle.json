@@ -1,0 +1,327 @@
+{
+  "id": "b3ef4088-8fff-4a6d-95aa-5c729434beac",
+  "revision": 0,
+  "last_node_id": 52,
+  "last_link_id": 45,
+  "nodes": [
+    {
+      "id": 43,
+      "type": "LoadFasterWhisperModel",
+      "pos": [
+        -217,
+        -35
+      ],
+      "size": [
+        315,
+        82
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "faster_whisper_model",
+          "type": "FASTERWHISPERMODEL",
+          "slot_index": 0,
+          "links": [
+            41
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-faster-whisper",
+        "ver": "1.0.0",
+        "Node name for S&R": "LoadFasterWhisperModel"
+      },
+      "widgets_values": [
+        "large-v2",
+        "cuda"
+      ]
+    },
+    {
+      "id": 44,
+      "type": "Note",
+      "pos": [
+        706.436279296875,
+        281.6055603027344
+      ],
+      "size": [
+        361.1064453125,
+        88
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "Since I can not use None value as default in ComfyUI, \n\nI used `-999` and empty strings as None value in some parameters."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 47,
+      "type": "InputFilePath",
+      "pos": [
+        -214,
+        -223
+      ],
+      "size": [
+        315,
+        58
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "filepath",
+          "type": "FILEPATH",
+          "slot_index": 0,
+          "links": [
+            40
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-faster-whisper",
+        "ver": "1.0.0",
+        "Node name for S&R": "InputFilePath"
+      },
+      "widgets_values": [
+        "/data/input/speaker_0.mp3"
+      ]
+    },
+    {
+      "id": 41,
+      "type": "FasterWhisperToSubtitle",
+      "pos": [
+        588,
+        -356
+      ],
+      "size": [
+        355.20001220703125,
+        58
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "transcriptions",
+          "type": "TRANSCRIPTIONS",
+          "link": 42
+        }
+      ],
+      "outputs": [
+        {
+          "name": "subtitle text",
+          "type": "SUBTITLE",
+          "slot_index": 0,
+          "links": [
+            45
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-faster-whisper",
+        "ver": "1.0.0",
+        "Node name for S&R": "FasterWhisperToSubtitle"
+      },
+      "widgets_values": [
+        ".srt"
+      ]
+    },
+    {
+      "id": 42,
+      "type": "SaveSubtitle",
+      "pos": [
+        1164.26708984375,
+        -357.3756103515625
+      ],
+      "size": [
+        433.5819396972656,
+        83.99053192138672
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "subtitle",
+          "type": "SUBTITLE",
+          "link": 45
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output_path",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-faster-whisper",
+        "ver": "1.0.0",
+        "Node name for S&R": "SaveSubtitle"
+      },
+      "widgets_values": [
+        "Subtitle"
+      ]
+    },
+    {
+      "id": 45,
+      "type": "Note",
+      "pos": [
+        752.3567504882812,
+        -200.80752563476562
+      ],
+      "size": [
+        352.7720642089844,
+        368.7601013183594
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "<= The source language is automatically detected.\nIf you want to enter it manually, refer to these language codes:\n\n{\n    \"Afrikaans\": \"af\",\n    \"Amharic\": \"am\",\n    \"Arabic\": \"ar\",\n    \"Assamese\": \"as\",\n    \"Azerbaijani\": \"az\",\n    \"Bashkir\": \"ba\",\n    \"Belarusian\": \"be\",\n    \"Bulgarian\": \"bg\",\n    \"Bengali\": \"bn\",\n    \"Tibetan\": \"bo\",\n    \"Breton\": \"br\",\n    \"Bosnian\": \"bs\",\n    \"Catalan\": \"ca\",\n    \"Czech\": \"cs\",\n    \"Welsh\": \"cy\",\n    \"Danish\": \"da\",\n    \"German\": \"de\",\n    \"Greek\": \"el\",\n    \"English\": \"en\",\n    \"Spanish\": \"es\",\n    \"Estonian\": \"et\",\n    \"Basque\": \"eu\",\n    \"Persian\": \"fa\",\n    \"Finnish\": \"fi\",\n    \"Faroese\": \"fo\",\n    \"French\": \"fr\",\n    \"Galician\": \"gl\",\n    \"Gujarati\": \"gu\",\n    \"Hausa\": \"ha\",\n    \"Hawaiian\": \"haw\",\n    \"Hebrew\": \"he\",\n    \"Hindi\": \"hi\",\n    \"Croatian\": \"hr\",\n    \"Haitian Creole\": \"ht\",\n    \"Hungarian\": \"hu\",\n    \"Armenian\": \"hy\",\n    \"Indonesian\": \"id\",\n    \"Icelandic\": \"is\",\n    \"Italian\": \"it\",\n    \"Japanese\": \"ja\",\n    \"Javanese\": \"jw\",\n    \"Georgian\": \"ka\",\n    \"Kazakh\": \"kk\",\n    \"Khmer\": \"km\",\n    \"Kannada\": \"kn\",\n    \"Korean\": \"ko\",\n    \"Latin\": \"la\",\n    \"Luxembourgish\": \"lb\",\n    \"Lingala\": \"ln\",\n    \"Lao\": \"lo\",\n    \"Lithuanian\": \"lt\",\n    \"Latvian\": \"lv\",\n    \"Malagasy\": \"mg\",\n    \"Maori\": \"mi\",\n    \"Macedonian\": \"mk\",\n    \"Malayalam\": \"ml\",\n    \"Mongolian\": \"mn\",\n    \"Marathi\": \"mr\",\n    \"Malay\": \"ms\",\n    \"Maltese\": \"mt\",\n    \"Burmese\": \"my\",\n    \"Nepali\": \"ne\",\n    \"Dutch\": \"nl\",\n    \"Norwegian Nynorsk\": \"nn\",\n    \"Norwegian\": \"no\",\n    \"Occitan\": \"oc\",\n    \"Punjabi\": \"pa\",\n    \"Polish\": \"pl\",\n    \"Pashto\": \"ps\",\n    \"Portuguese\": \"pt\",\n    \"Romanian\": \"ro\",\n    \"Russian\": \"ru\",\n    \"Sanskrit\": \"sa\",\n    \"Sindhi\": \"sd\",\n    \"Sinhala\": \"si\",\n    \"Slovak\": \"sk\",\n    \"Slovenian\": \"sl\",\n    \"Shona\": \"sn\",\n    \"Somali\": \"so\",\n    \"Albanian\": \"sq\",\n    \"Serbian\": \"sr\",\n    \"Sundanese\": \"su\",\n    \"Swedish\": \"sv\",\n    \"Swahili\": \"sw\",\n    \"Tamil\": \"ta\",\n    \"Telugu\": \"te\",\n    \"Tajik\": \"tg\",\n    \"Thai\": \"th\",\n    \"Turkmen\": \"tk\",\n    \"Tagalog\": \"tl\",\n    \"Turkish\": \"tr\",\n    \"Tatar\": \"tt\",\n    \"Ukrainian\": \"uk\",\n    \"Urdu\": \"ur\",\n    \"Uzbek\": \"uz\",\n    \"Vietnamese\": \"vi\",\n    \"Yiddish\": \"yi\",\n    \"Yoruba\": \"yo\",\n    \"Chinese\": \"zh\",\n    \"Cantonese\": \"yue\"\n}\n"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 49,
+      "type": "FasterWhisperTranscription",
+      "pos": [
+        193,
+        -226
+      ],
+      "size": [
+        388,
+        822
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "FILEPATH",
+          "link": 40
+        },
+        {
+          "name": "model",
+          "type": "FASTERWHISPERMODEL",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "transcriptions",
+          "type": "TRANSCRIPTIONS",
+          "slot_index": 0,
+          "links": [
+            42
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-faster-whisper",
+        "ver": "1.0.0",
+        "Node name for S&R": "FasterWhisperTranscription"
+      },
+      "widgets_values": [
+        "auto",
+        "transcribe",
+        5,
+        -1,
+        0.6,
+        5,
+        1,
+        0,
+        2.4,
+        1,
+        1,
+        0,
+        "",
+        true,
+        "[-1]",
+        1,
+        false,
+        "\"'“¿([{-",
+        "\"'.。,，!！?？:：”)]}、",
+        -999,
+        -999,
+        -999,
+        "",
+        -999,
+        1,
+        0.5,
+        true,
+        "",
+        false,
+        false,
+        "",
+        "0"
+      ]
+    }
+  ],
+  "links": [
+    [
+      40,
+      47,
+      0,
+      49,
+      0,
+      "FILEPATH"
+    ],
+    [
+      41,
+      43,
+      0,
+      49,
+      1,
+      "FASTERWHISPERMODEL"
+    ],
+    [
+      42,
+      49,
+      0,
+      41,
+      0,
+      "TRANSCRIPTIONS"
+    ],
+    [
+      45,
+      41,
+      0,
+      42,
+      0,
+      "SUBTITLE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.9849732675807631,
+      "offset": [
+        226.2526158028488,
+        623.6151114583139
+      ]
+    },
+    "frontendVersion": "1.17.11"
+  },
+  "version": 0.4
+}

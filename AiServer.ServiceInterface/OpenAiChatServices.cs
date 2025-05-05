@@ -62,7 +62,7 @@ public class OpenAiChatServices(
             activeModels.Add(customModel);
         }
         
-        return new StringsResponse
+        return new ActiveAiModelsResponse
         {
             Results = activeModels.OrderBy(x => x).ToList() 
         };

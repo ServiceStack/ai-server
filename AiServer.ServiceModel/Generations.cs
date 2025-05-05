@@ -67,6 +67,9 @@ public class TextToSpeech : IGeneration, IReturn<ArtifactGenerationResponse>
 [SystemJson(UseSystemJson.Response)]
 public class TextToImage : IGeneration, IReturn<ArtifactGenerationResponse>
 {
+    [ApiMember(Description = "The AI model to use for image generation")]
+    public string? Model { get; set; }
+
     [ApiMember(Description = "The main prompt describing the desired image")]
     [ValidateNotEmpty]
     [Input(Type = "textarea")]
@@ -75,6 +78,15 @@ public class TextToImage : IGeneration, IReturn<ArtifactGenerationResponse>
     [ApiMember(Description = "Optional prompt specifying what should not be in the image")]
     [Input(Type = "textarea")]
     public string? NegativePrompt { get; set; }
+
+    [ApiMember(Description = "Tag to identify the request")]
+    public string? Tag { get; set; }
+    
+    [ApiMember(Description = "Optional client-provided identifier for the request")]
+    public string? RefId { get; set; }
+    
+    [ApiMember(Description = "ComfyUI Workflow Arguments")]
+    public Dictionary<string,string>? Arguments { get; set; }
 
     [ApiMember(Description = "Desired width of the generated image")]
     [Range(64, 2048)]
@@ -88,18 +100,9 @@ public class TextToImage : IGeneration, IReturn<ArtifactGenerationResponse>
     [Range(1, 10)]
     public int? BatchSize { get; set; }
 
-    [ApiMember(Description = "The AI model to use for image generation")]
-    public string? Model { get; set; }
-
     [ApiMember(Description = "Optional seed for reproducible results")]
     [Range(0, int.MaxValue)]
     public int? Seed { get; set; }
-    
-    [ApiMember(Description = "Optional client-provided identifier for the request")]
-    public string? RefId { get; set; }
-
-    [ApiMember(Description = "Tag to identify the request")]
-    public string? Tag { get; set; }
 }
 
 [ValidateApiKey]
@@ -240,6 +243,9 @@ public class ArtifactGenerationResponse
     [ApiMember(Description = "List of generated outputs")]
     public List<ArtifactOutput>? Results { get; set; }
 
+    [ApiMember(Description = "Execution time of generation")]
+    public TimeSpan? Duration { get; set; }
+
     [ApiMember(Description = "Detailed response status information")]
     public ResponseStatus? ResponseStatus { get; set; }
 }
@@ -249,6 +255,9 @@ public class TextGenerationResponse
 {
     [ApiMember(Description = "List of generated text outputs")]
     public List<TextOutput>? Results { get; set; }
+
+    [ApiMember(Description = "Execution time of generation")]
+    public TimeSpan? Duration { get; set; }
 
     [ApiMember(Description = "Detailed response status information")]
     public ResponseStatus? ResponseStatus { get; set; }
@@ -262,6 +271,9 @@ public class GenerationResponse
 
     [ApiMember(Description = "List of generated text outputs")]
     public List<TextOutput>? TextOutputs { get; set; }
+
+    [ApiMember(Description = "Execution time of generation")]
+    public TimeSpan? Duration { get; set; }
 
     [ApiMember(Description = "Detailed response status information")]
     public ResponseStatus? ResponseStatus { get; set; }

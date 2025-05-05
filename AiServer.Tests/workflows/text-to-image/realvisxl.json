@@ -37,7 +37,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "{{negativePrompt}}"
+        "(nsfw),(explicit),(gore),(violence),(blood),low quality, blurry, noisy, compression artifacts"
       ]
     },
     {
@@ -75,7 +75,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "{{positivePrompt}}"
+        "A dramatic close-up portrait of Lara Croft&#39;s face, illuminated by the flickering light of a torch in a dark, dusty tomb. Her expression is intense and focused, showing grit and determination. Gritty realism, strong chiaroscuro lighting, detailed facial features, tomb environment background."
       ]
     },
     {
@@ -106,9 +106,9 @@
         "Node name for S&R": "EmptyLatentImage"
       },
       "widgets_values": [
-        {{width}},
-        {{height}},
-        {{batchSize}}
+        1024,
+        1024,
+        1
       ]
     },
     {
@@ -161,13 +161,13 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        {{seed}},
+        1597463009,
         "randomize",
-        {{steps}},
-        {{cfgScale}},
-        "{{sampler}}",
-        "{{scheduler}}",
-        {{denoise}}
+        5,
+        2,
+        "dpmpp_sde",
+        "normal",
+        1
       ]
     },
     {
@@ -213,7 +213,7 @@
         "Node name for S&R": "CheckpointLoaderSimple"
       },
       "widgets_values": [
-        "{{model}}"
+        "realvisxlV50_v50LightningBakedvae.safetensors"
       ]
     },
     {

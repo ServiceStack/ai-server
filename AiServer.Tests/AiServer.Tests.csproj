@@ -31,90 +31,28 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="workflows\workflow_simple_generation.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
-    <None Update="workflows\text_to_image.json">
+    <None Update="workflows\text-to-image\basic-prompt-workflow.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="files\comfyui_upload_test.png" />
-    <Content Include="files\comfyui_upload_test.png">
+    <None Update="workflows\**\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
-    <None Remove="workflows\image_to_image.json" />
-    <Content Include="workflows\image_to_image.json">
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="files\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
-    <None Remove="workflows\image_to_image_upscale.json" />
-    <Content Include="workflows\image_to_image_upscale.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
-    <None Remove="files\comfyui_upload_test_mask.png" />
-    <Content Include="files\comfyui_upload_test_mask.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
-    <None Remove="workflows\image_to_image_with_mask.json" />
-    <Content Include="workflows\image_to_image_with_mask.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
-    <None Remove="workflows\image_to_text.json" />
-    <Content Include="workflows\image_to_text.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
-    <None Remove="workflows\text_to_audio.json" />
-    <Content Include="workflows\text_to_audio.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
-    <None Remove="files\speech_to_text_test.wav" />
-    <Content Include="files\speech_to_text_test.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
-    <None Remove="workflows\speech_to_text.json" />
-    <Content Include="workflows\speech_to_text.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
-    <None Remove="workflows\text_to_speech.json" />
-    <Content Include="workflows\text_to_speech.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
-    <None Remove="files\test_image.jpg" />
-    <Content Include="files\test_image.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Remove="files\watermark_image.png" />
-    <Content Include="files\watermark_image.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Remove="files\test_video.webm" />
-    <Content Include="files\test_video.webm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Remove="files\test_audio.wav" />
-    <Content Include="files\test_audio.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Remove="files\test_audio.mp3" />
-    <Content Include="files\test_audio.mp3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="workflows\results\" />
   </ItemGroup>
 
 </Project>

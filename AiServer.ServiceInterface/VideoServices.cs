@@ -372,7 +372,7 @@ public static class TransformServiceExtensions
         // We know at this point, we definitely have a job
         var queuedJob = job;
         
-        var completedResponse = new ArtifactGenerationResponse();
+        var ret = new ArtifactGenerationResponse();
 
         // Wait for the job to synchronously complete, default: 5 minutes
         var timeout = DateTime.UtcNow.AddSeconds(job.Job?.TimeoutSecs ?? 5 * 60);
@@ -389,7 +389,8 @@ public static class TransformServiceExtensions
 
         var outputs = queuedJob.GetOutputs();
 
-        completedResponse.Results = outputs.Item1;
-        return completedResponse;
+        ret.Results = outputs.Item1;
+        ret.Duration = outputs.Item3;
+        return ret;
     }
 }
