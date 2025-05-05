@@ -1,6 +1,6 @@
 import { ref, computed, onMounted, inject, watch, nextTick } from "vue"
-import { useClient } from "@servicestack/vue"
-import { createErrorStatus } from "@servicestack/client"
+import { useClient, useFormatters } from "@servicestack/vue"
+import { createErrorStatus, fromXsdDuration } from "@servicestack/client"
 import { TextToImage, ActiveMediaModels } from "../dtos.mjs"
 import { UiLayout, ThreadStorage, HistoryTitle, HistoryGroups, useUiLayout, icons, toArtifacts } from "../utils.mjs"
 import { ArtifactGallery, ArtifactDownloads } from "./Artifacts.mjs"
@@ -28,22 +28,10 @@ export default {
                                     <div class="col-span-6 sm:col-span-2">
                                         <SelectInput id="model" v-model="request.model" :entries="activeModels" label="Active Models" required />
                                     </div>
-                                    <div class="col-span-6 sm:col-span-4">
+                                    <div class="col-span-6 sm:col-span-3">
                                         <TextInput id="negativePrompt" v-model="request.negativePrompt" required placeholder="Negative Prompt" />
                                     </div>
                                     <div class="col-span-6 sm:col-span-1">
-                                        <TextInput type="number" id="width" v-model="request.width" min="0" required />
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-1">
-                                        <TextInput type="number" id="height" v-model="request.height" min="0" required />
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-1">
-                                        <TextInput type="number" id="batchSize" label="Image Count" v-model="request.batchSize" min="0" required />
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-1">
-                                        <TextInput type="number" id="seed" v-model="request.seed" min="0" />
-                                    </div>
-                                    <div class="col-span-6 sm:col-span-2">
                                         <TextInput id="tag" v-model="request.tag" placeholder="Tag" />
                                     </div>
                                 </div>
@@ -64,6 +52,22 @@ export default {
                                         </button>
                                     </div>
                                 </div>
+                                
+                                <div class="mt-4 grid grid-cols-6 gap-4">
+                                    <div class="col-span-6 sm:col-span-1">
+                                        <TextInput type="number" id="width" v-model="request.width" min="0" required />
+                                    </div>
+                                    <div class="col-span-6 sm:col-span-1">
+                                        <TextInput type="number" id="height" v-model="request.height" min="0" required />
+                                    </div>
+                                    <div class="col-span-6 sm:col-span-1">
+                                        <TextInput type="number" id="batchSize" label="Image Count" v-model="request.batchSize" min="0" required />
+                                    </div>
+                                    <div class="col-span-6 sm:col-span-1">
+                                        <TextInput type="number" id="seed" v-model="request.seed" min="0" />
+                                    </div>
+                                </div>
+                                
                             </fieldset>
                         </div>
                     </div>
@@ -89,9 +93,14 @@ export default {
                             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z"></path><path fill="currentColor" d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z"></path></svg>
                         </div>
                     </div>
-                    <div v-if="result.request.model" class="float-right">                    
-                        <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                    <div v-if="result.request.model" class="float-right">
+                        <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10"
+                            :title="'Image Model ' + result.request.model">
                             {{activeModels.find(x => x.key == result.request.model)?.value || result.request.model}}
+                        </span>
+                        <span v-if="result.response.duration" class="ml-2 inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
+                            :title="'Executed in ' + formatDuration(result.response.duration)">
+                            {{formatDuration(result.response.duration)}}
                         </span>
                     </div>
 
@@ -282,6 +291,17 @@ export default {
                 }
             }
         }
+        
+        function formatDuration(xsdDuration) {
+            const seconds = fromXsdDuration(xsdDuration)
+            const wholeSeconds = Math.floor(seconds);
+            const milliseconds = Math.round((seconds - wholeSeconds) * 1000);
+            const duration = {
+                seconds: wholeSeconds,
+                milliseconds: milliseconds
+            };
+            return new Intl.DurationFormat("en", { style:"narrow" }).format(duration)
+        }
 
         watch(() => routes.id, updated)
         watch(() => [
@@ -332,6 +352,7 @@ export default {
             getThreadResults,
             saveHistoryItem,
             removeHistoryItem,
+            formatDuration,
         }
     }
 }
