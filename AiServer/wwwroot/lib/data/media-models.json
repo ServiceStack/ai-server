@@ -122,6 +122,7 @@
       "ComfyUI": "JuggernautXL.safetensors"
     },
     "dependencies": [
+      "sdxl_vae.safetensors"
     ],
     "installer": "Text to Image (7.1G Juggernaut XL v11)",
     "path": "/data/models/checkpoints/JuggernautXL.safetensors",
@@ -577,7 +578,7 @@
     "id": "stable_audio",
     "name": "Stable Audio Open 1.0",
     "type": "TextToAudio",
-    "path": "/data/models/checkpoints/model.safetensors",
+    "path": "/data/models/checkpoints/stable-audio-open.safetensors",
     "downloadToken": "$HF_TOKEN",
     "downloadUrl": "https://huggingface.co/stabilityai/stable-audio-open-1.0/resolve/main/model.safetensors",
     "url": "https://huggingface.co/stabilityai/stable-audio-open-1.0"

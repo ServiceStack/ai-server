@@ -1,8 +1,11 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using AiServer.ServiceModel;
 using Microsoft.Extensions.Logging;
+using ServiceStack;
+using AiServer.ServiceModel;
+using AiServer.ServiceModel.Types;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AiServer.ServiceInterface;
 
@@ -12,13 +15,9 @@ public class NodeIdConverter : JsonConverter<string>
     public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.Number)
-        {
             return reader.GetInt32().ToString();
-        }
-        else if (reader.TokenType == JsonTokenType.String)
-        {
+        if (reader.TokenType == JsonTokenType.String)
             return reader.GetString();
-        }
 
         throw new JsonException($"Unexpected token type: {reader.TokenType}");
     }
@@ -208,169 +207,6 @@ public class ComfyUIWorkflow
     }
 }
 
-// Classes for parsing the object_info.json
-public class NodeInputProperty
-{
-    [JsonPropertyName("default")] public JsonElement? Default { get; set; } // Can be various types
-
-    // Add other properties if needed, e.g., "min", "max", "step", "tooltip"
-    // public double? Min { get; set; }
-    // public double? Max { get; set; }
-    // public double? Step { get; set; }
-    // public string? Tooltip { get; set; }
-}
-
-public class NodeInputDefinition
-{
-    // In object_info.json, input definitions are arrays with two elements:
-    // ["MODEL", {"tooltip": "..."}] or [["option1", "option2"], {"default": "option1"}]
-    public ComfyInputType Type { get; set; }
-    public Dictionary<string, object>? Options { get; set; }
-    public string[]? EnumValues { get; set; }
-    public Dictionary<string, object>? ComboValues { get; set; }
-    // Special case for seed where it captures 2 widget_values, but is not included in the API prompt
-    public bool? ControlAfterGenerate { get; set; }
-    
-    public static NodeInputDefinition Parse(JsonElement rawValue)
-    {
-        if (rawValue.ValueKind == JsonValueKind.Array && rawValue.GetArrayLength() > 0)
-        {
-            var firstElement = rawValue[0];
-            var ret = new NodeInputDefinition
-            {
-                Type = GetDataType(firstElement), 
-            };
-            if (firstElement.ValueKind == JsonValueKind.Array)
-            {
-                ret.EnumValues = firstElement.EnumerateArray().Select(e => e.GetString() ?? "").ToArray();
-            }
-            else if (firstElement.ValueKind == JsonValueKind.Object)
-            {
-                ret.ComboValues = new();
-                foreach (var entry in firstElement.EnumerateObject())
-                {
-                    var value = entry.Value.AsObject();
-                    if (value == null) continue;
-                    ret.ComboValues[entry.Name] = value;
-                }
-            }
-            if (rawValue.GetArrayLength() > 1)
-            {
-                var secondElement = rawValue[1];
-                if (secondElement.ValueKind == JsonValueKind.Object)
-                {
-                    ret.Options = new();
-                    foreach (var entry in secondElement.EnumerateObject())
-                    {
-                        var value = entry.Value.AsObject();
-                        if (value == null) continue;
-                        ret.Options[entry.Name] = value;
-                        if (entry.Name == "control_after_generate")
-                        {
-                            ret.ControlAfterGenerate = entry.Value.GetBoolean();
-                        }
-                    }
-                }
-            }
-            return ret;
-        }
-        throw new Exception($"Could not parse node input definition from {rawValue}");
-    }
-
-    public static ComfyInputType GetDataType(JsonElement firstElement)
-    {
-        if (firstElement.ValueKind == JsonValueKind.String)
-        {
-            return firstElement.GetString() switch
-            {
-                "AUDIO" => ComfyInputType.Audio,
-                "BOOLEAN" => ComfyInputType.Boolean,
-                "CLIP" => ComfyInputType.Clip,
-                "CLIP_VISION" => ComfyInputType.ClipVision,
-                "CLIP_VISION_OUTPUT" => ComfyInputType.ClipVisionOutput,
-                "COMBO" => ComfyInputType.Combo,
-                "CONDITIONING" => ComfyInputType.Conditioning,
-                "CONTROL_NET" => ComfyInputType.ControlNet,
-                "ENUM" => ComfyInputType.Enum,
-                "FASTERWHISPERMODEL" => ComfyInputType.FasterWhisperModel,
-                "FILEPATH" => ComfyInputType.Filepath,
-                "FL2MODEL" => ComfyInputType.Fl2Model,
-                "FLOAT" => ComfyInputType.Float,
-                "FLOATS" => ComfyInputType.Floats,
-                "GLIGEN" => ComfyInputType.Gligen,
-                "GUIDER" => ComfyInputType.Guider,
-                "HOOKS" => ComfyInputType.Hooks,
-                "IMAGE" => ComfyInputType.Image,
-                "INT" => ComfyInputType.Int,
-                "LATENT" => ComfyInputType.Latent,
-                "LATENT_OPERATION" => ComfyInputType.LatentOperation,
-                "LOAD_3D" => ComfyInputType.Load3D,
-                "LOAD_3D_ANIMATION" => ComfyInputType.Load3DAnimation,
-                "MASK" => ComfyInputType.Mask,
-                "MESH" => ComfyInputType.Mesh,
-                "MODEL" => ComfyInputType.Model,
-                "NOISE" => ComfyInputType.Noise,
-                "PHOTOMAKER" => ComfyInputType.Photomaker,
-                "SAMPLER" => ComfyInputType.Sampler,
-                "SIGMAS" => ComfyInputType.Sigmas,
-                "STRING" => ComfyInputType.String,
-                "STYLE_MODEL" => ComfyInputType.StyleModel,
-                "SUBTITLE" => ComfyInputType.Subtitle,
-                "TRANSCRIPTION_PIPELINE" => ComfyInputType.TranscriptionPipeline,
-                "TRANSCRIPTIONS" => ComfyInputType.Transcriptions,
-                "UPSCALE_MODEL" => ComfyInputType.UpscaleModel,
-                "VAE" => ComfyInputType.VAE,
-                "VHS_AUDIO" => ComfyInputType.VHSAudio,
-                "VOXEL" => ComfyInputType.Voxel,
-                "WAV_BYTES" => ComfyInputType.WavBytes,
-                "WAV_BYTES_BATCH" => ComfyInputType.WavBytesBatch,
-                "WEBCAM" => ComfyInputType. Webcam,
-                _ => ComfyInputType.Unknown
-            };
-        }
-        if (firstElement.ValueKind == JsonValueKind.Array)
-        {
-            // For combo boxes, the type is usually STRING, but let's just indicate it's an enum
-            return ComfyInputType.Enum;
-        }
-        if (firstElement.ValueKind == JsonValueKind.Object)
-        {
-            return ComfyInputType.Combo;
-        }
-        return ComfyInputType.Unknown; // Fallback
-    }
-}
-
-public class NodeInputOrder
-{
-    [JsonPropertyName("required")] public List<string>? Required { get; set; }
-
-    [JsonPropertyName("optional")] public List<string>? Optional { get; set; }
-
-    [JsonPropertyName("hidden")] public List<string>? Hidden { get; set; }
-
-    // Combine all input names in order
-    public List<string> GetAllInputNamesInOrder()
-    {
-        var names = new List<string>();
-        if (Required != null) names.AddRange(Required);
-        if (Optional != null) names.AddRange(Optional);
-        if (Hidden != null) names.AddRange(Hidden);
-        return names;
-    }
-}
-
-public class NodeInfo
-{
-    // required/optional/hidden -> inputName -> definition
-    [JsonPropertyName("input")] public Dictionary<string, Dictionary<string, NodeInputDefinition>>? Input { get; set; }
-
-    [JsonPropertyName("input_order")] public NodeInputOrder? InputOrder { get; set; }
-
-    [JsonPropertyName("name")] public string Name { get; set; } = ""; // Class type
-    // Other properties like output, display_name, category are not strictly needed for prompt conversion
-}
-
 public class ApiNode
 {
     [JsonPropertyName("inputs")]
@@ -392,79 +228,14 @@ public class ApiPrompt
     public string? ClientId { get; set; }
 }
 
-// --- Conversion Logic ---
-public static class ComfyUIWorkflowConverter
+public static class ComfyConverters
 {
     public static JsonSerializerOptions JsonOptions => new() { PropertyNameCaseInsensitive = true };
-
     public static JsonSerializerOptions JsonPromptOptions => new()
     {
         WriteIndented = true, // Optional: for human-readable output
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull // Don't write null properties
     };
-
-    /// <summary>
-    /// Loads and parses the object_info.json file.
-    /// </summary>
-    /// <param name="objectInfoJson">The JSON content of object_info.json</param>
-    public static Dictionary<string, NodeInfo> ParseObjectInfoNodeDefinitions(string objectInfoJson)
-    {
-        // Parse the JSON document directly
-        using var jsonDoc = JsonDocument.Parse(objectInfoJson, new JsonDocumentOptions
-        {
-            AllowTrailingCommas = true,
-            CommentHandling = JsonCommentHandling.Skip
-        });
-
-        // Create a dictionary to hold the node info
-        var objectInfo = new Dictionary<string, NodeInfo>();
-
-        // Process each node in the JSON document
-        foreach (var nodeProp in jsonDoc.RootElement.EnumerateObject())
-        {
-            var nodeName = nodeProp.Name;
-            var nodeInfo = new NodeInfo
-            {
-                Name = nodeName,
-                Input = new Dictionary<string, Dictionary<string, NodeInputDefinition>>()
-            };
-
-            // Process the node properties
-            if (nodeProp.Value.TryGetProperty("input", out var inputProp))
-            {
-                // Process required inputs
-                if (inputProp.TryGetProperty("required", out var requiredProp))
-                {
-                    var requiredInputs = new Dictionary<string, NodeInputDefinition>();
-                    foreach (var reqInput in requiredProp.EnumerateObject())
-                    {
-                        requiredInputs[reqInput.Name] = NodeInputDefinition.Parse(reqInput.Value);
-                    }
-                    nodeInfo.Input["required"] = requiredInputs;
-                }
-
-                // Process optional inputs
-                if (inputProp.TryGetProperty("optional", out var optionalProp))
-                {
-                    var optionalInputs = new Dictionary<string, NodeInputDefinition>();
-                    foreach (var optInput in optionalProp.EnumerateObject())
-                    {
-                        optionalInputs[optInput.Name] = NodeInputDefinition.Parse(optInput.Value);
-                    }
-                    nodeInfo.Input["optional"] = optionalInputs;
-                }
-            }
-            
-            if (nodeProp.Value.TryGetProperty("input_order", out var inputOrderProp))
-            {
-                nodeInfo.InputOrder = JsonSerializer.Deserialize<NodeInputOrder>(inputOrderProp.GetRawText(), JsonOptions);
-            }
-
-            objectInfo[nodeName] = nodeInfo;
-        }
-
-        return objectInfo;
-    }
 
     /// <summary>
     /// Converts a ComfyUI workflow JSON string to an /api/prompt JSON string.
@@ -474,8 +245,10 @@ public static class ComfyUIWorkflowConverter
     /// <returns>The JSON content for the /api/prompt endpoint.</returns>
     /// <exception cref="InvalidOperationException">Thrown if object_info.json was not loaded.</exception>
     /// <exception cref="JsonException">Thrown if the workflow JSON is invalid.</exception>
-    public static string ConvertWorkflowToApiPrompt(string workflowJson, Dictionary<string, NodeInfo> nodeDefinitionsLookup, ILogger log)
+    public static string ConvertWorkflowToApiPrompt(string workflowJson, Dictionary<string, NodeInfo> nodeDefs, ILogger? log=null)
     {
+        log ??= NullLogger.Instance;
+        
         var workflowJsonNode = JsonNode.Parse(workflowJson);
 
         var workflow = workflowJsonNode.Deserialize<ComfyUIWorkflow>(JsonOptions);
@@ -524,7 +297,7 @@ public static class ComfyUIWorkflowConverter
             };
 
             // Look up the node definition from object_info for input ordering
-            if (!nodeDefinitionsLookup.TryGetValue(workflowNode.Type, out var nodeInfo) ||
+            if (!nodeDefs.TryGetValue(workflowNode.Type, out var nodeInfo) ||
                 nodeInfo?.InputOrder == null)
             {
                 log.LogWarning("Node definition not found or incomplete for class_type '{WorkflowNodeType}'. Attempting partial conversion without input order.", workflowNode.Type);
@@ -632,5 +405,113 @@ public static class ComfyUIWorkflowConverter
 
         // Serialize the API prompt structure to JSON
         return JsonSerializer.Serialize(apiPrompt, JsonPromptOptions);
+    }
+    
+    public static ComfyResult ParseComfyResult(string resultJson, string? comfyApiBaseUrl=null)
+    {
+        using var jsonDoc = JsonDocument.Parse(resultJson, new JsonDocumentOptions
+        {
+            AllowTrailingCommas = true,
+            CommentHandling = JsonCommentHandling.Skip,
+        });
+
+        var root = jsonDoc.RootElement;
+
+        var ret = new ComfyResult
+        {
+            PromptId = root.EnumerateObject().First().Name,
+        };
+
+        // Access the outputs section for this execution
+        var elPrompt = root.GetProperty(ret.PromptId);
+        var elOutputs = elPrompt.GetProperty("outputs");
+
+        if (elPrompt.TryGetProperty("prompt", out var elPromptTuple))
+        {
+            var promptTuple = elPromptTuple.EnumerateArray().ToList();
+            if (promptTuple.Count > 3)
+            {
+                var extraData = promptTuple[3];
+                if (extraData.ValueKind == JsonValueKind.Object)
+                {
+                    if (extraData.TryGetProperty("client_id", out var elClientId))
+                    {
+                        ret.ClientId = elClientId.GetString();
+                    }
+                }
+            }
+        }
+
+        // Iterate through all output nodes
+        foreach (var nodeOutput in elOutputs.EnumerateObject())
+        {
+            var nodeId = nodeOutput.Name;
+
+            // Extract Node Images
+            if (nodeOutput.Value.TryGetProperty("images", out var imagesArray))
+            {
+                ret.ImageOutputs ??= [];
+                foreach (var image in imagesArray.EnumerateArray())
+                {
+                    if (image.TryGetProperty("filename", out var elFilename) &&
+                        image.TryGetProperty("type", out var type))
+                    {
+                        var filename = elFilename.GetString();
+                        if (string.IsNullOrEmpty(filename)) continue;
+
+                        image.TryGetProperty("subfolder", out var elSubFolder);
+
+                        //view?filename=ComfyUI_00424_.png&type=output&subfolder=
+                        var path = "/view"
+                            .AddQueryParam("filename", filename)
+                            .AddQueryParam("type", type.GetString() ?? "")
+                            .AddQueryParam("subfolder", elSubFolder.GetString() ?? "");
+
+                        ret.ImageOutputs.Add(new() {
+                            NodeId = nodeId,
+                            Url = comfyApiBaseUrl.CombineWith(path)
+                        });
+                    }
+                }
+            }
+            if (nodeOutput.Value.TryGetProperty("text", out var textArray))
+            {
+                ret.TextOutputs ??= [];
+                foreach (var text in textArray.EnumerateArray())
+                {
+                    ret.TextOutputs.Add(new() {
+                        NodeId = nodeId,
+                        Text = text.GetString()
+                    });
+                }
+            }
+        }
+
+        if (elPrompt.TryGetProperty("status", out var elStatus) &&
+            elStatus.TryGetProperty("messages", out var elMessages))
+        {
+            long startTimestamp = 0;
+            long endTimestamp = 0;
+
+            foreach (var message in elMessages.EnumerateArray())
+            {
+                var messageType = message[0].GetString();
+                var elMessageData = message[1];
+
+                if (messageType == "execution_start")
+                {
+                    startTimestamp = elMessageData.GetProperty("timestamp").GetInt64();
+                }
+                else if (messageType == "execution_success")
+                {
+                    endTimestamp = elMessageData.GetProperty("timestamp").GetInt64();
+                }
+            }
+            if (startTimestamp > 0 && endTimestamp > 0)
+            {
+                ret.Duration = TimeSpan.FromMilliseconds(endTimestamp - startTimestamp);
+            }
+        }
+        return ret;
     }
 }

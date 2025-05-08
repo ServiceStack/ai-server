@@ -49,6 +49,8 @@ public class AppHost() : AppHostBase("AI Server"), IHostingStartup
             });
             
             services.AddSingleton<AppData>();
+            services.AddSingleton(ComfyMetadata.Instance);
+            services.AddSingleton<ComfyGateway>();
             
             services.AddSingleton<OpenAiProvider>();
             services.AddSingleton<OllamaAiProvider>();

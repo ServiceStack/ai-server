@@ -173,13 +173,13 @@
             "hassakuXLIllustrious_v22.safetensors",
             "iniverseMixSFWNSFW_guofengXLV15.safetensors",
             "jibMixRealisticXL_v160Aphrodite.safetensors",
-            "model.safetensors",
             "novaillustrousNSFW_v20.safetensors",
             "realvisxlV50_v50LightningBakedvae.safetensors",
             "sd3.5_large.safetensors",
             "sd3.5_large_fp8_scaled.safetensors",
             "sd3.5_large_turbo.safetensors",
             "sdxl_lightning_4step.safetensors",
+            "stable-audio-open.safetensors",
             "v1-5-pruned-emaonly-fp16.safetensors",
             "v1-5-pruned-emaonly.ckpt",
             "v2-1_768-ema-pruned.safetensors"
@@ -2891,13 +2891,13 @@
             "hassakuXLIllustrious_v22.safetensors",
             "iniverseMixSFWNSFW_guofengXLV15.safetensors",
             "jibMixRealisticXL_v160Aphrodite.safetensors",
-            "model.safetensors",
             "novaillustrousNSFW_v20.safetensors",
             "realvisxlV50_v50LightningBakedvae.safetensors",
             "sd3.5_large.safetensors",
             "sd3.5_large_fp8_scaled.safetensors",
             "sd3.5_large_turbo.safetensors",
             "sdxl_lightning_4step.safetensors",
+            "stable-audio-open.safetensors",
             "v1-5-pruned-emaonly-fp16.safetensors",
             "v1-5-pruned-emaonly.ckpt",
             "v2-1_768-ema-pruned.safetensors"
@@ -3135,13 +3135,13 @@
             "hassakuXLIllustrious_v22.safetensors",
             "iniverseMixSFWNSFW_guofengXLV15.safetensors",
             "jibMixRealisticXL_v160Aphrodite.safetensors",
-            "model.safetensors",
             "novaillustrousNSFW_v20.safetensors",
             "realvisxlV50_v50LightningBakedvae.safetensors",
             "sd3.5_large.safetensors",
             "sd3.5_large_fp8_scaled.safetensors",
             "sd3.5_large_turbo.safetensors",
             "sdxl_lightning_4step.safetensors",
+            "stable-audio-open.safetensors",
             "v1-5-pruned-emaonly-fp16.safetensors",
             "v1-5-pruned-emaonly.ckpt",
             "v2-1_768-ema-pruned.safetensors"
@@ -3835,6 +3835,7 @@
       "required": {
         "model_name": [
           [
+            "4x-AnimeSharp.pth",
             "4x-UltraSharp.pth",
             "4x_NMKD-Superscale-SP_178000_G.pth",
             "4x_NickelbackFS_72000_G.pth",
@@ -8332,13 +8333,13 @@
             "hassakuXLIllustrious_v22.safetensors",
             "iniverseMixSFWNSFW_guofengXLV15.safetensors",
             "jibMixRealisticXL_v160Aphrodite.safetensors",
-            "model.safetensors",
             "novaillustrousNSFW_v20.safetensors",
             "realvisxlV50_v50LightningBakedvae.safetensors",
             "sd3.5_large.safetensors",
             "sd3.5_large_fp8_scaled.safetensors",
             "sd3.5_large_turbo.safetensors",
             "sdxl_lightning_4step.safetensors",
+            "stable-audio-open.safetensors",
             "v1-5-pruned-emaonly-fp16.safetensors",
             "v1-5-pruned-emaonly.ckpt",
             "v2-1_768-ema-pruned.safetensors"
@@ -17442,13 +17443,13 @@
             "hassakuXLIllustrious_v22.safetensors",
             "iniverseMixSFWNSFW_guofengXLV15.safetensors",
             "jibMixRealisticXL_v160Aphrodite.safetensors",
-            "model.safetensors",
             "novaillustrousNSFW_v20.safetensors",
             "realvisxlV50_v50LightningBakedvae.safetensors",
             "sd3.5_large.safetensors",
             "sd3.5_large_fp8_scaled.safetensors",
             "sd3.5_large_turbo.safetensors",
             "sdxl_lightning_4step.safetensors",
+            "stable-audio-open.safetensors",
             "v1-5-pruned-emaonly-fp16.safetensors",
             "v1-5-pruned-emaonly.ckpt",
             "v2-1_768-ema-pruned.safetensors"
@@ -17518,13 +17519,13 @@
             "hassakuXLIllustrious_v22.safetensors",
             "iniverseMixSFWNSFW_guofengXLV15.safetensors",
             "jibMixRealisticXL_v160Aphrodite.safetensors",
-            "model.safetensors",
             "novaillustrousNSFW_v20.safetensors",
             "realvisxlV50_v50LightningBakedvae.safetensors",
             "sd3.5_large.safetensors",
             "sd3.5_large_fp8_scaled.safetensors",
             "sd3.5_large_turbo.safetensors",
             "sdxl_lightning_4step.safetensors",
+            "stable-audio-open.safetensors",
             "v1-5-pruned-emaonly-fp16.safetensors",
             "v1-5-pruned-emaonly.ckpt",
             "v2-1_768-ema-pruned.safetensors"
@@ -21655,6 +21656,14 @@
           {
             "default": ""
           }
+        ],
+        "token": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": false,
+            "password": true
+          }
         ]
       },
       "hidden": {
@@ -21669,7 +21678,8 @@
       ],
       "optional": [
         "overwrite",
-        "local_path_override"
+        "local_path_override",
+        "token"
       ],
       "hidden": [
         "node_id"
@@ -22050,13 +22060,13 @@
             "hassakuXLIllustrious_v22.safetensors",
             "iniverseMixSFWNSFW_guofengXLV15.safetensors",
             "jibMixRealisticXL_v160Aphrodite.safetensors",
-            "model.safetensors",
             "novaillustrousNSFW_v20.safetensors",
             "realvisxlV50_v50LightningBakedvae.safetensors",
             "sd3.5_large.safetensors",
             "sd3.5_large_fp8_scaled.safetensors",
             "sd3.5_large_turbo.safetensors",
             "sdxl_lightning_4step.safetensors",
+            "stable-audio-open.safetensors",
             "v1-5-pruned-emaonly-fp16.safetensors",
             "v1-5-pruned-emaonly.ckpt",
             "v2-1_768-ema-pruned.safetensors"
@@ -23151,6 +23161,486 @@
     "category": "Florence2",
     "output_node": false
   },
+  "TT-AudioSink": {
+    "input": {
+      "required": {
+        "wav_bytes": [
+          "WAV_BYTES"
+        ],
+        "filename": [
+          "STRING",
+          {
+            "default": "AudioSink"
+          }
+        ],
+        "save_format": [
+          [
+            "wav"
+          ]
+        ],
+        "save_output": [
+          "BOOLEAN",
+          {
+            "default": true
+          }
+        ],
+        "overwrite_existing": [
+          "BOOLEAN",
+          {
+            "default": true
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "wav_bytes",
+        "filename",
+        "save_format",
+        "save_output",
+        "overwrite_existing"
+      ]
+    },
+    "output": [],
+    "output_is_list": [],
+    "output_name": [],
+    "name": "TT-AudioSink",
+    "display_name": "Audio Sink",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
+    "category": "audio",
+    "output_node": true
+  },
+  "TT-LoadWhisperModel": {
+    "input": {
+      "required": {
+        "model_id": [
+          [
+            "openai/whisper-large-v3",
+            "openai/whisper-large-v2",
+            "openai/whisper-large",
+            "openai/whisper-medium",
+            "openai/whisper-small",
+            "openai/whisper-base",
+            "openai/whisper-tiny",
+            "openai/whisper-medium.en",
+            "openai/whisper-small.en",
+            "openai/whisper-base.en",
+            "openai/whisper-tiny.en"
+          ]
+        ],
+        "language": [
+          [
+            "en",
+            "auto",
+            "fr"
+          ]
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "model_id",
+        "language"
+      ]
+    },
+    "output": [
+      "TRANSCRIPTION_PIPELINE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "pipeline"
+    ],
+    "name": "TT-LoadWhisperModel",
+    "display_name": "Load Whisper Transcription Model",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
+    "category": "transcription",
+    "output_node": false
+  },
+  "TT-WhisperTranscription": {
+    "input": {
+      "required": {
+        "pipeline": [
+          "TRANSCRIPTION_PIPELINE"
+        ],
+        "wav_bytes": [
+          "WAV_BYTES"
+        ],
+        "format_newlines_on_punctuation": [
+          "BOOLEAN",
+          {
+            "default": true
+          }
+        ],
+        "save_transcription": [
+          "BOOLEAN",
+          {
+            "default": false
+          }
+        ],
+        "save_chunks": [
+          "BOOLEAN",
+          {
+            "default": false
+          }
+        ],
+        "save_filename": [
+          "STRING",
+          {
+            "default": "transcription"
+          }
+        ],
+        "overwrite_existing": [
+          "BOOLEAN",
+          {
+            "default": true
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "pipeline",
+        "wav_bytes",
+        "format_newlines_on_punctuation",
+        "save_transcription",
+        "save_chunks",
+        "save_filename",
+        "overwrite_existing"
+      ]
+    },
+    "output": [
+      "STRING",
+      "STRING"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "transcription",
+      "chunks"
+    ],
+    "name": "TT-WhisperTranscription",
+    "display_name": "Whisper Transcribe",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
+    "category": "transcription",
+    "output_node": true
+  },
+  "TT-WhisperTranscriptionBatch": {
+    "input": {
+      "required": {
+        "pipeline": [
+          "TRANSCRIPTION_PIPELINE"
+        ],
+        "wav_bytes_batch": [
+          "WAV_BYTES_BATCH"
+        ],
+        "format_newlines_on_punctuation": [
+          "BOOLEAN",
+          {
+            "default": true
+          }
+        ],
+        "save_transcription": [
+          "BOOLEAN",
+          {
+            "default": false
+          }
+        ],
+        "save_chunks": [
+          "BOOLEAN",
+          {
+            "default": false
+          }
+        ],
+        "filename_prefix": [
+          "STRING",
+          {
+            "default": ""
+          }
+        ],
+        "filename_suffix": [
+          "STRING",
+          {
+            "default": ""
+          }
+        ],
+        "overwrite_existing": [
+          "BOOLEAN",
+          {
+            "default": true
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "pipeline",
+        "wav_bytes_batch",
+        "format_newlines_on_punctuation",
+        "save_transcription",
+        "save_chunks",
+        "filename_prefix",
+        "filename_suffix",
+        "overwrite_existing"
+      ]
+    },
+    "output": [],
+    "output_is_list": [],
+    "output_name": [],
+    "name": "TT-WhisperTranscriptionBatch",
+    "display_name": "Whisper Transcribe Batch",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
+    "category": "transcription",
+    "output_node": true
+  },
+  "TT-ConvertVhsAudioToAudio": {
+    "input": {
+      "required": {
+        "vhs_audio": [
+          "VHS_AUDIO"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "vhs_audio"
+      ]
+    },
+    "output": [
+      "WAV_BYTES"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "wav_bytes"
+    ],
+    "name": "TT-ConvertVhsAudioToAudio",
+    "display_name": "Convert VHS Audio to WAV bytes",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
+    "category": "audio",
+    "output_node": false
+  },
+  "TT-LoadVideoAudio": {
+    "input": {
+      "required": {
+        "video": [
+          [
+            "ai-server-command-palette.mp4",
+            "okai-new.mp4",
+            "videos_litdb4.mp4"
+          ]
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "video"
+      ]
+    },
+    "output": [
+      "WAV_BYTES"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "wav_bytes"
+    ],
+    "name": "TT-LoadVideoAudio",
+    "display_name": "Load Audio from Video",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
+    "category": "audio",
+    "output_node": false
+  },
+  "TT-LoadAudio": {
+    "input": {
+      "required": {
+        "audio": [
+          [
+            "speaker_0.mp3"
+          ]
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "audio"
+      ]
+    },
+    "output": [
+      "WAV_BYTES"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "wav_bytes"
+    ],
+    "name": "TT-LoadAudio",
+    "display_name": "Load Audio",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
+    "category": "audio",
+    "output_node": false
+  },
+  "TT-LoadBatch": {
+    "input": {
+      "required": {
+        "base_folder": [
+          [
+            "input",
+            "root"
+          ]
+        ],
+        "path": [
+          "STRING",
+          {
+            "default": ""
+          }
+        ],
+        "regex_match": [
+          "STRING",
+          {
+            "default": ""
+          }
+        ],
+        "regex_exclude": [
+          "STRING",
+          {
+            "default": ""
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "base_folder",
+        "path",
+        "regex_match",
+        "regex_exclude"
+      ]
+    },
+    "output": [
+      "WAV_BYTES_BATCH",
+      "INT",
+      "LIST[STRING]"
+    ],
+    "output_is_list": [
+      false,
+      false,
+      false
+    ],
+    "output_name": [
+      "wav_bytes_batch",
+      "count",
+      "filenames"
+    ],
+    "name": "TT-LoadBatch",
+    "display_name": "Load Audio from Batch",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
+    "category": "audio",
+    "output_node": false
+  },
+  "AssetDownloader": {
+    "input": {
+      "required": {
+        "url": [
+          "STRING",
+          {
+            "multiline": false,
+            "default": "https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step.safetensors"
+          }
+        ],
+        "save_to": [
+          [
+            "Stable-diffusion",
+            "LDSR",
+            "checkpoints",
+            "clip",
+            "RealESRGAN",
+            "piper_tts",
+            "unet",
+            "loras",
+            "upscale_models",
+            "diffusion_models",
+            "diffusion_models/SDXL",
+            "LLM",
+            "LLM/Florence-2-base",
+            "faster-whisper",
+            "configs",
+            "clip_vision",
+            "controlnet",
+            "diffusers",
+            "embeddings",
+            "gligen",
+            "hypernetworks",
+            "photomaker",
+            "style_models",
+            "text_encoders",
+            "vae",
+            "vae_approx",
+            "VAE"
+          ],
+          {
+            "default": "checkpoints"
+          }
+        ],
+        "filename": [
+          "STRING",
+          {
+            "multiline": false,
+            "default": "sdxl_lightning_4step.safetensors"
+          }
+        ]
+      },
+      "optional": {
+        "token": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": false,
+            "password": true
+          }
+        ]
+      },
+      "hidden": {
+        "node_id": "UNIQUE_ID"
+      }
+    },
+    "input_order": {
+      "required": [
+        "url",
+        "save_to",
+        "filename"
+      ],
+      "optional": [
+        "token"
+      ],
+      "hidden": [
+        "node_id"
+      ]
+    },
+    "output": [],
+    "output_is_list": [],
+    "output_name": [],
+    "name": "AssetDownloader",
+    "display_name": "Requires Asset",
+    "description": "",
+    "python_module": "custom_nodes.comfy-asset-downloader",
+    "category": "loaders",
+    "output_node": true
+  },
   "LoadFasterWhisperModel": {
     "input": {
       "required": {
@@ -23569,1881 +24059,6 @@
     "description": "",
     "python_module": "custom_nodes.comfyui-faster-whisper",
     "category": "FASTERWHISPER",
-    "output_node": false
-  },
-  "TT-AudioSink": {
-    "input": {
-      "required": {
-        "wav_bytes": [
-          "WAV_BYTES"
-        ],
-        "filename": [
-          "STRING",
-          {
-            "default": "AudioSink"
-          }
-        ],
-        "save_format": [
-          [
-            "wav"
-          ]
-        ],
-        "save_output": [
-          "BOOLEAN",
-          {
-            "default": true
-          }
-        ],
-        "overwrite_existing": [
-          "BOOLEAN",
-          {
-            "default": true
-          }
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "wav_bytes",
-        "filename",
-        "save_format",
-        "save_output",
-        "overwrite_existing"
-      ]
-    },
-    "output": [],
-    "output_is_list": [],
-    "output_name": [],
-    "name": "TT-AudioSink",
-    "display_name": "Audio Sink",
-    "description": "",
-    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
-    "category": "audio",
-    "output_node": true
-  },
-  "TT-LoadWhisperModel": {
-    "input": {
-      "required": {
-        "model_id": [
-          [
-            "openai/whisper-large-v3",
-            "openai/whisper-large-v2",
-            "openai/whisper-large",
-            "openai/whisper-medium",
-            "openai/whisper-small",
-            "openai/whisper-base",
-            "openai/whisper-tiny",
-            "openai/whisper-medium.en",
-            "openai/whisper-small.en",
-            "openai/whisper-base.en",
-            "openai/whisper-tiny.en"
-          ]
-        ],
-        "language": [
-          [
-            "en",
-            "auto",
-            "fr"
-          ]
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "model_id",
-        "language"
-      ]
-    },
-    "output": [
-      "TRANSCRIPTION_PIPELINE"
-    ],
-    "output_is_list": [
-      false
-    ],
-    "output_name": [
-      "pipeline"
-    ],
-    "name": "TT-LoadWhisperModel",
-    "display_name": "Load Whisper Transcription Model",
-    "description": "",
-    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
-    "category": "transcription",
-    "output_node": false
-  },
-  "TT-WhisperTranscription": {
-    "input": {
-      "required": {
-        "pipeline": [
-          "TRANSCRIPTION_PIPELINE"
-        ],
-        "wav_bytes": [
-          "WAV_BYTES"
-        ],
-        "format_newlines_on_punctuation": [
-          "BOOLEAN",
-          {
-            "default": true
-          }
-        ],
-        "save_transcription": [
-          "BOOLEAN",
-          {
-            "default": false
-          }
-        ],
-        "save_chunks": [
-          "BOOLEAN",
-          {
-            "default": false
-          }
-        ],
-        "save_filename": [
-          "STRING",
-          {
-            "default": "transcription"
-          }
-        ],
-        "overwrite_existing": [
-          "BOOLEAN",
-          {
-            "default": true
-          }
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "pipeline",
-        "wav_bytes",
-        "format_newlines_on_punctuation",
-        "save_transcription",
-        "save_chunks",
-        "save_filename",
-        "overwrite_existing"
-      ]
-    },
-    "output": [
-      "STRING",
-      "STRING"
-    ],
-    "output_is_list": [
-      false,
-      false
-    ],
-    "output_name": [
-      "transcription",
-      "chunks"
-    ],
-    "name": "TT-WhisperTranscription",
-    "display_name": "Whisper Transcribe",
-    "description": "",
-    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
-    "category": "transcription",
-    "output_node": true
-  },
-  "TT-WhisperTranscriptionBatch": {
-    "input": {
-      "required": {
-        "pipeline": [
-          "TRANSCRIPTION_PIPELINE"
-        ],
-        "wav_bytes_batch": [
-          "WAV_BYTES_BATCH"
-        ],
-        "format_newlines_on_punctuation": [
-          "BOOLEAN",
-          {
-            "default": true
-          }
-        ],
-        "save_transcription": [
-          "BOOLEAN",
-          {
-            "default": false
-          }
-        ],
-        "save_chunks": [
-          "BOOLEAN",
-          {
-            "default": false
-          }
-        ],
-        "filename_prefix": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "filename_suffix": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "overwrite_existing": [
-          "BOOLEAN",
-          {
-            "default": true
-          }
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "pipeline",
-        "wav_bytes_batch",
-        "format_newlines_on_punctuation",
-        "save_transcription",
-        "save_chunks",
-        "filename_prefix",
-        "filename_suffix",
-        "overwrite_existing"
-      ]
-    },
-    "output": [],
-    "output_is_list": [],
-    "output_name": [],
-    "name": "TT-WhisperTranscriptionBatch",
-    "display_name": "Whisper Transcribe Batch",
-    "description": "",
-    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
-    "category": "transcription",
-    "output_node": true
-  },
-  "TT-ConvertVhsAudioToAudio": {
-    "input": {
-      "required": {
-        "vhs_audio": [
-          "VHS_AUDIO"
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "vhs_audio"
-      ]
-    },
-    "output": [
-      "WAV_BYTES"
-    ],
-    "output_is_list": [
-      false
-    ],
-    "output_name": [
-      "wav_bytes"
-    ],
-    "name": "TT-ConvertVhsAudioToAudio",
-    "display_name": "Convert VHS Audio to WAV bytes",
-    "description": "",
-    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
-    "category": "audio",
-    "output_node": false
-  },
-  "TT-LoadVideoAudio": {
-    "input": {
-      "required": {
-        "video": [
-          [
-            "ai-server-command-palette.mp4",
-            "okai-new.mp4",
-            "videos_litdb4.mp4"
-          ]
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "video"
-      ]
-    },
-    "output": [
-      "WAV_BYTES"
-    ],
-    "output_is_list": [
-      false
-    ],
-    "output_name": [
-      "wav_bytes"
-    ],
-    "name": "TT-LoadVideoAudio",
-    "display_name": "Load Audio from Video",
-    "description": "",
-    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
-    "category": "audio",
-    "output_node": false
-  },
-  "TT-LoadAudio": {
-    "input": {
-      "required": {
-        "audio": [
-          [
-            "speaker_0.mp3"
-          ]
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "audio"
-      ]
-    },
-    "output": [
-      "WAV_BYTES"
-    ],
-    "output_is_list": [
-      false
-    ],
-    "output_name": [
-      "wav_bytes"
-    ],
-    "name": "TT-LoadAudio",
-    "display_name": "Load Audio",
-    "description": "",
-    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
-    "category": "audio",
-    "output_node": false
-  },
-  "TT-LoadBatch": {
-    "input": {
-      "required": {
-        "base_folder": [
-          [
-            "input",
-            "root"
-          ]
-        ],
-        "path": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "regex_match": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "regex_exclude": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "base_folder",
-        "path",
-        "regex_match",
-        "regex_exclude"
-      ]
-    },
-    "output": [
-      "WAV_BYTES_BATCH",
-      "INT",
-      "LIST[STRING]"
-    ],
-    "output_is_list": [
-      false,
-      false,
-      false
-    ],
-    "output_name": [
-      "wav_bytes_batch",
-      "count",
-      "filenames"
-    ],
-    "name": "TT-LoadBatch",
-    "display_name": "Load Audio from Batch",
-    "description": "",
-    "python_module": "custom_nodes.ComfyUI-TranscriptionTools",
-    "category": "audio",
-    "output_node": false
-  },
-  "Image Filter": {
-    "input": {
-      "required": {
-        "images": [
-          "IMAGE"
-        ],
-        "timeout": [
-          "INT",
-          {
-            "default": 600,
-            "min": 1,
-            "max": 9999999,
-            "tooltip": "Timeout in seconds."
-          }
-        ],
-        "ontimeout": [
-          [
-            "send none",
-            "send all",
-            "send first",
-            "send last"
-          ],
-          {}
-        ]
-      },
-      "optional": {
-        "latents": [
-          "LATENT",
-          {
-            "tooltip": "Optional - if provided, will be output"
-          }
-        ],
-        "masks": [
-          "MASK",
-          {
-            "tooltip": "Optional - if provided, will be output"
-          }
-        ],
-        "tip": [
-          "STRING",
-          {
-            "default": "",
-            "tooltip": "Optional - if provided, will be displayed in popup window"
-          }
-        ],
-        "extra1": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "extra2": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "extra3": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "pick_list": [
-          "STRING",
-          {
-            "default": "",
-            "tooltip": "If a comma separated list of integers is provided, the images with these indices will be selected automatically."
-          }
-        ],
-        "video_frames": [
-          "INT",
-          {
-            "default": 1,
-            "min": 1,
-            "tooltip": "treat each block of n images as a video"
-          }
-        ]
-      },
-      "hidden": {
-        "prompt": "PROMPT",
-        "extra_pnginfo": "EXTRA_PNGINFO",
-        "uid": "UNIQUE_ID",
-        "node_identifier": "NID"
-      }
-    },
-    "input_order": {
-      "required": [
-        "images",
-        "timeout",
-        "ontimeout"
-      ],
-      "optional": [
-        "latents",
-        "masks",
-        "tip",
-        "extra1",
-        "extra2",
-        "extra3",
-        "pick_list",
-        "video_frames"
-      ],
-      "hidden": [
-        "prompt",
-        "extra_pnginfo",
-        "uid",
-        "node_identifier"
-      ]
-    },
-    "output": [
-      "IMAGE",
-      "LATENT",
-      "MASK",
-      "STRING",
-      "STRING",
-      "STRING",
-      "STRING"
-    ],
-    "output_is_list": [
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false
-    ],
-    "output_name": [
-      "images",
-      "latents",
-      "masks",
-      "extra1",
-      "extra2",
-      "extra3",
-      "indexes"
-    ],
-    "name": "Image Filter",
-    "display_name": "Image Filter",
-    "description": "Allows you to preview images and choose which, if any to proceed with",
-    "python_module": "custom_nodes.cg-image-filter",
-    "category": "image_filter",
-    "output_node": false
-  },
-  "Text Image Filter": {
-    "input": {
-      "required": {
-        "image": [
-          "IMAGE"
-        ],
-        "text": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "timeout": [
-          "INT",
-          {
-            "default": 600,
-            "min": 1,
-            "max": 9999999,
-            "tooltip": "Timeout in seconds."
-          }
-        ]
-      },
-      "optional": {
-        "mask": [
-          "MASK",
-          {
-            "tooltip": "Optional - if provided, will be overlaid on image"
-          }
-        ],
-        "tip": [
-          "STRING",
-          {
-            "default": "",
-            "tooltip": "Optional - if provided, will be displayed in popup window"
-          }
-        ],
-        "extra1": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "extra2": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "extra3": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "textareaheight": [
-          "INT",
-          {
-            "default": 150,
-            "min": 50,
-            "max": 500,
-            "tooltip": "Height of text area in pixels"
-          }
-        ]
-      },
-      "hidden": {
-        "prompt": "PROMPT",
-        "extra_pnginfo": "EXTRA_PNGINFO",
-        "uid": "UNIQUE_ID",
-        "node_identifier": "NID"
-      }
-    },
-    "input_order": {
-      "required": [
-        "image",
-        "text",
-        "timeout"
-      ],
-      "optional": [
-        "mask",
-        "tip",
-        "extra1",
-        "extra2",
-        "extra3",
-        "textareaheight"
-      ],
-      "hidden": [
-        "prompt",
-        "extra_pnginfo",
-        "uid",
-        "node_identifier"
-      ]
-    },
-    "output": [
-      "IMAGE",
-      "STRING",
-      "STRING",
-      "STRING",
-      "STRING"
-    ],
-    "output_is_list": [
-      false,
-      false,
-      false,
-      false,
-      false
-    ],
-    "output_name": [
-      "image",
-      "text",
-      "extra1",
-      "extra2",
-      "extra3"
-    ],
-    "name": "Text Image Filter",
-    "display_name": "Text Image Filter",
-    "description": "Saves the input images to your ComfyUI output directory.",
-    "python_module": "custom_nodes.cg-image-filter",
-    "category": "image_filter",
-    "output_node": false
-  },
-  "Text Image Filter with Extras": {
-    "input": {
-      "required": {
-        "image": [
-          "IMAGE"
-        ],
-        "text": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "timeout": [
-          "INT",
-          {
-            "default": 600,
-            "min": 1,
-            "max": 9999999,
-            "tooltip": "Timeout in seconds."
-          }
-        ]
-      },
-      "optional": {
-        "mask": [
-          "MASK",
-          {
-            "tooltip": "Optional - if provided, will be overlaid on image"
-          }
-        ],
-        "tip": [
-          "STRING",
-          {
-            "default": "",
-            "tooltip": "Optional - if provided, will be displayed in popup window"
-          }
-        ],
-        "extra1": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "extra2": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "extra3": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ],
-        "textareaheight": [
-          "INT",
-          {
-            "default": 150,
-            "min": 50,
-            "max": 500,
-            "tooltip": "Height of text area in pixels"
-          }
-        ]
-      },
-      "hidden": {
-        "prompt": "PROMPT",
-        "extra_pnginfo": "EXTRA_PNGINFO",
-        "uid": "UNIQUE_ID",
-        "node_identifier": "NID"
-      }
-    },
-    "input_order": {
-      "required": [
-        "image",
-        "text",
-        "timeout"
-      ],
-      "optional": [
-        "mask",
-        "tip",
-        "extra1",
-        "extra2",
-        "extra3",
-        "textareaheight"
-      ],
-      "hidden": [
-        "prompt",
-        "extra_pnginfo",
-        "uid",
-        "node_identifier"
-      ]
-    },
-    "output": [
-      "IMAGE",
-      "STRING",
-      "STRING",
-      "STRING",
-      "STRING"
-    ],
-    "output_is_list": [
-      false,
-      false,
-      false,
-      false,
-      false
-    ],
-    "output_name": [
-      "image",
-      "text",
-      "extra1",
-      "extra2",
-      "extra3"
-    ],
-    "name": "Text Image Filter with Extras",
-    "display_name": "Text Image Filter with Extras",
-    "description": "Saves the input images to your ComfyUI output directory.",
-    "python_module": "custom_nodes.cg-image-filter",
-    "category": "image_filter",
-    "output_node": false
-  },
-  "Mask Image Filter": {
-    "input": {
-      "required": {
-        "image": [
-          "IMAGE"
-        ],
-        "timeout": [
-          "INT",
-          {
-            "default": 600,
-            "min": 1,
-            "max": 9999999,
-            "tooltip": "Timeout in seconds."
-          }
-        ],
-        "if_no_mask": [
-          [
-            "cancel",
-            "send blank"
-          ],
-          {}
-        ]
-      },
-      "optional": {
-        "mask": [
-          "MASK",
-          {
-            "tooltip": "optional initial mask"
-          }
-        ]
-      },
-      "hidden": {
-        "prompt": "PROMPT",
-        "extra_pnginfo": "EXTRA_PNGINFO",
-        "uid": "UNIQUE_ID",
-        "node_identifier": "NID"
-      }
-    },
-    "input_order": {
-      "required": [
-        "image",
-        "timeout",
-        "if_no_mask"
-      ],
-      "optional": [
-        "mask"
-      ],
-      "hidden": [
-        "prompt",
-        "extra_pnginfo",
-        "uid",
-        "node_identifier"
-      ]
-    },
-    "output": [
-      "IMAGE",
-      "MASK"
-    ],
-    "output_is_list": [
-      false,
-      false
-    ],
-    "output_name": [
-      "image",
-      "mask"
-    ],
-    "name": "Mask Image Filter",
-    "display_name": "Mask Image Filter",
-    "description": "Saves the input images to your ComfyUI output directory.",
-    "python_module": "custom_nodes.cg-image-filter",
-    "category": "image_filter",
-    "output_node": false
-  },
-  "Split String by Commas": {
-    "input": {
-      "required": {
-        "string": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ]
-      },
-      "optional": {
-        "split": [
-          [
-            ",",
-            "|",
-            "^"
-          ],
-          {}
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "string"
-      ],
-      "optional": [
-        "split"
-      ]
-    },
-    "output": [
-      "STRING",
-      "STRING",
-      "STRING",
-      "STRING",
-      "STRING",
-      "STRING"
-    ],
-    "output_is_list": [
-      false,
-      false,
-      false,
-      false,
-      false,
-      true
-    ],
-    "output_name": [
-      "STRING",
-      "STRING",
-      "STRING",
-      "STRING",
-      "STRING",
-      "STRING"
-    ],
-    "name": "Split String by Commas",
-    "display_name": "Split String by Commas",
-    "description": "Split the input string into up to five pieces. Splits on commas (or | or ^) and then strips whitespace from front and end.",
-    "python_module": "custom_nodes.cg-image-filter",
-    "category": "image_filter/helpers",
-    "output_node": false
-  },
-  "String to Int": {
-    "input": {
-      "required": {
-        "string": [
-          "STRING",
-          {
-            "default": "",
-            "forceInput": true,
-            "tooltip": "whitespace will be stripped before parsing"
-          }
-        ],
-        "default": [
-          "INT",
-          {
-            "default": 0,
-            "tooltip": "used if the string can't be parsed as an integer"
-          }
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "string",
-        "default"
-      ]
-    },
-    "output": [
-      "INT"
-    ],
-    "output_is_list": [
-      false
-    ],
-    "output_name": [
-      "INT"
-    ],
-    "name": "String to Int",
-    "display_name": "String to Int",
-    "description": "",
-    "python_module": "custom_nodes.cg-image-filter",
-    "category": "image_filter/helpers",
-    "output_node": false
-  },
-  "String to Float": {
-    "input": {
-      "required": {
-        "string": [
-          "STRING",
-          {
-            "default": "",
-            "forceInput": true,
-            "tooltip": "whitespace will be stripped before parsing"
-          }
-        ],
-        "default": [
-          "FLOAT",
-          {
-            "default": 0,
-            "tooltip": "used if the string can't be parsed as a float"
-          }
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "string",
-        "default"
-      ]
-    },
-    "output": [
-      "FLOAT"
-    ],
-    "output_is_list": [
-      false
-    ],
-    "output_name": [
-      "FLOAT"
-    ],
-    "name": "String to Float",
-    "display_name": "String to Float",
-    "description": "",
-    "python_module": "custom_nodes.cg-image-filter",
-    "category": "image_filter/helpers",
-    "output_node": false
-  },
-  "Pick from List": {
-    "input": {
-      "required": {
-        "anything": [
-          "*"
-        ],
-        "indexes": [
-          "STRING",
-          {
-            "default": ""
-          }
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "anything",
-        "indexes"
-      ]
-    },
-    "output": [
-      "*"
-    ],
-    "output_is_list": [
-      true
-    ],
-    "output_name": [
-      "picks"
-    ],
-    "name": "Pick from List",
-    "display_name": "Pick from List",
-    "description": "",
-    "python_module": "custom_nodes.cg-image-filter",
-    "category": "image_filter/helpers",
-    "output_node": false
-  },
-  "Batch from Image List": {
-    "input": {
-      "required": {
-        "images": [
-          "IMAGE"
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "images"
-      ]
-    },
-    "output": [
-      "IMAGE"
-    ],
-    "output_is_list": [
-      false
-    ],
-    "output_name": [
-      "IMAGE"
-    ],
-    "name": "Batch from Image List",
-    "display_name": "Batch from Image List",
-    "description": "",
-    "python_module": "custom_nodes.cg-image-filter",
-    "category": "image_filter/helpers",
-    "output_node": false
-  },
-  "Image List From Batch": {
-    "input": {
-      "required": {
-        "images": [
-          "IMAGE"
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "images"
-      ]
-    },
-    "output": [
-      "IMAGE"
-    ],
-    "output_is_list": [
-      true
-    ],
-    "output_name": [
-      "IMAGE"
-    ],
-    "name": "Image List From Batch",
-    "display_name": "Image List From Batch",
-    "description": "",
-    "python_module": "custom_nodes.cg-image-filter",
-    "category": "image_filter/helpers",
-    "output_node": false
-  },
-  "UltimateSDUpscale": {
-    "input": {
-      "required": {
-        "image": [
-          "IMAGE"
-        ],
-        "model": [
-          "MODEL"
-        ],
-        "positive": [
-          "CONDITIONING"
-        ],
-        "negative": [
-          "CONDITIONING"
-        ],
-        "vae": [
-          "VAE"
-        ],
-        "upscale_by": [
-          "FLOAT",
-          {
-            "default": 2,
-            "min": 0.05,
-            "max": 4,
-            "step": 0.05
-          }
-        ],
-        "seed": [
-          "INT",
-          {
-            "default": 0,
-            "min": 0,
-            "max": 18446744073709551615
-          }
-        ],
-        "steps": [
-          "INT",
-          {
-            "default": 20,
-            "min": 1,
-            "max": 10000,
-            "step": 1
-          }
-        ],
-        "cfg": [
-          "FLOAT",
-          {
-            "default": 8.0,
-            "min": 0.0,
-            "max": 100.0
-          }
-        ],
-        "sampler_name": [
-          [
-            "euler",
-            "euler_cfg_pp",
-            "euler_ancestral",
-            "euler_ancestral_cfg_pp",
-            "heun",
-            "heunpp2",
-            "dpm_2",
-            "dpm_2_ancestral",
-            "lms",
-            "dpm_fast",
-            "dpm_adaptive",
-            "dpmpp_2s_ancestral",
-            "dpmpp_2s_ancestral_cfg_pp",
-            "dpmpp_sde",
-            "dpmpp_sde_gpu",
-            "dpmpp_2m",
-            "dpmpp_2m_cfg_pp",
-            "dpmpp_2m_sde",
-            "dpmpp_2m_sde_gpu",
-            "dpmpp_3m_sde",
-            "dpmpp_3m_sde_gpu",
-            "ddpm",
-            "lcm",
-            "ipndm",
-            "ipndm_v",
-            "deis",
-            "res_multistep",
-            "res_multistep_cfg_pp",
-            "res_multistep_ancestral",
-            "res_multistep_ancestral_cfg_pp",
-            "gradient_estimation",
-            "er_sde",
-            "seeds_2",
-            "seeds_3",
-            "ddim",
-            "uni_pc",
-            "uni_pc_bh2"
-          ]
-        ],
-        "scheduler": [
-          [
-            "normal",
-            "karras",
-            "exponential",
-            "sgm_uniform",
-            "simple",
-            "ddim_uniform",
-            "beta",
-            "linear_quadratic",
-            "kl_optimal"
-          ]
-        ],
-        "denoise": [
-          "FLOAT",
-          {
-            "default": 0.2,
-            "min": 0.0,
-            "max": 1.0,
-            "step": 0.01
-          }
-        ],
-        "upscale_model": [
-          "UPSCALE_MODEL"
-        ],
-        "mode_type": [
-          [
-            "Linear",
-            "Chess",
-            "None"
-          ]
-        ],
-        "tile_width": [
-          "INT",
-          {
-            "default": 512,
-            "min": 64,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "tile_height": [
-          "INT",
-          {
-            "default": 512,
-            "min": 64,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "mask_blur": [
-          "INT",
-          {
-            "default": 8,
-            "min": 0,
-            "max": 64,
-            "step": 1
-          }
-        ],
-        "tile_padding": [
-          "INT",
-          {
-            "default": 32,
-            "min": 0,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "seam_fix_mode": [
-          [
-            "None",
-            "Band Pass",
-            "Half Tile",
-            "Half Tile + Intersections"
-          ]
-        ],
-        "seam_fix_denoise": [
-          "FLOAT",
-          {
-            "default": 1.0,
-            "min": 0.0,
-            "max": 1.0,
-            "step": 0.01
-          }
-        ],
-        "seam_fix_width": [
-          "INT",
-          {
-            "default": 64,
-            "min": 0,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "seam_fix_mask_blur": [
-          "INT",
-          {
-            "default": 8,
-            "min": 0,
-            "max": 64,
-            "step": 1
-          }
-        ],
-        "seam_fix_padding": [
-          "INT",
-          {
-            "default": 16,
-            "min": 0,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "force_uniform_tiles": [
-          "BOOLEAN",
-          {
-            "default": true
-          }
-        ],
-        "tiled_decode": [
-          "BOOLEAN",
-          {
-            "default": false
-          }
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "image",
-        "model",
-        "positive",
-        "negative",
-        "vae",
-        "upscale_by",
-        "seed",
-        "steps",
-        "cfg",
-        "sampler_name",
-        "scheduler",
-        "denoise",
-        "upscale_model",
-        "mode_type",
-        "tile_width",
-        "tile_height",
-        "mask_blur",
-        "tile_padding",
-        "seam_fix_mode",
-        "seam_fix_denoise",
-        "seam_fix_width",
-        "seam_fix_mask_blur",
-        "seam_fix_padding",
-        "force_uniform_tiles",
-        "tiled_decode"
-      ]
-    },
-    "output": [
-      "IMAGE"
-    ],
-    "output_is_list": [
-      false
-    ],
-    "output_name": [
-      "IMAGE"
-    ],
-    "name": "UltimateSDUpscale",
-    "display_name": "Ultimate SD Upscale",
-    "description": "",
-    "python_module": "custom_nodes.comfyui_ultimatesdupscale",
-    "category": "image/upscaling",
-    "output_node": false
-  },
-  "UltimateSDUpscaleNoUpscale": {
-    "input": {
-      "required": {
-        "upscaled_image": [
-          "IMAGE"
-        ],
-        "model": [
-          "MODEL"
-        ],
-        "positive": [
-          "CONDITIONING"
-        ],
-        "negative": [
-          "CONDITIONING"
-        ],
-        "vae": [
-          "VAE"
-        ],
-        "seed": [
-          "INT",
-          {
-            "default": 0,
-            "min": 0,
-            "max": 18446744073709551615
-          }
-        ],
-        "steps": [
-          "INT",
-          {
-            "default": 20,
-            "min": 1,
-            "max": 10000,
-            "step": 1
-          }
-        ],
-        "cfg": [
-          "FLOAT",
-          {
-            "default": 8.0,
-            "min": 0.0,
-            "max": 100.0
-          }
-        ],
-        "sampler_name": [
-          [
-            "euler",
-            "euler_cfg_pp",
-            "euler_ancestral",
-            "euler_ancestral_cfg_pp",
-            "heun",
-            "heunpp2",
-            "dpm_2",
-            "dpm_2_ancestral",
-            "lms",
-            "dpm_fast",
-            "dpm_adaptive",
-            "dpmpp_2s_ancestral",
-            "dpmpp_2s_ancestral_cfg_pp",
-            "dpmpp_sde",
-            "dpmpp_sde_gpu",
-            "dpmpp_2m",
-            "dpmpp_2m_cfg_pp",
-            "dpmpp_2m_sde",
-            "dpmpp_2m_sde_gpu",
-            "dpmpp_3m_sde",
-            "dpmpp_3m_sde_gpu",
-            "ddpm",
-            "lcm",
-            "ipndm",
-            "ipndm_v",
-            "deis",
-            "res_multistep",
-            "res_multistep_cfg_pp",
-            "res_multistep_ancestral",
-            "res_multistep_ancestral_cfg_pp",
-            "gradient_estimation",
-            "er_sde",
-            "seeds_2",
-            "seeds_3",
-            "ddim",
-            "uni_pc",
-            "uni_pc_bh2"
-          ]
-        ],
-        "scheduler": [
-          [
-            "normal",
-            "karras",
-            "exponential",
-            "sgm_uniform",
-            "simple",
-            "ddim_uniform",
-            "beta",
-            "linear_quadratic",
-            "kl_optimal"
-          ]
-        ],
-        "denoise": [
-          "FLOAT",
-          {
-            "default": 0.2,
-            "min": 0.0,
-            "max": 1.0,
-            "step": 0.01
-          }
-        ],
-        "mode_type": [
-          [
-            "Linear",
-            "Chess",
-            "None"
-          ]
-        ],
-        "tile_width": [
-          "INT",
-          {
-            "default": 512,
-            "min": 64,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "tile_height": [
-          "INT",
-          {
-            "default": 512,
-            "min": 64,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "mask_blur": [
-          "INT",
-          {
-            "default": 8,
-            "min": 0,
-            "max": 64,
-            "step": 1
-          }
-        ],
-        "tile_padding": [
-          "INT",
-          {
-            "default": 32,
-            "min": 0,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "seam_fix_mode": [
-          [
-            "None",
-            "Band Pass",
-            "Half Tile",
-            "Half Tile + Intersections"
-          ]
-        ],
-        "seam_fix_denoise": [
-          "FLOAT",
-          {
-            "default": 1.0,
-            "min": 0.0,
-            "max": 1.0,
-            "step": 0.01
-          }
-        ],
-        "seam_fix_width": [
-          "INT",
-          {
-            "default": 64,
-            "min": 0,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "seam_fix_mask_blur": [
-          "INT",
-          {
-            "default": 8,
-            "min": 0,
-            "max": 64,
-            "step": 1
-          }
-        ],
-        "seam_fix_padding": [
-          "INT",
-          {
-            "default": 16,
-            "min": 0,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "force_uniform_tiles": [
-          "BOOLEAN",
-          {
-            "default": true
-          }
-        ],
-        "tiled_decode": [
-          "BOOLEAN",
-          {
-            "default": false
-          }
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "upscaled_image",
-        "model",
-        "positive",
-        "negative",
-        "vae",
-        "seed",
-        "steps",
-        "cfg",
-        "sampler_name",
-        "scheduler",
-        "denoise",
-        "mode_type",
-        "tile_width",
-        "tile_height",
-        "mask_blur",
-        "tile_padding",
-        "seam_fix_mode",
-        "seam_fix_denoise",
-        "seam_fix_width",
-        "seam_fix_mask_blur",
-        "seam_fix_padding",
-        "force_uniform_tiles",
-        "tiled_decode"
-      ]
-    },
-    "output": [
-      "IMAGE"
-    ],
-    "output_is_list": [
-      false
-    ],
-    "output_name": [
-      "IMAGE"
-    ],
-    "name": "UltimateSDUpscaleNoUpscale",
-    "display_name": "Ultimate SD Upscale (No Upscale)",
-    "description": "",
-    "python_module": "custom_nodes.comfyui_ultimatesdupscale",
-    "category": "image/upscaling",
-    "output_node": false
-  },
-  "UltimateSDUpscaleCustomSample": {
-    "input": {
-      "required": {
-        "image": [
-          "IMAGE"
-        ],
-        "model": [
-          "MODEL"
-        ],
-        "positive": [
-          "CONDITIONING"
-        ],
-        "negative": [
-          "CONDITIONING"
-        ],
-        "vae": [
-          "VAE"
-        ],
-        "upscale_by": [
-          "FLOAT",
-          {
-            "default": 2,
-            "min": 0.05,
-            "max": 4,
-            "step": 0.05
-          }
-        ],
-        "seed": [
-          "INT",
-          {
-            "default": 0,
-            "min": 0,
-            "max": 18446744073709551615
-          }
-        ],
-        "steps": [
-          "INT",
-          {
-            "default": 20,
-            "min": 1,
-            "max": 10000,
-            "step": 1
-          }
-        ],
-        "cfg": [
-          "FLOAT",
-          {
-            "default": 8.0,
-            "min": 0.0,
-            "max": 100.0
-          }
-        ],
-        "sampler_name": [
-          [
-            "euler",
-            "euler_cfg_pp",
-            "euler_ancestral",
-            "euler_ancestral_cfg_pp",
-            "heun",
-            "heunpp2",
-            "dpm_2",
-            "dpm_2_ancestral",
-            "lms",
-            "dpm_fast",
-            "dpm_adaptive",
-            "dpmpp_2s_ancestral",
-            "dpmpp_2s_ancestral_cfg_pp",
-            "dpmpp_sde",
-            "dpmpp_sde_gpu",
-            "dpmpp_2m",
-            "dpmpp_2m_cfg_pp",
-            "dpmpp_2m_sde",
-            "dpmpp_2m_sde_gpu",
-            "dpmpp_3m_sde",
-            "dpmpp_3m_sde_gpu",
-            "ddpm",
-            "lcm",
-            "ipndm",
-            "ipndm_v",
-            "deis",
-            "res_multistep",
-            "res_multistep_cfg_pp",
-            "res_multistep_ancestral",
-            "res_multistep_ancestral_cfg_pp",
-            "gradient_estimation",
-            "er_sde",
-            "seeds_2",
-            "seeds_3",
-            "ddim",
-            "uni_pc",
-            "uni_pc_bh2"
-          ]
-        ],
-        "scheduler": [
-          [
-            "normal",
-            "karras",
-            "exponential",
-            "sgm_uniform",
-            "simple",
-            "ddim_uniform",
-            "beta",
-            "linear_quadratic",
-            "kl_optimal"
-          ]
-        ],
-        "denoise": [
-          "FLOAT",
-          {
-            "default": 0.2,
-            "min": 0.0,
-            "max": 1.0,
-            "step": 0.01
-          }
-        ],
-        "mode_type": [
-          [
-            "Linear",
-            "Chess",
-            "None"
-          ]
-        ],
-        "tile_width": [
-          "INT",
-          {
-            "default": 512,
-            "min": 64,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "tile_height": [
-          "INT",
-          {
-            "default": 512,
-            "min": 64,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "mask_blur": [
-          "INT",
-          {
-            "default": 8,
-            "min": 0,
-            "max": 64,
-            "step": 1
-          }
-        ],
-        "tile_padding": [
-          "INT",
-          {
-            "default": 32,
-            "min": 0,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "seam_fix_mode": [
-          [
-            "None",
-            "Band Pass",
-            "Half Tile",
-            "Half Tile + Intersections"
-          ]
-        ],
-        "seam_fix_denoise": [
-          "FLOAT",
-          {
-            "default": 1.0,
-            "min": 0.0,
-            "max": 1.0,
-            "step": 0.01
-          }
-        ],
-        "seam_fix_width": [
-          "INT",
-          {
-            "default": 64,
-            "min": 0,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "seam_fix_mask_blur": [
-          "INT",
-          {
-            "default": 8,
-            "min": 0,
-            "max": 64,
-            "step": 1
-          }
-        ],
-        "seam_fix_padding": [
-          "INT",
-          {
-            "default": 16,
-            "min": 0,
-            "max": 8192,
-            "step": 8
-          }
-        ],
-        "force_uniform_tiles": [
-          "BOOLEAN",
-          {
-            "default": true
-          }
-        ],
-        "tiled_decode": [
-          "BOOLEAN",
-          {
-            "default": false
-          }
-        ]
-      },
-      "optional": {
-        "upscale_model": [
-          "UPSCALE_MODEL"
-        ],
-        "custom_sampler": [
-          "SAMPLER"
-        ],
-        "custom_sigmas": [
-          "SIGMAS"
-        ]
-      }
-    },
-    "input_order": {
-      "required": [
-        "image",
-        "model",
-        "positive",
-        "negative",
-        "vae",
-        "upscale_by",
-        "seed",
-        "steps",
-        "cfg",
-        "sampler_name",
-        "scheduler",
-        "denoise",
-        "mode_type",
-        "tile_width",
-        "tile_height",
-        "mask_blur",
-        "tile_padding",
-        "seam_fix_mode",
-        "seam_fix_denoise",
-        "seam_fix_width",
-        "seam_fix_mask_blur",
-        "seam_fix_padding",
-        "force_uniform_tiles",
-        "tiled_decode"
-      ],
-      "optional": [
-        "upscale_model",
-        "custom_sampler",
-        "custom_sigmas"
-      ]
-    },
-    "output": [
-      "IMAGE"
-    ],
-    "output_is_list": [
-      false
-    ],
-    "output_name": [
-      "IMAGE"
-    ],
-    "name": "UltimateSDUpscaleCustomSample",
-    "display_name": "Ultimate SD Upscale (Custom Sample)",
-    "description": "",
-    "python_module": "custom_nodes.comfyui_ultimatesdupscale",
-    "category": "image/upscaling",
     "output_node": false
   }
 }

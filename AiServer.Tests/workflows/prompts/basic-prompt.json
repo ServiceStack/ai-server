@@ -3,7 +3,7 @@
   "prompt": {
     "3": {
       "inputs": {
-        "seed": 381764798468854,
+        "seed": 499534115870369,
         "steps": 20,
         "cfg": 8,
         "sampler_name": "euler",
@@ -105,56 +105,29 @@
       "_meta": {
         "title": "Save Image"
       }
+    },
+    "10": {
+      "inputs": {
+        "repo_id": "Comfy-Org/stable-diffusion-v1-5-archive",
+        "filename": "v1-5-pruned-emaonly-fp16.safetensors",
+        "local_path": "checkpoints",
+        "overwrite": true,
+        "local_path_override": ""
+      },
+      "class_type": "HF Downloader",
+      "_meta": {
+        "title": "HF Download"
+      }
     }
   },
   "extra_data": {
     "extra_pnginfo": {
       "workflow": {
-        "id": "6488e870-c8ae-4c21-9bd7-ba0e56d8651f",
+        "id": "a33e56d9-39b3-425e-a8be-8a887862184d",
         "revision": 0,
-        "last_node_id": 9,
+        "last_node_id": 10,
         "last_link_id": 9,
         "nodes": [
-          {
-            "id": 7,
-            "type": "CLIPTextEncode",
-            "pos": [
-              413,
-              389
-            ],
-            "size": [
-              425.27801513671875,
-              180.6060791015625
-            ],
-            "flags": {},
-            "order": 3,
-            "mode": 0,
-            "inputs": [
-              {
-                "name": "clip",
-                "type": "CLIP",
-                "link": 5
-              }
-            ],
-            "outputs": [
-              {
-                "name": "CONDITIONING",
-                "type": "CONDITIONING",
-                "slot_index": 0,
-                "links": [
-                  6
-                ]
-              }
-            ],
-            "properties": {
-              "cnr_id": "comfy-core",
-              "ver": "0.3.30",
-              "Node name for S&R": "CLIPTextEncode"
-            },
-            "widgets_values": [
-              "text, watermark"
-            ]
-          },
           {
             "id": 5,
             "type": "EmptyLatentImage",
@@ -203,7 +176,7 @@
               262
             ],
             "flags": {},
-            "order": 4,
+            "order": 5,
             "mode": 0,
             "inputs": [
               {
@@ -243,7 +216,7 @@
               "Node name for S&R": "KSampler"
             },
             "widgets_values": [
-              381764798468854,
+              499534115870369,
               "randomize",
               20,
               8,
@@ -264,7 +237,7 @@
               46
             ],
             "flags": {},
-            "order": 5,
+            "order": 6,
             "mode": 0,
             "inputs": [
               {
@@ -307,7 +280,7 @@
               270
             ],
             "flags": {},
-            "order": 6,
+            "order": 7,
             "mode": 0,
             "inputs": [
               {
@@ -388,7 +361,7 @@
               164.31304931640625
             ],
             "flags": {},
-            "order": 2,
+            "order": 3,
             "mode": 0,
             "inputs": [
               {
@@ -414,6 +387,75 @@
             },
             "widgets_values": [
               "beautiful scenery nature glass bottle landscape, , purple galaxy bottle,"
+            ]
+          },
+          {
+            "id": 10,
+            "type": "HF Downloader",
+            "pos": [
+              34.05896759033203,
+              764.31396484375
+            ],
+            "size": [
+              375.9153747558594,
+              283.95281982421875
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [],
+            "properties": {
+              "cnr_id": "comfyui-model-downloader",
+              "ver": "e8f2ee01fbe180b49550cb01408ef15048cfba77",
+              "Node name for S&R": "HF Downloader"
+            },
+            "widgets_values": [
+              "Comfy-Org/stable-diffusion-v1-5-archive",
+              "v1-5-pruned-emaonly-fp16.safetensors",
+              "checkpoints",
+              true,
+              ""
+            ]
+          },
+          {
+            "id": 7,
+            "type": "CLIPTextEncode",
+            "pos": [
+              413,
+              389
+            ],
+            "size": [
+              425.27801513671875,
+              180.6060791015625
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "clip",
+                "type": "CLIP",
+                "link": 5
+              }
+            ],
+            "outputs": [
+              {
+                "name": "CONDITIONING",
+                "type": "CONDITIONING",
+                "slot_index": 0,
+                "links": [
+                  6
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.3.30",
+              "Node name for S&R": "CLIPTextEncode"
+            },
+            "widgets_values": [
+              "text, watermark"
             ]
           }
         ],
@@ -495,10 +537,10 @@
         "config": {},
         "extra": {
           "ds": {
-            "scale": 0.84,
+            "scale": 0.9849732675807631,
             "offset": [
-              383.15827677408856,
-              -16.734043666294482
+              84.92903296717427,
+              32.25620207817085
             ]
           },
           "frontendVersion": "1.17.11"

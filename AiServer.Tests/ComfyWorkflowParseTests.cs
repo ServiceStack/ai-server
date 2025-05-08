@@ -2,29 +2,34 @@ using AiServer.ServiceInterface;
 using AiServer.ServiceModel;
 using AiServer.ServiceModel.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 using ServiceStack;
 using ServiceStack.Text;
 
 namespace AiServer.Tests;
 
-[Explicit("Integration tests")]
 public class ComfyWorkflowParseTests
 {
     private IServiceProvider serviceProvider;
     string ComfyEndpoint = "http://localhost:7860";
     private string ApiKey = Environment.GetEnvironmentVariable("AI_SERVER_API_KEY");
+    private Dictionary<string, NodeInfo> NodeDefs;
 
     public ComfyWorkflowParseTests()
     {
         var services = new ServiceCollection();
         services.AddHttpClient(nameof(ComfyGateway));
         serviceProvider = services.BuildServiceProvider();
+        
+        var objectInfoPath = Path.Combine(AppContext.BaseDirectory, "../../../files/object_info.json");
+        NodeDefs = ComfyMetadata.Instance.LoadObjectInfo(File.ReadAllText(objectInfoPath), ComfyEndpoint);
     }
 
-    ComfyGateway CreateGateway() => new(serviceProvider.GetRequiredService<IHttpClientFactory>());
+    ComfyGateway CreateGateway() => new(NullLogger<ComfyGateway>.Instance, serviceProvider.GetRequiredService<IHttpClientFactory>(), ComfyMetadata.Instance);
     
     [Test]
+    [Explicit("Integration tests")]
     public async Task Can_get_Workflows()
     {
         var comfy = CreateGateway();
@@ -33,6 +38,7 @@ public class ComfyWorkflowParseTests
     }
     
     [Test]
+    [Explicit("Integration tests")]
     public async Task Can_get_basic_Workflow()
     {
         var comfy = CreateGateway();
@@ -45,7 +51,7 @@ public class ComfyWorkflowParseTests
     {
         var workflowPath = "./workflows/text-to-image/basic.json";
         var workflowJson = File.ReadAllText(workflowPath);
-        var workflow = ComfyWorkflowParser.Parse("basic.json", workflowJson) ?? throw new Exception($"Could not parse {workflowPath}");
+        var workflow = ComfyWorkflowParser.Parse(workflowJson, "basic.json", NodeDefs) ?? throw new Exception($"Could not parse {workflowPath}");
         var inputNames = workflow.Inputs.Map(x => x.Name);
         Assert.That(workflow.Type, Is.EqualTo(ComfyWorkflowType.TextToImage));
         Assert.That(inputNames,Is.EquivalentTo("positivePrompt,negativePrompt,width,height,batch_size,seed,steps,cfg,sampler_name,scheduler,denoise".Split(',')));
@@ -56,7 +62,7 @@ public class ComfyWorkflowParseTests
     {
         var workflowPath = "./workflows/text-to-image/dreamshaperXL.json";
         var workflowJson = File.ReadAllText(workflowPath);
-        var workflow = ComfyWorkflowParser.Parse(workflowPath.LastRightPart('/'), workflowJson) ?? throw new Exception($"Could not parse {workflowPath}");
+        var workflow = ComfyWorkflowParser.Parse(workflowJson, workflowPath.LastRightPart('/'), NodeDefs) ?? throw new Exception($"Could not parse {workflowPath}");
         var inputNames = workflow.Inputs.Map(x => x.Name);
         Assert.That(workflow.Type, Is.EqualTo(ComfyWorkflowType.TextToImage));
         Assert.That(inputNames,Is.EquivalentTo("positivePrompt,negativePrompt,width,height,batch_size,seed,steps,cfg,sampler_name,scheduler,denoise".Split(',')));
@@ -67,7 +73,7 @@ public class ComfyWorkflowParseTests
     {
         var workflowPath = "./workflows/text-to-image/flux1-schnell.json";
         var workflowJson = File.ReadAllText(workflowPath);
-        var workflow = ComfyWorkflowParser.Parse(workflowPath.LastRightPart('/'), workflowJson) ?? throw new Exception($"Could not parse {workflowPath}");
+        var workflow = ComfyWorkflowParser.Parse(workflowJson, workflowPath.LastRightPart('/'), NodeDefs) ?? throw new Exception($"Could not parse {workflowPath}");
         var inputNames = workflow.Inputs.Map(x => x.Name);
         Assert.That(workflow.Type, Is.EqualTo(ComfyWorkflowType.TextToImage));
         Assert.That(inputNames,Is.EquivalentTo("positivePrompt,width,height,batch_size,noise_seed,sampler_name,scheduler,steps,denoise".Split(',')));
@@ -78,7 +84,7 @@ public class ComfyWorkflowParseTests
     {
         var workflowPath = "./workflows/text-to-image/hidream_i1_dev_fp8.json";
         var workflowJson = File.ReadAllText(workflowPath);
-        var workflow = ComfyWorkflowParser.Parse(workflowPath.LastRightPart('/'), workflowJson) ?? throw new Exception($"Could not parse {workflowPath}");
+        var workflow = ComfyWorkflowParser.Parse(workflowJson, workflowPath.LastRightPart('/'), NodeDefs) ?? throw new Exception($"Could not parse {workflowPath}");
         var inputNames = workflow.Inputs.Map(x => x.Name);
         workflow.PrintDump();
         Assert.That(workflow.Type, Is.EqualTo(ComfyWorkflowType.TextToImage));
@@ -106,7 +112,7 @@ public class ComfyWorkflowParseTests
             var workflowPath = $"./workflows/text-to-image/{fileName}.json";
             Console.WriteLine("Parsing {0}...", workflowPath);
             var workflowJson = File.ReadAllText(workflowPath);
-            var workflow = ComfyWorkflowParser.Parse(workflowPath.LastRightPart('/'), workflowJson) ?? throw new Exception($"Could not parse {workflowPath}");
+            var workflow = ComfyWorkflowParser.Parse(workflowJson, workflowPath.LastRightPart('/'), NodeDefs) ?? throw new Exception($"Could not parse {workflowPath}");
             var inputNames = workflow.Inputs.Map(x => x.Name);
             // workflow.PrintDump();
             Assert.That(workflow.Type, Is.EqualTo(ComfyWorkflowType.TextToImage));
@@ -119,7 +125,7 @@ public class ComfyWorkflowParseTests
     {
         var workflowPath = "./workflows/text-to-audio/stable_audio.json";
         var workflowJson = File.ReadAllText(workflowPath);
-        var workflow = ComfyWorkflowParser.Parse(workflowPath.LastRightPart('/'), workflowJson) ?? throw new Exception($"Could not parse {workflowPath}");
+        var workflow = ComfyWorkflowParser.Parse(workflowJson, workflowPath.LastRightPart('/'), NodeDefs) ?? throw new Exception($"Could not parse {workflowPath}");
         var inputNames = workflow.Inputs.Map(x => x.Name);
         workflow.PrintDump();
         Assert.That(workflow.Type, Is.EqualTo(ComfyWorkflowType.TextToAudio));
@@ -131,7 +137,7 @@ public class ComfyWorkflowParseTests
     {
         var workflowPath = "./workflows/image-to-text/florence2.json";
         var workflowJson = File.ReadAllText(workflowPath);
-        var workflow = ComfyWorkflowParser.Parse(workflowPath.LastRightPart('/'), workflowJson) ?? throw new Exception($"Could not parse {workflowPath}");
+        var workflow = ComfyWorkflowParser.Parse(workflowJson, workflowPath.LastRightPart('/'), NodeDefs) ?? throw new Exception($"Could not parse {workflowPath}");
         var inputNames = workflow.Inputs.Map(x => x.Name);
         workflow.PrintDump();
         Assert.That(workflow.Type, Is.EqualTo(ComfyWorkflowType.ImageToText));
@@ -143,7 +149,7 @@ public class ComfyWorkflowParseTests
     {
         var workflowPath = "./workflows/image-to-image/sd1.5_pruned_emaonly.json";
         var workflowJson = File.ReadAllText(workflowPath);
-        var workflow = ComfyWorkflowParser.Parse(workflowPath.LastRightPart('/'), workflowJson) ?? throw new Exception($"Could not parse {workflowPath}");
+        var workflow = ComfyWorkflowParser.Parse(workflowJson, workflowPath.LastRightPart('/'), NodeDefs) ?? throw new Exception($"Could not parse {workflowPath}");
         var inputNames = workflow.Inputs.Map(x => x.Name);
         workflow.PrintDump();
         Assert.That(workflow.Type, Is.EqualTo(ComfyWorkflowType.ImageToImage));
@@ -155,7 +161,7 @@ public class ComfyWorkflowParseTests
     {
         var workflowPath = "./workflows/audio-to-text/transcribe-audio-whisper.json";
         var workflowJson = File.ReadAllText(workflowPath);
-        var workflow = ComfyWorkflowParser.Parse(workflowPath.LastRightPart('/'), workflowJson) ?? throw new Exception($"Could not parse {workflowPath}");
+        var workflow = ComfyWorkflowParser.Parse(workflowJson, workflowPath.LastRightPart('/'), NodeDefs) ?? throw new Exception($"Could not parse {workflowPath}");
         var inputNames = workflow.Inputs.Map(x => x.Name);
         workflow.PrintDump();
         Assert.That(workflow.Type, Is.EqualTo(ComfyWorkflowType.AudioToText));
@@ -167,11 +173,10 @@ public class ComfyWorkflowParseTests
     {
         var workflowPath = "./workflows/video-to-text/transcribe-video-whisper.json";
         var workflowJson = File.ReadAllText(workflowPath);
-        var workflow = ComfyWorkflowParser.Parse(workflowPath.LastRightPart('/'), workflowJson) ?? throw new Exception($"Could not parse {workflowPath}");
+        var workflow = ComfyWorkflowParser.Parse(workflowJson, workflowPath.LastRightPart('/'), NodeDefs) ?? throw new Exception($"Could not parse {workflowPath}");
         var inputNames = workflow.Inputs.Map(x => x.Name);
         workflow.PrintDump();
         Assert.That(workflow.Type, Is.EqualTo(ComfyWorkflowType.VideoToText));
         Assert.That(inputNames,Is.EquivalentTo("video".Split(',')));
     }
-    
 }

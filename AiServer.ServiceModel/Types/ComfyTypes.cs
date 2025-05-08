@@ -31,6 +31,7 @@ public class ComfyFileOutput
 
 public class ComfyTextOutput
 {
+    public string NodeId { get; set; }
     public string? Text { get; set; }
 }
 
@@ -40,6 +41,22 @@ public class ComfyFileInput
     public string Type { get; set; }
     public string Subfolder { get; set; }
 }
+
+
+public class ComfyResult
+{
+    public string PromptId { get; set; }
+    public string? ClientId { get; set; }
+    public TimeSpan? Duration { get; set; }
+    public List<ComfyTextOutput>? TextOutputs { get; set; }
+    public List<ComfyAssetOutput>? ImageOutputs { get; set; }
+}
+public class ComfyAssetOutput
+{
+    public string NodeId { get; set; }
+    public string Url { get; set; }
+}
+
 
 public enum ComfyMaskSource
 {

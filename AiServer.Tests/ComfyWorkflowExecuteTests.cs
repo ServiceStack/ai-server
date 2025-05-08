@@ -16,12 +16,13 @@ namespace AiServer.Tests;
  * Models: http://localhost:7860/api/experiment/models
  * Text Encoders: http://localhost:7860/api/experiment/models/text_encoders
  */
+[Explicit("Integration tests")]
 public class ComfyWorkflowExecuteTests
 {
     private IServiceProvider serviceProvider;
     string ComfyEndpoint = "http://localhost:7860";
     private string ApiKey = Environment.GetEnvironmentVariable("AI_SERVER_API_KEY");
-    private Dictionary<string, NodeInfo> NodeDefinitions;
+    Dictionary<string, NodeInfo> NodeDefs;
 
     public ComfyWorkflowExecuteTests()
     {
@@ -29,19 +30,18 @@ public class ComfyWorkflowExecuteTests
         services.AddHttpClient(nameof(ComfyGateway));
         serviceProvider = services.BuildServiceProvider();
 
-        // Fix the path to object_info.json - use Path.Combine to ensure correct path
         var objectInfoPath = Path.Combine(AppContext.BaseDirectory, "../../../files/object_info.json");
-        NodeDefinitions = ComfyUIWorkflowConverter.ParseObjectInfoNodeDefinitions(File.ReadAllText(objectInfoPath));
+        NodeDefs = ComfyMetadata.Instance.LoadObjectInfo(File.ReadAllText(objectInfoPath), ComfyEndpoint);
     }
 
-    ComfyGateway CreateGateway() => new(serviceProvider.GetRequiredService<IHttpClientFactory>());
+    ComfyGateway CreateGateway() => new(NullLogger<ComfyGateway>.Instance, serviceProvider.GetRequiredService<IHttpClientFactory>(), ComfyMetadata.Instance);
 
     private async Task<string> CreateApiPrompt(string workflowPath)
     {
         var workflowFullPath = Path.Combine(AppContext.BaseDirectory, $"../../../workflows/{workflowPath}");
         var workflowJson = await File.ReadAllTextAsync(workflowFullPath);
-       
-        var promptJson = ComfyUIWorkflowConverter.ConvertWorkflowToApiPrompt(workflowJson, NodeDefinitions, NullLogger.Instance);
+
+        var promptJson = ComfyConverters.ConvertWorkflowToApiPrompt(workflowJson, NodeDefs);
         return promptJson;
     }
 
@@ -84,6 +84,7 @@ public class ComfyWorkflowExecuteTests
             {
                 Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
             }
+
             throw;
         }
     }
@@ -92,7 +93,8 @@ public class ComfyWorkflowExecuteTests
     public void Can_load_ObjectInfo()
     {
         var objectInfoPath = Path.Combine(AppContext.BaseDirectory, "../../../files/object_info.json");
-        var nodeDefinitions = ComfyUIWorkflowConverter.ParseObjectInfoNodeDefinitions(File.ReadAllText(objectInfoPath));
+        var nodeDefinitions = ComfyMetadata.Instance.LoadObjectInfo(
+            File.ReadAllText(objectInfoPath), ComfyEndpoint);
         Assert.That(nodeDefinitions.Count, Is.GreaterThan(300));
     }
 
@@ -100,6 +102,7 @@ public class ComfyWorkflowExecuteTests
     public async Task Can_execute_basic_Workflow()
     {
         var promptJson = await CreateApiPrompt("text-to-image/basic.json");
+        Console.WriteLine(promptJson);
 
         // Verify the converted JSON is valid and contains expected elements
         var jsonNode = JsonNode.Parse(promptJson);
@@ -121,13 +124,15 @@ public class ComfyWorkflowExecuteTests
     [Test]
     public void Can_convert_all_TextToImage_models()
     {
-        var workflowDir = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, "../../../workflows/text-to-image/"));
+        var workflowDir =
+            new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, "../../../workflows/text-to-image/"));
         foreach (var workflowFile in workflowDir.GetFiles())
         {
             Console.WriteLine($"Converting {workflowFile.Name}:");
             var workflowJson = File.ReadAllText(workflowFile.FullName);
-            var promptJson = ComfyUIWorkflowConverter.ConvertWorkflowToApiPrompt(workflowJson, NodeDefinitions, NullLogger.Instance);
-            Console.WriteLine(promptJson);
+            var promptJson =
+                ComfyConverters.ConvertWorkflowToApiPrompt(workflowJson, NodeDefs, NullLogger.Instance);
+            // Console.WriteLine(promptJson);
         }
     }
 
@@ -220,7 +225,7 @@ public class ComfyWorkflowExecuteTests
         var responseJson = await ExecutePrompt(promptJson);
         Console.WriteLine(responseJson);
     }
-    
+
     [Test]
     public async Task Can_execute_Florence2_ImageToText_Workflow()
     {
@@ -230,7 +235,7 @@ public class ComfyWorkflowExecuteTests
         var responseJson = await ExecutePrompt(promptJson);
         Console.WriteLine(responseJson);
     }
-    
+
     [Test]
     public async Task Can_execute_SD15_pruned_emaonly_ImageToImage_Workflow()
     {
@@ -240,7 +245,7 @@ public class ComfyWorkflowExecuteTests
         var responseJson = await ExecutePrompt(promptJson);
         Console.WriteLine(responseJson);
     }
-    
+
     [Test]
     public async Task Can_execute_SD15_pruned_emaonly_AudioToText_Workflow()
     {
@@ -250,7 +255,7 @@ public class ComfyWorkflowExecuteTests
         var responseJson = await ExecutePrompt(promptJson);
         Console.WriteLine(responseJson);
     }
-    
+
     [Test]
     public async Task Can_execute_Transcribe_Whisper_VideoToText_Workflow()
     {
@@ -259,5 +264,29 @@ public class ComfyWorkflowExecuteTests
 
         var responseJson = await ExecutePrompt(promptJson);
         Console.WriteLine(responseJson);
+    }
+
+    [Test]
+    public void Can_parse_image_outputs()
+    {
+        var responseJson = File.ReadAllText("../../../workflows/results/sd3.5_fp8.output.json");
+        var comfyResult = ComfyConverters.ParseComfyResult(responseJson, "http://localhost:7860/api");
+        Assert.That(comfyResult.ImageOutputs, Is.Not.Null.Or.Empty);
+        Assert.That(comfyResult.ImageOutputs![0].NodeId, Is.EqualTo("9"));
+        Assert.That(comfyResult.ImageOutputs[0].Url, Is.EqualTo("http://localhost:7860/api/view?filename=ComfyUI%5f00422%5f.png&type=output&subfolder="));
+        Assert.That(comfyResult.ClientId, Is.EqualTo("c865c47cd3e1443ab100d17a0e577154"));
+        Assert.That(comfyResult.Duration, Is.EqualTo(TimeSpan.FromMilliseconds(1746602436899-1746602412297)));
+    }
+
+    [Test]
+    public void Can_parse_text_outputs()
+    {
+        var responseJson = File.ReadAllText("../../../workflows/results/transcribe-audio-whisper.output.json");
+        var comfyResult = ComfyConverters.ParseComfyResult(responseJson, "http://localhost:7860/api");
+        Assert.That(comfyResult.TextOutputs, Is.Not.Null.Or.Empty);
+        Assert.That(comfyResult.TextOutputs![0].NodeId, Is.EqualTo("7"));
+        Assert.That(comfyResult.TextOutputs[0].Text, Is.EqualTo(" A rainbow is a meteorological phenomenon that is caused by reflection, refraction, and dispersion of light in water droplets resulting in a spectrum of light appearing in the sky."));
+        Assert.That(comfyResult.ClientId, Is.EqualTo("2eda9668a7794463bf00613df2ec0fe1"));
+        Assert.That(comfyResult.Duration, Is.EqualTo(TimeSpan.FromMilliseconds(1746463824832-1746463824831)));
     }
 }

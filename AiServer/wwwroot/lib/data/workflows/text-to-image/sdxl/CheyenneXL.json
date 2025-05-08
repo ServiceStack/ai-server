@@ -1,0 +1,501 @@
+{
+  "id": "27b72623-b1e1-419b-b435-885ff40b7474",
+  "revision": 0,
+  "last_node_id": 10,
+  "last_link_id": 9,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "VAEDecode",
+      "pos": [
+        1158.080322265625,
+        149.46624755859375
+      ],
+      "size": [
+        210,
+        46
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 1
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
+        "Node name for S&R": "VAEDecode"
+      }
+    },
+    {
+      "id": 2,
+      "type": "VAELoader",
+      "pos": [
+        821.0802001953125,
+        463.46636962890625
+      ],
+      "size": [
+        315,
+        58
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "slot_index": 0,
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "sdxl_vae.safetensors"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "AssetDownloader",
+      "pos": [
+        -33.70664978027344,
+        566.6258544921875
+      ],
+      "size": [
+        315,
+        130
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-asset-downloader",
+        "ver": "cb7151a82f91ab3da819f469945eafe3ac6ec7f8",
+        "Node name for S&R": "AssetDownloader"
+      },
+      "widgets_values": [
+        "https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors",
+        "loras",
+        "aesthetic_anime_v1s.safetensors",
+        ""
+      ]
+    },
+    {
+      "id": 6,
+      "type": "PreviewImage",
+      "pos": [
+        827.079833984375,
+        643.466064453125
+      ],
+      "size": [
+        515.4545288085938,
+        492.5455322265625
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "EmptyLatentImage",
+      "pos": [
+        403.1708984375,
+        605.375244140625
+      ],
+      "size": [
+        315,
+        106
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "slot_index": 0,
+          "links": [
+            8
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        1024,
+        1024,
+        1
+      ]
+    },
+    {
+      "id": 9,
+      "type": "KSampler",
+      "pos": [
+        812.0802001953125,
+        147.46624755859375
+      ],
+      "size": [
+        315,
+        262
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 5
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 6
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 7
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "slot_index": 0,
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        32566606704244,
+        "randomize",
+        8,
+        2,
+        "dpmpp_sde",
+        "karras",
+        1
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        -26.51993751525879,
+        164.26632690429688
+      ],
+      "size": [
+        315,
+        98
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "slot_index": 0,
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "slot_index": 1,
+          "links": [
+            4,
+            9
+          ]
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "slot_index": 2,
+          "links": []
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "CHEYENNE_v22VAEBaked.safetensors"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "AssetDownloader",
+      "pos": [
+        -33.70664978027344,
+        381.8258361816406
+      ],
+      "size": [
+        315,
+        130
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-asset-downloader",
+        "ver": "cb7151a82f91ab3da819f469945eafe3ac6ec7f8",
+        "Node name for S&R": "AssetDownloader"
+      },
+      "widgets_values": [
+        "https://civitai.com/api/download/models/1640059?type=Model&format=SafeTensor&size=full&fp=fp16",
+        "checkpoints",
+        "CHEYENNE_v22VAEBaked.safetensors",
+        "$CIVITAI_TOKEN"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CLIPTextEncode",
+      "pos": [
+        359.8981628417969,
+        369.37542724609375
+      ],
+      "size": [
+        425.27801513671875,
+        180.6060791015625
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "slot_index": 0,
+          "links": [
+            7
+          ]
+        }
+      ],
+      "title": "CLIP Text Encode (Negative Prompt)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "a fantasy underwater village beautiful  landscape, early morning, woman, very intricate, very detailed, sharp, bright, colorful, <lora:Hand v2:0.5> <lora:Anti-Blur:1><lora:Insane Detail Slider:0.25>  <lora:flux.1_lora_flyway_Epic-detail_v2:0.3> <lora:fluxenhancer:0.25> <lora:ROWER:0.8>  <lora:Anime art - Variant 2:0.6>"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 10,
+      "type": "CLIPTextEncode",
+      "pos": [
+        359.8981628417969,
+        148.1935272216797
+      ],
+      "size": [
+        422.84503173828125,
+        164.31304931640625
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "slot_index": 0,
+          "links": [
+            6
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.30",
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "A lone samurai stands before a crumbling red torii gate under a massive blood moon, his shadow stretching long across the ground. He wears a fearsome samurai kabuto helmet with a horned crest, the metal scarred from battle. In his hands, a single katana catches the moon’s crimson glow, its edge gleaming like a sliver of ice.\n\nBehind him, the gate’s peeling paint reveals ancient wood, and the sky pulses with an eerie red light. The air is thick with drifting cherry blossoms—some frozen mid-fall, others clinging to his armor like spectral hands. The ground is cracked, as if the earth itself recoils from his presence.\n\nUltra-detailed fantasy realism, blending historical samurai aesthetics with dark mythology. The blood moon’s light bathes everything in a surreal red hue, turning the scene into a waking nightmare"
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    }
+  ],
+  "links": [
+    [
+      1,
+      9,
+      0,
+      1,
+      0,
+      "LATENT"
+    ],
+    [
+      2,
+      2,
+      0,
+      1,
+      1,
+      "VAE"
+    ],
+    [
+      3,
+      1,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      3,
+      1,
+      7,
+      0,
+      "CLIP"
+    ],
+    [
+      5,
+      3,
+      0,
+      9,
+      0,
+      "MODEL"
+    ],
+    [
+      6,
+      10,
+      0,
+      9,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      7,
+      7,
+      0,
+      9,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      8,
+      8,
+      0,
+      9,
+      3,
+      "LATENT"
+    ],
+    [
+      9,
+      3,
+      1,
+      10,
+      0,
+      "CLIP"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Download Dependencies",
+      "bounding": [
+        -55.43706512451172,
+        293.4106750488281,
+        351.9045715332031,
+        424.4669494628906
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.2100000000000002,
+      "offset": [
+        -8.070376893921567,
+        -32.97371345273165
+      ]
+    },
+    "frontendVersion": "1.17.11"
+  },
+  "version": 0.4
+}

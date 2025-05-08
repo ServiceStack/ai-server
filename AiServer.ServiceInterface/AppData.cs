@@ -86,7 +86,22 @@ public class AppData(ILogger<AppData> log,
         }
         return models.ToArray();
     }
-    
+
+    public void LoadComfyWorkflow()
+    {
+        var objectInfoJson = ReadTextFile("wwwroot/lib/data/object_info.json")!;
+        var nodeDefs = ComfyMetadata.Instance.LoadObjectInfo(objectInfoJson);
+        var overrideObjectInfoJson = ReadTextFile("App_Data/overrides/object_info.json");
+        if (overrideObjectInfoJson != null)
+        {
+            var overrideNodeDefs = ComfyMetadata.ParseNodeDefinitions(overrideObjectInfoJson);
+            foreach (var entry in overrideNodeDefs)
+            {
+                nodeDefs[entry.Key] = entry.Value;
+            }
+        }
+    }
+
     public void Reload(IDbConnection db)
     {
         Prompts = PocoDataSource.Create(LoadModels<Prompt>("prompts.json")
@@ -101,6 +116,7 @@ public class AppData(ILogger<AppData> log,
         
         LoadModelDefaults();
         LogWorkerInfo(AiProviders, "API");
+        LoadComfyWorkflow();
     }
 
     public void ResetAiProviders(IDbConnection db)

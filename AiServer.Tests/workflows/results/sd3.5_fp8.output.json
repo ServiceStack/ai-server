@@ -1,0 +1,901 @@
+{
+  "365ab3be-8ff3-406c-9fe4-8c682f137da7": {
+    "prompt": [
+      31,
+      "365ab3be-8ff3-406c-9fe4-8c682f137da7",
+        {
+        "3": {
+          "inputs": {
+            "seed": 301929262793461,
+            "steps": 30,
+            "cfg": 5.45,
+            "sampler_name": "euler",
+            "scheduler": "sgm_uniform",
+            "denoise": 1.0,
+            "model": [
+              "4",
+              0
+            ],
+            "positive": [
+              "16",
+              0
+            ],
+            "negative": [
+              "40",
+              0
+            ],
+            "latent_image": [
+              "53",
+              0
+            ]
+          },
+          "class_type": "KSampler",
+          "_meta": {
+            "title": "KSampler"
+          }
+        },
+        "4": {
+          "inputs": {
+            "ckpt_name": "sd3.5_large_fp8_scaled.safetensors"
+          },
+          "class_type": "CheckpointLoaderSimple",
+          "_meta": {
+            "title": "Load Checkpoint"
+          }
+        },
+        "8": {
+          "inputs": {
+            "samples": [
+              "3",
+              0
+            ],
+            "vae": [
+              "4",
+              2
+            ]
+          },
+          "class_type": "VAEDecode",
+          "_meta": {
+            "title": "VAE Decode"
+          }
+        },
+        "9": {
+          "inputs": {
+            "filename_prefix": "ComfyUI",
+            "images": [
+              "8",
+              0
+            ]
+          },
+          "class_type": "SaveImage",
+          "_meta": {
+            "title": "Save Image"
+          }
+        },
+        "16": {
+          "inputs": {
+            "text": "A cinematic wide-angle view of an open book lying on a carved wooden desk, with a sleekly designed cyborg spider crawling across the delicate yellowed pages. The spider\u2019s exoskeleton gleams with polished chrome, with intricate engravings and pulsating LED strips running along its abdomen. The book\u2019s script glows faintly, as if the text is alive and reacting to the spider\u2019s presence. Around the book are scattered objects: a magnifying glass, old fountain pens, glowing vials, and gears \u2014 suggesting a steampunk-mechanical world. The ambient lighting comes from a soft golden lamp nearby, creating rich contrasts between shadows and shining metallic highlights. Rim lighting enhances the spider\u2019s silhouette, while a bokeh effect softens the background details. Shot at 28mm, f/1.8, achieving an immersive yet intimate perspective.",
+            "clip": [
+              "43",
+              0
+            ]
+          },
+          "class_type": "CLIPTextEncode",
+          "_meta": {
+            "title": "Positive Prompt"
+          }
+        },
+        "40": {
+          "inputs": {
+            "text": "(nsfw),(explicit),(gore),(violence),(blood),low quality, blurry, noisy, compression artifacts",
+            "clip": [
+              "43",
+              0
+            ]
+          },
+          "class_type": "CLIPTextEncode",
+          "_meta": {
+            "title": "Negative Prompt"
+          }
+        },
+        "41": {
+          "inputs": {
+            "clip_name": "t5xxl_fp16.safetensors",
+            "type": "sd3",
+            "device": "default"
+          },
+          "class_type": "CLIPLoader",
+          "_meta": {
+            "title": "Load CLIP"
+          }
+        },
+        "42": {
+          "inputs": {
+            "clip_name1": "clip_l.safetensors",
+            "clip_name2": "clip_g.safetensors",
+            "type": "sd3",
+            "device": "default"
+          },
+          "class_type": "DualCLIPLoader",
+          "_meta": {
+            "title": "DualCLIPLoader"
+          }
+        },
+        "43": {
+          "inputs": {
+            "clip_name1": "clip_l.safetensors",
+            "clip_name2": "clip_g.safetensors",
+            "clip_name3": "t5xxl_fp8_e4m3fn_scaled.safetensors"
+          },
+          "class_type": "TripleCLIPLoader",
+          "_meta": {
+            "title": "TripleCLIPLoader"
+          }
+        },
+        "53": {
+          "inputs": {
+            "width": 1024,
+            "height": 1024,
+            "batch_size": 1
+          },
+          "class_type": "EmptySD3LatentImage",
+          "_meta": {
+            "title": "EmptySD3LatentImage"
+          }
+        },
+        "54": {
+          "inputs": {
+            "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/sd3.5_large_fp8_scaled.safetensors",
+            "save_to": "checkpoints",
+            "filename": "sd3.5_large_fp8_scaled.safetensors",
+            "token": ""
+          },
+          "class_type": "AssetDownloader",
+          "_meta": {
+            "title": "Requires Asset"
+          }
+        },
+        "55": {
+          "inputs": {
+            "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/t5xxl_fp8_e4m3fn.safetensors",
+            "save_to": "clip",
+            "filename": "t5xxl_fp8_e4m3fn.safetensors",
+            "token": ""
+          },
+          "class_type": "AssetDownloader",
+          "_meta": {
+            "title": "Requires Asset"
+          }
+        },
+        "56": {
+          "inputs": {
+            "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/clip_g.safetensors",
+            "save_to": "clip",
+            "filename": "clip_g.safetensors",
+            "token": ""
+          },
+          "class_type": "AssetDownloader",
+          "_meta": {
+            "title": "Requires Asset"
+          }
+        },
+        "58": {
+          "inputs": {
+            "url": "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/blob/main/text_encoders/clip_l.safetensors",
+            "save_to": "clip",
+            "filename": "clip_l.safetensors",
+            "token": ""
+          },
+          "class_type": "AssetDownloader",
+          "_meta": {
+            "title": "Requires Asset"
+          }
+        }
+      },
+      {
+        "extra_pnginfo": {
+          "workflow": {
+            "id": "8574c9cc-f05e-46b2-87b4-f243a8322094",
+            "revision": 0,
+            "last_node_id": 58,
+            "last_link_id": 100,
+            "nodes": [
+              {
+                "id": 8,
+                "type": "VAEDecode",
+                "pos": [
+                  1200,
+                  96
+                ],
+                "size": [
+                  210,
+                  46
+                ],
+                "flags": {},
+                "order": 12,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "samples",
+                    "type": "LATENT",
+                    "link": 7
+                  },
+                  {
+                    "name": "vae",
+                    "type": "VAE",
+                    "link": 53
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "IMAGE",
+                    "type": "IMAGE",
+                    "slot_index": 0,
+                    "links": [
+                      51
+                    ]
+                  }
+                ],
+                "properties": {
+                  "cnr_id": "comfy-core",
+                  "ver": "0.3.30",
+                  "Node name for S&R": "VAEDecode"
+                },
+                "widgets_values": []
+              },
+              {
+                "id": 9,
+                "type": "SaveImage",
+                "pos": [
+                  1440,
+                  96
+                ],
+                "size": [
+                  952.5112915039062,
+                  1007.9328002929688
+                ],
+                "flags": {},
+                "order": 13,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "images",
+                    "type": "IMAGE",
+                    "link": 51
+                  }
+                ],
+                "outputs": [],
+                "properties": {
+                  "cnr_id": "comfy-core",
+                  "ver": "0.3.30"
+                },
+                "widgets_values": [
+                  "ComfyUI"
+                ]
+              },
+              {
+                "id": 3,
+                "type": "KSampler",
+                "pos": [
+                  864,
+                  96
+                ],
+                "size": [
+                  315,
+                  262
+                ],
+                "flags": {},
+                "order": 11,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "model",
+                    "type": "MODEL",
+                    "link": 99
+                  },
+                  {
+                    "name": "positive",
+                    "type": "CONDITIONING",
+                    "link": 21
+                  },
+                  {
+                    "name": "negative",
+                    "type": "CONDITIONING",
+                    "link": 80
+                  },
+                  {
+                    "name": "latent_image",
+                    "type": "LATENT",
+                    "link": 100
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "LATENT",
+                    "type": "LATENT",
+                    "slot_index": 0,
+                    "links": [
+                      7
+                    ]
+                  }
+                ],
+                "properties": {
+                  "cnr_id": "comfy-core",
+                  "ver": "0.3.30",
+                  "Node name for S&R": "KSampler"
+                },
+                "widgets_values": [
+                  301929262793461,
+                  "randomize",
+                  30,
+                  5.45,
+                  "euler",
+                  "sgm_uniform",
+                  1
+                ]
+              },
+              {
+                "id": 40,
+                "type": "CLIPTextEncode",
+                "pos": [
+                  384,
+                  336
+                ],
+                "size": [
+                  432,
+                  192
+                ],
+                "flags": {},
+                "order": 10,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "clip",
+                    "type": "CLIP",
+                    "link": 97
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "CONDITIONING",
+                    "type": "CONDITIONING",
+                    "slot_index": 0,
+                    "links": [
+                      80
+                    ]
+                  }
+                ],
+                "title": "Negative Prompt",
+                "properties": {
+                  "cnr_id": "comfy-core",
+                  "ver": "0.3.30",
+                  "Node name for S&R": "CLIPTextEncode"
+                },
+                "widgets_values": [
+                  "(nsfw),(explicit),(gore),(violence),(blood),low quality, blurry, noisy, compression artifacts"
+                ],
+                "color": "#322",
+                "bgcolor": "#533"
+              },
+              {
+                "id": 53,
+                "type": "EmptySD3LatentImage",
+                "pos": [
+                  480,
+                  576
+                ],
+                "size": [
+                  315,
+                  106
+                ],
+                "flags": {},
+                "order": 0,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "LATENT",
+                    "type": "LATENT",
+                    "slot_index": 0,
+                    "links": [
+                      100
+                    ]
+                  }
+                ],
+                "properties": {
+                  "cnr_id": "comfy-core",
+                  "ver": "0.3.30",
+                  "Node name for S&R": "EmptySD3LatentImage"
+                },
+                "widgets_values": [
+                  1024,
+                  1024,
+                  1
+                ]
+              },
+              {
+                "id": 42,
+                "type": "DualCLIPLoader",
+                "pos": [
+                  -96,
+                  144
+                ],
+                "size": [
+                  315,
+                  130
+                ],
+                "flags": {},
+                "order": 1,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "CLIP",
+                    "type": "CLIP",
+                    "slot_index": 0,
+                    "links": []
+                  }
+                ],
+                "properties": {
+                  "cnr_id": "comfy-core",
+                  "ver": "0.3.30",
+                  "Node name for S&R": "DualCLIPLoader"
+                },
+                "widgets_values": [
+                  "clip_l.safetensors",
+                  "clip_g.safetensors",
+                  "sd3",
+                  "default"
+                ]
+              },
+              {
+                "id": 43,
+                "type": "TripleCLIPLoader",
+                "pos": [
+                  -96,
+                  288
+                ],
+                "size": [
+                  315,
+                  106
+                ],
+                "flags": {},
+                "order": 2,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "CLIP",
+                    "type": "CLIP",
+                    "slot_index": 0,
+                    "links": [
+                      96,
+                      97
+                    ]
+                  }
+                ],
+                "properties": {
+                  "cnr_id": "comfy-core",
+                  "ver": "0.3.30",
+                  "Node name for S&R": "TripleCLIPLoader"
+                },
+                "widgets_values": [
+                  "clip_l.safetensors",
+                  "clip_g.safetensors",
+                  "t5xxl_fp8_e4m3fn_scaled.safetensors"
+                ]
+              },
+              {
+                "id": 4,
+                "type": "CheckpointLoaderSimple",
+                "pos": [
+                  -96,
+                  480
+                ],
+                "size": [
+                  384.75592041015625,
+                  98
+                ],
+                "flags": {},
+                "order": 3,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "MODEL",
+                    "type": "MODEL",
+                    "slot_index": 0,
+                    "links": [
+                      99
+                    ]
+                  },
+                  {
+                    "name": "CLIP",
+                    "type": "CLIP",
+                    "slot_index": 1,
+                    "links": []
+                  },
+                  {
+                    "name": "VAE",
+                    "type": "VAE",
+                    "slot_index": 2,
+                    "links": [
+                      53
+                    ]
+                  }
+                ],
+                "properties": {
+                  "cnr_id": "comfy-core",
+                  "ver": "0.3.30",
+                  "Node name for S&R": "CheckpointLoaderSimple"
+                },
+                "widgets_values": [
+                  "sd3.5_large_fp8_scaled.safetensors"
+                ]
+              },
+              {
+                "id": 41,
+                "type": "CLIPLoader",
+                "pos": [
+                  -96,
+                  0
+                ],
+                "size": [
+                  315,
+                  106
+                ],
+                "flags": {},
+                "order": 4,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [
+                  {
+                    "name": "CLIP",
+                    "type": "CLIP",
+                    "slot_index": 0,
+                    "links": []
+                  }
+                ],
+                "properties": {
+                  "cnr_id": "comfy-core",
+                  "ver": "0.3.30",
+                  "Node name for S&R": "CLIPLoader"
+                },
+                "widgets_values": [
+                  "t5xxl_fp16.safetensors",
+                  "sd3",
+                  "default"
+                ]
+              },
+              {
+                "id": 54,
+                "type": "AssetDownloader",
+                "pos": [
+                  -232.17430114746094,
+                  714.2232055664062
+                ],
+                "size": [
+                  290.6424560546875,
+                  130
+                ],
+                "flags": {},
+                "order": 5,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [],
+                "properties": {
+                  "Node name for S&R": "AssetDownloader"
+                },
+                "widgets_values": [
+                  "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/sd3.5_large_fp8_scaled.safetensors",
+                  "checkpoints",
+                  "sd3.5_large_fp8_scaled.safetensors",
+                  ""
+                ]
+              },
+              {
+                "id": 56,
+                "type": "AssetDownloader",
+                "pos": [
+                  81.23357391357422,
+                  905.1696166992188
+                ],
+                "size": [
+                  293.06683349609375,
+                  130
+                ],
+                "flags": {},
+                "order": 6,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [],
+                "properties": {
+                  "Node name for S&R": "AssetDownloader"
+                },
+                "widgets_values": [
+                  "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/clip_g.safetensors",
+                  "clip",
+                  "clip_g.safetensors",
+                  ""
+                ]
+              },
+              {
+                "id": 58,
+                "type": "AssetDownloader",
+                "pos": [
+                  -232.17430114746094,
+                  905.1696166992188
+                ],
+                "size": [
+                  293.06683349609375,
+                  130
+                ],
+                "flags": {},
+                "order": 7,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [],
+                "properties": {
+                  "Node name for S&R": "AssetDownloader"
+                },
+                "widgets_values": [
+                  "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/blob/main/text_encoders/clip_l.safetensors",
+                  "clip",
+                  "clip_l.safetensors",
+                  ""
+                ]
+              },
+              {
+                "id": 55,
+                "type": "AssetDownloader",
+                "pos": [
+                  81.23357391357422,
+                  712.4465942382812
+                ],
+                "size": [
+                  293.06683349609375,
+                  130
+                ],
+                "flags": {},
+                "order": 8,
+                "mode": 0,
+                "inputs": [],
+                "outputs": [],
+                "properties": {
+                  "Node name for S&R": "AssetDownloader"
+                },
+                "widgets_values": [
+                  "https://huggingface.co/Comfy-Org/stable-diffusion-3.5-fp8/resolve/main/text_encoders/t5xxl_fp8_e4m3fn.safetensors",
+                  "clip",
+                  "t5xxl_fp8_e4m3fn.safetensors",
+                  ""
+                ]
+              },
+              {
+                "id": 16,
+                "type": "CLIPTextEncode",
+                "pos": [
+                  384,
+                  96
+                ],
+                "size": [
+                  432,
+                  192
+                ],
+                "flags": {},
+                "order": 9,
+                "mode": 0,
+                "inputs": [
+                  {
+                    "name": "clip",
+                    "type": "CLIP",
+                    "link": 96
+                  }
+                ],
+                "outputs": [
+                  {
+                    "name": "CONDITIONING",
+                    "type": "CONDITIONING",
+                    "slot_index": 0,
+                    "links": [
+                      21
+                    ]
+                  }
+                ],
+                "title": "Positive Prompt",
+                "properties": {
+                  "cnr_id": "comfy-core",
+                  "ver": "0.3.30",
+                  "Node name for S&R": "CLIPTextEncode"
+                },
+                "widgets_values": [
+                  "A cinematic wide-angle view of an open book lying on a carved wooden desk, with a sleekly designed cyborg spider crawling across the delicate yellowed pages. The spider\u2019s exoskeleton gleams with polished chrome, with intricate engravings and pulsating LED strips running along its abdomen. The book\u2019s script glows faintly, as if the text is alive and reacting to the spider\u2019s presence. Around the book are scattered objects: a magnifying glass, old fountain pens, glowing vials, and gears \u2014 suggesting a steampunk-mechanical world. The ambient lighting comes from a soft golden lamp nearby, creating rich contrasts between shadows and shining metallic highlights. Rim lighting enhances the spider\u2019s silhouette, while a bokeh effect softens the background details. Shot at 28mm, f/1.8, achieving an immersive yet intimate perspective."
+                ],
+                "color": "#232",
+                "bgcolor": "#353"
+              }
+            ],
+            "links": [
+              [
+                7,
+                3,
+                0,
+                8,
+                0,
+                "LATENT"
+              ],
+              [
+                21,
+                16,
+                0,
+                3,
+                1,
+                "CONDITIONING"
+              ],
+              [
+                51,
+                8,
+                0,
+                9,
+                0,
+                "IMAGE"
+              ],
+              [
+                53,
+                4,
+                2,
+                8,
+                1,
+                "VAE"
+              ],
+              [
+                80,
+                40,
+                0,
+                3,
+                2,
+                "CONDITIONING"
+              ],
+              [
+                96,
+                43,
+                0,
+                16,
+                0,
+                "CLIP"
+              ],
+              [
+                97,
+                43,
+                0,
+                40,
+                0,
+                "CLIP"
+              ],
+              [
+                99,
+                4,
+                0,
+                3,
+                0,
+                "MODEL"
+              ],
+              [
+                100,
+                53,
+                0,
+                3,
+                3,
+                "LATENT"
+              ]
+            ],
+            "groups": [
+              {
+                "id": 1,
+                "title": "Different Text Encoder Configurations",
+                "bounding": [
+                  -144,
+                  -96,
+                  480,
+                  528
+                ],
+                "color": "#3f789e",
+                "font_size": 24,
+                "flags": {}
+              },
+              {
+                "id": 2,
+                "title": "Download Dependencies",
+                "bounding": [
+                  -251.6294708251953,
+                  625.6795654296875,
+                  643.3455200195312,
+                  431.88751220703125
+                ],
+                "color": "#3f789e",
+                "font_size": 24,
+                "flags": {}
+              }
+            ],
+            "config": {},
+            "extra": {
+              "ds": {
+                "scale": 0.9090909090909091,
+                "offset": [
+                  725.7025526366515,
+                  309.8901409495965
+                ]
+              },
+              "frontendVersion": "1.17.11"
+            },
+            "version": 0.4
+          }
+        },
+        "client_id": "c865c47cd3e1443ab100d17a0e577154"
+      },
+      [
+        "55",
+        "9",
+        "58",
+        "54",
+        "56"
+      ]
+    ],
+    "outputs": {
+      "9": {
+        "images": [
+          {
+            "filename": "ComfyUI_00422_.png",
+            "subfolder": "",
+            "type": "output"
+          }
+        ]
+      }
+    },
+    "status": {
+      "status_str": "success",
+      "completed": true,
+      "messages": [
+        [
+          "execution_start",
+          {
+            "prompt_id": "365ab3be-8ff3-406c-9fe4-8c682f137da7",
+            "timestamp": 1746602412297
+          }
+        ],
+        [
+          "execution_cached",
+          {
+            "nodes": [
+              "4",
+              "40",
+              "43",
+              "53",
+              "54",
+              "55",
+              "56",
+              "58"
+            ],
+            "prompt_id": "365ab3be-8ff3-406c-9fe4-8c682f137da7",
+            "timestamp": 1746602412299
+          }
+        ],
+        [
+          "execution_success",
+          {
+            "prompt_id": "365ab3be-8ff3-406c-9fe4-8c682f137da7",
+            "timestamp": 1746602436899
+          }
+        ]
+      ]
+    },
+    "meta": {
+      "9": {
+        "node_id": "9",
+        "display_node": "9",
+        "parent_node": null,
+        "real_node_id": "9"
+      }
+    }
+  }
+}

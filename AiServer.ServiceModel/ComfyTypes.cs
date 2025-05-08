@@ -80,6 +80,8 @@ public enum ComfyInputType
 
 public class ComfyInput
 {
+    public int NodeId { get; set; }
+    public int ValueIndex { get; set; }
     public string Name { get; set; }
     public string Label { get; set; }
     public ComfyInputType Type { get; set; }
@@ -92,7 +94,7 @@ public class ComfyInput
     public bool? Multiline { get; set; }
     public bool? DynamicPrompts { get; set; }
     public bool? ControlAfterGenerate { get; set; }
-    public List<string>? EnumValues { get; set; }
+    public string[]? EnumValues { get; set; }
     public Dictionary<string, object>? ComboValues { get; set; }
 }
 
@@ -105,7 +107,7 @@ public class ComfyArg
 public class ComfyWorkflowInfo
 {
     public string Name { get; set; }
-    public string FileName { get; set; }
+    public string Path { get; set; }
     public ComfyWorkflowType Type { get; set; }
     public ComfyPrimarySource Input { get; set; }
     public ComfyPrimarySource Output { get; set; }
