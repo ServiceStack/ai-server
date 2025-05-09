@@ -29,41 +29,5 @@
     <ProjectReference Include="..\AiServer.ServiceInterface\AiServer.ServiceInterface.csproj" />
     <ProjectReference Include="..\AiServer.ServiceModel\AiServer.ServiceModel.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\img\langs\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="App_Data\overrides\workflows\audio-to-text\faster-whisper\suttitle-audio.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
-    <None Include="wwwroot\lib\data\workflows\audio-to-text\whisper\transcribe-audio.json" />
-    <None Include="wwwroot\lib\data\workflows\image-to-image\sd-1.5\simple.json" />
-    <None Include="wwwroot\lib\data\workflows\image-to-text\florence2\describe-image.json" />
-    <None Include="wwwroot\lib\data\workflows\image-to-video\wan\generate-video.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-audio\stable-audio\generate-audio.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-image\flux\flux1-schnell.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-image\hidream\hidream_i1_dev_fp8.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-image\hidream\hidream_i1_fast_fp8.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-image\sd-1.5\basic.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-image\sd-3.5-large\sd3.5_large.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-image\sd-3.5-large\sd3.5_large_fp8_scaled.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-image\sd-3.5-large\sd3.5_large_turbo.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-image\sdxl-lightning\4step.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-image\sdxl\dreamshaperXL.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-image\sdxl\epiCRealismXL.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-image\sdxl\jibMixRealisticXL.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-image\sdxl\juggernautXL.json" />
-    <None Include="wwwroot\lib\data\workflows\text-to-image\sdxl\realvisxl.json" />
-    <None Include="wwwroot\lib\data\workflows\video-to-text\whisper\transcribe-video.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="wwwroot\lib\data\object_info.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   
 </Project>
