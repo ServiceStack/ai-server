@@ -42,9 +42,11 @@ public class DownloadComfyFile : IReturn<Stream>
     public string? FileName { get; set; }
 }
 
+[Tag(Tags.Comfy)]
 [Route("/comfy/workflows")]
 public class GetComfyWorkflows : IGet, IReturn<string[]> {}
 
+[Tag(Tags.Comfy)]
 [Route("/comfy/workflows/info")]
 public class GetComfyWorkflowInfo : IGet, IReturn<GetComfyWorkflowInfoResponse>
 {
@@ -57,6 +59,7 @@ public class GetComfyWorkflowInfoResponse
     public ResponseStatus? ResponseStatus { get; set; }
 }
 
+[Tag(Tags.Comfy)]
 [Route("/comfy/workflows/prompt")]
 public class GetComfyApiPrompt : IGet, IReturn<string>
 {
@@ -64,14 +67,19 @@ public class GetComfyApiPrompt : IGet, IReturn<string>
     public string Workflow { get; set; }
 }
 
-[Route("/comfy/workflows/execute")]
-public class ExecuteComfyWorkflow : IPost, IReturn<ExecuteComfyWorkflowResponse>
+[Tag(Tags.Comfy)]
+[Route("/comfy/workflows/queue")]
+public class QueueComfyWorkflow : IPost, IReturn<QueueComfyWorkflowResponse>
 {
+    [ValidateNotEmpty]
     public string Workflow { get; set; }
-    public Dictionary<string, object> Args { get; set; }
+    public Dictionary<string, object>? Args { get; set; }
 }
-public class ExecuteComfyWorkflowResponse
+public class QueueComfyWorkflowResponse
 {
-    public ComfyResult? Result { get; set; }
+    public long MediaProviderId { get; set; }
+    public string RefId { get; set; }
+    public string PromptId { get; set; }
+    public long JobId { get; set; }
     public ResponseStatus? ResponseStatus { get; set; }
 }

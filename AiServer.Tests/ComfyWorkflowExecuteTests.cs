@@ -131,7 +131,7 @@ public class ComfyWorkflowExecuteTests
             Console.WriteLine($"Converting {workflowFile.Name}:");
             var workflowJson = File.ReadAllText(workflowFile.FullName);
             var promptJson =
-                ComfyConverters.ConvertWorkflowToApiPrompt(workflowJson, NodeDefs, NullLogger.Instance);
+                ComfyConverters.ConvertWorkflowToApiPrompt(workflowJson, NodeDefs, log:NullLogger.Instance);
             // Console.WriteLine(promptJson);
         }
     }
@@ -271,9 +271,9 @@ public class ComfyWorkflowExecuteTests
     {
         var responseJson = File.ReadAllText("../../../workflows/results/sd3.5_fp8.output.json");
         var comfyResult = ComfyConverters.ParseComfyResult(responseJson, "http://localhost:7860/api");
-        Assert.That(comfyResult.ImageOutputs, Is.Not.Null.Or.Empty);
-        Assert.That(comfyResult.ImageOutputs![0].NodeId, Is.EqualTo("9"));
-        Assert.That(comfyResult.ImageOutputs[0].Url, Is.EqualTo("http://localhost:7860/api/view?filename=ComfyUI%5f00422%5f.png&type=output&subfolder="));
+        Assert.That(comfyResult.Assets, Is.Not.Null.Or.Empty);
+        Assert.That(comfyResult.Assets![0].NodeId, Is.EqualTo("9"));
+        Assert.That(comfyResult.Assets[0].Url, Is.EqualTo("http://localhost:7860/api/view?filename=ComfyUI%5f00422%5f.png&type=output&subfolder="));
         Assert.That(comfyResult.ClientId, Is.EqualTo("c865c47cd3e1443ab100d17a0e577154"));
         Assert.That(comfyResult.Duration, Is.EqualTo(TimeSpan.FromMilliseconds(1746602436899-1746602412297)));
     }
@@ -283,9 +283,9 @@ public class ComfyWorkflowExecuteTests
     {
         var responseJson = File.ReadAllText("../../../workflows/results/transcribe-audio-whisper.output.json");
         var comfyResult = ComfyConverters.ParseComfyResult(responseJson, "http://localhost:7860/api");
-        Assert.That(comfyResult.TextOutputs, Is.Not.Null.Or.Empty);
-        Assert.That(comfyResult.TextOutputs![0].NodeId, Is.EqualTo("7"));
-        Assert.That(comfyResult.TextOutputs[0].Text, Is.EqualTo(" A rainbow is a meteorological phenomenon that is caused by reflection, refraction, and dispersion of light in water droplets resulting in a spectrum of light appearing in the sky."));
+        Assert.That(comfyResult.Texts, Is.Not.Null.Or.Empty);
+        Assert.That(comfyResult.Texts![0].NodeId, Is.EqualTo("7"));
+        Assert.That(comfyResult.Texts[0].Text, Is.EqualTo(" A rainbow is a meteorological phenomenon that is caused by reflection, refraction, and dispersion of light in water droplets resulting in a spectrum of light appearing in the sky."));
         Assert.That(comfyResult.ClientId, Is.EqualTo("2eda9668a7794463bf00613df2ec0fe1"));
         Assert.That(comfyResult.Duration, Is.EqualTo(TimeSpan.FromMilliseconds(1746463824832-1746463824831)));
     }

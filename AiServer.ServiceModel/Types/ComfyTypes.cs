@@ -48,15 +48,25 @@ public class ComfyResult
     public string PromptId { get; set; }
     public string? ClientId { get; set; }
     public TimeSpan? Duration { get; set; }
-    public List<ComfyTextOutput>? TextOutputs { get; set; }
-    public List<ComfyAssetOutput>? ImageOutputs { get; set; }
+    public List<ComfyTextOutput>? Texts { get; set; }
+    public List<ComfyAssetOutput>? Assets { get; set; }
 }
 public class ComfyAssetOutput
 {
     public string NodeId { get; set; }
     public string Url { get; set; }
+    public AssetType Type { get; set; }
+    public string FileName { get; set; }
 }
 
+public enum AssetType
+{
+    Image,
+    Video,
+    Audio,
+    Text,
+    Binary,
+}
 
 public enum ComfyMaskSource
 {

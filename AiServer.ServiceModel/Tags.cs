@@ -8,4 +8,5 @@ public static class Tags
     public const string MediaInfo = "Media Info";
     public const string Admin = nameof(Admin);
     public const string Files = nameof(Files);
+    public const string Comfy = nameof(Comfy);
 }

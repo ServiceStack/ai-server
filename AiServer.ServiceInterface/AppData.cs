@@ -47,6 +47,9 @@ public class AppData(ILogger<AppData> log,
         .Where(x => x.MediaType.Provider == AiServiceProvider.Comfy)
         .ToArray();
 
+    public string ContentRootPath => env.ContentRootPath;
+    public string WebRootPath => env.ContentRootPath.CombineWith("wwwroot");
+    
     public string? ReadTextFile(string path)
     {
         var fullPath  = Path.Combine(env.ContentRootPath, path);

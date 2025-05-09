@@ -11,14 +11,17 @@ namespace AiServer.ServiceInterface;
 
 public class ComfyGateway(ILogger<ComfyGateway> log, IHttpClientFactory clientFactory, ComfyMetadata metadata)
 {
-    public HttpClient CreateHttpClient(string url, string apiKey)
+    public HttpClient CreateHttpClient(string url, string? apiKey=null)
     {
         HttpClient? client = null;
         try
         {
             client = clientFactory.CreateClient(nameof(ComfyGateway));
             client.BaseAddress = new Uri(url);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            if (apiKey is { Length: > 0 })
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            }
             return client;
         }
         catch
@@ -58,7 +61,7 @@ public class ComfyGateway(ILogger<ComfyGateway> log, IHttpClientFactory clientFa
         return workflowInfo ?? throw HttpError.NotFound($"Could not parse {workflow}");
     }
 
-    public async Task<string> ExecuteApiPromptAsync(string url, string apiKey, string promptJson)
+    public async Task<string> ExecuteApiPromptAsync(string url, string? apiKey, string promptJson)
     {
         using var client = CreateHttpClient(url, apiKey);
         var response = await client.PostAsync("/api/prompt",
@@ -81,4 +84,14 @@ public class ComfyGateway(ILogger<ComfyGateway> log, IHttpClientFactory clientFa
         var result = await response.Content.ReadAsStringAsync();
         return result;
     }
+
+    public async Task<string> GetPromptHistoryAsync(string url, string? apiKey, string promptId, CancellationToken token)
+    {
+        using var client = CreateHttpClient(url, apiKey);
+        var response = await client.GetAsync($"/api/history/{promptId}", token);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync(token);
+    }
+    
+    
 }

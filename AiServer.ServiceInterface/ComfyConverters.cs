@@ -245,7 +245,7 @@ public static class ComfyConverters
     /// <returns>The JSON content for the /api/prompt endpoint.</returns>
     /// <exception cref="InvalidOperationException">Thrown if object_info.json was not loaded.</exception>
     /// <exception cref="JsonException">Thrown if the workflow JSON is invalid.</exception>
-    public static string ConvertWorkflowToApiPrompt(string workflowJson, Dictionary<string, NodeInfo> nodeDefs, ILogger? log=null)
+    public static string ConvertWorkflowToApiPrompt(string workflowJson, Dictionary<string, NodeInfo> nodeDefs, string? clientId=null, ILogger? log=null)
     {
         log ??= NullLogger.Instance;
         
@@ -268,7 +268,8 @@ public static class ComfyConverters
             ExtraData = new JsonObject {
                 ["extra_pnginfo"] = new JsonObject {
                     ["workflow"] = workflowJsonNode
-                }
+                },
+                ["client_id"] = clientId ?? Guid.NewGuid().ToString("N"),
             },
         };
         
@@ -450,7 +451,7 @@ public static class ComfyConverters
             // Extract Node Images
             if (nodeOutput.Value.TryGetProperty("images", out var imagesArray))
             {
-                ret.ImageOutputs ??= [];
+                ret.Assets ??= [];
                 foreach (var image in imagesArray.EnumerateArray())
                 {
                     if (image.TryGetProperty("filename", out var elFilename) &&
@@ -461,25 +462,37 @@ public static class ComfyConverters
 
                         image.TryGetProperty("subfolder", out var elSubFolder);
 
-                        //view?filename=ComfyUI_00424_.png&type=output&subfolder=
+                        var mimeType = MimeTypes.GetMimeType(filename);
+                        var assetType = mimeType.StartsWith("image")
+                            ? AssetType.Image
+                            : mimeType.StartsWith("video")
+                                ? AssetType.Video
+                                : mimeType.StartsWith("audio")
+                                    ? AssetType.Audio
+                                    : mimeType.StartsWith("text")
+                                        ? AssetType.Text
+                                        : AssetType.Binary;
+                        
                         var path = "/view"
                             .AddQueryParam("filename", filename)
                             .AddQueryParam("type", type.GetString() ?? "")
                             .AddQueryParam("subfolder", elSubFolder.GetString() ?? "");
 
-                        ret.ImageOutputs.Add(new() {
+                        ret.Assets.Add(new() {
                             NodeId = nodeId,
-                            Url = comfyApiBaseUrl.CombineWith(path)
+                            Type = assetType,
+                            FileName = filename,
+                            Url = comfyApiBaseUrl.CombineWith(path),
                         });
                     }
                 }
             }
             if (nodeOutput.Value.TryGetProperty("text", out var textArray))
             {
-                ret.TextOutputs ??= [];
+                ret.Texts ??= [];
                 foreach (var text in textArray.EnumerateArray())
                 {
-                    ret.TextOutputs.Add(new() {
+                    ret.Texts.Add(new() {
                         NodeId = nodeId,
                         Text = text.GetString()
                     });
